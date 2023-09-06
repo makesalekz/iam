@@ -2,7 +2,7 @@ version: '3.5'
 
 services:
   db:
-    container_name: db
+    container_name: ${SERVICE_NAME}_db
     restart: always
     image: postgres:latest
     volumes:
@@ -20,7 +20,7 @@ services:
     build:
       context: ./
       dockerfile: Dockerfile
-    container_name: iam-service
+    container_name: ${SERVICE_NAME}_service
     ports:
       - '8000:8000'
     networks:
@@ -30,6 +30,8 @@ services:
     restart: unless-stopped
     depends_on:
       - db
+    profiles:
+      - build
 
 networks:
   backend:
