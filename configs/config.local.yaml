@@ -1,0 +1,13 @@
+server:
+  http:
+    addr: 0.0.0.0:8000
+    timeout: 30s
+  grpc:
+    addr: 0.0.0.0:9000
+    timeout: 1s
+consul:
+  address: 0.0.0.0:8500
+  path: app/iam/
+vault:
+  address: 0.0.0.0:8200
+  token: myroot

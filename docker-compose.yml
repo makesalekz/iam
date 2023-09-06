@@ -1,0 +1,20 @@
+version: '3.5'
+
+services:
+  service:
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    container_name: iam-service
+    ports:
+      - '8000:8000'
+    networks:
+      - backend
+    volumes:
+      - ./configs:/data/conf
+    restart: unless-stopped
+
+networks:
+  backend:
+    name: backend
+    external: true

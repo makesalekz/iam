@@ -1,0 +1,100 @@
+# Generated with protoc-gen-openapi
+# https://github.com/google/gnostic/tree/master/cmd/protoc-gen-openapi
+
+openapi: 3.0.3
+info:
+    title: Auth API
+    version: 0.0.1
+paths:
+    /v1/auth/login:
+        post:
+            tags:
+                - Auth
+            operationId: Auth_AuthByLoginPassword
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/api.iam.v1.AuthByLoginPasswordRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/api.iam.v1.AuthByLoginPasswordReply'
+    /v1/auth/phone:
+        post:
+            tags:
+                - Auth
+            operationId: Auth_AuthByPhone
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/api.iam.v1.AuthByPhoneRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/api.iam.v1.AuthByPhoneReply'
+    /v1/auth/phone-code:
+        post:
+            tags:
+                - Auth
+            operationId: Auth_AuthByPhoneCode
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/api.iam.v1.AuthByPhoneCodeRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/api.iam.v1.AuthByPhoneCodeReply'
+components:
+    schemas:
+        api.iam.v1.AuthByLoginPasswordReply:
+            type: object
+            properties:
+                token:
+                    type: string
+        api.iam.v1.AuthByLoginPasswordRequest:
+            type: object
+            properties:
+                login:
+                    type: string
+                password:
+                    type: string
+        api.iam.v1.AuthByPhoneCodeReply:
+            type: object
+            properties:
+                token:
+                    type: string
+        api.iam.v1.AuthByPhoneCodeRequest:
+            type: object
+            properties:
+                state:
+                    type: string
+                code:
+                    type: string
+        api.iam.v1.AuthByPhoneReply:
+            type: object
+            properties:
+                state:
+                    type: string
+        api.iam.v1.AuthByPhoneRequest:
+            type: object
+            properties:
+                phone:
+                    type: string
+tags:
+    - name: Auth
