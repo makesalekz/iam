@@ -15,13 +15,12 @@ type User struct {
 // Fields of the User.
 func (User) Fields() []ent.Field {
 	return []ent.Field{
-		field.String("phone").Nillable().Unique(),
-		field.String("email").Nillable().Unique(),
-		field.String("password").Nillable(),
+		field.String("phone").Unique().Nillable().Optional(),
+		field.String("email").Unique().Nillable().Optional(),
 		field.String("name").Default(""),
 		field.String("bio").Default(""),
-		field.String("avatar").Nillable(),
-		field.String("timezone").NotEmpty().Default("UTC"),
+		field.String("avatar").Nillable().Optional(),
+		field.String("timezone").Default("UTC"),
 		field.Bool("is_active").Default(false),
 		field.Time("last_login_at").Default(time.Now),
 		field.Time("created_at").Default(time.Now),

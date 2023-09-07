@@ -8,15 +8,38 @@ import (
 )
 
 var (
+	// OneTimePasswordsColumns holds the columns for the "one_time_passwords" table.
+	OneTimePasswordsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt64, Increment: true},
+		{Name: "code", Type: field.TypeString, Size: 6},
+		{Name: "type", Type: field.TypeEnum, Enums: []string{"EMAIL", "PHONE"}},
+		{Name: "is_used", Type: field.TypeBool, Default: false},
+		{Name: "expires_at", Type: field.TypeTime},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "user_id", Type: field.TypeInt64},
+	}
+	// OneTimePasswordsTable holds the schema information for the "one_time_passwords" table.
+	OneTimePasswordsTable = &schema.Table{
+		Name:       "one_time_passwords",
+		Columns:    OneTimePasswordsColumns,
+		PrimaryKey: []*schema.Column{OneTimePasswordsColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "one_time_passwords_users_user",
+				Columns:    []*schema.Column{OneTimePasswordsColumns[6]},
+				RefColumns: []*schema.Column{UsersColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+		},
+	}
 	// UsersColumns holds the columns for the "users" table.
 	UsersColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeInt, Increment: true},
-		{Name: "phone", Type: field.TypeString, Unique: true},
-		{Name: "email", Type: field.TypeString, Unique: true},
-		{Name: "password", Type: field.TypeString},
+		{Name: "id", Type: field.TypeInt64, Increment: true},
+		{Name: "phone", Type: field.TypeString, Unique: true, Nullable: true},
+		{Name: "email", Type: field.TypeString, Unique: true, Nullable: true},
 		{Name: "name", Type: field.TypeString, Default: ""},
 		{Name: "bio", Type: field.TypeString, Default: ""},
-		{Name: "avatar", Type: field.TypeString},
+		{Name: "avatar", Type: field.TypeString, Nullable: true},
 		{Name: "timezone", Type: field.TypeString, Default: "UTC"},
 		{Name: "is_active", Type: field.TypeBool, Default: false},
 		{Name: "last_login_at", Type: field.TypeTime},
@@ -32,9 +55,11 @@ var (
 	}
 	// Tables holds all the tables in the schema.
 	Tables = []*schema.Table{
+		OneTimePasswordsTable,
 		UsersTable,
 	}
 )
 
 func init() {
+	OneTimePasswordsTable.ForeignKeys[0].RefTable = UsersTable
 }

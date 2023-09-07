@@ -1,0 +1,6 @@
+{
+  "files.exclude": {
+    // "ent/*.go": true,
+    // "ent/{enttest,hook,predicate,runtime}/": true
+  }
+}

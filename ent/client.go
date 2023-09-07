@@ -10,11 +10,13 @@ import (
 
 	"iam/ent/migrate"
 
+	"iam/ent/onetimepassword"
 	"iam/ent/user"
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect"
 	"entgo.io/ent/dialect/sql"
+	"entgo.io/ent/dialect/sql/sqlgraph"
 )
 
 // Client is the client that holds all ent builders.
@@ -22,6 +24,8 @@ type Client struct {
 	config
 	// Schema is the client for creating, migrating and dropping schema.
 	Schema *migrate.Schema
+	// OneTimePassword is the client for interacting with the OneTimePassword builders.
+	OneTimePassword *OneTimePasswordClient
 	// User is the client for interacting with the User builders.
 	User *UserClient
 }
@@ -37,6 +41,7 @@ func NewClient(opts ...Option) *Client {
 
 func (c *Client) init() {
 	c.Schema = migrate.NewSchema(c.driver)
+	c.OneTimePassword = NewOneTimePasswordClient(c.config)
 	c.User = NewUserClient(c.config)
 }
 
@@ -118,9 +123,10 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 	cfg := c.config
 	cfg.driver = tx
 	return &Tx{
-		ctx:    ctx,
-		config: cfg,
-		User:   NewUserClient(cfg),
+		ctx:             ctx,
+		config:          cfg,
+		OneTimePassword: NewOneTimePasswordClient(cfg),
+		User:            NewUserClient(cfg),
 	}, nil
 }
 
@@ -138,16 +144,17 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 	cfg := c.config
 	cfg.driver = &txDriver{tx: tx, drv: c.driver}
 	return &Tx{
-		ctx:    ctx,
-		config: cfg,
-		User:   NewUserClient(cfg),
+		ctx:             ctx,
+		config:          cfg,
+		OneTimePassword: NewOneTimePasswordClient(cfg),
+		User:            NewUserClient(cfg),
 	}, nil
 }
 
 // Debug returns a new debug-client. It's used to get verbose logging on specific operations.
 //
 //	client.Debug().
-//		User.
+//		OneTimePassword.
 //		Query().
 //		Count(ctx)
 func (c *Client) Debug() *Client {
@@ -169,22 +176,160 @@ func (c *Client) Close() error {
 // Use adds the mutation hooks to all the entity clients.
 // In order to add hooks to a specific client, call: `client.Node.Use(...)`.
 func (c *Client) Use(hooks ...Hook) {
+	c.OneTimePassword.Use(hooks...)
 	c.User.Use(hooks...)
 }
 
 // Intercept adds the query interceptors to all the entity clients.
 // In order to add interceptors to a specific client, call: `client.Node.Intercept(...)`.
 func (c *Client) Intercept(interceptors ...Interceptor) {
+	c.OneTimePassword.Intercept(interceptors...)
 	c.User.Intercept(interceptors...)
 }
 
 // Mutate implements the ent.Mutator interface.
 func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 	switch m := m.(type) {
+	case *OneTimePasswordMutation:
+		return c.OneTimePassword.mutate(ctx, m)
 	case *UserMutation:
 		return c.User.mutate(ctx, m)
 	default:
 		return nil, fmt.Errorf("ent: unknown mutation type %T", m)
+	}
+}
+
+// OneTimePasswordClient is a client for the OneTimePassword schema.
+type OneTimePasswordClient struct {
+	config
+}
+
+// NewOneTimePasswordClient returns a client for the OneTimePassword from the given config.
+func NewOneTimePasswordClient(c config) *OneTimePasswordClient {
+	return &OneTimePasswordClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `onetimepassword.Hooks(f(g(h())))`.
+func (c *OneTimePasswordClient) Use(hooks ...Hook) {
+	c.hooks.OneTimePassword = append(c.hooks.OneTimePassword, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `onetimepassword.Intercept(f(g(h())))`.
+func (c *OneTimePasswordClient) Intercept(interceptors ...Interceptor) {
+	c.inters.OneTimePassword = append(c.inters.OneTimePassword, interceptors...)
+}
+
+// Create returns a builder for creating a OneTimePassword entity.
+func (c *OneTimePasswordClient) Create() *OneTimePasswordCreate {
+	mutation := newOneTimePasswordMutation(c.config, OpCreate)
+	return &OneTimePasswordCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of OneTimePassword entities.
+func (c *OneTimePasswordClient) CreateBulk(builders ...*OneTimePasswordCreate) *OneTimePasswordCreateBulk {
+	return &OneTimePasswordCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for OneTimePassword.
+func (c *OneTimePasswordClient) Update() *OneTimePasswordUpdate {
+	mutation := newOneTimePasswordMutation(c.config, OpUpdate)
+	return &OneTimePasswordUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *OneTimePasswordClient) UpdateOne(otp *OneTimePassword) *OneTimePasswordUpdateOne {
+	mutation := newOneTimePasswordMutation(c.config, OpUpdateOne, withOneTimePassword(otp))
+	return &OneTimePasswordUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *OneTimePasswordClient) UpdateOneID(id int64) *OneTimePasswordUpdateOne {
+	mutation := newOneTimePasswordMutation(c.config, OpUpdateOne, withOneTimePasswordID(id))
+	return &OneTimePasswordUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for OneTimePassword.
+func (c *OneTimePasswordClient) Delete() *OneTimePasswordDelete {
+	mutation := newOneTimePasswordMutation(c.config, OpDelete)
+	return &OneTimePasswordDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *OneTimePasswordClient) DeleteOne(otp *OneTimePassword) *OneTimePasswordDeleteOne {
+	return c.DeleteOneID(otp.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *OneTimePasswordClient) DeleteOneID(id int64) *OneTimePasswordDeleteOne {
+	builder := c.Delete().Where(onetimepassword.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &OneTimePasswordDeleteOne{builder}
+}
+
+// Query returns a query builder for OneTimePassword.
+func (c *OneTimePasswordClient) Query() *OneTimePasswordQuery {
+	return &OneTimePasswordQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeOneTimePassword},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a OneTimePassword entity by its id.
+func (c *OneTimePasswordClient) Get(ctx context.Context, id int64) (*OneTimePassword, error) {
+	return c.Query().Where(onetimepassword.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *OneTimePasswordClient) GetX(ctx context.Context, id int64) *OneTimePassword {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryUser queries the user edge of a OneTimePassword.
+func (c *OneTimePasswordClient) QueryUser(otp *OneTimePassword) *UserQuery {
+	query := (&UserClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := otp.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(onetimepassword.Table, onetimepassword.FieldID, id),
+			sqlgraph.To(user.Table, user.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, onetimepassword.UserTable, onetimepassword.UserColumn),
+		)
+		fromV = sqlgraph.Neighbors(otp.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *OneTimePasswordClient) Hooks() []Hook {
+	return c.hooks.OneTimePassword
+}
+
+// Interceptors returns the client interceptors.
+func (c *OneTimePasswordClient) Interceptors() []Interceptor {
+	return c.inters.OneTimePassword
+}
+
+func (c *OneTimePasswordClient) mutate(ctx context.Context, m *OneTimePasswordMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&OneTimePasswordCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&OneTimePasswordUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&OneTimePasswordUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&OneTimePasswordDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown OneTimePassword mutation op: %q", m.Op())
 	}
 }
 
@@ -234,7 +379,7 @@ func (c *UserClient) UpdateOne(u *User) *UserUpdateOne {
 }
 
 // UpdateOneID returns an update builder for the given id.
-func (c *UserClient) UpdateOneID(id int) *UserUpdateOne {
+func (c *UserClient) UpdateOneID(id int64) *UserUpdateOne {
 	mutation := newUserMutation(c.config, OpUpdateOne, withUserID(id))
 	return &UserUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
@@ -251,7 +396,7 @@ func (c *UserClient) DeleteOne(u *User) *UserDeleteOne {
 }
 
 // DeleteOneID returns a builder for deleting the given entity by its id.
-func (c *UserClient) DeleteOneID(id int) *UserDeleteOne {
+func (c *UserClient) DeleteOneID(id int64) *UserDeleteOne {
 	builder := c.Delete().Where(user.ID(id))
 	builder.mutation.id = &id
 	builder.mutation.op = OpDeleteOne
@@ -268,12 +413,12 @@ func (c *UserClient) Query() *UserQuery {
 }
 
 // Get returns a User entity by its id.
-func (c *UserClient) Get(ctx context.Context, id int) (*User, error) {
+func (c *UserClient) Get(ctx context.Context, id int64) (*User, error) {
 	return c.Query().Where(user.ID(id)).Only(ctx)
 }
 
 // GetX is like Get, but panics if an error occurs.
-func (c *UserClient) GetX(ctx context.Context, id int) *User {
+func (c *UserClient) GetX(ctx context.Context, id int64) *User {
 	obj, err := c.Get(ctx, id)
 	if err != nil {
 		panic(err)
@@ -309,9 +454,9 @@ func (c *UserClient) mutate(ctx context.Context, m *UserMutation) (Value, error)
 // hooks and interceptors per client, for fast access.
 type (
 	hooks struct {
-		User []ent.Hook
+		OneTimePassword, User []ent.Hook
 	}
 	inters struct {
-		User []ent.Interceptor
+		OneTimePassword, User []ent.Interceptor
 	}
 )

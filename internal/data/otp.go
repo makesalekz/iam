@@ -1,0 +1,73 @@
+package data
+
+import (
+	"context"
+	"math/rand"
+	"time"
+
+	"iam/ent"
+	"iam/ent/onetimepassword"
+	"iam/ent/property"
+
+	_ "github.com/lib/pq"
+)
+
+const digits = "0123456789"
+
+// OtpRepo
+type OtpRepo interface {
+	CreateOneTimePassword(ctx context.Context, userId int64, t property.OneTimePasswordType, duration time.Duration) (*ent.OneTimePassword, error)
+	CheckOneTimePassword(ctx context.Context, userId int64, code string) (bool, error)
+}
+
+type otpRepo struct {
+	db *ent.Client
+}
+
+// NewOtpRepo .
+func NewOtpRepo(d *Data) OtpRepo {
+	return &otpRepo{
+		db: d.db,
+	}
+}
+
+func generateRandomNumber(n int) string {
+	result := make([]byte, n)
+	for i := range result {
+		result[i] = digits[rand.Int63()%int64(len(digits))]
+	}
+	return string(result)
+}
+
+func (r *otpRepo) CreateOneTimePassword(ctx context.Context, userId int64, t property.OneTimePasswordType, duration time.Duration) (*ent.OneTimePassword, error) {
+	code := generateRandomNumber(6)
+	expiresAt := time.Now().Add(duration)
+
+	return r.db.OneTimePassword.Create().SetUserID(userId).SetCode(code).SetType(t).SetExpiresAt(expiresAt).Save(ctx)
+}
+
+func (r *otpRepo) CheckOneTimePassword(ctx context.Context, userId int64, code string) (bool, error) {
+	otp, err := r.db.OneTimePassword.Query().Where(
+		onetimepassword.And(
+			onetimepassword.UserID(userId),
+			onetimepassword.Code(code),
+			onetimepassword.IsUsed(false),
+			onetimepassword.ExpiresAtGT(time.Now()),
+		),
+	).First(ctx)
+
+	if err != nil {
+		return false, err
+	}
+
+	if otp == nil {
+		return false, nil
+	}
+
+	_, err = otp.Update().SetIsUsed(true).Save(ctx)
+	if err != nil {
+		return false, err
+	}
+
+	return true, nil
+}

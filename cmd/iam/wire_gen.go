@@ -25,12 +25,22 @@ import (
 
 // wireApp init kratos application.
 func wireApp(bootstrap *conf.Bootstrap, client *api.Client, logger log.Logger) (*kratos.App, func(), error) {
+	config, err := data.NewConfig(client, bootstrap)
+	if err != nil {
+		return nil, nil, err
+	}
 	dataData, cleanup, err := data.NewData(bootstrap, logger)
 	if err != nil {
 		return nil, nil, err
 	}
-	dummy := biz.NewDummy(dataData)
-	authService := service.NewAuthService(bootstrap, logger, dummy)
+	usersRepo := data.NewUsersRepo(dataData, logger)
+	otpRepo := data.NewOtpRepo(dataData)
+	usersUsecase, err := biz.NewUsersUsecase(config, logger, client, usersRepo, otpRepo)
+	if err != nil {
+		cleanup()
+		return nil, nil, err
+	}
+	authService := service.NewAuthService(bootstrap, logger, usersUsecase)
 	grpcServer := server.NewGRPCServer(bootstrap, authService, logger)
 	httpServer := server.NewHTTPServer(bootstrap, authService, logger)
 	app := newApp(logger, client, grpcServer, httpServer)

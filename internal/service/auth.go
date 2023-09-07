@@ -3,7 +3,7 @@ package service
 import (
 	"context"
 
-	v1 "iam/api/iam/v1"
+	pb "iam/api/iam/v1"
 	"iam/internal/biz"
 	"iam/internal/conf"
 
@@ -11,27 +11,37 @@ import (
 )
 
 type AuthService struct {
-	v1.UnimplementedAuthServer
+	pb.UnimplementedAuthServer
 
-	conf *conf.Bootstrap
+	uc     *biz.UsersUsecase
+	conf   *conf.Bootstrap
 	logger log.Logger
 }
 
-func NewAuthService(cfg *conf.Bootstrap, logger log.Logger, dummy *biz.Dummy) *AuthService {
+func NewAuthService(cfg *conf.Bootstrap, logger log.Logger, uc *biz.UsersUsecase) *AuthService {
 	return &AuthService{
-		conf: cfg,
+		uc:     uc,
+		conf:   cfg,
 		logger: logger,
 	}
 }
 
-func (s *AuthService) AuthByLoginPassword(ctx context.Context, req *v1.AuthByLoginPasswordRequest) (*v1.AuthByLoginPasswordReply, error) {
-	return &v1.AuthByLoginPasswordReply{}, nil
+func (s *AuthService) AuthByLoginPassword(ctx context.Context, req *pb.AuthByLoginPasswordRequest) (*pb.AuthByLoginPasswordReply, error) {
+	return &pb.AuthByLoginPasswordReply{}, nil
 }
 
-func (s *AuthService) AuthByPhone(ctx context.Context, req *v1.AuthByPhoneRequest) (*v1.AuthByPhoneReply, error) {
-	return &v1.AuthByPhoneReply{}, nil
+func (s *AuthService) AuthByPhone(ctx context.Context, req *pb.AuthByPhoneRequest) (*pb.AuthByPhoneReply, error) {
+	code, err := s.uc.AuthUserByPhone(ctx, req.Phone)
+	if err != nil {
+		s.logger.Log(log.LevelError, "uc.AuthUserByPhone", err)
+		return &pb.AuthByPhoneReply{}, nil
+	}
+
+	return &pb.AuthByPhoneReply{
+		State: code,
+	}, nil
 }
 
-func (s *AuthService) AuthByPhoneCode(ctx context.Context, req *v1.AuthByPhoneCodeRequest) (*v1.AuthByPhoneCodeReply, error) {
-	return &v1.AuthByPhoneCodeReply{}, nil
+func (s *AuthService) AuthByPhoneCode(ctx context.Context, req *pb.AuthByPhoneCodeRequest) (*pb.AuthByPhoneCodeReply, error) {
+	return &pb.AuthByPhoneCodeReply{}, nil
 }

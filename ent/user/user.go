@@ -17,8 +17,6 @@ const (
 	FieldPhone = "phone"
 	// FieldEmail holds the string denoting the email field in the database.
 	FieldEmail = "email"
-	// FieldPassword holds the string denoting the password field in the database.
-	FieldPassword = "password"
 	// FieldName holds the string denoting the name field in the database.
 	FieldName = "name"
 	// FieldBio holds the string denoting the bio field in the database.
@@ -46,7 +44,6 @@ var Columns = []string{
 	FieldID,
 	FieldPhone,
 	FieldEmail,
-	FieldPassword,
 	FieldName,
 	FieldBio,
 	FieldAvatar,
@@ -75,8 +72,6 @@ var (
 	DefaultBio string
 	// DefaultTimezone holds the default value on creation for the "timezone" field.
 	DefaultTimezone string
-	// TimezoneValidator is a validator for the "timezone" field. It is called by the builders before save.
-	TimezoneValidator func(string) error
 	// DefaultIsActive holds the default value on creation for the "is_active" field.
 	DefaultIsActive bool
 	// DefaultLastLoginAt holds the default value on creation for the "last_login_at" field.
@@ -103,11 +98,6 @@ func ByPhone(opts ...sql.OrderTermOption) OrderOption {
 // ByEmail orders the results by the email field.
 func ByEmail(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldEmail, opts...).ToFunc()
-}
-
-// ByPassword orders the results by the password field.
-func ByPassword(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldPassword, opts...).ToFunc()
 }
 
 // ByName orders the results by the name field.
