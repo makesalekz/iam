@@ -1,7 +1,7 @@
 package server
 
 import (
-	iam "iam/api/iam/v1"
+	auth_v1 "iam/api/auth/v1"
 	"iam/internal/conf"
 	"iam/internal/service"
 
@@ -28,7 +28,7 @@ func NewHTTPServer(c *conf.Bootstrap, auth *service.AuthService, logger log.Logg
 	}
 	srv := khttp.NewServer(opts...)
 
-	iam.RegisterAuthHTTPServer(srv, auth)
+	auth_v1.RegisterAuthHTTPServer(srv, auth)
 
 	return srv
 }

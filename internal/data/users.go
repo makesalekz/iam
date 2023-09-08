@@ -20,6 +20,7 @@ type UpdateUserDto struct {
 
 // UsersRepo
 type UsersRepo interface {
+	GetUserById(ctx context.Context, id int64) (*ent.User, error)
 	GetUserByPhone(ctx context.Context, phone string) (*ent.User, error)
 	GetUserByEmail(ctx context.Context, email string) (*ent.User, error)
 	CreateUserWithPhone(ctx context.Context, phone string) (*ent.User, error)
@@ -80,6 +81,10 @@ func (r *usersRepo) UpdateUserData(ctx context.Context, id int64, dto UpdateUser
 	_, err = query.Save(ctx)
 
 	return err
+}
+
+func (r *usersRepo) GetUserById(ctx context.Context, id int64) (*ent.User, error) {
+	return r.db.User.Query().Where(user.ID(id)).First(ctx)
 }
 
 func (r *usersRepo) GetUserByPhone(ctx context.Context, phone string) (*ent.User, error) {
