@@ -25,20 +25,30 @@ import (
 
 // wireApp init kratos application.
 func wireApp(bootstrap *conf.Bootstrap, client *api.Client, logger log.Logger) (*kratos.App, func(), error) {
+	jwtProcessor, err := biz.NewJwtProcessor()
+	if err != nil {
+		return nil, nil, err
+	}
 	dataData, cleanup, err := data.NewData(bootstrap, logger)
 	if err != nil {
 		return nil, nil, err
 	}
 	usersRepo := data.NewUsersRepo(dataData, logger)
 	otpRepo := data.NewOtpRepo(dataData)
+	authUsecase, err := biz.NewAuthUsecase(bootstrap, logger, client, usersRepo, otpRepo)
+	if err != nil {
+		cleanup()
+		return nil, nil, err
+	}
+	authService := service.NewAuthService(bootstrap, logger, jwtProcessor, authUsecase)
 	usersUsecase, err := biz.NewUsersUsecase(bootstrap, logger, client, usersRepo, otpRepo)
 	if err != nil {
 		cleanup()
 		return nil, nil, err
 	}
-	authService := service.NewAuthService(bootstrap, logger, usersUsecase)
-	grpcServer := server.NewGRPCServer(bootstrap, authService, logger)
-	httpServer := server.NewHTTPServer(bootstrap, authService, logger)
+	usersService := service.NewUsersService(logger, jwtProcessor, usersUsecase)
+	grpcServer := server.NewGRPCServer(bootstrap, logger, jwtProcessor, authService, usersService)
+	httpServer := server.NewHTTPServer(bootstrap, logger, jwtProcessor, authService, usersService)
 	app := newApp(logger, client, grpcServer, httpServer)
 	return app, func() {
 		cleanup()

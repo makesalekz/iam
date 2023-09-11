@@ -1,0 +1,59 @@
+syntax = "proto3";
+
+package api.users.v1;
+
+import "google/api/annotations.proto";
+import "errors/errors.proto";
+
+option go_package = "iam/api/users/v1;users_v1";
+option java_multiple_files = true;
+option java_package = "api.users.v1";
+
+service Users {
+	rpc GetOwnProfile (GetOwnProfileRequest) returns (GetOwnProfileReply) {
+		option (google.api.http) = {
+			get: "/v1/users/me"
+		};
+	};
+	rpc UpdateOwnProfile (UpdateOwnProfileRequest) returns (GetOwnProfileReply) {
+		option (google.api.http) = {
+			post: "/v1/users/me"
+			body: "*"
+		};
+	};
+}
+
+message GetOwnProfileRequest {}
+message GetOwnProfileReply {
+	string id = 1;
+	string phone = 2;
+	string email = 3;
+	string name = 4;
+	string bio = 5;
+	string avatar = 6;
+	string timezone = 7;
+	string created_at = 8;
+	string updated_at = 9;
+}
+
+message UpdateOwnProfileRequest {
+	string name = 1;
+	string bio = 2;
+	string avatar = 3;
+	string timezone = 4;
+}
+
+enum ErrorReason {
+  // Set default error code.
+  option (errors.default_code) = 500;
+
+  // Set the error code separately for an enumeration.
+  INTERNAL = 0;
+  GRPC_CONNECTION = 1;
+  SERVICE_FAILED = 2;
+  DATABASE_QUERY = 3;
+  
+  UNAUTHORIZED = 10 [(errors.code) = 401];
+  
+  USER_NOT_FOUND = 20 [(errors.code) = 404];
+}

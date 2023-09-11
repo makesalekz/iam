@@ -25,7 +25,7 @@ type UsersRepo interface {
 	GetUserByEmail(ctx context.Context, email string) (*ent.User, error)
 	CreateUserWithPhone(ctx context.Context, phone string) (*ent.User, error)
 	CreateUserWithEmail(ctx context.Context, email string) (*ent.User, error)
-	UpdateUserData(ctx context.Context, id int64, dto UpdateUserDto) error
+	UpdateUserData(ctx context.Context, id int64, dto UpdateUserDto) (*ent.User, error)
 }
 
 type usersRepo struct {
@@ -47,10 +47,10 @@ func (r *usersRepo) CreateUserWithEmail(ctx context.Context, email string) (*ent
 	return r.db.User.Create().SetEmail(email).Save(ctx)
 }
 
-func (r *usersRepo) UpdateUserData(ctx context.Context, id int64, dto UpdateUserDto) error {
+func (r *usersRepo) UpdateUserData(ctx context.Context, id int64, dto UpdateUserDto) (*ent.User, error) {
 	user, err := r.db.User.Get(ctx, id)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	shouldUpdate := false
@@ -75,12 +75,12 @@ func (r *usersRepo) UpdateUserData(ctx context.Context, id int64, dto UpdateUser
 	}
 
 	if !shouldUpdate {
-		return nil
+		return user, nil
 	}
 
 	_, err = query.Save(ctx)
 
-	return err
+	return user, err
 }
 
 func (r *usersRepo) GetUserById(ctx context.Context, id int64) (*ent.User, error) {

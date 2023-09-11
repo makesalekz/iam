@@ -1,20 +1,47 @@
 package server
 
 import (
+	"context"
 	auth_v1 "iam/api/auth/v1"
+	users_v1 "iam/api/users/v1"
+	"iam/internal/biz"
 	"iam/internal/conf"
 	"iam/internal/service"
 
 	"github.com/go-kratos/kratos/v2/log"
+	"github.com/go-kratos/kratos/v2/middleware/auth/jwt"
+	"github.com/go-kratos/kratos/v2/middleware/metadata"
 	"github.com/go-kratos/kratos/v2/middleware/recovery"
+	"github.com/go-kratos/kratos/v2/middleware/selector"
 	khttp "github.com/go-kratos/kratos/v2/transport/http"
+	jwtv4 "github.com/golang-jwt/jwt/v4"
 )
 
+func NewWhiteListMatcher() selector.MatchFunc {
+	whiteList := make(map[string]struct{})
+	whiteList["/api.auth.v1.Auth/AuthByPhone"] = struct{}{}
+	whiteList["/api.auth.v1.Auth/AuthByCode"] = struct{}{}
+	return func(ctx context.Context, operation string) bool {
+		if _, ok := whiteList[operation]; ok {
+			return false
+		}
+		return true
+	}
+}
+
 // NewHTTPServer new an HTTP server.
-func NewHTTPServer(c *conf.Bootstrap, auth *service.AuthService, logger log.Logger) *khttp.Server {
+func NewHTTPServer(c *conf.Bootstrap, logger log.Logger, jwtBiz *biz.JwtProcessor, auth *service.AuthService, users *service.UsersService) *khttp.Server {
 	var opts = []khttp.ServerOption{
 		khttp.Middleware(
 			recovery.Recovery(),
+			metadata.Server(),
+			selector.Server(
+				jwt.Server(func(token *jwtv4.Token) (interface{}, error) {
+					return jwtBiz.GetSecret(), nil
+				}, jwt.WithSigningMethod(jwtv4.SigningMethodHS256), jwt.WithClaims(func() jwtv4.Claims { return &jwtv4.RegisteredClaims{} })),
+			).
+				Match(NewWhiteListMatcher()).
+				Build(),
 		),
 	}
 	if c.Server.Http.Network != "" {
@@ -29,6 +56,7 @@ func NewHTTPServer(c *conf.Bootstrap, auth *service.AuthService, logger log.Logg
 	srv := khttp.NewServer(opts...)
 
 	auth_v1.RegisterAuthHTTPServer(srv, auth)
+	users_v1.RegisterUsersHTTPServer(srv, users)
 
 	return srv
 }

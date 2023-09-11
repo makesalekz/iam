@@ -61,6 +61,18 @@ func ErrorDatabaseQuery(format string, args ...interface{}) *errors.Error {
 	return errors.New(500, ErrorReason_DATABASE_QUERY.String(), fmt.Sprintf(format, args...))
 }
 
+func IsInvalidRequest(err error) bool {
+	if err == nil {
+		return false
+	}
+	e := errors.FromError(err)
+	return e.Reason == ErrorReason_INVALID_REQUEST.String() && e.Code == 400
+}
+
+func ErrorInvalidRequest(format string, args ...interface{}) *errors.Error {
+	return errors.New(400, ErrorReason_INVALID_REQUEST.String(), fmt.Sprintf(format, args...))
+}
+
 func IsInvalidPhoneNumber(err error) bool {
 	if err == nil {
 		return false

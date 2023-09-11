@@ -2,19 +2,28 @@ package server
 
 import (
 	auth_v1 "iam/api/auth/v1"
+	users_v1 "iam/api/users/v1"
+	"iam/internal/biz"
 	"iam/internal/conf"
 	"iam/internal/service"
 
 	"github.com/go-kratos/kratos/v2/log"
+	"github.com/go-kratos/kratos/v2/middleware/auth/jwt"
+	"github.com/go-kratos/kratos/v2/middleware/metadata"
 	"github.com/go-kratos/kratos/v2/middleware/recovery"
 	"github.com/go-kratos/kratos/v2/transport/grpc"
+	jwtv4 "github.com/golang-jwt/jwt/v4"
 )
 
 // NewGRPCServer new a gRPC server.
-func NewGRPCServer(c *conf.Bootstrap, auth *service.AuthService, logger log.Logger) *grpc.Server {
+func NewGRPCServer(c *conf.Bootstrap, logger log.Logger, jwtBiz *biz.JwtProcessor, auth *service.AuthService, users *service.UsersService) *grpc.Server {
 	var opts = []grpc.ServerOption{
 		grpc.Middleware(
 			recovery.Recovery(),
+			metadata.Server(),
+			jwt.Server(func(token *jwtv4.Token) (interface{}, error) {
+				return jwtBiz.GetSecret(), nil
+			}, jwt.WithSigningMethod(jwtv4.SigningMethodHS256)),
 		),
 	}
 	if c.Server.Grpc.Network != "" {
@@ -29,6 +38,7 @@ func NewGRPCServer(c *conf.Bootstrap, auth *service.AuthService, logger log.Logg
 	srv := grpc.NewServer(opts...)
 
 	auth_v1.RegisterAuthServer(srv, auth)
+	users_v1.RegisterUsersServer(srv, users)
 
 	return srv
 }

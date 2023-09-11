@@ -28,11 +28,11 @@ message AuthByPhoneRequest {
 	string phone = 1;
 }
 message AuthByPhoneReply {
-	string token = 1;
+	string user_id = 1;
 }
 
 message AuthByCodeRequest {
-	string token = 1;
+	string user_id = 1;
 	string code = 2;
 }
 message AuthByCodeReply {
@@ -49,9 +49,10 @@ enum ErrorReason {
   SERVICE_FAILED = 2;
   DATABASE_QUERY = 3;
   
-  INVALID_PHONE_NUMBER = 10 [(errors.code) = 400];
-  INVALID_TOKEN = 11 [(errors.code) = 401];
-  INVALID_CODE = 12 [(errors.code) = 401];
+  INVALID_REQUEST = 10 [(errors.code) = 400];
+  INVALID_PHONE_NUMBER = 11 [(errors.code) = 400];
+  INVALID_TOKEN = 12 [(errors.code) = 401];
+  INVALID_CODE = 13 [(errors.code) = 401];
   
   USER_NOT_FOUND = 20 [(errors.code) = 404];
 }

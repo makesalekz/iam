@@ -3,7 +3,7 @@
 
 openapi: 3.0.3
 info:
-    title: Auth API
+    title: ""
     version: 0.0.1
 paths:
     /v1/auth/code:
@@ -42,6 +42,35 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/api.auth.v1.AuthByPhoneReply'
+    /v1/users/me:
+        get:
+            tags:
+                - Users
+            operationId: Users_GetOwnProfile
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/api.users.v1.GetOwnProfileReply'
+        post:
+            tags:
+                - Users
+            operationId: Users_UpdateOwnProfile
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/api.users.v1.UpdateOwnProfileRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/api.users.v1.GetOwnProfileReply'
 components:
     schemas:
         api.auth.v1.AuthByCodeReply:
@@ -52,19 +81,52 @@ components:
         api.auth.v1.AuthByCodeRequest:
             type: object
             properties:
-                token:
+                userId:
                     type: string
                 code:
                     type: string
         api.auth.v1.AuthByPhoneReply:
             type: object
             properties:
-                token:
+                userId:
                     type: string
         api.auth.v1.AuthByPhoneRequest:
             type: object
             properties:
                 phone:
                     type: string
+        api.users.v1.GetOwnProfileReply:
+            type: object
+            properties:
+                id:
+                    type: string
+                phone:
+                    type: string
+                email:
+                    type: string
+                name:
+                    type: string
+                bio:
+                    type: string
+                avatar:
+                    type: string
+                timezone:
+                    type: string
+                createdAt:
+                    type: string
+                updatedAt:
+                    type: string
+        api.users.v1.UpdateOwnProfileRequest:
+            type: object
+            properties:
+                name:
+                    type: string
+                bio:
+                    type: string
+                avatar:
+                    type: string
+                timezone:
+                    type: string
 tags:
     - name: Auth
+    - name: Users
