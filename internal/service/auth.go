@@ -14,7 +14,7 @@ import (
 	jwtv4 "github.com/golang-jwt/jwt/v4"
 )
 
-const TOKEN_DURATION = 30 * 24 * time.Hour
+const TOKEN_DURATION = 24 * time.Hour
 
 type AuthService struct {
 	v1.UnimplementedAuthServer
@@ -62,17 +62,17 @@ func (s *AuthService) AuthByCode(ctx context.Context, req *v1.AuthByCodeRequest)
 		return nil, errors.InternalServer("internal", "internal error")
 	}
 
-	token := jwtv4.RegisteredClaims{
+	claims := &jwtv4.RegisteredClaims{
 		Issuer:    "iam",
 		Audience:  jwtv4.ClaimStrings{"personal"},
 		Subject:   strconv.FormatInt(userId, 10),
 		ExpiresAt: jwtv4.NewNumericDate(time.Now().Add(TOKEN_DURATION)),
 	}
-	jwtv4Token := jwtv4.NewWithClaims(jwtv4.SigningMethodHS256, token)
+	token := jwtv4.NewWithClaims(jwtv4.SigningMethodHS256, claims)
 
-	tokenString, err := jwtv4Token.SignedString(s.jwt.GetSecret())
+	tokenString, err := token.SignedString(s.jwt.GetSecret())
 	if err != nil {
-		s.log.Errorf("jwtv4Token.SignedString: ", err)
+		s.log.Errorf("token.SignedString: ", err)
 		return nil, errors.InternalServer("internal", "internal error")
 	}
 

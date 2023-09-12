@@ -98,6 +98,22 @@ components:
         api.users.v1.GetOwnProfileReply:
             type: object
             properties:
+                user:
+                    $ref: '#/components/schemas/api.users.v1.User'
+        api.users.v1.UpdateOwnProfileRequest:
+            type: object
+            properties:
+                name:
+                    type: string
+                bio:
+                    type: string
+                avatar:
+                    type: string
+                timezone:
+                    type: string
+        api.users.v1.User:
+            type: object
+            properties:
                 id:
                     type: string
                 phone:
@@ -115,17 +131,6 @@ components:
                 createdAt:
                     type: string
                 updatedAt:
-                    type: string
-        api.users.v1.UpdateOwnProfileRequest:
-            type: object
-            properties:
-                name:
-                    type: string
-                bio:
-                    type: string
-                avatar:
-                    type: string
-                timezone:
                     type: string
 tags:
     - name: Auth

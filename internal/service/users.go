@@ -5,6 +5,7 @@ import (
 	"strconv"
 
 	v1 "iam/api/users/v1"
+	"iam/ent"
 	"iam/internal/biz"
 	"iam/internal/data"
 
@@ -27,8 +28,30 @@ func NewUsersService(logger log.Logger, jwt *biz.JwtProcessor, uc *biz.UsersUsec
 	}
 }
 
+func transformUserForReply(user *ent.User) *v1.User {
+	result := &v1.User{
+		Id:        strconv.FormatInt(user.ID, 10),
+		Name:      user.Name,
+		Bio:       user.Bio,
+		Timezone:  user.Timezone,
+		CreatedAt: user.CreatedAt.Local().String(),
+		UpdatedAt: user.UpdatedAt.Local().String(),
+	}
+	if user.Phone != nil {
+		result.Phone = *user.Phone
+	}
+	if user.Email != nil {
+		result.Email = *user.Email
+	}
+	if user.Avatar != nil {
+		result.Avatar = *user.Avatar
+	}
+	return result
+}
+
 func (s *UsersService) GetOwnProfile(ctx context.Context, req *v1.GetOwnProfileRequest) (*v1.GetOwnProfileReply, error) {
 	userId, ok := s.jwt.GetUserIdFromContext(ctx)
+	s.log.Infof("userId: %v", userId)
 	if !ok {
 		return nil, v1.ErrorUnauthorized("Unauthorized")
 	}
@@ -38,17 +61,7 @@ func (s *UsersService) GetOwnProfile(ctx context.Context, req *v1.GetOwnProfileR
 		return nil, v1.ErrorUserNotFound("User not found: %v", err)
 	}
 
-	return &v1.GetOwnProfileReply{
-		Id:        strconv.FormatInt(user.ID, 10),
-		Name:      user.Name,
-		Phone:     *user.Phone,
-		Email:     *user.Email,
-		Bio:       user.Bio,
-		Avatar:    *user.Avatar,
-		Timezone:  user.Timezone,
-		CreatedAt: user.CreatedAt.Local().String(),
-		UpdatedAt: user.UpdatedAt.Local().String(),
-	}, nil
+	return &v1.GetOwnProfileReply{User: transformUserForReply(user)}, nil
 }
 
 func (s *UsersService) UpdateOwnProfile(ctx context.Context, req *v1.UpdateOwnProfileRequest) (*v1.GetOwnProfileReply, error) {
@@ -67,15 +80,5 @@ func (s *UsersService) UpdateOwnProfile(ctx context.Context, req *v1.UpdateOwnPr
 		return nil, v1.ErrorUserNotFound("User not found: %v", err)
 	}
 
-	return &v1.GetOwnProfileReply{
-		Id:        strconv.FormatInt(user.ID, 10),
-		Name:      user.Name,
-		Phone:     *user.Phone,
-		Email:     *user.Email,
-		Bio:       user.Bio,
-		Avatar:    *user.Avatar,
-		Timezone:  user.Timezone,
-		CreatedAt: user.CreatedAt.Local().String(),
-		UpdatedAt: user.UpdatedAt.Local().String(),
-	}, nil
+	return &v1.GetOwnProfileReply{User: transformUserForReply(user)}, nil
 }

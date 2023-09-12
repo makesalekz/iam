@@ -25,6 +25,17 @@ service Users {
 
 message GetOwnProfileRequest {}
 message GetOwnProfileReply {
+	User user = 1;
+}
+
+message UpdateOwnProfileRequest {
+	string name = 1;
+	string bio = 2;
+	string avatar = 3;
+	string timezone = 4;
+}
+
+message User {
 	string id = 1;
 	string phone = 2;
 	string email = 3;
@@ -34,13 +45,6 @@ message GetOwnProfileReply {
 	string timezone = 7;
 	string created_at = 8;
 	string updated_at = 9;
-}
-
-message UpdateOwnProfileRequest {
-	string name = 1;
-	string bio = 2;
-	string avatar = 3;
-	string timezone = 4;
 }
 
 enum ErrorReason {
