@@ -42,6 +42,35 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/api.auth.v1.AuthByPhoneReply'
+    /v1/privacy/me:
+        get:
+            tags:
+                - Privacy
+            operationId: Privacy_GetPrivacy
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/api.privacy.v1.PrivacyReply'
+        post:
+            tags:
+                - Privacy
+            operationId: Privacy_UpdatePrivacy
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/api.privacy.v1.PrivacyRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/api.privacy.v1.PrivacyReply'
     /v1/users/me:
         get:
             tags:
@@ -127,6 +156,20 @@ components:
             properties:
                 phone:
                     type: string
+        api.privacy.v1.PrivacyReply:
+            type: object
+            properties:
+                settings:
+                    type: object
+                    additionalProperties:
+                        type: string
+        api.privacy.v1.PrivacyRequest:
+            type: object
+            properties:
+                settings:
+                    type: object
+                    additionalProperties:
+                        type: string
         api.users.v1.EmptyReply:
             type: object
             properties: {}
@@ -174,4 +217,5 @@ components:
                     type: boolean
 tags:
     - name: Auth
+    - name: Privacy
     - name: Users

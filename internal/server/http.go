@@ -3,6 +3,7 @@ package server
 import (
 	"context"
 	auth_v1 "iam/api/auth/v1"
+	privacy_v1 "iam/api/privacy/v1"
 	users_v1 "iam/api/users/v1"
 	"iam/internal/biz"
 	"iam/internal/conf"
@@ -30,7 +31,7 @@ func NewWhiteListMatcher() selector.MatchFunc {
 }
 
 // NewHTTPServer new an HTTP server.
-func NewHTTPServer(c *conf.Bootstrap, logger log.Logger, jwtBiz *biz.JwtProcessor, auth *service.AuthService, users *service.UsersService) *khttp.Server {
+func NewHTTPServer(c *conf.Bootstrap, logger log.Logger, jwtBiz *biz.JwtProcessor, auth *service.AuthService, users *service.UsersService, privacy *service.PrivacyService) *khttp.Server {
 	var opts = []khttp.ServerOption{
 		khttp.Middleware(
 			recovery.Recovery(),
@@ -57,6 +58,7 @@ func NewHTTPServer(c *conf.Bootstrap, logger log.Logger, jwtBiz *biz.JwtProcesso
 
 	auth_v1.RegisterAuthHTTPServer(srv, auth)
 	users_v1.RegisterUsersHTTPServer(srv, users)
+	privacy_v1.RegisterPrivacyHTTPServer(srv, privacy)
 
 	return srv
 }

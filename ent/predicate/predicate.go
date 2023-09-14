@@ -11,3 +11,6 @@ type OneTimePassword func(*sql.Selector)
 
 // User is the predicate function for user builders.
 type User func(*sql.Selector)
+
+// UserPrivacy is the predicate function for userprivacy builders.
+type UserPrivacy func(*sql.Selector)

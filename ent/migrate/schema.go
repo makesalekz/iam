@@ -53,13 +53,44 @@ var (
 		Columns:    UsersColumns,
 		PrimaryKey: []*schema.Column{UsersColumns[0]},
 	}
+	// UserPrivaciesColumns holds the columns for the "user_privacies" table.
+	UserPrivaciesColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt64, Increment: true},
+		{Name: "setting", Type: field.TypeEnum, Enums: []string{"MY_LAST_ACTIONS", "MY_PROFILE_IMAGE", "MY_EVENTS", "GROUP_CHAT_INVITE", "EVENT_INVITE"}},
+		{Name: "option", Type: field.TypeEnum, Enums: []string{"ALL", "MY_CONTACTS", "NO_ONE"}},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "user_id", Type: field.TypeInt64},
+	}
+	// UserPrivaciesTable holds the schema information for the "user_privacies" table.
+	UserPrivaciesTable = &schema.Table{
+		Name:       "user_privacies",
+		Columns:    UserPrivaciesColumns,
+		PrimaryKey: []*schema.Column{UserPrivaciesColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "user_privacies_users_user",
+				Columns:    []*schema.Column{UserPrivaciesColumns[4]},
+				RefColumns: []*schema.Column{UsersColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "userprivacy_user_id_setting",
+				Unique:  true,
+				Columns: []*schema.Column{UserPrivaciesColumns[4], UserPrivaciesColumns[1]},
+			},
+		},
+	}
 	// Tables holds all the tables in the schema.
 	Tables = []*schema.Table{
 		OneTimePasswordsTable,
 		UsersTable,
+		UserPrivaciesTable,
 	}
 )
 
 func init() {
 	OneTimePasswordsTable.ForeignKeys[0].RefTable = UsersTable
+	UserPrivaciesTable.ForeignKeys[0].RefTable = UsersTable
 }

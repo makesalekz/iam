@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"iam/ent/onetimepassword"
 	"iam/ent/user"
+	"iam/ent/userprivacy"
 	"reflect"
 	"sync"
 
@@ -76,6 +77,7 @@ func checkColumn(table, column string) error {
 		columnCheck = sql.NewColumnCheck(map[string]func(string) bool{
 			onetimepassword.Table: onetimepassword.ValidColumn,
 			user.Table:            user.ValidColumn,
+			userprivacy.Table:     userprivacy.ValidColumn,
 		})
 	})
 	return columnCheck(table, column)

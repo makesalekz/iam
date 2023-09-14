@@ -1,0 +1,73 @@
+package data
+
+import (
+	"context"
+	"slices"
+
+	"iam/ent"
+	"iam/ent/property"
+	"iam/ent/userprivacy"
+
+	"entgo.io/ent/dialect/sql"
+)
+
+type PrivacySettingsData map[string]string
+
+// PrivacyRepo
+type PrivacyRepo interface {
+	GetPrivacy(ctx context.Context, userId int64) (PrivacySettingsData, error)
+	UpdatePrivacy(ctx context.Context, userId int64, dto PrivacySettingsData) (PrivacySettingsData, error)
+}
+
+type privacyRepo struct {
+	db *ent.Client
+}
+
+// NewPrivacyRepo .
+func NewPrivacyRepo(d *Data) PrivacyRepo {
+	return &privacyRepo{
+		db: d.db,
+	}
+}
+
+func (r *privacyRepo) GetPrivacy(ctx context.Context, userId int64) (PrivacySettingsData, error) {
+	settings, err := r.db.UserPrivacy.Query().Where(userprivacy.UserID(userId)).All(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	result := make(PrivacySettingsData)
+	for _, setting := range settings {
+		result[string(setting.Setting)] = string(setting.Option)
+	}
+
+	return result, nil
+}
+
+func (r *privacyRepo) UpdatePrivacy(ctx context.Context, userId int64, dto PrivacySettingsData) (PrivacySettingsData, error) {
+	var privacySettings property.PrivacySettings
+	settingsAvailable := privacySettings.Values()
+
+	builders := make([]*ent.UserPrivacyCreate, 0)
+
+	for setting, option := range dto {
+		if !slices.Contains(settingsAvailable, setting) {
+			return nil, ent.CustomValidationError("SettingsUnavailable", "Unavailable setting: %s", setting)
+		}
+		builder := r.db.UserPrivacy.Create().
+			SetUserID(userId).
+			SetSetting(property.PrivacySettings(setting)).
+			SetOption(property.PrivacyOptions(option))
+
+		builders = append(builders, builder)
+	}
+
+	err := r.db.UserPrivacy.CreateBulk(builders...).OnConflict(
+		sql.ConflictColumns(userprivacy.FieldUserID, userprivacy.FieldSetting),
+	).UpdateNewValues().Exec(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	return r.GetPrivacy(ctx, userId)
+}

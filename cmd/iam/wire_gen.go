@@ -48,7 +48,14 @@ func wireApp(bootstrap *conf.Bootstrap, client *api.Client, logger log.Logger) (
 	}
 	usersService := service.NewUsersService(logger, jwtProcessor, usersUsecase)
 	grpcServer := server.NewGRPCServer(bootstrap, logger, jwtProcessor, authService, usersService)
-	httpServer := server.NewHTTPServer(bootstrap, logger, jwtProcessor, authService, usersService)
+	privacyRepo := data.NewPrivacyRepo(dataData)
+	privacyUsecase, err := biz.NewPrivacyUsecase(privacyRepo)
+	if err != nil {
+		cleanup()
+		return nil, nil, err
+	}
+	privacyService := service.NewPrivacyService(logger, jwtProcessor, privacyUsecase)
+	httpServer := server.NewHTTPServer(bootstrap, logger, jwtProcessor, authService, usersService, privacyService)
 	app := newApp(logger, client, grpcServer, httpServer)
 	return app, func() {
 		cleanup()

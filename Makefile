@@ -86,6 +86,7 @@ all:
 	make api;
 	make errors;
 	make config;
+	make ent;
 	make generate;
 
 # show help

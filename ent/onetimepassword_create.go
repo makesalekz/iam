@@ -11,6 +11,7 @@ import (
 	"iam/ent/user"
 	"time"
 
+	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 )
@@ -20,6 +21,7 @@ type OneTimePasswordCreate struct {
 	config
 	mutation *OneTimePasswordMutation
 	hooks    []Hook
+	conflict []sql.ConflictOption
 }
 
 // SetUserID sets the "user_id" field.
@@ -183,6 +185,7 @@ func (otpc *OneTimePasswordCreate) createSpec() (*OneTimePassword, *sqlgraph.Cre
 		_node = &OneTimePassword{config: otpc.config}
 		_spec = sqlgraph.NewCreateSpec(onetimepassword.Table, sqlgraph.NewFieldSpec(onetimepassword.FieldID, field.TypeInt64))
 	)
+	_spec.OnConflict = otpc.conflict
 	if value, ok := otpc.mutation.Code(); ok {
 		_spec.SetField(onetimepassword.FieldCode, field.TypeString, value)
 		_node.Code = value
@@ -223,10 +226,289 @@ func (otpc *OneTimePasswordCreate) createSpec() (*OneTimePassword, *sqlgraph.Cre
 	return _node, _spec
 }
 
+// OnConflict allows configuring the `ON CONFLICT` / `ON DUPLICATE KEY` clause
+// of the `INSERT` statement. For example:
+//
+//	client.OneTimePassword.Create().
+//		SetUserID(v).
+//		OnConflict(
+//			// Update the row with the new values
+//			// the was proposed for insertion.
+//			sql.ResolveWithNewValues(),
+//		).
+//		// Override some of the fields with custom
+//		// update values.
+//		Update(func(u *ent.OneTimePasswordUpsert) {
+//			SetUserID(v+v).
+//		}).
+//		Exec(ctx)
+func (otpc *OneTimePasswordCreate) OnConflict(opts ...sql.ConflictOption) *OneTimePasswordUpsertOne {
+	otpc.conflict = opts
+	return &OneTimePasswordUpsertOne{
+		create: otpc,
+	}
+}
+
+// OnConflictColumns calls `OnConflict` and configures the columns
+// as conflict target. Using this option is equivalent to using:
+//
+//	client.OneTimePassword.Create().
+//		OnConflict(sql.ConflictColumns(columns...)).
+//		Exec(ctx)
+func (otpc *OneTimePasswordCreate) OnConflictColumns(columns ...string) *OneTimePasswordUpsertOne {
+	otpc.conflict = append(otpc.conflict, sql.ConflictColumns(columns...))
+	return &OneTimePasswordUpsertOne{
+		create: otpc,
+	}
+}
+
+type (
+	// OneTimePasswordUpsertOne is the builder for "upsert"-ing
+	//  one OneTimePassword node.
+	OneTimePasswordUpsertOne struct {
+		create *OneTimePasswordCreate
+	}
+
+	// OneTimePasswordUpsert is the "OnConflict" setter.
+	OneTimePasswordUpsert struct {
+		*sql.UpdateSet
+	}
+)
+
+// SetUserID sets the "user_id" field.
+func (u *OneTimePasswordUpsert) SetUserID(v int64) *OneTimePasswordUpsert {
+	u.Set(onetimepassword.FieldUserID, v)
+	return u
+}
+
+// UpdateUserID sets the "user_id" field to the value that was provided on create.
+func (u *OneTimePasswordUpsert) UpdateUserID() *OneTimePasswordUpsert {
+	u.SetExcluded(onetimepassword.FieldUserID)
+	return u
+}
+
+// SetCode sets the "code" field.
+func (u *OneTimePasswordUpsert) SetCode(v string) *OneTimePasswordUpsert {
+	u.Set(onetimepassword.FieldCode, v)
+	return u
+}
+
+// UpdateCode sets the "code" field to the value that was provided on create.
+func (u *OneTimePasswordUpsert) UpdateCode() *OneTimePasswordUpsert {
+	u.SetExcluded(onetimepassword.FieldCode)
+	return u
+}
+
+// SetType sets the "type" field.
+func (u *OneTimePasswordUpsert) SetType(v property.OneTimePasswordType) *OneTimePasswordUpsert {
+	u.Set(onetimepassword.FieldType, v)
+	return u
+}
+
+// UpdateType sets the "type" field to the value that was provided on create.
+func (u *OneTimePasswordUpsert) UpdateType() *OneTimePasswordUpsert {
+	u.SetExcluded(onetimepassword.FieldType)
+	return u
+}
+
+// SetIsUsed sets the "is_used" field.
+func (u *OneTimePasswordUpsert) SetIsUsed(v bool) *OneTimePasswordUpsert {
+	u.Set(onetimepassword.FieldIsUsed, v)
+	return u
+}
+
+// UpdateIsUsed sets the "is_used" field to the value that was provided on create.
+func (u *OneTimePasswordUpsert) UpdateIsUsed() *OneTimePasswordUpsert {
+	u.SetExcluded(onetimepassword.FieldIsUsed)
+	return u
+}
+
+// SetExpiresAt sets the "expires_at" field.
+func (u *OneTimePasswordUpsert) SetExpiresAt(v time.Time) *OneTimePasswordUpsert {
+	u.Set(onetimepassword.FieldExpiresAt, v)
+	return u
+}
+
+// UpdateExpiresAt sets the "expires_at" field to the value that was provided on create.
+func (u *OneTimePasswordUpsert) UpdateExpiresAt() *OneTimePasswordUpsert {
+	u.SetExcluded(onetimepassword.FieldExpiresAt)
+	return u
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (u *OneTimePasswordUpsert) SetCreatedAt(v time.Time) *OneTimePasswordUpsert {
+	u.Set(onetimepassword.FieldCreatedAt, v)
+	return u
+}
+
+// UpdateCreatedAt sets the "created_at" field to the value that was provided on create.
+func (u *OneTimePasswordUpsert) UpdateCreatedAt() *OneTimePasswordUpsert {
+	u.SetExcluded(onetimepassword.FieldCreatedAt)
+	return u
+}
+
+// UpdateNewValues updates the mutable fields using the new values that were set on create.
+// Using this option is equivalent to using:
+//
+//	client.OneTimePassword.Create().
+//		OnConflict(
+//			sql.ResolveWithNewValues(),
+//		).
+//		Exec(ctx)
+func (u *OneTimePasswordUpsertOne) UpdateNewValues() *OneTimePasswordUpsertOne {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWithNewValues())
+	return u
+}
+
+// Ignore sets each column to itself in case of conflict.
+// Using this option is equivalent to using:
+//
+//	client.OneTimePassword.Create().
+//	    OnConflict(sql.ResolveWithIgnore()).
+//	    Exec(ctx)
+func (u *OneTimePasswordUpsertOne) Ignore() *OneTimePasswordUpsertOne {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWithIgnore())
+	return u
+}
+
+// DoNothing configures the conflict_action to `DO NOTHING`.
+// Supported only by SQLite and PostgreSQL.
+func (u *OneTimePasswordUpsertOne) DoNothing() *OneTimePasswordUpsertOne {
+	u.create.conflict = append(u.create.conflict, sql.DoNothing())
+	return u
+}
+
+// Update allows overriding fields `UPDATE` values. See the OneTimePasswordCreate.OnConflict
+// documentation for more info.
+func (u *OneTimePasswordUpsertOne) Update(set func(*OneTimePasswordUpsert)) *OneTimePasswordUpsertOne {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(update *sql.UpdateSet) {
+		set(&OneTimePasswordUpsert{UpdateSet: update})
+	}))
+	return u
+}
+
+// SetUserID sets the "user_id" field.
+func (u *OneTimePasswordUpsertOne) SetUserID(v int64) *OneTimePasswordUpsertOne {
+	return u.Update(func(s *OneTimePasswordUpsert) {
+		s.SetUserID(v)
+	})
+}
+
+// UpdateUserID sets the "user_id" field to the value that was provided on create.
+func (u *OneTimePasswordUpsertOne) UpdateUserID() *OneTimePasswordUpsertOne {
+	return u.Update(func(s *OneTimePasswordUpsert) {
+		s.UpdateUserID()
+	})
+}
+
+// SetCode sets the "code" field.
+func (u *OneTimePasswordUpsertOne) SetCode(v string) *OneTimePasswordUpsertOne {
+	return u.Update(func(s *OneTimePasswordUpsert) {
+		s.SetCode(v)
+	})
+}
+
+// UpdateCode sets the "code" field to the value that was provided on create.
+func (u *OneTimePasswordUpsertOne) UpdateCode() *OneTimePasswordUpsertOne {
+	return u.Update(func(s *OneTimePasswordUpsert) {
+		s.UpdateCode()
+	})
+}
+
+// SetType sets the "type" field.
+func (u *OneTimePasswordUpsertOne) SetType(v property.OneTimePasswordType) *OneTimePasswordUpsertOne {
+	return u.Update(func(s *OneTimePasswordUpsert) {
+		s.SetType(v)
+	})
+}
+
+// UpdateType sets the "type" field to the value that was provided on create.
+func (u *OneTimePasswordUpsertOne) UpdateType() *OneTimePasswordUpsertOne {
+	return u.Update(func(s *OneTimePasswordUpsert) {
+		s.UpdateType()
+	})
+}
+
+// SetIsUsed sets the "is_used" field.
+func (u *OneTimePasswordUpsertOne) SetIsUsed(v bool) *OneTimePasswordUpsertOne {
+	return u.Update(func(s *OneTimePasswordUpsert) {
+		s.SetIsUsed(v)
+	})
+}
+
+// UpdateIsUsed sets the "is_used" field to the value that was provided on create.
+func (u *OneTimePasswordUpsertOne) UpdateIsUsed() *OneTimePasswordUpsertOne {
+	return u.Update(func(s *OneTimePasswordUpsert) {
+		s.UpdateIsUsed()
+	})
+}
+
+// SetExpiresAt sets the "expires_at" field.
+func (u *OneTimePasswordUpsertOne) SetExpiresAt(v time.Time) *OneTimePasswordUpsertOne {
+	return u.Update(func(s *OneTimePasswordUpsert) {
+		s.SetExpiresAt(v)
+	})
+}
+
+// UpdateExpiresAt sets the "expires_at" field to the value that was provided on create.
+func (u *OneTimePasswordUpsertOne) UpdateExpiresAt() *OneTimePasswordUpsertOne {
+	return u.Update(func(s *OneTimePasswordUpsert) {
+		s.UpdateExpiresAt()
+	})
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (u *OneTimePasswordUpsertOne) SetCreatedAt(v time.Time) *OneTimePasswordUpsertOne {
+	return u.Update(func(s *OneTimePasswordUpsert) {
+		s.SetCreatedAt(v)
+	})
+}
+
+// UpdateCreatedAt sets the "created_at" field to the value that was provided on create.
+func (u *OneTimePasswordUpsertOne) UpdateCreatedAt() *OneTimePasswordUpsertOne {
+	return u.Update(func(s *OneTimePasswordUpsert) {
+		s.UpdateCreatedAt()
+	})
+}
+
+// Exec executes the query.
+func (u *OneTimePasswordUpsertOne) Exec(ctx context.Context) error {
+	if len(u.create.conflict) == 0 {
+		return errors.New("ent: missing options for OneTimePasswordCreate.OnConflict")
+	}
+	return u.create.Exec(ctx)
+}
+
+// ExecX is like Exec, but panics if an error occurs.
+func (u *OneTimePasswordUpsertOne) ExecX(ctx context.Context) {
+	if err := u.create.Exec(ctx); err != nil {
+		panic(err)
+	}
+}
+
+// Exec executes the UPSERT query and returns the inserted/updated ID.
+func (u *OneTimePasswordUpsertOne) ID(ctx context.Context) (id int64, err error) {
+	node, err := u.create.Save(ctx)
+	if err != nil {
+		return id, err
+	}
+	return node.ID, nil
+}
+
+// IDX is like ID, but panics if an error occurs.
+func (u *OneTimePasswordUpsertOne) IDX(ctx context.Context) int64 {
+	id, err := u.ID(ctx)
+	if err != nil {
+		panic(err)
+	}
+	return id
+}
+
 // OneTimePasswordCreateBulk is the builder for creating many OneTimePassword entities in bulk.
 type OneTimePasswordCreateBulk struct {
 	config
 	builders []*OneTimePasswordCreate
+	conflict []sql.ConflictOption
 }
 
 // Save creates the OneTimePassword entities in the database.
@@ -253,6 +535,7 @@ func (otpcb *OneTimePasswordCreateBulk) Save(ctx context.Context) ([]*OneTimePas
 					_, err = mutators[i+1].Mutate(root, otpcb.builders[i+1].mutation)
 				} else {
 					spec := &sqlgraph.BatchCreateSpec{Nodes: specs}
+					spec.OnConflict = otpcb.conflict
 					// Invoke the actual operation on the latest mutation in the chain.
 					if err = sqlgraph.BatchCreate(ctx, otpcb.driver, spec); err != nil {
 						if sqlgraph.IsConstraintError(err) {
@@ -303,6 +586,191 @@ func (otpcb *OneTimePasswordCreateBulk) Exec(ctx context.Context) error {
 // ExecX is like Exec, but panics if an error occurs.
 func (otpcb *OneTimePasswordCreateBulk) ExecX(ctx context.Context) {
 	if err := otpcb.Exec(ctx); err != nil {
+		panic(err)
+	}
+}
+
+// OnConflict allows configuring the `ON CONFLICT` / `ON DUPLICATE KEY` clause
+// of the `INSERT` statement. For example:
+//
+//	client.OneTimePassword.CreateBulk(builders...).
+//		OnConflict(
+//			// Update the row with the new values
+//			// the was proposed for insertion.
+//			sql.ResolveWithNewValues(),
+//		).
+//		// Override some of the fields with custom
+//		// update values.
+//		Update(func(u *ent.OneTimePasswordUpsert) {
+//			SetUserID(v+v).
+//		}).
+//		Exec(ctx)
+func (otpcb *OneTimePasswordCreateBulk) OnConflict(opts ...sql.ConflictOption) *OneTimePasswordUpsertBulk {
+	otpcb.conflict = opts
+	return &OneTimePasswordUpsertBulk{
+		create: otpcb,
+	}
+}
+
+// OnConflictColumns calls `OnConflict` and configures the columns
+// as conflict target. Using this option is equivalent to using:
+//
+//	client.OneTimePassword.Create().
+//		OnConflict(sql.ConflictColumns(columns...)).
+//		Exec(ctx)
+func (otpcb *OneTimePasswordCreateBulk) OnConflictColumns(columns ...string) *OneTimePasswordUpsertBulk {
+	otpcb.conflict = append(otpcb.conflict, sql.ConflictColumns(columns...))
+	return &OneTimePasswordUpsertBulk{
+		create: otpcb,
+	}
+}
+
+// OneTimePasswordUpsertBulk is the builder for "upsert"-ing
+// a bulk of OneTimePassword nodes.
+type OneTimePasswordUpsertBulk struct {
+	create *OneTimePasswordCreateBulk
+}
+
+// UpdateNewValues updates the mutable fields using the new values that
+// were set on create. Using this option is equivalent to using:
+//
+//	client.OneTimePassword.Create().
+//		OnConflict(
+//			sql.ResolveWithNewValues(),
+//		).
+//		Exec(ctx)
+func (u *OneTimePasswordUpsertBulk) UpdateNewValues() *OneTimePasswordUpsertBulk {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWithNewValues())
+	return u
+}
+
+// Ignore sets each column to itself in case of conflict.
+// Using this option is equivalent to using:
+//
+//	client.OneTimePassword.Create().
+//		OnConflict(sql.ResolveWithIgnore()).
+//		Exec(ctx)
+func (u *OneTimePasswordUpsertBulk) Ignore() *OneTimePasswordUpsertBulk {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWithIgnore())
+	return u
+}
+
+// DoNothing configures the conflict_action to `DO NOTHING`.
+// Supported only by SQLite and PostgreSQL.
+func (u *OneTimePasswordUpsertBulk) DoNothing() *OneTimePasswordUpsertBulk {
+	u.create.conflict = append(u.create.conflict, sql.DoNothing())
+	return u
+}
+
+// Update allows overriding fields `UPDATE` values. See the OneTimePasswordCreateBulk.OnConflict
+// documentation for more info.
+func (u *OneTimePasswordUpsertBulk) Update(set func(*OneTimePasswordUpsert)) *OneTimePasswordUpsertBulk {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(update *sql.UpdateSet) {
+		set(&OneTimePasswordUpsert{UpdateSet: update})
+	}))
+	return u
+}
+
+// SetUserID sets the "user_id" field.
+func (u *OneTimePasswordUpsertBulk) SetUserID(v int64) *OneTimePasswordUpsertBulk {
+	return u.Update(func(s *OneTimePasswordUpsert) {
+		s.SetUserID(v)
+	})
+}
+
+// UpdateUserID sets the "user_id" field to the value that was provided on create.
+func (u *OneTimePasswordUpsertBulk) UpdateUserID() *OneTimePasswordUpsertBulk {
+	return u.Update(func(s *OneTimePasswordUpsert) {
+		s.UpdateUserID()
+	})
+}
+
+// SetCode sets the "code" field.
+func (u *OneTimePasswordUpsertBulk) SetCode(v string) *OneTimePasswordUpsertBulk {
+	return u.Update(func(s *OneTimePasswordUpsert) {
+		s.SetCode(v)
+	})
+}
+
+// UpdateCode sets the "code" field to the value that was provided on create.
+func (u *OneTimePasswordUpsertBulk) UpdateCode() *OneTimePasswordUpsertBulk {
+	return u.Update(func(s *OneTimePasswordUpsert) {
+		s.UpdateCode()
+	})
+}
+
+// SetType sets the "type" field.
+func (u *OneTimePasswordUpsertBulk) SetType(v property.OneTimePasswordType) *OneTimePasswordUpsertBulk {
+	return u.Update(func(s *OneTimePasswordUpsert) {
+		s.SetType(v)
+	})
+}
+
+// UpdateType sets the "type" field to the value that was provided on create.
+func (u *OneTimePasswordUpsertBulk) UpdateType() *OneTimePasswordUpsertBulk {
+	return u.Update(func(s *OneTimePasswordUpsert) {
+		s.UpdateType()
+	})
+}
+
+// SetIsUsed sets the "is_used" field.
+func (u *OneTimePasswordUpsertBulk) SetIsUsed(v bool) *OneTimePasswordUpsertBulk {
+	return u.Update(func(s *OneTimePasswordUpsert) {
+		s.SetIsUsed(v)
+	})
+}
+
+// UpdateIsUsed sets the "is_used" field to the value that was provided on create.
+func (u *OneTimePasswordUpsertBulk) UpdateIsUsed() *OneTimePasswordUpsertBulk {
+	return u.Update(func(s *OneTimePasswordUpsert) {
+		s.UpdateIsUsed()
+	})
+}
+
+// SetExpiresAt sets the "expires_at" field.
+func (u *OneTimePasswordUpsertBulk) SetExpiresAt(v time.Time) *OneTimePasswordUpsertBulk {
+	return u.Update(func(s *OneTimePasswordUpsert) {
+		s.SetExpiresAt(v)
+	})
+}
+
+// UpdateExpiresAt sets the "expires_at" field to the value that was provided on create.
+func (u *OneTimePasswordUpsertBulk) UpdateExpiresAt() *OneTimePasswordUpsertBulk {
+	return u.Update(func(s *OneTimePasswordUpsert) {
+		s.UpdateExpiresAt()
+	})
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (u *OneTimePasswordUpsertBulk) SetCreatedAt(v time.Time) *OneTimePasswordUpsertBulk {
+	return u.Update(func(s *OneTimePasswordUpsert) {
+		s.SetCreatedAt(v)
+	})
+}
+
+// UpdateCreatedAt sets the "created_at" field to the value that was provided on create.
+func (u *OneTimePasswordUpsertBulk) UpdateCreatedAt() *OneTimePasswordUpsertBulk {
+	return u.Update(func(s *OneTimePasswordUpsert) {
+		s.UpdateCreatedAt()
+	})
+}
+
+// Exec executes the query.
+func (u *OneTimePasswordUpsertBulk) Exec(ctx context.Context) error {
+	for i, b := range u.create.builders {
+		if len(b.conflict) != 0 {
+			return fmt.Errorf("ent: OnConflict was set for builder %d. Set it on the OneTimePasswordCreateBulk instead", i)
+		}
+	}
+	if len(u.create.conflict) == 0 {
+		return errors.New("ent: missing options for OneTimePasswordCreateBulk.OnConflict")
+	}
+	return u.create.Exec(ctx)
+}
+
+// ExecX is like Exec, but panics if an error occurs.
+func (u *OneTimePasswordUpsertBulk) ExecX(ctx context.Context) {
+	if err := u.create.Exec(ctx); err != nil {
 		panic(err)
 	}
 }
