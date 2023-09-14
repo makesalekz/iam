@@ -3,6 +3,8 @@ package schema
 import (
 	"time"
 
+	"iam/ent/mixins"
+
 	"entgo.io/ent"
 	"entgo.io/ent/schema/field"
 )
@@ -25,7 +27,12 @@ func (User) Fields() []ent.Field {
 		field.Time("last_login_at").Default(time.Now),
 		field.Time("created_at").Default(time.Now),
 		field.Time("updated_at").Default(time.Now),
-		field.Time("deleted_at").Nillable().Optional(),
+	}
+}
+
+func (User) Mixin() []ent.Mixin {
+	return []ent.Mixin{
+		mixins.SoftDeleteMixin{},
 	}
 }
 

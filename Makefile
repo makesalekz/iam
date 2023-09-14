@@ -52,6 +52,11 @@ errors:
 			--go-errors_out=paths=source_relative:. \
 			$(API_PROTO_FILES)
 
+.PHONY: ent
+# generate ent
+ent:
+	go generate ./ent
+
 .PHONY: api
 # generate api proto
 api:

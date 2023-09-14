@@ -2,7 +2,67 @@
 
 package runtime
 
-// The schema-stitching logic is generated in iam/ent/runtime.go
+import (
+	"iam/ent/onetimepassword"
+	"iam/ent/schema"
+	"iam/ent/user"
+	"time"
+)
+
+// The init function reads all schema descriptors with runtime code
+// (default values, validators, hooks and policies) and stitches it
+// to their package variables.
+func init() {
+	onetimepasswordFields := schema.OneTimePassword{}.Fields()
+	_ = onetimepasswordFields
+	// onetimepasswordDescCode is the schema descriptor for code field.
+	onetimepasswordDescCode := onetimepasswordFields[1].Descriptor()
+	// onetimepassword.CodeValidator is a validator for the "code" field. It is called by the builders before save.
+	onetimepassword.CodeValidator = onetimepasswordDescCode.Validators[0].(func(string) error)
+	// onetimepasswordDescIsUsed is the schema descriptor for is_used field.
+	onetimepasswordDescIsUsed := onetimepasswordFields[3].Descriptor()
+	// onetimepassword.DefaultIsUsed holds the default value on creation for the is_used field.
+	onetimepassword.DefaultIsUsed = onetimepasswordDescIsUsed.Default.(bool)
+	// onetimepasswordDescCreatedAt is the schema descriptor for created_at field.
+	onetimepasswordDescCreatedAt := onetimepasswordFields[5].Descriptor()
+	// onetimepassword.DefaultCreatedAt holds the default value on creation for the created_at field.
+	onetimepassword.DefaultCreatedAt = onetimepasswordDescCreatedAt.Default.(func() time.Time)
+	userMixin := schema.User{}.Mixin()
+	userMixinHooks0 := userMixin[0].Hooks()
+	user.Hooks[0] = userMixinHooks0[0]
+	userMixinInters0 := userMixin[0].Interceptors()
+	user.Interceptors[0] = userMixinInters0[0]
+	userFields := schema.User{}.Fields()
+	_ = userFields
+	// userDescName is the schema descriptor for name field.
+	userDescName := userFields[2].Descriptor()
+	// user.DefaultName holds the default value on creation for the name field.
+	user.DefaultName = userDescName.Default.(string)
+	// userDescBio is the schema descriptor for bio field.
+	userDescBio := userFields[3].Descriptor()
+	// user.DefaultBio holds the default value on creation for the bio field.
+	user.DefaultBio = userDescBio.Default.(string)
+	// userDescTimezone is the schema descriptor for timezone field.
+	userDescTimezone := userFields[5].Descriptor()
+	// user.DefaultTimezone holds the default value on creation for the timezone field.
+	user.DefaultTimezone = userDescTimezone.Default.(string)
+	// userDescIsActive is the schema descriptor for is_active field.
+	userDescIsActive := userFields[6].Descriptor()
+	// user.DefaultIsActive holds the default value on creation for the is_active field.
+	user.DefaultIsActive = userDescIsActive.Default.(bool)
+	// userDescLastLoginAt is the schema descriptor for last_login_at field.
+	userDescLastLoginAt := userFields[7].Descriptor()
+	// user.DefaultLastLoginAt holds the default value on creation for the last_login_at field.
+	user.DefaultLastLoginAt = userDescLastLoginAt.Default.(func() time.Time)
+	// userDescCreatedAt is the schema descriptor for created_at field.
+	userDescCreatedAt := userFields[8].Descriptor()
+	// user.DefaultCreatedAt holds the default value on creation for the created_at field.
+	user.DefaultCreatedAt = userDescCreatedAt.Default.(func() time.Time)
+	// userDescUpdatedAt is the schema descriptor for updated_at field.
+	userDescUpdatedAt := userFields[9].Descriptor()
+	// user.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	user.DefaultUpdatedAt = userDescUpdatedAt.Default.(func() time.Time)
+}
 
 const (
 	Version = "v0.12.3"                                         // Version of ent codegen.

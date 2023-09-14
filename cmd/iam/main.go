@@ -50,7 +50,7 @@ func newApp(logger log.Logger, consulClient *api.Client, gs *grpc.Server, hs *ht
 			hs,
 		),
 		// with registrar
-	    kratos.Registrar(reg),
+		kratos.Registrar(reg),
 	)
 }
 
@@ -84,8 +84,8 @@ func main() {
 
 	// new consul client
 	consulClient, err := api.NewClient(&api.Config{
-        Address: bc.Consul.Address,
-    })
+		Address: bc.Consul.Address,
+	})
 	if err != nil {
 		panic(err)
 	}

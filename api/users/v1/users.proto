@@ -10,21 +10,28 @@ option java_multiple_files = true;
 option java_package = "api.users.v1";
 
 service Users {
-	rpc GetOwnProfile (GetOwnProfileRequest) returns (GetOwnProfileReply) {
+	rpc GetOwnProfile (EmptyRequest) returns (ProfileReply) {
 		option (google.api.http) = {
 			get: "/v1/users/me"
 		};
 	};
-	rpc UpdateOwnProfile (UpdateOwnProfileRequest) returns (GetOwnProfileReply) {
+	rpc UpdateOwnProfile (UpdateOwnProfileRequest) returns (ProfileReply) {
 		option (google.api.http) = {
 			post: "/v1/users/me"
 			body: "*"
 		};
 	};
+	rpc DeleteOwnProfile (EmptyRequest) returns (EmptyReply) {
+		option (google.api.http) = {
+			delete: "/v1/users/me"
+		};
+	};
 }
 
-message GetOwnProfileRequest {}
-message GetOwnProfileReply {
+message EmptyRequest {}
+message EmptyReply {}
+
+message ProfileReply {
 	User user = 1;
 }
 

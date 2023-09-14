@@ -8,8 +8,6 @@ import (
 	"iam/ent"
 	"iam/ent/onetimepassword"
 	"iam/ent/property"
-
-	_ "github.com/lib/pq"
 )
 
 const digits = "0123456789"

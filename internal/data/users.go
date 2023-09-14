@@ -8,7 +8,6 @@ import (
 	"iam/ent/user"
 
 	"github.com/go-kratos/kratos/v2/log"
-	_ "github.com/lib/pq"
 )
 
 type UpdateUserDto struct {
@@ -26,6 +25,7 @@ type UsersRepo interface {
 	CreateUserWithPhone(ctx context.Context, phone string) (*ent.User, error)
 	CreateUserWithEmail(ctx context.Context, email string) (*ent.User, error)
 	UpdateUserData(ctx context.Context, id int64, dto UpdateUserDto) (*ent.User, error)
+	DeleteUser(ctx context.Context, id int64) error
 }
 
 type usersRepo struct {
@@ -81,6 +81,10 @@ func (r *usersRepo) UpdateUserData(ctx context.Context, id int64, dto UpdateUser
 	_, err = query.Save(ctx)
 
 	return user, err
+}
+
+func (r *usersRepo) DeleteUser(ctx context.Context, id int64) error {
+	return r.db.User.DeleteOneID(id).Exec(ctx)
 }
 
 func (r *usersRepo) GetUserById(ctx context.Context, id int64) (*ent.User, error) {

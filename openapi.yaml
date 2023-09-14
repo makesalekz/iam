@@ -53,7 +53,7 @@ paths:
                     content:
                         application/json:
                             schema:
-                                $ref: '#/components/schemas/api.users.v1.GetOwnProfileReply'
+                                $ref: '#/components/schemas/api.users.v1.ProfileReply'
         post:
             tags:
                 - Users
@@ -70,7 +70,18 @@ paths:
                     content:
                         application/json:
                             schema:
-                                $ref: '#/components/schemas/api.users.v1.GetOwnProfileReply'
+                                $ref: '#/components/schemas/api.users.v1.ProfileReply'
+        delete:
+            tags:
+                - Users
+            operationId: Users_DeleteOwnProfile
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/api.users.v1.EmptyReply'
 components:
     schemas:
         api.auth.v1.AuthByCodeReply:
@@ -95,7 +106,10 @@ components:
             properties:
                 phone:
                     type: string
-        api.users.v1.GetOwnProfileReply:
+        api.users.v1.EmptyReply:
+            type: object
+            properties: {}
+        api.users.v1.ProfileReply:
             type: object
             properties:
                 user:
