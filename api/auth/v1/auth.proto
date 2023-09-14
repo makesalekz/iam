@@ -28,11 +28,11 @@ message AuthByPhoneRequest {
 	string phone = 1;
 }
 message AuthByPhoneReply {
-	string user_id = 1;
+	int64 user_id = 1;
 }
 
 message AuthByCodeRequest {
-	string user_id = 1;
+	int64 user_id = 1;
 	string code = 2;
 }
 message AuthByCodeReply {

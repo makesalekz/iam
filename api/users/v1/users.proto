@@ -26,6 +26,11 @@ service Users {
 			delete: "/v1/users/me"
 		};
 	};
+	rpc GetUserProfile (GetUserProfileRequest) returns (ProfileReply) {
+		option (google.api.http) = {
+			get: "/v1/users/{user_id}"
+		};
+	};
 }
 
 message EmptyRequest {}
@@ -42,8 +47,12 @@ message UpdateOwnProfileRequest {
 	string timezone = 4;
 }
 
+message GetUserProfileRequest {
+	int64 user_id = 1;
+}
+
 message User {
-	string id = 1;
+	int64 id = 1;
 	string phone = 2;
 	string email = 3;
 	string name = 4;
@@ -52,6 +61,8 @@ message User {
 	string timezone = 7;
 	string created_at = 8;
 	string updated_at = 9;
+	string last_login_at = 10;
+	bool is_active = 11;
 }
 
 enum ErrorReason {

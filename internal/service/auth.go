@@ -44,16 +44,11 @@ func (s *AuthService) AuthByPhone(ctx context.Context, req *v1.AuthByPhoneReques
 		return nil, errors.InternalServer("internal", "internal error")
 	}
 
-	return &v1.AuthByPhoneReply{UserId: strconv.FormatInt(userId, 10)}, nil
+	return &v1.AuthByPhoneReply{UserId: userId}, nil
 }
 
 func (s *AuthService) AuthByCode(ctx context.Context, req *v1.AuthByCodeRequest) (*v1.AuthByCodeReply, error) {
-	userId, err := strconv.ParseInt(req.UserId, 10, 64)
-	if err != nil {
-		return nil, v1.ErrorInvalidRequest("Invalid request (user ID)")
-	}
-
-	err = s.au.AuthUserByCode(ctx, userId, req.Code)
+	err := s.au.AuthUserByCode(ctx, req.UserId, req.Code)
 	if err != nil {
 		if v1.IsInvalidCode(err) {
 			return nil, err
@@ -65,7 +60,7 @@ func (s *AuthService) AuthByCode(ctx context.Context, req *v1.AuthByCodeRequest)
 	claims := &jwtv4.RegisteredClaims{
 		Issuer:    "iam",
 		Audience:  jwtv4.ClaimStrings{"personal"},
-		Subject:   strconv.FormatInt(userId, 10),
+		Subject:   strconv.FormatInt(req.UserId, 10),
 		ExpiresAt: jwtv4.NewNumericDate(time.Now().Add(TOKEN_DURATION)),
 	}
 	token := jwtv4.NewWithClaims(jwtv4.SigningMethodHS256, claims)
