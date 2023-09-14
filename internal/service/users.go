@@ -58,7 +58,11 @@ func (s *UsersService) GetOwnProfile(ctx context.Context, req *v1.EmptyRequest) 
 
 	user, err := s.uc.GetUserProfile(ctx, userId)
 	if err != nil {
-		return nil, v1.ErrorUserNotFound("User not found: %v", err)
+		_, notFound := err.(*ent.NotFoundError)
+		if notFound {
+			return nil, v1.ErrorUserNotFound("User not found: %v", err)
+		}
+		return nil, v1.ErrorDatabaseQuery("Internal error")
 	}
 
 	return &v1.ProfileReply{User: transformUserForReply(user)}, nil
@@ -77,7 +81,11 @@ func (s *UsersService) UpdateOwnProfile(ctx context.Context, req *v1.UpdateOwnPr
 		Timezone: req.Timezone,
 	})
 	if err != nil {
-		return nil, v1.ErrorUserNotFound("User not found: %v", err)
+		_, notFound := err.(*ent.NotFoundError)
+		if notFound {
+			return nil, v1.ErrorUserNotFound("User not found: %v", err)
+		}
+		return nil, v1.ErrorDatabaseQuery("Internal error")
 	}
 
 	return &v1.ProfileReply{User: transformUserForReply(user)}, nil
@@ -91,7 +99,11 @@ func (s *UsersService) DeleteOwnProfile(ctx context.Context, req *v1.EmptyReques
 
 	err := s.uc.DeleteUser(ctx, userId)
 	if err != nil {
-		return nil, v1.ErrorUserNotFound("User not found: %v", err)
+		_, notFound := err.(*ent.NotFoundError)
+		if notFound {
+			return nil, v1.ErrorUserNotFound("User not found: %v", err)
+		}
+		return nil, v1.ErrorDatabaseQuery("Internal error")
 	}
 
 	return &v1.EmptyReply{}, nil
