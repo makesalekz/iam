@@ -23,7 +23,7 @@ func NewGRPCServer(c *conf.Bootstrap, logger log.Logger, jwtBiz *biz.JwtProcesso
 			metadata.Server(),
 			jwt.Server(func(token *jwtv4.Token) (interface{}, error) {
 				return jwtBiz.GetSecret(), nil
-			}, jwt.WithSigningMethod(jwtv4.SigningMethodHS256)),
+			}, jwt.WithSigningMethod(jwtv4.SigningMethodHS256), jwt.WithClaims(func() jwtv4.Claims { return &jwtv4.RegisteredClaims{} })),
 		),
 	}
 	if c.Server.Grpc.Network != "" {

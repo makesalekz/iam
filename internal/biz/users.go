@@ -14,7 +14,7 @@ import (
 	"github.com/hashicorp/consul/api"
 )
 
-// GreeterUsecase is a Greeter usecase.
+// UsersUsecase .
 type UsersUsecase struct {
 	conf      *conf.Bootstrap
 	log       *log.Helper
@@ -23,7 +23,7 @@ type UsersUsecase struct {
 	otpRepo   data.OtpRepo
 }
 
-// NewGreeterUsecase new a Greeter usecase.
+// NewUsersUsecase .
 func NewUsersUsecase(c *conf.Bootstrap, logger log.Logger, consulClient *api.Client, usersRepo data.UsersRepo, otpRepo data.OtpRepo) (*UsersUsecase, error) {
 	dis := consul.New(consulClient)
 
