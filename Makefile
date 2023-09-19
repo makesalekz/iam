@@ -35,7 +35,10 @@ run:
 .PHONY: start
 # start
 start:
-	docker-compose up -d
+	export JWT_SECRET=$(JWT_SECRET) && \
+	export REGISTRY_IMAGE=busybox && \
+	export CI_PROJECT_NAME=local && \
+	docker-compose --profile=dev up -d
 
 .PHONY: config
 # generate internal proto

@@ -6,7 +6,7 @@ services:
     restart: always
     image: postgres:latest
     volumes:
-      - dbvol:/var/lib/postgresql/data
+      - ${DB_VOLUME}:/var/lib/postgresql/data
     ports:
       - '${DB_PORT}:5432'
     environment:
@@ -56,7 +56,7 @@ services:
 volumes:
   dbvol:
     external:
-      name: ${DB_VOLUME}
+      name: ${SERVICE_NAME}_db
 
 networks:
   backend:
