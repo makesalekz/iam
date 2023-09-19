@@ -1,18 +1,14 @@
-package biz
+package data
 
 import (
 	"context"
-	_ "embed"
+	"fmt"
+	"os"
 	"strconv"
 
 	"github.com/go-kratos/kratos/v2/middleware/auth/jwt"
 	jwtv4 "github.com/golang-jwt/jwt/v4"
 )
-
-// TODO: move to vault
-//
-//go:embed jwt.key
-var jwtSecret []byte
 
 type JwtProcessor struct {
 	jwtSecret []byte
@@ -20,9 +16,14 @@ type JwtProcessor struct {
 
 // NewJwtProcessor .
 func NewJwtProcessor() (*JwtProcessor, error) {
-	return &JwtProcessor{
-		jwtSecret: jwtSecret,
-	}, nil
+	secret := os.Getenv("JWT_SECRET")
+	if secret != "" {
+		return &JwtProcessor{
+			jwtSecret: []byte(secret),
+		}, nil
+	}
+
+	return nil, fmt.Errorf("JWT_SECRET not found")
 }
 
 func (j *JwtProcessor) GetSecret() []byte {

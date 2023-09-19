@@ -6,6 +6,7 @@ import (
 	v1 "iam/api/privacy/v1"
 	"iam/ent"
 	"iam/internal/biz"
+	"iam/internal/data"
 
 	"github.com/go-kratos/kratos/v2/log"
 )
@@ -14,11 +15,11 @@ type PrivacyService struct {
 	v1.UnimplementedPrivacyServer
 
 	log *log.Helper
-	jwt *biz.JwtProcessor
+	jwt *data.JwtProcessor
 	uc  *biz.PrivacyUsecase
 }
 
-func NewPrivacyService(logger log.Logger, jwt *biz.JwtProcessor, uc *biz.PrivacyUsecase) *PrivacyService {
+func NewPrivacyService(logger log.Logger, jwt *data.JwtProcessor, uc *biz.PrivacyUsecase) *PrivacyService {
 	return &PrivacyService{
 		log: log.NewHelper(logger),
 		jwt: jwt,

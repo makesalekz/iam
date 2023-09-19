@@ -16,11 +16,11 @@ type UsersService struct {
 	v1.UnimplementedUsersServer
 
 	log *log.Helper
-	jwt *biz.JwtProcessor
+	jwt *data.JwtProcessor
 	uc  *biz.UsersUsecase
 }
 
-func NewUsersService(logger log.Logger, jwt *biz.JwtProcessor, uc *biz.UsersUsecase) *UsersService {
+func NewUsersService(logger log.Logger, jwt *data.JwtProcessor, uc *biz.UsersUsecase) *UsersService {
 	return &UsersService{
 		log: log.NewHelper(logger),
 		jwt: jwt,
@@ -112,11 +112,6 @@ func (s *UsersService) DeleteOwnProfile(ctx context.Context, req *v1.EmptyReques
 }
 
 func (s *UsersService) GetUserProfile(ctx context.Context, req *v1.GetUserProfileRequest) (*v1.ProfileReply, error) {
-	_, ok := s.jwt.GetUserIdFromContext(ctx)
-	if !ok {
-		return nil, v1.ErrorUnauthorized("Unauthorized")
-	}
-
 	user, err := s.uc.GetUserProfile(ctx, req.UserId)
 	if err != nil {
 		_, notFound := err.(*ent.NotFoundError)

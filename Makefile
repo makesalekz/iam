@@ -13,6 +13,7 @@ ifeq ($(GOHOSTOS), windows)
 else
 	INTERNAL_PROTO_FILES=$(shell find internal -name *.proto)
 	API_PROTO_FILES=$(shell find api -name *.proto)
+	JWT_SECRET=$(shell cat $(shell find configs -name jwt.key))
 endif
 
 .PHONY: init
@@ -28,6 +29,7 @@ init:
 .PHONY: run
 # run
 run:	
+	export JWT_SECRET=$(JWT_SECRET) && \
 	kratos run
 
 .PHONY: start
@@ -56,6 +58,14 @@ errors:
 # generate ent
 ent:
 	go generate ./ent
+
+.PHONY: migrations
+# generate migrations
+migrations:
+	atlas migrate diff init \
+		--dir "file://ent/migrate/migrations" \
+		--to "ent://ent/schema" \
+		--dev-url "docker://postgres/15/test?search_path=public"
 
 .PHONY: api
 # generate api proto
@@ -86,7 +96,6 @@ all:
 	make api;
 	make errors;
 	make config;
-	make ent;
 	make generate;
 
 # show help

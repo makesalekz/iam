@@ -36,31 +36,31 @@ func init() {
 	userFields := schema.User{}.Fields()
 	_ = userFields
 	// userDescName is the schema descriptor for name field.
-	userDescName := userFields[2].Descriptor()
+	userDescName := userFields[3].Descriptor()
 	// user.DefaultName holds the default value on creation for the name field.
 	user.DefaultName = userDescName.Default.(string)
 	// userDescBio is the schema descriptor for bio field.
-	userDescBio := userFields[3].Descriptor()
+	userDescBio := userFields[4].Descriptor()
 	// user.DefaultBio holds the default value on creation for the bio field.
 	user.DefaultBio = userDescBio.Default.(string)
 	// userDescTimezone is the schema descriptor for timezone field.
-	userDescTimezone := userFields[5].Descriptor()
+	userDescTimezone := userFields[6].Descriptor()
 	// user.DefaultTimezone holds the default value on creation for the timezone field.
 	user.DefaultTimezone = userDescTimezone.Default.(string)
 	// userDescIsActive is the schema descriptor for is_active field.
-	userDescIsActive := userFields[6].Descriptor()
+	userDescIsActive := userFields[7].Descriptor()
 	// user.DefaultIsActive holds the default value on creation for the is_active field.
 	user.DefaultIsActive = userDescIsActive.Default.(bool)
 	// userDescLastLoginAt is the schema descriptor for last_login_at field.
-	userDescLastLoginAt := userFields[7].Descriptor()
+	userDescLastLoginAt := userFields[8].Descriptor()
 	// user.DefaultLastLoginAt holds the default value on creation for the last_login_at field.
 	user.DefaultLastLoginAt = userDescLastLoginAt.Default.(func() time.Time)
 	// userDescCreatedAt is the schema descriptor for created_at field.
-	userDescCreatedAt := userFields[8].Descriptor()
+	userDescCreatedAt := userFields[9].Descriptor()
 	// user.DefaultCreatedAt holds the default value on creation for the created_at field.
 	user.DefaultCreatedAt = userDescCreatedAt.Default.(func() time.Time)
 	// userDescUpdatedAt is the schema descriptor for updated_at field.
-	userDescUpdatedAt := userFields[9].Descriptor()
+	userDescUpdatedAt := userFields[10].Descriptor()
 	// user.DefaultUpdatedAt holds the default value on creation for the updated_at field.
 	user.DefaultUpdatedAt = userDescUpdatedAt.Default.(func() time.Time)
 	userprivacyFields := schema.UserPrivacy{}.Fields()

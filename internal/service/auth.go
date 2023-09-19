@@ -8,6 +8,7 @@ import (
 	v1 "iam/api/auth/v1"
 	"iam/internal/biz"
 	"iam/internal/conf"
+	"iam/internal/data"
 
 	"github.com/go-kratos/kratos/v2/errors"
 	"github.com/go-kratos/kratos/v2/log"
@@ -21,11 +22,11 @@ type AuthService struct {
 
 	conf *conf.Bootstrap
 	log  *log.Helper
-	jwt  *biz.JwtProcessor
+	jwt  *data.JwtProcessor
 	au   *biz.AuthUsecase
 }
 
-func NewAuthService(cfg *conf.Bootstrap, logger log.Logger, jwt *biz.JwtProcessor, au *biz.AuthUsecase) *AuthService {
+func NewAuthService(cfg *conf.Bootstrap, logger log.Logger, jwt *data.JwtProcessor, au *biz.AuthUsecase) *AuthService {
 	return &AuthService{
 		conf: cfg,
 		log:  log.NewHelper(logger),
@@ -61,6 +62,7 @@ func (s *AuthService) AuthByCode(ctx context.Context, req *v1.AuthByCodeRequest)
 		Issuer:    "iam",
 		Audience:  jwtv4.ClaimStrings{"personal"},
 		Subject:   strconv.FormatInt(req.UserId, 10),
+		IssuedAt:  jwtv4.NewNumericDate(time.Now()),
 		ExpiresAt: jwtv4.NewNumericDate(time.Now().Add(TOKEN_DURATION)),
 	}
 	token := jwtv4.NewWithClaims(jwtv4.SigningMethodHS256, claims)

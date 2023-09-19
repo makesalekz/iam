@@ -6,7 +6,7 @@ services:
     restart: always
     image: postgres:latest
     volumes:
-      - ./.docker/data/postgres:/var/lib/postgresql/data
+      - dbvol:/var/lib/postgresql/data
     ports:
       - '${DB_PORT}:5432'
     environment:
@@ -17,13 +17,11 @@ services:
     networks:
       - backend
   service:
-    build:
-      context: ./
-      dockerfile: Dockerfile
+    image: ${REGISTRY_IMAGE}
     container_name: ${SERVICE_NAME}_service
     ports:
-      - '${HTTP_PORT}:8000'
-      - '${GRPC_PORT}:8000'
+      - '8000:8000'
+      - '9000:9000'
     networks:
       - backend
     volumes:
@@ -32,9 +30,36 @@ services:
     depends_on:
       - db
     profiles:
-      - build
+      - stage
+    environment:
+      - JWT_SECRET=${JWT_SECRET}
+  dev-service:
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    container_name: ${SERVICE_NAME}_service
+    ports:
+      - '${HTTP_PORT}:8000'
+      - '${GRPC_PORT}:9000'
+    networks:
+      - backend
+    volumes:
+      - ./configs:/data/conf
+    restart: unless-stopped
+    depends_on:
+      - db
+    profiles:
+      - dev
+    environment:
+      - JWT_SECRET=${JWT_SECRET}
+
+volumes:
+  dbvol:
+    external:
+      name: ${DB_VOLUME}
 
 networks:
   backend:
-    name: backend
+    name: ${NETWORK}
+    driver: bridge
     external: true
