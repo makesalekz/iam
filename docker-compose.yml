@@ -19,9 +19,6 @@ services:
   service:
     image: ${REGISTRY_IMAGE}
     container_name: ${SERVICE_NAME}_service
-    ports:
-      - '8000:8000'
-      - '9000:9000'
     networks:
       - backend
     volumes:
@@ -55,8 +52,8 @@ services:
 
 volumes:
   dbvol:
-    external:
-      name: ${SERVICE_NAME}_db
+    name: ${SERVICE_NAME}_db
+    external: true
 
 networks:
   backend:
