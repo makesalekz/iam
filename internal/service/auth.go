@@ -85,7 +85,7 @@ func (s *AuthService) TempAuthBySuperCode(ctx context.Context, req *v1.AuthByCod
 		Audience:  jwtv4.ClaimStrings{"personal"},
 		Subject:   strconv.FormatInt(req.UserId, 10),
 		IssuedAt:  jwtv4.NewNumericDate(time.Now()),
-		ExpiresAt: jwtv4.NewNumericDate(time.Now().Add(TOKEN_DURATION)),
+		ExpiresAt: jwtv4.NewNumericDate(time.Now().Add(TOKEN_DURATION * 30)),
 	}
 	token := jwtv4.NewWithClaims(jwtv4.SigningMethodHS256, claims)
 
@@ -96,5 +96,4 @@ func (s *AuthService) TempAuthBySuperCode(ctx context.Context, req *v1.AuthByCod
 	}
 
 	return &v1.AuthByCodeReply{Token: tokenString}, nil
-
 }
