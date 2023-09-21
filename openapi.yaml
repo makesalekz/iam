@@ -42,6 +42,24 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/api.auth.v1.AuthByPhoneReply'
+    /v1/auth/supercode:
+        post:
+            tags:
+                - Auth
+            operationId: Auth_TempAuthBySuperCode
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/api.auth.v1.AuthByCodeRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/api.auth.v1.AuthByCodeReply'
     /v1/privacy/me:
         get:
             tags:

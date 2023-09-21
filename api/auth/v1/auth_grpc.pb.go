@@ -19,8 +19,9 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	Auth_AuthByPhone_FullMethodName = "/api.auth.v1.Auth/AuthByPhone"
-	Auth_AuthByCode_FullMethodName  = "/api.auth.v1.Auth/AuthByCode"
+	Auth_AuthByPhone_FullMethodName         = "/api.auth.v1.Auth/AuthByPhone"
+	Auth_AuthByCode_FullMethodName          = "/api.auth.v1.Auth/AuthByCode"
+	Auth_TempAuthBySuperCode_FullMethodName = "/api.auth.v1.Auth/TempAuthBySuperCode"
 )
 
 // AuthClient is the client API for Auth service.
@@ -29,6 +30,7 @@ const (
 type AuthClient interface {
 	AuthByPhone(ctx context.Context, in *AuthByPhoneRequest, opts ...grpc.CallOption) (*AuthByPhoneReply, error)
 	AuthByCode(ctx context.Context, in *AuthByCodeRequest, opts ...grpc.CallOption) (*AuthByCodeReply, error)
+	TempAuthBySuperCode(ctx context.Context, in *AuthByCodeRequest, opts ...grpc.CallOption) (*AuthByCodeReply, error)
 }
 
 type authClient struct {
@@ -57,12 +59,22 @@ func (c *authClient) AuthByCode(ctx context.Context, in *AuthByCodeRequest, opts
 	return out, nil
 }
 
+func (c *authClient) TempAuthBySuperCode(ctx context.Context, in *AuthByCodeRequest, opts ...grpc.CallOption) (*AuthByCodeReply, error) {
+	out := new(AuthByCodeReply)
+	err := c.cc.Invoke(ctx, Auth_TempAuthBySuperCode_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // AuthServer is the server API for Auth service.
 // All implementations must embed UnimplementedAuthServer
 // for forward compatibility
 type AuthServer interface {
 	AuthByPhone(context.Context, *AuthByPhoneRequest) (*AuthByPhoneReply, error)
 	AuthByCode(context.Context, *AuthByCodeRequest) (*AuthByCodeReply, error)
+	TempAuthBySuperCode(context.Context, *AuthByCodeRequest) (*AuthByCodeReply, error)
 	mustEmbedUnimplementedAuthServer()
 }
 
@@ -75,6 +87,9 @@ func (UnimplementedAuthServer) AuthByPhone(context.Context, *AuthByPhoneRequest)
 }
 func (UnimplementedAuthServer) AuthByCode(context.Context, *AuthByCodeRequest) (*AuthByCodeReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AuthByCode not implemented")
+}
+func (UnimplementedAuthServer) TempAuthBySuperCode(context.Context, *AuthByCodeRequest) (*AuthByCodeReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method TempAuthBySuperCode not implemented")
 }
 func (UnimplementedAuthServer) mustEmbedUnimplementedAuthServer() {}
 
@@ -125,6 +140,24 @@ func _Auth_AuthByCode_Handler(srv interface{}, ctx context.Context, dec func(int
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Auth_TempAuthBySuperCode_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(AuthByCodeRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AuthServer).TempAuthBySuperCode(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Auth_TempAuthBySuperCode_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AuthServer).TempAuthBySuperCode(ctx, req.(*AuthByCodeRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Auth_ServiceDesc is the grpc.ServiceDesc for Auth service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -139,6 +172,10 @@ var Auth_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "AuthByCode",
 			Handler:    _Auth_AuthByCode_Handler,
+		},
+		{
+			MethodName: "TempAuthBySuperCode",
+			Handler:    _Auth_TempAuthBySuperCode_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

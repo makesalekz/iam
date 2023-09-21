@@ -76,3 +76,18 @@ To stop docker:
 ```bash
 make stop
 ```
+
+## Vault
+
+TODO: DB creds
+
+To save JWT secret in Vault terminal (write command, ENTER, paste secret, CTRL+D):
+
+```bash
+export VAULT_TOKEN=myroot
+vault kv put -mount=secret app/global/jwt data=-
+```
+
+## JWT token for your services
+
+To get JWT token for any services, use API `/v1/auth/supercode` with code `sup3rcaL2033`
