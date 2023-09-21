@@ -5,18 +5,14 @@ import (
 	_ "embed"
 
 	"iam/ent"
-	"iam/internal/conf"
 	"iam/internal/data"
 
-	consul "github.com/go-kratos/consul/registry"
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/go-kratos/kratos/v2/registry"
-	"github.com/hashicorp/consul/api"
 )
 
 // UsersUsecase .
 type UsersUsecase struct {
-	conf      *conf.Bootstrap
 	log       *log.Helper
 	discovery registry.Discovery
 	usersRepo data.UsersRepo
@@ -24,13 +20,10 @@ type UsersUsecase struct {
 }
 
 // NewUsersUsecase .
-func NewUsersUsecase(c *conf.Bootstrap, logger log.Logger, consulClient *api.Client, usersRepo data.UsersRepo, otpRepo data.OtpRepo) (*UsersUsecase, error) {
-	dis := consul.New(consulClient)
-
+func NewUsersUsecase(logger log.Logger, c *data.Config, usersRepo data.UsersRepo, otpRepo data.OtpRepo) (*UsersUsecase, error) {
 	return &UsersUsecase{
-		conf:      c,
 		log:       log.NewHelper(logger),
-		discovery: dis,
+		discovery: c.GetRegistry(),
 		usersRepo: usersRepo,
 		otpRepo:   otpRepo,
 	}, nil

@@ -9,7 +9,6 @@ package main
 import (
 	"github.com/go-kratos/kratos/v2"
 	"github.com/go-kratos/kratos/v2/log"
-	"github.com/hashicorp/consul/api"
 	"iam/internal/biz"
 	"iam/internal/conf"
 	"iam/internal/data"
@@ -24,8 +23,12 @@ import (
 // Injectors from wire.go:
 
 // wireApp init kratos application.
-func wireApp(bootstrap *conf.Bootstrap, client *api.Client, logger log.Logger) (*kratos.App, func(), error) {
-	jwtProcessor, err := data.NewJwtProcessor()
+func wireApp(bootstrap *conf.Bootstrap, logger log.Logger) (*kratos.App, func(), error) {
+	config, err := data.NewConfig(bootstrap)
+	if err != nil {
+		return nil, nil, err
+	}
+	jwtProcessor, err := data.NewJwtProcessor(config)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -35,13 +38,13 @@ func wireApp(bootstrap *conf.Bootstrap, client *api.Client, logger log.Logger) (
 	}
 	usersRepo := data.NewUsersRepo(dataData, logger)
 	otpRepo := data.NewOtpRepo(dataData)
-	authUsecase, err := biz.NewAuthUsecase(bootstrap, logger, client, usersRepo, otpRepo)
+	authUsecase, err := biz.NewAuthUsecase(logger, config, usersRepo, otpRepo)
 	if err != nil {
 		cleanup()
 		return nil, nil, err
 	}
-	authService := service.NewAuthService(bootstrap, logger, jwtProcessor, authUsecase)
-	usersUsecase, err := biz.NewUsersUsecase(bootstrap, logger, client, usersRepo, otpRepo)
+	authService := service.NewAuthService(logger, jwtProcessor, authUsecase)
+	usersUsecase, err := biz.NewUsersUsecase(logger, config, usersRepo, otpRepo)
 	if err != nil {
 		cleanup()
 		return nil, nil, err
@@ -56,7 +59,7 @@ func wireApp(bootstrap *conf.Bootstrap, client *api.Client, logger log.Logger) (
 	}
 	privacyService := service.NewPrivacyService(logger, jwtProcessor, privacyUsecase)
 	httpServer := server.NewHTTPServer(bootstrap, logger, jwtProcessor, authService, usersService, privacyService)
-	app := newApp(logger, client, grpcServer, httpServer)
+	app := newApp(logger, config, grpcServer, httpServer)
 	return app, func() {
 		cleanup()
 	}, nil

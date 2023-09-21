@@ -29,7 +29,13 @@ services:
     profiles:
       - stage
     environment:
-      - JWT_SECRET=${JWT_SECRET}
+      - SERVICE_NAME=${SERVICE_NAME}
+      - CONSUL_ADDRESS=${CONSUL_ADDRESS}
+      - VAULT_ADDRESS=${VAULT_ADDRESS}
+      - VAULT_ROLE_ID=${VAULT_ROLE_ID}
+      - VAULT_SECRET_ID_PATH=/run/secrets/vault_secret_id
+    secrets:
+      - vault_secret_id
   dev-service:
     build:
       context: ./
@@ -43,12 +49,14 @@ services:
     volumes:
       - ./configs:/data/conf
     restart: unless-stopped
-    depends_on:
-      - db
     profiles:
       - dev
     environment:
-      - JWT_SECRET=${JWT_SECRET}
+      - AUTOMIGRATE=true
+      - SERVICE_NAME=${SERVICE_NAME}
+      - CONSUL_ADDRESS=http://consul:8500
+      - VAULT_ADDRESS=http://vault:8200
+      - VAULT_TOKEN=myroot
 
 volumes:
   dbvol:
@@ -60,3 +68,7 @@ networks:
     name: ${NETWORK}
     driver: bridge
     external: true
+
+secrets:
+  vault_secret_id:
+    environment: 'VAULT_SECRET_ID'

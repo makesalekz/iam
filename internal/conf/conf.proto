@@ -7,10 +7,8 @@ import "google/protobuf/duration.proto";
 
 message Bootstrap {
   Server server = 1;
-  Consul consul = 2;
-  Vault vault = 3;
-  Db db = 4;
-  Discovery discovery = 5;
+  Db db = 2;
+  Discovery discovery = 3;
 }
 
 message Server {
@@ -28,19 +26,8 @@ message Server {
   GRPC grpc = 2;
 }
 
-message Consul {
-  string address = 1;
-  string path = 2;
-}
-
-message Vault {
-  string address = 1;
-  string token = 2;
-}
-
 message Db {
   string address = 1;
-  bool automigrate = 2;
 }
 
 message Discovery {

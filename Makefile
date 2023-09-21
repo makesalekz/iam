@@ -13,7 +13,6 @@ ifeq ($(GOHOSTOS), windows)
 else
 	INTERNAL_PROTO_FILES=$(shell find internal -name *.proto)
 	API_PROTO_FILES=$(shell find api -name *.proto)
-	JWT_SECRET=$(shell cat $(shell find configs -name jwt.key))
 endif
 
 .PHONY: init
@@ -29,16 +28,30 @@ init:
 .PHONY: run
 # run
 run:	
-	export JWT_SECRET=$(JWT_SECRET) && \
+	set -a && source .env && set +a && \
 	kratos run
+
+.PHONY: db
+# db
+db:
+	set -a && source .env && set +a && \
+	export REGISTRY_IMAGE=busybox && \
+	docker compose up -d
 
 .PHONY: start
 # start
 start:
-	export JWT_SECRET=$(JWT_SECRET) && \
+	set -a && source .env && set +a && \
 	export REGISTRY_IMAGE=busybox && \
-	export CI_PROJECT_NAME=local && \
-	docker-compose --profile=dev up -d
+	docker compose build dev-service && \
+	docker compose --profile=dev up -d dev-service
+
+.PHONY: stop
+# stop
+stop:
+	set -a && source .env && set +a && \
+	export REGISTRY_IMAGE=busybox && \
+	docker compose --profile=dev down
 
 .PHONY: config
 # generate internal proto

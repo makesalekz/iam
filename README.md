@@ -1,4 +1,4 @@
-# LDAP
+# iam
 
 ## Proto files
 
@@ -68,5 +68,11 @@ go build -o ./bin/ ./...
 ## Run in Docker
 
 ```bash
-docker compose up -d
+make start
+```
+
+To stop docker:
+
+```bash
+make stop
 ```

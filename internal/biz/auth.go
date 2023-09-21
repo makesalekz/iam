@@ -13,11 +13,9 @@ import (
 	"iam/internal/data"
 	sender "iam/third_party/api/send/v1"
 
-	consul "github.com/go-kratos/consul/registry"
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/go-kratos/kratos/v2/registry"
 	"github.com/go-kratos/kratos/v2/transport/grpc"
-	"github.com/hashicorp/consul/api"
 	"github.com/nyaruka/phonenumbers"
 )
 
@@ -34,13 +32,11 @@ type AuthUsecase struct {
 }
 
 // NewAuthUsecase new a Greeter usecase.
-func NewAuthUsecase(c *conf.Bootstrap, logger log.Logger, consulClient *api.Client, usersRepo data.UsersRepo, otpRepo data.OtpRepo) (*AuthUsecase, error) {
-	dis := consul.New(consulClient)
-
+func NewAuthUsecase(logger log.Logger, c *data.Config, usersRepo data.UsersRepo, otpRepo data.OtpRepo) (*AuthUsecase, error) {
 	return &AuthUsecase{
-		conf:      c,
+		conf:      c.Bootstrap,
 		log:       log.NewHelper(logger),
-		discovery: dis,
+		discovery: c.GetRegistry(),
 		usersRepo: usersRepo,
 		otpRepo:   otpRepo,
 	}, nil

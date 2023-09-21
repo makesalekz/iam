@@ -7,7 +7,6 @@ import (
 
 	v1 "iam/api/auth/v1"
 	"iam/internal/biz"
-	"iam/internal/conf"
 	"iam/internal/data"
 
 	"github.com/go-kratos/kratos/v2/errors"
@@ -20,18 +19,16 @@ const TOKEN_DURATION = 24 * time.Hour
 type AuthService struct {
 	v1.UnimplementedAuthServer
 
-	conf *conf.Bootstrap
-	log  *log.Helper
-	jwt  *data.JwtProcessor
-	au   *biz.AuthUsecase
+	log *log.Helper
+	jwt *data.JwtProcessor
+	au  *biz.AuthUsecase
 }
 
-func NewAuthService(cfg *conf.Bootstrap, logger log.Logger, jwt *data.JwtProcessor, au *biz.AuthUsecase) *AuthService {
+func NewAuthService(logger log.Logger, jwt *data.JwtProcessor, au *biz.AuthUsecase) *AuthService {
 	return &AuthService{
-		conf: cfg,
-		log:  log.NewHelper(logger),
-		jwt:  jwt,
-		au:   au,
+		log: log.NewHelper(logger),
+		jwt: jwt,
+		au:  au,
 	}
 }
 
