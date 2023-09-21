@@ -55,7 +55,7 @@ make migrations
 ### Run debug
 
 ```bash
-kratos run
+make run
 ```
 
 ### Build & Run
