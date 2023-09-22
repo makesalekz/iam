@@ -18,6 +18,8 @@ type Tx struct {
 	User *UserClient
 	// UserPrivacy is the client for interacting with the UserPrivacy builders.
 	UserPrivacy *UserPrivacyClient
+	// UserSettings is the client for interacting with the UserSettings builders.
+	UserSettings *UserSettingsClient
 
 	// lazily loaded.
 	client     *Client
@@ -152,6 +154,7 @@ func (tx *Tx) init() {
 	tx.OneTimePassword = NewOneTimePasswordClient(tx.config)
 	tx.User = NewUserClient(tx.config)
 	tx.UserPrivacy = NewUserPrivacyClient(tx.config)
+	tx.UserSettings = NewUserSettingsClient(tx.config)
 }
 
 // txDriver wraps the given dialect.Tx with a nop dialect.Driver implementation.

@@ -89,6 +89,35 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/api.privacy.v1.PrivacyReply'
+    /v1/settings/me:
+        get:
+            tags:
+                - Settings
+            operationId: Settings_GetSettings
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/api.settings.v1.SettingsReply'
+        post:
+            tags:
+                - Settings
+            operationId: Settings_UpdateSettings
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/api.settings.v1.SettingsRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/api.settings.v1.SettingsReply'
     /v1/users/me:
         get:
             tags:
@@ -188,6 +217,20 @@ components:
                     type: object
                     additionalProperties:
                         type: string
+        api.settings.v1.SettingsReply:
+            type: object
+            properties:
+                settings:
+                    type: object
+                    additionalProperties:
+                        type: string
+        api.settings.v1.SettingsRequest:
+            type: object
+            properties:
+                settings:
+                    type: object
+                    additionalProperties:
+                        type: string
         api.users.v1.EmptyReply:
             type: object
             properties: {}
@@ -236,4 +279,5 @@ components:
 tags:
     - name: Auth
     - name: Privacy
+    - name: Settings
     - name: Users

@@ -14,3 +14,6 @@ type User func(*sql.Selector)
 
 // UserPrivacy is the predicate function for userprivacy builders.
 type UserPrivacy func(*sql.Selector)
+
+// UserSettings is the predicate function for usersettings builders.
+type UserSettings func(*sql.Selector)

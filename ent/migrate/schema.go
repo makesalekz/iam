@@ -82,15 +82,46 @@ var (
 			},
 		},
 	}
+	// UserSettingsColumns holds the columns for the "user_settings" table.
+	UserSettingsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt64, Increment: true},
+		{Name: "setting", Type: field.TypeEnum, Enums: []string{"TEST_SETTING"}},
+		{Name: "value", Type: field.TypeString},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "user_id", Type: field.TypeInt64},
+	}
+	// UserSettingsTable holds the schema information for the "user_settings" table.
+	UserSettingsTable = &schema.Table{
+		Name:       "user_settings",
+		Columns:    UserSettingsColumns,
+		PrimaryKey: []*schema.Column{UserSettingsColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "user_settings_users_user",
+				Columns:    []*schema.Column{UserSettingsColumns[4]},
+				RefColumns: []*schema.Column{UsersColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "usersettings_user_id_setting",
+				Unique:  true,
+				Columns: []*schema.Column{UserSettingsColumns[4], UserSettingsColumns[1]},
+			},
+		},
+	}
 	// Tables holds all the tables in the schema.
 	Tables = []*schema.Table{
 		OneTimePasswordsTable,
 		UsersTable,
 		UserPrivaciesTable,
+		UserSettingsTable,
 	}
 )
 
 func init() {
 	OneTimePasswordsTable.ForeignKeys[0].RefTable = UsersTable
 	UserPrivaciesTable.ForeignKeys[0].RefTable = UsersTable
+	UserSettingsTable.ForeignKeys[0].RefTable = UsersTable
 }

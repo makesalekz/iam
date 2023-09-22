@@ -1,23 +1,23 @@
 syntax = "proto3";
 
-package api.privacy.v1;
+package api.settings.v1;
 
 import "google/api/annotations.proto";
 import "errors/errors.proto";
 
-option go_package = "iam/api/privacy/v1;privacy_v1";
+option go_package = "iam/api/settings/v1;settings_v1";
 option java_multiple_files = true;
-option java_package = "api.privacy.v1";
+option java_package = "api.settings.v1";
 
-service Privacy {
-	rpc GetPrivacy (EmptyRequest) returns (PrivacyReply) {
+service Settings {
+	rpc GetSettings (EmptyRequest) returns (SettingsReply) {
 		option (google.api.http) = {
-			get: "/v1/privacy/me"
+			get: "/v1/settings/me"
 		};
 	};
-	rpc UpdatePrivacy (PrivacyRequest) returns (PrivacyReply) {
+	rpc UpdateSettings (SettingsRequest) returns (SettingsReply) {
 		option (google.api.http) = {
-			post: "/v1/privacy/me"
+			post: "/v1/settings/me"
 			body: "*"
 		};
 	};
@@ -25,11 +25,11 @@ service Privacy {
 
 message EmptyRequest {}
 
-message PrivacyRequest {
+message SettingsRequest {
 	map<string, string> settings = 1;
 }
 
-message PrivacyReply {
+message SettingsReply {
 	map<string, string> settings = 1;
 }
 

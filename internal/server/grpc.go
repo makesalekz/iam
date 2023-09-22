@@ -2,6 +2,8 @@ package server
 
 import (
 	auth_v1 "iam/api/auth/v1"
+	privacy_v1 "iam/api/privacy/v1"
+	settings_v1 "iam/api/settings/v1"
 	users_v1 "iam/api/users/v1"
 	"iam/internal/conf"
 	"iam/internal/data"
@@ -16,7 +18,7 @@ import (
 )
 
 // NewGRPCServer new a gRPC server.
-func NewGRPCServer(c *conf.Bootstrap, logger log.Logger, jwtp *data.JwtProcessor, auth *service.AuthService, users *service.UsersService) *grpc.Server {
+func NewGRPCServer(c *conf.Bootstrap, logger log.Logger, jwtp *data.JwtProcessor, auth *service.AuthService, users *service.UsersService, privacy *service.PrivacyService, settings *service.SettingsService) *grpc.Server {
 	var opts = []grpc.ServerOption{
 		grpc.Middleware(
 			recovery.Recovery(),
@@ -39,6 +41,8 @@ func NewGRPCServer(c *conf.Bootstrap, logger log.Logger, jwtp *data.JwtProcessor
 
 	auth_v1.RegisterAuthServer(srv, auth)
 	users_v1.RegisterUsersServer(srv, users)
+	privacy_v1.RegisterPrivacyServer(srv, privacy)
+	settings_v1.RegisterSettingsServer(srv, settings)
 
 	return srv
 }

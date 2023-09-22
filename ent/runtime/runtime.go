@@ -7,6 +7,7 @@ import (
 	"iam/ent/schema"
 	"iam/ent/user"
 	"iam/ent/userprivacy"
+	"iam/ent/usersettings"
 	"time"
 )
 
@@ -69,6 +70,12 @@ func init() {
 	userprivacyDescUpdatedAt := userprivacyFields[3].Descriptor()
 	// userprivacy.DefaultUpdatedAt holds the default value on creation for the updated_at field.
 	userprivacy.DefaultUpdatedAt = userprivacyDescUpdatedAt.Default.(func() time.Time)
+	usersettingsFields := schema.UserSettings{}.Fields()
+	_ = usersettingsFields
+	// usersettingsDescUpdatedAt is the schema descriptor for updated_at field.
+	usersettingsDescUpdatedAt := usersettingsFields[3].Descriptor()
+	// usersettings.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	usersettings.DefaultUpdatedAt = usersettingsDescUpdatedAt.Default.(func() time.Time)
 }
 
 const (

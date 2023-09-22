@@ -13,6 +13,7 @@ import (
 	"iam/ent/onetimepassword"
 	"iam/ent/user"
 	"iam/ent/userprivacy"
+	"iam/ent/usersettings"
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect"
@@ -31,6 +32,8 @@ type Client struct {
 	User *UserClient
 	// UserPrivacy is the client for interacting with the UserPrivacy builders.
 	UserPrivacy *UserPrivacyClient
+	// UserSettings is the client for interacting with the UserSettings builders.
+	UserSettings *UserSettingsClient
 }
 
 // NewClient creates a new client configured with the given options.
@@ -47,6 +50,7 @@ func (c *Client) init() {
 	c.OneTimePassword = NewOneTimePasswordClient(c.config)
 	c.User = NewUserClient(c.config)
 	c.UserPrivacy = NewUserPrivacyClient(c.config)
+	c.UserSettings = NewUserSettingsClient(c.config)
 }
 
 type (
@@ -132,6 +136,7 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		OneTimePassword: NewOneTimePasswordClient(cfg),
 		User:            NewUserClient(cfg),
 		UserPrivacy:     NewUserPrivacyClient(cfg),
+		UserSettings:    NewUserSettingsClient(cfg),
 	}, nil
 }
 
@@ -154,6 +159,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		OneTimePassword: NewOneTimePasswordClient(cfg),
 		User:            NewUserClient(cfg),
 		UserPrivacy:     NewUserPrivacyClient(cfg),
+		UserSettings:    NewUserSettingsClient(cfg),
 	}, nil
 }
 
@@ -185,6 +191,7 @@ func (c *Client) Use(hooks ...Hook) {
 	c.OneTimePassword.Use(hooks...)
 	c.User.Use(hooks...)
 	c.UserPrivacy.Use(hooks...)
+	c.UserSettings.Use(hooks...)
 }
 
 // Intercept adds the query interceptors to all the entity clients.
@@ -193,6 +200,7 @@ func (c *Client) Intercept(interceptors ...Interceptor) {
 	c.OneTimePassword.Intercept(interceptors...)
 	c.User.Intercept(interceptors...)
 	c.UserPrivacy.Intercept(interceptors...)
+	c.UserSettings.Intercept(interceptors...)
 }
 
 // Mutate implements the ent.Mutator interface.
@@ -204,6 +212,8 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 		return c.User.mutate(ctx, m)
 	case *UserPrivacyMutation:
 		return c.UserPrivacy.mutate(ctx, m)
+	case *UserSettingsMutation:
+		return c.UserSettings.mutate(ctx, m)
 	default:
 		return nil, fmt.Errorf("ent: unknown mutation type %T", m)
 	}
@@ -597,12 +607,146 @@ func (c *UserPrivacyClient) mutate(ctx context.Context, m *UserPrivacyMutation) 
 	}
 }
 
+// UserSettingsClient is a client for the UserSettings schema.
+type UserSettingsClient struct {
+	config
+}
+
+// NewUserSettingsClient returns a client for the UserSettings from the given config.
+func NewUserSettingsClient(c config) *UserSettingsClient {
+	return &UserSettingsClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `usersettings.Hooks(f(g(h())))`.
+func (c *UserSettingsClient) Use(hooks ...Hook) {
+	c.hooks.UserSettings = append(c.hooks.UserSettings, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `usersettings.Intercept(f(g(h())))`.
+func (c *UserSettingsClient) Intercept(interceptors ...Interceptor) {
+	c.inters.UserSettings = append(c.inters.UserSettings, interceptors...)
+}
+
+// Create returns a builder for creating a UserSettings entity.
+func (c *UserSettingsClient) Create() *UserSettingsCreate {
+	mutation := newUserSettingsMutation(c.config, OpCreate)
+	return &UserSettingsCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of UserSettings entities.
+func (c *UserSettingsClient) CreateBulk(builders ...*UserSettingsCreate) *UserSettingsCreateBulk {
+	return &UserSettingsCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for UserSettings.
+func (c *UserSettingsClient) Update() *UserSettingsUpdate {
+	mutation := newUserSettingsMutation(c.config, OpUpdate)
+	return &UserSettingsUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *UserSettingsClient) UpdateOne(us *UserSettings) *UserSettingsUpdateOne {
+	mutation := newUserSettingsMutation(c.config, OpUpdateOne, withUserSettings(us))
+	return &UserSettingsUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *UserSettingsClient) UpdateOneID(id int64) *UserSettingsUpdateOne {
+	mutation := newUserSettingsMutation(c.config, OpUpdateOne, withUserSettingsID(id))
+	return &UserSettingsUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for UserSettings.
+func (c *UserSettingsClient) Delete() *UserSettingsDelete {
+	mutation := newUserSettingsMutation(c.config, OpDelete)
+	return &UserSettingsDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *UserSettingsClient) DeleteOne(us *UserSettings) *UserSettingsDeleteOne {
+	return c.DeleteOneID(us.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *UserSettingsClient) DeleteOneID(id int64) *UserSettingsDeleteOne {
+	builder := c.Delete().Where(usersettings.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &UserSettingsDeleteOne{builder}
+}
+
+// Query returns a query builder for UserSettings.
+func (c *UserSettingsClient) Query() *UserSettingsQuery {
+	return &UserSettingsQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeUserSettings},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a UserSettings entity by its id.
+func (c *UserSettingsClient) Get(ctx context.Context, id int64) (*UserSettings, error) {
+	return c.Query().Where(usersettings.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *UserSettingsClient) GetX(ctx context.Context, id int64) *UserSettings {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryUser queries the user edge of a UserSettings.
+func (c *UserSettingsClient) QueryUser(us *UserSettings) *UserQuery {
+	query := (&UserClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := us.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(usersettings.Table, usersettings.FieldID, id),
+			sqlgraph.To(user.Table, user.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, usersettings.UserTable, usersettings.UserColumn),
+		)
+		fromV = sqlgraph.Neighbors(us.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *UserSettingsClient) Hooks() []Hook {
+	return c.hooks.UserSettings
+}
+
+// Interceptors returns the client interceptors.
+func (c *UserSettingsClient) Interceptors() []Interceptor {
+	return c.inters.UserSettings
+}
+
+func (c *UserSettingsClient) mutate(ctx context.Context, m *UserSettingsMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&UserSettingsCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&UserSettingsUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&UserSettingsUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&UserSettingsDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown UserSettings mutation op: %q", m.Op())
+	}
+}
+
 // hooks and interceptors per client, for fast access.
 type (
 	hooks struct {
-		OneTimePassword, User, UserPrivacy []ent.Hook
+		OneTimePassword, User, UserPrivacy, UserSettings []ent.Hook
 	}
 	inters struct {
-		OneTimePassword, User, UserPrivacy []ent.Interceptor
+		OneTimePassword, User, UserPrivacy, UserSettings []ent.Interceptor
 	}
 )

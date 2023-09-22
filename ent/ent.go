@@ -9,6 +9,7 @@ import (
 	"iam/ent/onetimepassword"
 	"iam/ent/user"
 	"iam/ent/userprivacy"
+	"iam/ent/usersettings"
 	"reflect"
 	"sync"
 
@@ -78,6 +79,7 @@ func checkColumn(table, column string) error {
 			onetimepassword.Table: onetimepassword.ValidColumn,
 			user.Table:            user.ValidColumn,
 			userprivacy.Table:     userprivacy.ValidColumn,
+			usersettings.Table:    usersettings.ValidColumn,
 		})
 	})
 	return columnCheck(table, column)

@@ -50,7 +50,6 @@ func wireApp(bootstrap *conf.Bootstrap, logger log.Logger) (*kratos.App, func(),
 		return nil, nil, err
 	}
 	usersService := service.NewUsersService(logger, jwtProcessor, usersUsecase)
-	grpcServer := server.NewGRPCServer(bootstrap, logger, jwtProcessor, authService, usersService)
 	privacyRepo := data.NewPrivacyRepo(dataData)
 	privacyUsecase, err := biz.NewPrivacyUsecase(privacyRepo)
 	if err != nil {
@@ -58,7 +57,15 @@ func wireApp(bootstrap *conf.Bootstrap, logger log.Logger) (*kratos.App, func(),
 		return nil, nil, err
 	}
 	privacyService := service.NewPrivacyService(logger, jwtProcessor, privacyUsecase)
-	httpServer := server.NewHTTPServer(bootstrap, logger, jwtProcessor, authService, usersService, privacyService)
+	settingsRepo := data.NewSettingsRepo(dataData)
+	settingsUsecase, err := biz.NewSettingsUsecase(settingsRepo)
+	if err != nil {
+		cleanup()
+		return nil, nil, err
+	}
+	settingsService := service.NewSettingsService(logger, jwtProcessor, settingsUsecase)
+	grpcServer := server.NewGRPCServer(bootstrap, logger, jwtProcessor, authService, usersService, privacyService, settingsService)
+	httpServer := server.NewHTTPServer(bootstrap, logger, jwtProcessor, authService, usersService, privacyService, settingsService)
 	app := newApp(logger, config, grpcServer, httpServer)
 	return app, func() {
 		cleanup()

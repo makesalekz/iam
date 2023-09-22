@@ -10,6 +10,7 @@ import (
 	"iam/ent/predicate"
 	"iam/ent/user"
 	"iam/ent/userprivacy"
+	"iam/ent/usersettings"
 
 	"entgo.io/ent/dialect/sql"
 )
@@ -151,6 +152,33 @@ func (f TraverseUserPrivacy) Traverse(ctx context.Context, q ent.Query) error {
 	return fmt.Errorf("unexpected query type %T. expect *ent.UserPrivacyQuery", q)
 }
 
+// The UserSettingsFunc type is an adapter to allow the use of ordinary function as a Querier.
+type UserSettingsFunc func(context.Context, *ent.UserSettingsQuery) (ent.Value, error)
+
+// Query calls f(ctx, q).
+func (f UserSettingsFunc) Query(ctx context.Context, q ent.Query) (ent.Value, error) {
+	if q, ok := q.(*ent.UserSettingsQuery); ok {
+		return f(ctx, q)
+	}
+	return nil, fmt.Errorf("unexpected query type %T. expect *ent.UserSettingsQuery", q)
+}
+
+// The TraverseUserSettings type is an adapter to allow the use of ordinary function as Traverser.
+type TraverseUserSettings func(context.Context, *ent.UserSettingsQuery) error
+
+// Intercept is a dummy implementation of Intercept that returns the next Querier in the pipeline.
+func (f TraverseUserSettings) Intercept(next ent.Querier) ent.Querier {
+	return next
+}
+
+// Traverse calls f(ctx, q).
+func (f TraverseUserSettings) Traverse(ctx context.Context, q ent.Query) error {
+	if q, ok := q.(*ent.UserSettingsQuery); ok {
+		return f(ctx, q)
+	}
+	return fmt.Errorf("unexpected query type %T. expect *ent.UserSettingsQuery", q)
+}
+
 // NewQuery returns the generic Query interface for the given typed query.
 func NewQuery(q ent.Query) (Query, error) {
 	switch q := q.(type) {
@@ -160,6 +188,8 @@ func NewQuery(q ent.Query) (Query, error) {
 		return &query[*ent.UserQuery, predicate.User, user.OrderOption]{typ: ent.TypeUser, tq: q}, nil
 	case *ent.UserPrivacyQuery:
 		return &query[*ent.UserPrivacyQuery, predicate.UserPrivacy, userprivacy.OrderOption]{typ: ent.TypeUserPrivacy, tq: q}, nil
+	case *ent.UserSettingsQuery:
+		return &query[*ent.UserSettingsQuery, predicate.UserSettings, usersettings.OrderOption]{typ: ent.TypeUserSettings, tq: q}, nil
 	default:
 		return nil, fmt.Errorf("unknown query type %T", q)
 	}

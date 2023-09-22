@@ -14,7 +14,6 @@ type PrivacyUsecase struct {
 
 // NewPrivacyUsecase .
 func NewPrivacyUsecase(privacyRepo data.PrivacyRepo) (*PrivacyUsecase, error) {
-
 	return &PrivacyUsecase{
 		privacyRepo: privacyRepo,
 	}, nil

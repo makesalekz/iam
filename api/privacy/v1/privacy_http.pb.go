@@ -4,7 +4,7 @@
 // - protoc             v4.23.4
 // source: privacy/v1/privacy.proto
 
-package v1
+package privacy_v1
 
 import (
 	context "context"
