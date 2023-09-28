@@ -29,8 +29,8 @@ type SettingsHTTPServer interface {
 
 func RegisterSettingsHTTPServer(s *http.Server, srv SettingsHTTPServer) {
 	r := s.Route("/")
-	r.GET("/v1/settings/me", _Settings_GetSettings0_HTTP_Handler(srv))
-	r.POST("/v1/settings/me", _Settings_UpdateSettings0_HTTP_Handler(srv))
+	r.GET("/v1/users/me/settings", _Settings_GetSettings0_HTTP_Handler(srv))
+	r.PUT("/v1/users/me/settings", _Settings_UpdateSettings0_HTTP_Handler(srv))
 }
 
 func _Settings_GetSettings0_HTTP_Handler(srv SettingsHTTPServer) func(ctx http.Context) error {
@@ -89,7 +89,7 @@ func NewSettingsHTTPClient(client *http.Client) SettingsHTTPClient {
 
 func (c *SettingsHTTPClientImpl) GetSettings(ctx context.Context, in *EmptyRequest, opts ...http.CallOption) (*SettingsReply, error) {
 	var out SettingsReply
-	pattern := "/v1/settings/me"
+	pattern := "/v1/users/me/settings"
 	path := binding.EncodeURL(pattern, in, true)
 	opts = append(opts, http.Operation(OperationSettingsGetSettings))
 	opts = append(opts, http.PathTemplate(pattern))
@@ -102,11 +102,11 @@ func (c *SettingsHTTPClientImpl) GetSettings(ctx context.Context, in *EmptyReque
 
 func (c *SettingsHTTPClientImpl) UpdateSettings(ctx context.Context, in *SettingsRequest, opts ...http.CallOption) (*SettingsReply, error) {
 	var out SettingsReply
-	pattern := "/v1/settings/me"
+	pattern := "/v1/users/me/settings"
 	path := binding.EncodeURL(pattern, in, false)
 	opts = append(opts, http.Operation(OperationSettingsUpdateSettings))
 	opts = append(opts, http.PathTemplate(pattern))
-	err := c.cc.Invoke(ctx, "POST", path, in, &out, opts...)
+	err := c.cc.Invoke(ctx, "PUT", path, in, &out, opts...)
 	if err != nil {
 		return nil, err
 	}

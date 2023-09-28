@@ -22,12 +22,6 @@ service Auth {
 			body: "*"
 		};
 	};
-	rpc TempAuthBySuperCode (AuthByCodeRequest) returns (AuthByCodeReply) {
-		option (google.api.http) = {
-			post: "/v1/auth/supercode"
-			body: "*"
-		};
-	};
 }
 
 message AuthByPhoneRequest {

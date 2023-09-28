@@ -21,19 +21,16 @@ const _ = http.SupportPackageIsVersion1
 
 const OperationAuthAuthByCode = "/api.auth.v1.Auth/AuthByCode"
 const OperationAuthAuthByPhone = "/api.auth.v1.Auth/AuthByPhone"
-const OperationAuthTempAuthBySuperCode = "/api.auth.v1.Auth/TempAuthBySuperCode"
 
 type AuthHTTPServer interface {
 	AuthByCode(context.Context, *AuthByCodeRequest) (*AuthByCodeReply, error)
 	AuthByPhone(context.Context, *AuthByPhoneRequest) (*AuthByPhoneReply, error)
-	TempAuthBySuperCode(context.Context, *AuthByCodeRequest) (*AuthByCodeReply, error)
 }
 
 func RegisterAuthHTTPServer(s *http.Server, srv AuthHTTPServer) {
 	r := s.Route("/")
 	r.POST("/v1/auth/phone", _Auth_AuthByPhone0_HTTP_Handler(srv))
 	r.POST("/v1/auth/code", _Auth_AuthByCode0_HTTP_Handler(srv))
-	r.POST("/v1/auth/supercode", _Auth_TempAuthBySuperCode0_HTTP_Handler(srv))
 }
 
 func _Auth_AuthByPhone0_HTTP_Handler(srv AuthHTTPServer) func(ctx http.Context) error {
@@ -80,32 +77,9 @@ func _Auth_AuthByCode0_HTTP_Handler(srv AuthHTTPServer) func(ctx http.Context) e
 	}
 }
 
-func _Auth_TempAuthBySuperCode0_HTTP_Handler(srv AuthHTTPServer) func(ctx http.Context) error {
-	return func(ctx http.Context) error {
-		var in AuthByCodeRequest
-		if err := ctx.Bind(&in); err != nil {
-			return err
-		}
-		if err := ctx.BindQuery(&in); err != nil {
-			return err
-		}
-		http.SetOperation(ctx, OperationAuthTempAuthBySuperCode)
-		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
-			return srv.TempAuthBySuperCode(ctx, req.(*AuthByCodeRequest))
-		})
-		out, err := h(ctx, &in)
-		if err != nil {
-			return err
-		}
-		reply := out.(*AuthByCodeReply)
-		return ctx.Result(200, reply)
-	}
-}
-
 type AuthHTTPClient interface {
 	AuthByCode(ctx context.Context, req *AuthByCodeRequest, opts ...http.CallOption) (rsp *AuthByCodeReply, err error)
 	AuthByPhone(ctx context.Context, req *AuthByPhoneRequest, opts ...http.CallOption) (rsp *AuthByPhoneReply, err error)
-	TempAuthBySuperCode(ctx context.Context, req *AuthByCodeRequest, opts ...http.CallOption) (rsp *AuthByCodeReply, err error)
 }
 
 type AuthHTTPClientImpl struct {
@@ -134,19 +108,6 @@ func (c *AuthHTTPClientImpl) AuthByPhone(ctx context.Context, in *AuthByPhoneReq
 	pattern := "/v1/auth/phone"
 	path := binding.EncodeURL(pattern, in, false)
 	opts = append(opts, http.Operation(OperationAuthAuthByPhone))
-	opts = append(opts, http.PathTemplate(pattern))
-	err := c.cc.Invoke(ctx, "POST", path, in, &out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return &out, err
-}
-
-func (c *AuthHTTPClientImpl) TempAuthBySuperCode(ctx context.Context, in *AuthByCodeRequest, opts ...http.CallOption) (*AuthByCodeReply, error) {
-	var out AuthByCodeReply
-	pattern := "/v1/auth/supercode"
-	path := binding.EncodeURL(pattern, in, false)
-	opts = append(opts, http.Operation(OperationAuthTempAuthBySuperCode))
 	opts = append(opts, http.PathTemplate(pattern))
 	err := c.cc.Invoke(ctx, "POST", path, in, &out, opts...)
 	if err != nil {

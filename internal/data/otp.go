@@ -3,6 +3,7 @@ package data
 import (
 	"context"
 	"math/rand"
+	"os"
 	"time"
 
 	"iam/ent"
@@ -41,17 +42,20 @@ func (r *otpRepo) CreateOneTimePassword(ctx context.Context, userId int64, t pro
 	code := generateRandomNumber(6)
 	expiresAt := time.Now().Add(duration)
 
+	debug := os.Getenv("DEBUG")
+	if debug != "" { // use fixed code in debug mode
+		code = "777333"
+	}
+
 	return r.db.OneTimePassword.Create().SetUserID(userId).SetCode(code).SetType(t).SetExpiresAt(expiresAt).Save(ctx)
 }
 
 func (r *otpRepo) CheckOneTimePassword(ctx context.Context, userId int64, code string) (bool, error) {
 	otp, err := r.db.OneTimePassword.Query().Where(
-		onetimepassword.And(
-			onetimepassword.UserID(userId),
-			onetimepassword.Code(code),
-			onetimepassword.IsUsed(false),
-			onetimepassword.ExpiresAtGT(time.Now()),
-		),
+		onetimepassword.UserID(userId),
+		onetimepassword.Code(code),
+		onetimepassword.IsUsed(false),
+		onetimepassword.ExpiresAtGT(time.Now()),
 	).First(ctx)
 
 	if err != nil {

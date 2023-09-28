@@ -28,7 +28,7 @@ func NewUsersService(logger log.Logger, jwt *data.JwtProcessor, uc *biz.UsersUse
 	}
 }
 
-func transformUserForReply(user *ent.User) *v1.User {
+func replyUser(user *ent.User) *v1.User {
 	result := &v1.User{
 		Id:          user.ID,
 		Name:        user.Name,
@@ -51,6 +51,34 @@ func transformUserForReply(user *ent.User) *v1.User {
 	return result
 }
 
+func replyUserShort(user *ent.User) *v1.UserShort {
+	result := &v1.UserShort{
+		Id:          user.ID,
+		Name:        user.Name,
+		LastLoginAt: user.LastLoginAt.Format(time.RFC3339),
+	}
+
+	if user.Phone != nil {
+		result.Phone = *user.Phone
+	}
+	if user.Email != nil {
+		result.Email = *user.Email
+	}
+	if user.Avatar != nil {
+		result.Avatar = *user.Avatar
+	}
+
+	return result
+}
+
+func replyUsers(users []*ent.User) []*v1.UserShort {
+	var replies []*v1.UserShort
+	for _, user := range users {
+		replies = append(replies, replyUserShort(user))
+	}
+	return replies
+}
+
 func (s *UsersService) GetOwnProfile(ctx context.Context, req *v1.EmptyRequest) (*v1.ProfileReply, error) {
 	userId, ok := s.jwt.GetUserIdFromContext(ctx)
 	if !ok {
@@ -66,7 +94,7 @@ func (s *UsersService) GetOwnProfile(ctx context.Context, req *v1.EmptyRequest) 
 		return nil, v1.ErrorDatabaseQuery("Internal error")
 	}
 
-	return &v1.ProfileReply{User: transformUserForReply(user)}, nil
+	return &v1.ProfileReply{User: replyUser(user)}, nil
 }
 
 func (s *UsersService) UpdateOwnProfile(ctx context.Context, req *v1.UpdateOwnProfileRequest) (*v1.ProfileReply, error) {
@@ -89,7 +117,7 @@ func (s *UsersService) UpdateOwnProfile(ctx context.Context, req *v1.UpdateOwnPr
 		return nil, v1.ErrorDatabaseQuery("Internal error")
 	}
 
-	return &v1.ProfileReply{User: transformUserForReply(user)}, nil
+	return &v1.ProfileReply{User: replyUser(user)}, nil
 }
 
 func (s *UsersService) DeleteOwnProfile(ctx context.Context, req *v1.EmptyRequest) (*v1.EmptyReply, error) {
@@ -121,5 +149,15 @@ func (s *UsersService) GetUserProfile(ctx context.Context, req *v1.GetUserProfil
 		return nil, v1.ErrorDatabaseQuery("Internal error")
 	}
 
-	return &v1.ProfileReply{User: transformUserForReply(user)}, nil
+	return &v1.ProfileReply{User: replyUser(user)}, nil
+}
+
+func (s *UsersService) GetUsers(ctx context.Context, req *v1.GetUsersRequest) (*v1.GetUsersReply, error) {
+	s.log.Infof("GetUsers: %v", req.Ids)
+	users, err := s.uc.GetUsers(ctx, req.Ids)
+	if err != nil {
+		return nil, v1.ErrorDatabaseQuery("Internal error")
+	}
+
+	return &v1.GetUsersReply{Users: replyUsers(users)}, nil
 }

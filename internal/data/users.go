@@ -26,6 +26,7 @@ type UsersRepo interface {
 	CreateUserWithEmail(ctx context.Context, email string) (*ent.User, error)
 	UpdateUserData(ctx context.Context, id int64, dto UpdateUserDto) (*ent.User, error)
 	DeleteUser(ctx context.Context, id int64) error
+	GetUsersByIds(ctx context.Context, ids []int64) ([]*ent.User, error)
 }
 
 type usersRepo struct {
@@ -97,4 +98,8 @@ func (r *usersRepo) GetUserByPhone(ctx context.Context, phone string) (*ent.User
 
 func (r *usersRepo) GetUserByEmail(ctx context.Context, email string) (*ent.User, error) {
 	return r.db.User.Query().Where(user.Email(email)).First(ctx)
+}
+
+func (r *usersRepo) GetUsersByIds(ctx context.Context, ids []int64) ([]*ent.User, error) {
+	return r.db.User.Query().Where(user.IDIn(ids...)).All(ctx)
 }

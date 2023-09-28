@@ -2,7 +2,6 @@ package service
 
 import (
 	"context"
-	"os"
 	"strconv"
 	"time"
 
@@ -62,30 +61,6 @@ func (s *AuthService) AuthByCode(ctx context.Context, req *v1.AuthByCodeRequest)
 		Subject:   strconv.FormatInt(req.UserId, 10),
 		IssuedAt:  jwtv4.NewNumericDate(time.Now()),
 		ExpiresAt: jwtv4.NewNumericDate(time.Now().Add(TOKEN_DURATION)),
-	}
-	token := jwtv4.NewWithClaims(jwtv4.SigningMethodHS256, claims)
-
-	tokenString, err := token.SignedString(s.jwt.GetSecret())
-	if err != nil {
-		s.log.Errorf("token.SignedString: ", err)
-		return nil, errors.InternalServer("internal", "internal error")
-	}
-
-	return &v1.AuthByCodeReply{Token: tokenString}, nil
-}
-
-func (s *AuthService) TempAuthBySuperCode(ctx context.Context, req *v1.AuthByCodeRequest) (*v1.AuthByCodeReply, error) {
-	automigrate := os.Getenv("AUTOMIGRATE") // check if we are in dev mode
-	if automigrate == "" || req.Code != "sup3rcaL2033" {
-		return nil, errors.InternalServer("internal", "internal error")
-	}
-
-	claims := &jwtv4.RegisteredClaims{
-		Issuer:    "iam",
-		Audience:  jwtv4.ClaimStrings{"personal"},
-		Subject:   strconv.FormatInt(req.UserId, 10),
-		IssuedAt:  jwtv4.NewNumericDate(time.Now()),
-		ExpiresAt: jwtv4.NewNumericDate(time.Now().Add(TOKEN_DURATION * 30)),
 	}
 	token := jwtv4.NewWithClaims(jwtv4.SigningMethodHS256, claims)
 

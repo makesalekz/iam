@@ -12,12 +12,12 @@ option java_package = "api.settings.v1";
 service Settings {
 	rpc GetSettings (EmptyRequest) returns (SettingsReply) {
 		option (google.api.http) = {
-			get: "/v1/settings/me"
+			get: "/v1/users/me/settings"
 		};
 	};
 	rpc UpdateSettings (SettingsRequest) returns (SettingsReply) {
 		option (google.api.http) = {
-			post: "/v1/settings/me"
+			put: "/v1/users/me/settings"
 			body: "*"
 		};
 	};

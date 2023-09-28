@@ -18,6 +18,7 @@ services:
       - backend
   service:
     image: ${REGISTRY_IMAGE}
+    hostname: ${SERVICE_NAME}
     container_name: ${SERVICE_NAME}_service
     networks:
       - backend
@@ -29,6 +30,7 @@ services:
     profiles:
       - stage
     environment:
+      - DEBUG=1
       - SERVICE_NAME=${SERVICE_NAME}
       - CONSUL_ADDRESS=${CONSUL_ADDRESS}
       - VAULT_ADDRESS=${VAULT_ADDRESS}
@@ -52,6 +54,7 @@ services:
     profiles:
       - dev
     environment:
+      - DEBUG=1
       - AUTOMIGRATE=true
       - SERVICE_NAME=${SERVICE_NAME}
       - CONSUL_ADDRESS=http://consul:8500

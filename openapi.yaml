@@ -42,16 +42,16 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/api.auth.v1.AuthByPhoneReply'
-    /v1/auth/supercode:
+    /v1/users/list:
         post:
             tags:
-                - Auth
-            operationId: Auth_TempAuthBySuperCode
+                - Users
+            operationId: Users_GetUsers
             requestBody:
                 content:
                     application/json:
                         schema:
-                            $ref: '#/components/schemas/api.auth.v1.AuthByCodeRequest'
+                            $ref: '#/components/schemas/api.users.v1.GetUsersRequest'
                 required: true
             responses:
                 "200":
@@ -59,65 +59,7 @@ paths:
                     content:
                         application/json:
                             schema:
-                                $ref: '#/components/schemas/api.auth.v1.AuthByCodeReply'
-    /v1/privacy/me:
-        get:
-            tags:
-                - Privacy
-            operationId: Privacy_GetPrivacy
-            responses:
-                "200":
-                    description: OK
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/api.privacy.v1.PrivacyReply'
-        post:
-            tags:
-                - Privacy
-            operationId: Privacy_UpdatePrivacy
-            requestBody:
-                content:
-                    application/json:
-                        schema:
-                            $ref: '#/components/schemas/api.privacy.v1.PrivacyRequest'
-                required: true
-            responses:
-                "200":
-                    description: OK
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/api.privacy.v1.PrivacyReply'
-    /v1/settings/me:
-        get:
-            tags:
-                - Settings
-            operationId: Settings_GetSettings
-            responses:
-                "200":
-                    description: OK
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/api.settings.v1.SettingsReply'
-        post:
-            tags:
-                - Settings
-            operationId: Settings_UpdateSettings
-            requestBody:
-                content:
-                    application/json:
-                        schema:
-                            $ref: '#/components/schemas/api.settings.v1.SettingsRequest'
-                required: true
-            responses:
-                "200":
-                    description: OK
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/api.settings.v1.SettingsReply'
+                                $ref: '#/components/schemas/api.users.v1.GetUsersReply'
     /v1/users/me:
         get:
             tags:
@@ -158,6 +100,64 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/api.users.v1.EmptyReply'
+    /v1/users/me/privacy:
+        get:
+            tags:
+                - Privacy
+            operationId: Privacy_GetPrivacy
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/api.privacy.v1.PrivacyReply'
+        put:
+            tags:
+                - Privacy
+            operationId: Privacy_UpdatePrivacy
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/api.privacy.v1.PrivacyRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/api.privacy.v1.PrivacyReply'
+    /v1/users/me/settings:
+        get:
+            tags:
+                - Settings
+            operationId: Settings_GetSettings
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/api.settings.v1.SettingsReply'
+        put:
+            tags:
+                - Settings
+            operationId: Settings_UpdateSettings
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/api.settings.v1.SettingsRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/api.settings.v1.SettingsReply'
     /v1/users/{userId}:
         get:
             tags:
@@ -234,6 +234,21 @@ components:
         api.users.v1.EmptyReply:
             type: object
             properties: {}
+        api.users.v1.GetUsersReply:
+            type: object
+            properties:
+                users:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/api.users.v1.UserShort'
+        api.users.v1.GetUsersRequest:
+            type: object
+            properties:
+                ids:
+                    type: array
+                    items:
+                        type: integer
+                        format: int64
         api.users.v1.ProfileReply:
             type: object
             properties:
@@ -276,6 +291,22 @@ components:
                     type: string
                 isActive:
                     type: boolean
+        api.users.v1.UserShort:
+            type: object
+            properties:
+                id:
+                    type: integer
+                    format: int64
+                phone:
+                    type: string
+                email:
+                    type: string
+                name:
+                    type: string
+                avatar:
+                    type: string
+                lastLoginAt:
+                    type: string
 tags:
     - name: Auth
     - name: Privacy

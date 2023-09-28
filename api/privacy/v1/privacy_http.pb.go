@@ -29,8 +29,8 @@ type PrivacyHTTPServer interface {
 
 func RegisterPrivacyHTTPServer(s *http.Server, srv PrivacyHTTPServer) {
 	r := s.Route("/")
-	r.GET("/v1/privacy/me", _Privacy_GetPrivacy0_HTTP_Handler(srv))
-	r.POST("/v1/privacy/me", _Privacy_UpdatePrivacy0_HTTP_Handler(srv))
+	r.GET("/v1/users/me/privacy", _Privacy_GetPrivacy0_HTTP_Handler(srv))
+	r.PUT("/v1/users/me/privacy", _Privacy_UpdatePrivacy0_HTTP_Handler(srv))
 }
 
 func _Privacy_GetPrivacy0_HTTP_Handler(srv PrivacyHTTPServer) func(ctx http.Context) error {
@@ -89,7 +89,7 @@ func NewPrivacyHTTPClient(client *http.Client) PrivacyHTTPClient {
 
 func (c *PrivacyHTTPClientImpl) GetPrivacy(ctx context.Context, in *EmptyRequest, opts ...http.CallOption) (*PrivacyReply, error) {
 	var out PrivacyReply
-	pattern := "/v1/privacy/me"
+	pattern := "/v1/users/me/privacy"
 	path := binding.EncodeURL(pattern, in, true)
 	opts = append(opts, http.Operation(OperationPrivacyGetPrivacy))
 	opts = append(opts, http.PathTemplate(pattern))
@@ -102,11 +102,11 @@ func (c *PrivacyHTTPClientImpl) GetPrivacy(ctx context.Context, in *EmptyRequest
 
 func (c *PrivacyHTTPClientImpl) UpdatePrivacy(ctx context.Context, in *PrivacyRequest, opts ...http.CallOption) (*PrivacyReply, error) {
 	var out PrivacyReply
-	pattern := "/v1/privacy/me"
+	pattern := "/v1/users/me/privacy"
 	path := binding.EncodeURL(pattern, in, false)
 	opts = append(opts, http.Operation(OperationPrivacyUpdatePrivacy))
 	opts = append(opts, http.PathTemplate(pattern))
-	err := c.cc.Invoke(ctx, "POST", path, in, &out, opts...)
+	err := c.cc.Invoke(ctx, "PUT", path, in, &out, opts...)
 	if err != nil {
 		return nil, err
 	}

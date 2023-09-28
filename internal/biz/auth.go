@@ -4,6 +4,7 @@ import (
 	"context"
 	_ "embed"
 	"fmt"
+	"os"
 	"time"
 
 	auth "iam/api/auth/v1"
@@ -83,19 +84,22 @@ func (uc *AuthUsecase) AuthUserByPhone(ctx context.Context, phone string) (int64
 		return 0, auth.ErrorDatabaseQuery("DB Error (OtpRepo): %s", err.Error())
 	}
 
-	senderClient, err := uc.dialNotifications(ctx)
-	if err != nil {
-		return 0, auth.ErrorGrpcConnection("dialNotifications: %s", err.Error())
-	}
+	debug := os.Getenv("DEBUG")
+	if debug == "" { // don't send sms in debug mode
+		senderClient, err := uc.dialNotifications(ctx)
+		if err != nil {
+			return 0, auth.ErrorGrpcConnection("dialNotifications: %s", err.Error())
+		}
 
-	reply, err := senderClient.PersonalSmsSender(ctx, &sender.PersonalSmsSenderRequest{
-		Phone:   phone,
-		Message: fmt.Sprintf("Enter this code to sign in: %s", otp.Code),
-	})
-	if err != nil {
-		return 0, auth.ErrorServiceFailed("sender.PersonalSmsSender: %s", err.Error())
+		reply, err := senderClient.PersonalSmsSender(ctx, &sender.PersonalSmsSenderRequest{
+			Phone:   phone,
+			Message: fmt.Sprintf("Enter this code to sign in: %s", otp.Code),
+		})
+		if err != nil {
+			return 0, auth.ErrorServiceFailed("sender.PersonalSmsSender: %s", err.Error())
+		}
+		uc.log.Infof("sender.PersonalSmsSender: %s", reply.Result)
 	}
-	uc.log.Infof("sender.PersonalSmsSender: %s", reply.Result)
 
 	return int64(user.ID), nil
 }

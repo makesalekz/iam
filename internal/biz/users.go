@@ -40,3 +40,7 @@ func (uc *UsersUsecase) UpdateUserProfile(ctx context.Context, userId int64, dat
 func (uc *UsersUsecase) DeleteUser(ctx context.Context, userId int64) error {
 	return uc.usersRepo.DeleteUser(ctx, userId)
 }
+
+func (uc *UsersUsecase) GetUsers(ctx context.Context, usersIds []int64) ([]*ent.User, error) {
+	return uc.usersRepo.GetUsersByIds(ctx, usersIds)
+}

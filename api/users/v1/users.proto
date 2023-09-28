@@ -28,7 +28,13 @@ service Users {
 	};
 	rpc GetUserProfile (GetUserProfileRequest) returns (ProfileReply) {
 		option (google.api.http) = {
-			get: "/v1/users/{user_id}"
+			get: "/v1/users/{userId}"
+		};
+	};
+	rpc GetUsers (GetUsersRequest) returns (GetUsersReply) {
+		option (google.api.http) = {
+			post: "/v1/users/list"
+			body: "*"
 		};
 	};
 }
@@ -48,7 +54,15 @@ message UpdateOwnProfileRequest {
 }
 
 message GetUserProfileRequest {
-	int64 user_id = 1;
+	int64 userId = 1;
+}
+
+message GetUsersRequest {
+	repeated int64 ids = 1;
+}
+
+message GetUsersReply {
+	repeated UserShort users = 1;
 }
 
 message User {
@@ -59,10 +73,19 @@ message User {
 	string bio = 5;
 	string avatar = 6;
 	string timezone = 7;
-	string created_at = 8;
-	string updated_at = 9;
-	string last_login_at = 10;
-	bool is_active = 11;
+	string createdAt = 8;
+	string updatedAt = 9;
+	string lastLoginAt = 10;
+	bool isActive = 11;
+}
+
+message UserShort {
+	int64 id = 1;
+	string phone = 2;
+	string email = 3;
+	string name = 4;
+	string avatar = 6;
+	string lastLoginAt = 7;
 }
 
 enum ErrorReason {
