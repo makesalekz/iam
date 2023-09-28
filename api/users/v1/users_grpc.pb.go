@@ -22,7 +22,8 @@ const (
 	Users_GetOwnProfile_FullMethodName    = "/api.users.v1.Users/GetOwnProfile"
 	Users_UpdateOwnProfile_FullMethodName = "/api.users.v1.Users/UpdateOwnProfile"
 	Users_DeleteOwnProfile_FullMethodName = "/api.users.v1.Users/DeleteOwnProfile"
-	Users_GetUserProfile_FullMethodName   = "/api.users.v1.Users/GetUserProfile"
+	Users_GetUserFull_FullMethodName      = "/api.users.v1.Users/GetUserFull"
+	Users_GetUser_FullMethodName          = "/api.users.v1.Users/GetUser"
 	Users_GetUsers_FullMethodName         = "/api.users.v1.Users/GetUsers"
 )
 
@@ -30,10 +31,11 @@ const (
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type UsersClient interface {
-	GetOwnProfile(ctx context.Context, in *EmptyRequest, opts ...grpc.CallOption) (*ProfileReply, error)
-	UpdateOwnProfile(ctx context.Context, in *UpdateOwnProfileRequest, opts ...grpc.CallOption) (*ProfileReply, error)
+	GetOwnProfile(ctx context.Context, in *EmptyRequest, opts ...grpc.CallOption) (*UserFullReply, error)
+	UpdateOwnProfile(ctx context.Context, in *UpdateOwnProfileRequest, opts ...grpc.CallOption) (*UserFullReply, error)
 	DeleteOwnProfile(ctx context.Context, in *EmptyRequest, opts ...grpc.CallOption) (*EmptyReply, error)
-	GetUserProfile(ctx context.Context, in *GetUserProfileRequest, opts ...grpc.CallOption) (*ProfileReply, error)
+	GetUserFull(ctx context.Context, in *GetUserRequest, opts ...grpc.CallOption) (*UserFullReply, error)
+	GetUser(ctx context.Context, in *GetUserRequest, opts ...grpc.CallOption) (*UserReply, error)
 	GetUsers(ctx context.Context, in *GetUsersRequest, opts ...grpc.CallOption) (*GetUsersReply, error)
 }
 
@@ -45,8 +47,8 @@ func NewUsersClient(cc grpc.ClientConnInterface) UsersClient {
 	return &usersClient{cc}
 }
 
-func (c *usersClient) GetOwnProfile(ctx context.Context, in *EmptyRequest, opts ...grpc.CallOption) (*ProfileReply, error) {
-	out := new(ProfileReply)
+func (c *usersClient) GetOwnProfile(ctx context.Context, in *EmptyRequest, opts ...grpc.CallOption) (*UserFullReply, error) {
+	out := new(UserFullReply)
 	err := c.cc.Invoke(ctx, Users_GetOwnProfile_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -54,8 +56,8 @@ func (c *usersClient) GetOwnProfile(ctx context.Context, in *EmptyRequest, opts 
 	return out, nil
 }
 
-func (c *usersClient) UpdateOwnProfile(ctx context.Context, in *UpdateOwnProfileRequest, opts ...grpc.CallOption) (*ProfileReply, error) {
-	out := new(ProfileReply)
+func (c *usersClient) UpdateOwnProfile(ctx context.Context, in *UpdateOwnProfileRequest, opts ...grpc.CallOption) (*UserFullReply, error) {
+	out := new(UserFullReply)
 	err := c.cc.Invoke(ctx, Users_UpdateOwnProfile_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -72,9 +74,18 @@ func (c *usersClient) DeleteOwnProfile(ctx context.Context, in *EmptyRequest, op
 	return out, nil
 }
 
-func (c *usersClient) GetUserProfile(ctx context.Context, in *GetUserProfileRequest, opts ...grpc.CallOption) (*ProfileReply, error) {
-	out := new(ProfileReply)
-	err := c.cc.Invoke(ctx, Users_GetUserProfile_FullMethodName, in, out, opts...)
+func (c *usersClient) GetUserFull(ctx context.Context, in *GetUserRequest, opts ...grpc.CallOption) (*UserFullReply, error) {
+	out := new(UserFullReply)
+	err := c.cc.Invoke(ctx, Users_GetUserFull_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *usersClient) GetUser(ctx context.Context, in *GetUserRequest, opts ...grpc.CallOption) (*UserReply, error) {
+	out := new(UserReply)
+	err := c.cc.Invoke(ctx, Users_GetUser_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -94,10 +105,11 @@ func (c *usersClient) GetUsers(ctx context.Context, in *GetUsersRequest, opts ..
 // All implementations must embed UnimplementedUsersServer
 // for forward compatibility
 type UsersServer interface {
-	GetOwnProfile(context.Context, *EmptyRequest) (*ProfileReply, error)
-	UpdateOwnProfile(context.Context, *UpdateOwnProfileRequest) (*ProfileReply, error)
+	GetOwnProfile(context.Context, *EmptyRequest) (*UserFullReply, error)
+	UpdateOwnProfile(context.Context, *UpdateOwnProfileRequest) (*UserFullReply, error)
 	DeleteOwnProfile(context.Context, *EmptyRequest) (*EmptyReply, error)
-	GetUserProfile(context.Context, *GetUserProfileRequest) (*ProfileReply, error)
+	GetUserFull(context.Context, *GetUserRequest) (*UserFullReply, error)
+	GetUser(context.Context, *GetUserRequest) (*UserReply, error)
 	GetUsers(context.Context, *GetUsersRequest) (*GetUsersReply, error)
 	mustEmbedUnimplementedUsersServer()
 }
@@ -106,17 +118,20 @@ type UsersServer interface {
 type UnimplementedUsersServer struct {
 }
 
-func (UnimplementedUsersServer) GetOwnProfile(context.Context, *EmptyRequest) (*ProfileReply, error) {
+func (UnimplementedUsersServer) GetOwnProfile(context.Context, *EmptyRequest) (*UserFullReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetOwnProfile not implemented")
 }
-func (UnimplementedUsersServer) UpdateOwnProfile(context.Context, *UpdateOwnProfileRequest) (*ProfileReply, error) {
+func (UnimplementedUsersServer) UpdateOwnProfile(context.Context, *UpdateOwnProfileRequest) (*UserFullReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateOwnProfile not implemented")
 }
 func (UnimplementedUsersServer) DeleteOwnProfile(context.Context, *EmptyRequest) (*EmptyReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteOwnProfile not implemented")
 }
-func (UnimplementedUsersServer) GetUserProfile(context.Context, *GetUserProfileRequest) (*ProfileReply, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetUserProfile not implemented")
+func (UnimplementedUsersServer) GetUserFull(context.Context, *GetUserRequest) (*UserFullReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetUserFull not implemented")
+}
+func (UnimplementedUsersServer) GetUser(context.Context, *GetUserRequest) (*UserReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetUser not implemented")
 }
 func (UnimplementedUsersServer) GetUsers(context.Context, *GetUsersRequest) (*GetUsersReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetUsers not implemented")
@@ -188,20 +203,38 @@ func _Users_DeleteOwnProfile_Handler(srv interface{}, ctx context.Context, dec f
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Users_GetUserProfile_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetUserProfileRequest)
+func _Users_GetUserFull_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetUserRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(UsersServer).GetUserProfile(ctx, in)
+		return srv.(UsersServer).GetUserFull(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: Users_GetUserProfile_FullMethodName,
+		FullMethod: Users_GetUserFull_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(UsersServer).GetUserProfile(ctx, req.(*GetUserProfileRequest))
+		return srv.(UsersServer).GetUserFull(ctx, req.(*GetUserRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Users_GetUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetUserRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UsersServer).GetUser(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Users_GetUser_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UsersServer).GetUser(ctx, req.(*GetUserRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -244,8 +277,12 @@ var Users_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _Users_DeleteOwnProfile_Handler,
 		},
 		{
-			MethodName: "GetUserProfile",
-			Handler:    _Users_GetUserProfile_Handler,
+			MethodName: "GetUserFull",
+			Handler:    _Users_GetUserFull_Handler,
+		},
+		{
+			MethodName: "GetUser",
+			Handler:    _Users_GetUser_Handler,
 		},
 		{
 			MethodName: "GetUsers",

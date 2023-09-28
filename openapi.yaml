@@ -71,7 +71,7 @@ paths:
                     content:
                         application/json:
                             schema:
-                                $ref: '#/components/schemas/api.users.v1.ProfileReply'
+                                $ref: '#/components/schemas/api.users.v1.UserFullReply'
         post:
             tags:
                 - Users
@@ -88,7 +88,7 @@ paths:
                     content:
                         application/json:
                             schema:
-                                $ref: '#/components/schemas/api.users.v1.ProfileReply'
+                                $ref: '#/components/schemas/api.users.v1.UserFullReply'
         delete:
             tags:
                 - Users
@@ -162,7 +162,7 @@ paths:
         get:
             tags:
                 - Users
-            operationId: Users_GetUserProfile
+            operationId: Users_GetUser
             parameters:
                 - name: userId
                   in: path
@@ -176,7 +176,26 @@ paths:
                     content:
                         application/json:
                             schema:
-                                $ref: '#/components/schemas/api.users.v1.ProfileReply'
+                                $ref: '#/components/schemas/api.users.v1.UserReply'
+    /v1/users/{userId}/full:
+        get:
+            tags:
+                - Users
+            operationId: Users_GetUserFull
+            parameters:
+                - name: userId
+                  in: path
+                  required: true
+                  schema:
+                    type: integer
+                    format: int64
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/api.users.v1.UserFullReply'
 components:
     schemas:
         api.auth.v1.AuthByCodeReply:
@@ -249,11 +268,6 @@ components:
                     items:
                         type: integer
                         format: int64
-        api.users.v1.ProfileReply:
-            type: object
-            properties:
-                user:
-                    $ref: '#/components/schemas/api.users.v1.User'
         api.users.v1.UpdateOwnProfileRequest:
             type: object
             properties:
@@ -291,6 +305,16 @@ components:
                     type: string
                 isActive:
                     type: boolean
+        api.users.v1.UserFullReply:
+            type: object
+            properties:
+                user:
+                    $ref: '#/components/schemas/api.users.v1.User'
+        api.users.v1.UserReply:
+            type: object
+            properties:
+                user:
+                    $ref: '#/components/schemas/api.users.v1.UserShort'
         api.users.v1.UserShort:
             type: object
             properties:

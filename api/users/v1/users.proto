@@ -10,12 +10,12 @@ option java_multiple_files = true;
 option java_package = "api.users.v1";
 
 service Users {
-	rpc GetOwnProfile (EmptyRequest) returns (ProfileReply) {
+	rpc GetOwnProfile (EmptyRequest) returns (UserFullReply) {
 		option (google.api.http) = {
 			get: "/v1/users/me"
 		};
 	};
-	rpc UpdateOwnProfile (UpdateOwnProfileRequest) returns (ProfileReply) {
+	rpc UpdateOwnProfile (UpdateOwnProfileRequest) returns (UserFullReply) {
 		option (google.api.http) = {
 			post: "/v1/users/me"
 			body: "*"
@@ -26,7 +26,12 @@ service Users {
 			delete: "/v1/users/me"
 		};
 	};
-	rpc GetUserProfile (GetUserProfileRequest) returns (ProfileReply) {
+	rpc GetUserFull (GetUserRequest) returns (UserFullReply) {
+		option (google.api.http) = {
+			get: "/v1/users/{userId}/full"
+		};
+	};
+	rpc GetUser (GetUserRequest) returns (UserReply) {
 		option (google.api.http) = {
 			get: "/v1/users/{userId}"
 		};
@@ -42,7 +47,7 @@ service Users {
 message EmptyRequest {}
 message EmptyReply {}
 
-message ProfileReply {
+message UserFullReply {
 	User user = 1;
 }
 
@@ -53,8 +58,12 @@ message UpdateOwnProfileRequest {
 	string timezone = 4;
 }
 
-message GetUserProfileRequest {
+message GetUserRequest {
 	int64 userId = 1;
+}
+
+message UserReply {
+	UserShort user = 1;
 }
 
 message GetUsersRequest {

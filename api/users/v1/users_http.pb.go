@@ -21,16 +21,18 @@ const _ = http.SupportPackageIsVersion1
 
 const OperationUsersDeleteOwnProfile = "/api.users.v1.Users/DeleteOwnProfile"
 const OperationUsersGetOwnProfile = "/api.users.v1.Users/GetOwnProfile"
-const OperationUsersGetUserProfile = "/api.users.v1.Users/GetUserProfile"
+const OperationUsersGetUser = "/api.users.v1.Users/GetUser"
+const OperationUsersGetUserFull = "/api.users.v1.Users/GetUserFull"
 const OperationUsersGetUsers = "/api.users.v1.Users/GetUsers"
 const OperationUsersUpdateOwnProfile = "/api.users.v1.Users/UpdateOwnProfile"
 
 type UsersHTTPServer interface {
 	DeleteOwnProfile(context.Context, *EmptyRequest) (*EmptyReply, error)
-	GetOwnProfile(context.Context, *EmptyRequest) (*ProfileReply, error)
-	GetUserProfile(context.Context, *GetUserProfileRequest) (*ProfileReply, error)
+	GetOwnProfile(context.Context, *EmptyRequest) (*UserFullReply, error)
+	GetUser(context.Context, *GetUserRequest) (*UserReply, error)
+	GetUserFull(context.Context, *GetUserRequest) (*UserFullReply, error)
 	GetUsers(context.Context, *GetUsersRequest) (*GetUsersReply, error)
-	UpdateOwnProfile(context.Context, *UpdateOwnProfileRequest) (*ProfileReply, error)
+	UpdateOwnProfile(context.Context, *UpdateOwnProfileRequest) (*UserFullReply, error)
 }
 
 func RegisterUsersHTTPServer(s *http.Server, srv UsersHTTPServer) {
@@ -38,7 +40,8 @@ func RegisterUsersHTTPServer(s *http.Server, srv UsersHTTPServer) {
 	r.GET("/v1/users/me", _Users_GetOwnProfile0_HTTP_Handler(srv))
 	r.POST("/v1/users/me", _Users_UpdateOwnProfile0_HTTP_Handler(srv))
 	r.DELETE("/v1/users/me", _Users_DeleteOwnProfile0_HTTP_Handler(srv))
-	r.GET("/v1/users/{userId}", _Users_GetUserProfile0_HTTP_Handler(srv))
+	r.GET("/v1/users/{userId}/full", _Users_GetUserFull0_HTTP_Handler(srv))
+	r.GET("/v1/users/{userId}", _Users_GetUser0_HTTP_Handler(srv))
 	r.POST("/v1/users/list", _Users_GetUsers0_HTTP_Handler(srv))
 }
 
@@ -56,7 +59,7 @@ func _Users_GetOwnProfile0_HTTP_Handler(srv UsersHTTPServer) func(ctx http.Conte
 		if err != nil {
 			return err
 		}
-		reply := out.(*ProfileReply)
+		reply := out.(*UserFullReply)
 		return ctx.Result(200, reply)
 	}
 }
@@ -78,7 +81,7 @@ func _Users_UpdateOwnProfile0_HTTP_Handler(srv UsersHTTPServer) func(ctx http.Co
 		if err != nil {
 			return err
 		}
-		reply := out.(*ProfileReply)
+		reply := out.(*UserFullReply)
 		return ctx.Result(200, reply)
 	}
 }
@@ -102,24 +105,46 @@ func _Users_DeleteOwnProfile0_HTTP_Handler(srv UsersHTTPServer) func(ctx http.Co
 	}
 }
 
-func _Users_GetUserProfile0_HTTP_Handler(srv UsersHTTPServer) func(ctx http.Context) error {
+func _Users_GetUserFull0_HTTP_Handler(srv UsersHTTPServer) func(ctx http.Context) error {
 	return func(ctx http.Context) error {
-		var in GetUserProfileRequest
+		var in GetUserRequest
 		if err := ctx.BindQuery(&in); err != nil {
 			return err
 		}
 		if err := ctx.BindVars(&in); err != nil {
 			return err
 		}
-		http.SetOperation(ctx, OperationUsersGetUserProfile)
+		http.SetOperation(ctx, OperationUsersGetUserFull)
 		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
-			return srv.GetUserProfile(ctx, req.(*GetUserProfileRequest))
+			return srv.GetUserFull(ctx, req.(*GetUserRequest))
 		})
 		out, err := h(ctx, &in)
 		if err != nil {
 			return err
 		}
-		reply := out.(*ProfileReply)
+		reply := out.(*UserFullReply)
+		return ctx.Result(200, reply)
+	}
+}
+
+func _Users_GetUser0_HTTP_Handler(srv UsersHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in GetUserRequest
+		if err := ctx.BindQuery(&in); err != nil {
+			return err
+		}
+		if err := ctx.BindVars(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, OperationUsersGetUser)
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.GetUser(ctx, req.(*GetUserRequest))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*UserReply)
 		return ctx.Result(200, reply)
 	}
 }
@@ -148,10 +173,11 @@ func _Users_GetUsers0_HTTP_Handler(srv UsersHTTPServer) func(ctx http.Context) e
 
 type UsersHTTPClient interface {
 	DeleteOwnProfile(ctx context.Context, req *EmptyRequest, opts ...http.CallOption) (rsp *EmptyReply, err error)
-	GetOwnProfile(ctx context.Context, req *EmptyRequest, opts ...http.CallOption) (rsp *ProfileReply, err error)
-	GetUserProfile(ctx context.Context, req *GetUserProfileRequest, opts ...http.CallOption) (rsp *ProfileReply, err error)
+	GetOwnProfile(ctx context.Context, req *EmptyRequest, opts ...http.CallOption) (rsp *UserFullReply, err error)
+	GetUser(ctx context.Context, req *GetUserRequest, opts ...http.CallOption) (rsp *UserReply, err error)
+	GetUserFull(ctx context.Context, req *GetUserRequest, opts ...http.CallOption) (rsp *UserFullReply, err error)
 	GetUsers(ctx context.Context, req *GetUsersRequest, opts ...http.CallOption) (rsp *GetUsersReply, err error)
-	UpdateOwnProfile(ctx context.Context, req *UpdateOwnProfileRequest, opts ...http.CallOption) (rsp *ProfileReply, err error)
+	UpdateOwnProfile(ctx context.Context, req *UpdateOwnProfileRequest, opts ...http.CallOption) (rsp *UserFullReply, err error)
 }
 
 type UsersHTTPClientImpl struct {
@@ -175,8 +201,8 @@ func (c *UsersHTTPClientImpl) DeleteOwnProfile(ctx context.Context, in *EmptyReq
 	return &out, err
 }
 
-func (c *UsersHTTPClientImpl) GetOwnProfile(ctx context.Context, in *EmptyRequest, opts ...http.CallOption) (*ProfileReply, error) {
-	var out ProfileReply
+func (c *UsersHTTPClientImpl) GetOwnProfile(ctx context.Context, in *EmptyRequest, opts ...http.CallOption) (*UserFullReply, error) {
+	var out UserFullReply
 	pattern := "/v1/users/me"
 	path := binding.EncodeURL(pattern, in, true)
 	opts = append(opts, http.Operation(OperationUsersGetOwnProfile))
@@ -188,11 +214,24 @@ func (c *UsersHTTPClientImpl) GetOwnProfile(ctx context.Context, in *EmptyReques
 	return &out, err
 }
 
-func (c *UsersHTTPClientImpl) GetUserProfile(ctx context.Context, in *GetUserProfileRequest, opts ...http.CallOption) (*ProfileReply, error) {
-	var out ProfileReply
+func (c *UsersHTTPClientImpl) GetUser(ctx context.Context, in *GetUserRequest, opts ...http.CallOption) (*UserReply, error) {
+	var out UserReply
 	pattern := "/v1/users/{userId}"
 	path := binding.EncodeURL(pattern, in, true)
-	opts = append(opts, http.Operation(OperationUsersGetUserProfile))
+	opts = append(opts, http.Operation(OperationUsersGetUser))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "GET", path, nil, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, err
+}
+
+func (c *UsersHTTPClientImpl) GetUserFull(ctx context.Context, in *GetUserRequest, opts ...http.CallOption) (*UserFullReply, error) {
+	var out UserFullReply
+	pattern := "/v1/users/{userId}/full"
+	path := binding.EncodeURL(pattern, in, true)
+	opts = append(opts, http.Operation(OperationUsersGetUserFull))
 	opts = append(opts, http.PathTemplate(pattern))
 	err := c.cc.Invoke(ctx, "GET", path, nil, &out, opts...)
 	if err != nil {
@@ -214,8 +253,8 @@ func (c *UsersHTTPClientImpl) GetUsers(ctx context.Context, in *GetUsersRequest,
 	return &out, err
 }
 
-func (c *UsersHTTPClientImpl) UpdateOwnProfile(ctx context.Context, in *UpdateOwnProfileRequest, opts ...http.CallOption) (*ProfileReply, error) {
-	var out ProfileReply
+func (c *UsersHTTPClientImpl) UpdateOwnProfile(ctx context.Context, in *UpdateOwnProfileRequest, opts ...http.CallOption) (*UserFullReply, error) {
+	var out UserFullReply
 	pattern := "/v1/users/me"
 	path := binding.EncodeURL(pattern, in, false)
 	opts = append(opts, http.Operation(OperationUsersUpdateOwnProfile))
