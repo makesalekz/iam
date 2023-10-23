@@ -176,6 +176,12 @@ func (uc *UserCreate) SetNillableUpdatedAt(t *time.Time) *UserCreate {
 	return uc
 }
 
+// SetBioUpdatedAt sets the "bio_updated_at" field.
+func (uc *UserCreate) SetBioUpdatedAt(t time.Time) *UserCreate {
+	uc.mutation.SetBioUpdatedAt(t)
+	return uc
+}
+
 // SetID sets the "id" field.
 func (uc *UserCreate) SetID(i int64) *UserCreate {
 	uc.mutation.SetID(i)
@@ -282,6 +288,9 @@ func (uc *UserCreate) check() error {
 	if _, ok := uc.mutation.UpdatedAt(); !ok {
 		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "User.updated_at"`)}
 	}
+	if _, ok := uc.mutation.BioUpdatedAt(); !ok {
+		return &ValidationError{Name: "bio_updated_at", err: errors.New(`ent: missing required field "User.bio_updated_at"`)}
+	}
 	return nil
 }
 
@@ -358,6 +367,10 @@ func (uc *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 	if value, ok := uc.mutation.UpdatedAt(); ok {
 		_spec.SetField(user.FieldUpdatedAt, field.TypeTime, value)
 		_node.UpdatedAt = value
+	}
+	if value, ok := uc.mutation.BioUpdatedAt(); ok {
+		_spec.SetField(user.FieldBioUpdatedAt, field.TypeTime, value)
+		_node.BioUpdatedAt = &value
 	}
 	return _node, _spec
 }
@@ -564,6 +577,18 @@ func (u *UserUpsert) SetUpdatedAt(v time.Time) *UserUpsert {
 // UpdateUpdatedAt sets the "updated_at" field to the value that was provided on create.
 func (u *UserUpsert) UpdateUpdatedAt() *UserUpsert {
 	u.SetExcluded(user.FieldUpdatedAt)
+	return u
+}
+
+// SetBioUpdatedAt sets the "bio_updated_at" field.
+func (u *UserUpsert) SetBioUpdatedAt(v time.Time) *UserUpsert {
+	u.Set(user.FieldBioUpdatedAt, v)
+	return u
+}
+
+// UpdateBioUpdatedAt sets the "bio_updated_at" field to the value that was provided on create.
+func (u *UserUpsert) UpdateBioUpdatedAt() *UserUpsert {
+	u.SetExcluded(user.FieldBioUpdatedAt)
 	return u
 }
 
@@ -794,6 +819,20 @@ func (u *UserUpsertOne) SetUpdatedAt(v time.Time) *UserUpsertOne {
 func (u *UserUpsertOne) UpdateUpdatedAt() *UserUpsertOne {
 	return u.Update(func(s *UserUpsert) {
 		s.UpdateUpdatedAt()
+	})
+}
+
+// SetBioUpdatedAt sets the "bio_updated_at" field.
+func (u *UserUpsertOne) SetBioUpdatedAt(v time.Time) *UserUpsertOne {
+	return u.Update(func(s *UserUpsert) {
+		s.SetBioUpdatedAt(v)
+	})
+}
+
+// UpdateBioUpdatedAt sets the "bio_updated_at" field to the value that was provided on create.
+func (u *UserUpsertOne) UpdateBioUpdatedAt() *UserUpsertOne {
+	return u.Update(func(s *UserUpsert) {
+		s.UpdateBioUpdatedAt()
 	})
 }
 
@@ -1186,6 +1225,20 @@ func (u *UserUpsertBulk) SetUpdatedAt(v time.Time) *UserUpsertBulk {
 func (u *UserUpsertBulk) UpdateUpdatedAt() *UserUpsertBulk {
 	return u.Update(func(s *UserUpsert) {
 		s.UpdateUpdatedAt()
+	})
+}
+
+// SetBioUpdatedAt sets the "bio_updated_at" field.
+func (u *UserUpsertBulk) SetBioUpdatedAt(v time.Time) *UserUpsertBulk {
+	return u.Update(func(s *UserUpsert) {
+		s.SetBioUpdatedAt(v)
+	})
+}
+
+// UpdateBioUpdatedAt sets the "bio_updated_at" field to the value that was provided on create.
+func (u *UserUpsertBulk) UpdateBioUpdatedAt() *UserUpsertBulk {
+	return u.Update(func(s *UserUpsert) {
+		s.UpdateBioUpdatedAt()
 	})
 }
 

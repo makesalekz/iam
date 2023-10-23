@@ -689,24 +689,25 @@ func (m *OneTimePasswordMutation) ResetEdge(name string) error {
 // UserMutation represents an operation that mutates the User nodes in the graph.
 type UserMutation struct {
 	config
-	op            Op
-	typ           string
-	id            *int64
-	deleted_at    *time.Time
-	phone         *string
-	email         *string
-	name          *string
-	bio           *string
-	avatar        *string
-	timezone      *string
-	is_active     *bool
-	last_login_at *time.Time
-	created_at    *time.Time
-	updated_at    *time.Time
-	clearedFields map[string]struct{}
-	done          bool
-	oldValue      func(context.Context) (*User, error)
-	predicates    []predicate.User
+	op             Op
+	typ            string
+	id             *int64
+	deleted_at     *time.Time
+	phone          *string
+	email          *string
+	name           *string
+	bio            *string
+	avatar         *string
+	timezone       *string
+	is_active      *bool
+	last_login_at  *time.Time
+	created_at     *time.Time
+	updated_at     *time.Time
+	bio_updated_at *time.Time
+	clearedFields  map[string]struct{}
+	done           bool
+	oldValue       func(context.Context) (*User, error)
+	predicates     []predicate.User
 }
 
 var _ ent.Mutation = (*UserMutation)(nil)
@@ -1261,6 +1262,42 @@ func (m *UserMutation) ResetUpdatedAt() {
 	m.updated_at = nil
 }
 
+// SetBioUpdatedAt sets the "bio_updated_at" field.
+func (m *UserMutation) SetBioUpdatedAt(t time.Time) {
+	m.bio_updated_at = &t
+}
+
+// BioUpdatedAt returns the value of the "bio_updated_at" field in the mutation.
+func (m *UserMutation) BioUpdatedAt() (r time.Time, exists bool) {
+	v := m.bio_updated_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldBioUpdatedAt returns the old "bio_updated_at" field's value of the User entity.
+// If the User object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *UserMutation) OldBioUpdatedAt(ctx context.Context) (v *time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldBioUpdatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldBioUpdatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldBioUpdatedAt: %w", err)
+	}
+	return oldValue.BioUpdatedAt, nil
+}
+
+// ResetBioUpdatedAt resets all changes to the "bio_updated_at" field.
+func (m *UserMutation) ResetBioUpdatedAt() {
+	m.bio_updated_at = nil
+}
+
 // Where appends a list predicates to the UserMutation builder.
 func (m *UserMutation) Where(ps ...predicate.User) {
 	m.predicates = append(m.predicates, ps...)
@@ -1295,7 +1332,7 @@ func (m *UserMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *UserMutation) Fields() []string {
-	fields := make([]string, 0, 11)
+	fields := make([]string, 0, 12)
 	if m.deleted_at != nil {
 		fields = append(fields, user.FieldDeletedAt)
 	}
@@ -1329,6 +1366,9 @@ func (m *UserMutation) Fields() []string {
 	if m.updated_at != nil {
 		fields = append(fields, user.FieldUpdatedAt)
 	}
+	if m.bio_updated_at != nil {
+		fields = append(fields, user.FieldBioUpdatedAt)
+	}
 	return fields
 }
 
@@ -1359,6 +1399,8 @@ func (m *UserMutation) Field(name string) (ent.Value, bool) {
 		return m.CreatedAt()
 	case user.FieldUpdatedAt:
 		return m.UpdatedAt()
+	case user.FieldBioUpdatedAt:
+		return m.BioUpdatedAt()
 	}
 	return nil, false
 }
@@ -1390,6 +1432,8 @@ func (m *UserMutation) OldField(ctx context.Context, name string) (ent.Value, er
 		return m.OldCreatedAt(ctx)
 	case user.FieldUpdatedAt:
 		return m.OldUpdatedAt(ctx)
+	case user.FieldBioUpdatedAt:
+		return m.OldBioUpdatedAt(ctx)
 	}
 	return nil, fmt.Errorf("unknown User field %s", name)
 }
@@ -1475,6 +1519,13 @@ func (m *UserMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetUpdatedAt(v)
+		return nil
+	case user.FieldBioUpdatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetBioUpdatedAt(v)
 		return nil
 	}
 	return fmt.Errorf("unknown User field %s", name)
@@ -1584,6 +1635,9 @@ func (m *UserMutation) ResetField(name string) error {
 		return nil
 	case user.FieldUpdatedAt:
 		m.ResetUpdatedAt()
+		return nil
+	case user.FieldBioUpdatedAt:
+		m.ResetBioUpdatedAt()
 		return nil
 	}
 	return fmt.Errorf("unknown User field %s", name)

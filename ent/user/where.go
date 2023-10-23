@@ -109,6 +109,11 @@ func UpdatedAt(v time.Time) predicate.User {
 	return predicate.User(sql.FieldEQ(FieldUpdatedAt, v))
 }
 
+// BioUpdatedAt applies equality check predicate on the "bio_updated_at" field. It's identical to BioUpdatedAtEQ.
+func BioUpdatedAt(v time.Time) predicate.User {
+	return predicate.User(sql.FieldEQ(FieldBioUpdatedAt, v))
+}
+
 // DeletedAtEQ applies the EQ predicate on the "deleted_at" field.
 func DeletedAtEQ(v time.Time) predicate.User {
 	return predicate.User(sql.FieldEQ(FieldDeletedAt, v))
@@ -707,6 +712,46 @@ func UpdatedAtLT(v time.Time) predicate.User {
 // UpdatedAtLTE applies the LTE predicate on the "updated_at" field.
 func UpdatedAtLTE(v time.Time) predicate.User {
 	return predicate.User(sql.FieldLTE(FieldUpdatedAt, v))
+}
+
+// BioUpdatedAtEQ applies the EQ predicate on the "bio_updated_at" field.
+func BioUpdatedAtEQ(v time.Time) predicate.User {
+	return predicate.User(sql.FieldEQ(FieldBioUpdatedAt, v))
+}
+
+// BioUpdatedAtNEQ applies the NEQ predicate on the "bio_updated_at" field.
+func BioUpdatedAtNEQ(v time.Time) predicate.User {
+	return predicate.User(sql.FieldNEQ(FieldBioUpdatedAt, v))
+}
+
+// BioUpdatedAtIn applies the In predicate on the "bio_updated_at" field.
+func BioUpdatedAtIn(vs ...time.Time) predicate.User {
+	return predicate.User(sql.FieldIn(FieldBioUpdatedAt, vs...))
+}
+
+// BioUpdatedAtNotIn applies the NotIn predicate on the "bio_updated_at" field.
+func BioUpdatedAtNotIn(vs ...time.Time) predicate.User {
+	return predicate.User(sql.FieldNotIn(FieldBioUpdatedAt, vs...))
+}
+
+// BioUpdatedAtGT applies the GT predicate on the "bio_updated_at" field.
+func BioUpdatedAtGT(v time.Time) predicate.User {
+	return predicate.User(sql.FieldGT(FieldBioUpdatedAt, v))
+}
+
+// BioUpdatedAtGTE applies the GTE predicate on the "bio_updated_at" field.
+func BioUpdatedAtGTE(v time.Time) predicate.User {
+	return predicate.User(sql.FieldGTE(FieldBioUpdatedAt, v))
+}
+
+// BioUpdatedAtLT applies the LT predicate on the "bio_updated_at" field.
+func BioUpdatedAtLT(v time.Time) predicate.User {
+	return predicate.User(sql.FieldLT(FieldBioUpdatedAt, v))
+}
+
+// BioUpdatedAtLTE applies the LTE predicate on the "bio_updated_at" field.
+func BioUpdatedAtLTE(v time.Time) predicate.User {
+	return predicate.User(sql.FieldLTE(FieldBioUpdatedAt, v))
 }
 
 // And groups predicates with the AND operator between them.

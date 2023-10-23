@@ -36,6 +36,8 @@ const (
 	FieldCreatedAt = "created_at"
 	// FieldUpdatedAt holds the string denoting the updated_at field in the database.
 	FieldUpdatedAt = "updated_at"
+	// FieldBioUpdatedAt holds the string denoting the bio_updated_at field in the database.
+	FieldBioUpdatedAt = "bio_updated_at"
 	// Table holds the table name of the user in the database.
 	Table = "users"
 )
@@ -54,6 +56,7 @@ var Columns = []string{
 	FieldLastLoginAt,
 	FieldCreatedAt,
 	FieldUpdatedAt,
+	FieldBioUpdatedAt,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -151,4 +154,9 @@ func ByCreatedAt(opts ...sql.OrderTermOption) OrderOption {
 // ByUpdatedAt orders the results by the updated_at field.
 func ByUpdatedAt(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldUpdatedAt, opts...).ToFunc()
+}
+
+// ByBioUpdatedAt orders the results by the bio_updated_at field.
+func ByBioUpdatedAt(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldBioUpdatedAt, opts...).ToFunc()
 }
