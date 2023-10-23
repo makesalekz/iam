@@ -754,6 +754,16 @@ func BioUpdatedAtLTE(v time.Time) predicate.User {
 	return predicate.User(sql.FieldLTE(FieldBioUpdatedAt, v))
 }
 
+// BioUpdatedAtIsNil applies the IsNil predicate on the "bio_updated_at" field.
+func BioUpdatedAtIsNil() predicate.User {
+	return predicate.User(sql.FieldIsNull(FieldBioUpdatedAt))
+}
+
+// BioUpdatedAtNotNil applies the NotNil predicate on the "bio_updated_at" field.
+func BioUpdatedAtNotNil() predicate.User {
+	return predicate.User(sql.FieldNotNull(FieldBioUpdatedAt))
+}
+
 // And groups predicates with the AND operator between them.
 func And(predicates ...predicate.User) predicate.User {
 	return predicate.User(func(s *sql.Selector) {

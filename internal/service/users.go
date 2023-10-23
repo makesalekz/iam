@@ -30,14 +30,15 @@ func NewUsersService(logger log.Logger, jwt *data.JwtProcessor, uc *biz.UsersUse
 
 func replyUser(user *ent.User) *v1.User {
 	result := &v1.User{
-		Id:          user.ID,
-		Name:        user.Name,
-		Bio:         user.Bio,
-		Timezone:    user.Timezone,
-		CreatedAt:   user.CreatedAt.Format(time.RFC3339),
-		UpdatedAt:   user.UpdatedAt.Format(time.RFC3339),
-		LastLoginAt: user.LastLoginAt.Format(time.RFC3339),
-		IsActive:    user.IsActive,
+		Id:           user.ID,
+		Name:         user.Name,
+		Bio:          user.Bio,
+		Timezone:     user.Timezone,
+		CreatedAt:    user.CreatedAt.Format(time.RFC3339),
+		UpdatedAt:    user.UpdatedAt.Format(time.RFC3339),
+		LastLoginAt:  user.LastLoginAt.Format(time.RFC3339),
+		IsActive:     user.IsActive,
+		BioUpdatedAt: user.BioUpdatedAt.Format(time.RFC3339),
 	}
 	if user.Phone != nil {
 		result.Phone = *user.Phone

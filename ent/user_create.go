@@ -182,6 +182,14 @@ func (uc *UserCreate) SetBioUpdatedAt(t time.Time) *UserCreate {
 	return uc
 }
 
+// SetNillableBioUpdatedAt sets the "bio_updated_at" field if the given value is not nil.
+func (uc *UserCreate) SetNillableBioUpdatedAt(t *time.Time) *UserCreate {
+	if t != nil {
+		uc.SetBioUpdatedAt(*t)
+	}
+	return uc
+}
+
 // SetID sets the "id" field.
 func (uc *UserCreate) SetID(i int64) *UserCreate {
 	uc.mutation.SetID(i)
@@ -287,9 +295,6 @@ func (uc *UserCreate) check() error {
 	}
 	if _, ok := uc.mutation.UpdatedAt(); !ok {
 		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "User.updated_at"`)}
-	}
-	if _, ok := uc.mutation.BioUpdatedAt(); !ok {
-		return &ValidationError{Name: "bio_updated_at", err: errors.New(`ent: missing required field "User.bio_updated_at"`)}
 	}
 	return nil
 }
@@ -592,6 +597,12 @@ func (u *UserUpsert) UpdateBioUpdatedAt() *UserUpsert {
 	return u
 }
 
+// ClearBioUpdatedAt clears the value of the "bio_updated_at" field.
+func (u *UserUpsert) ClearBioUpdatedAt() *UserUpsert {
+	u.SetNull(user.FieldBioUpdatedAt)
+	return u
+}
+
 // UpdateNewValues updates the mutable fields using the new values that were set on create except the ID field.
 // Using this option is equivalent to using:
 //
@@ -833,6 +844,13 @@ func (u *UserUpsertOne) SetBioUpdatedAt(v time.Time) *UserUpsertOne {
 func (u *UserUpsertOne) UpdateBioUpdatedAt() *UserUpsertOne {
 	return u.Update(func(s *UserUpsert) {
 		s.UpdateBioUpdatedAt()
+	})
+}
+
+// ClearBioUpdatedAt clears the value of the "bio_updated_at" field.
+func (u *UserUpsertOne) ClearBioUpdatedAt() *UserUpsertOne {
+	return u.Update(func(s *UserUpsert) {
+		s.ClearBioUpdatedAt()
 	})
 }
 
@@ -1239,6 +1257,13 @@ func (u *UserUpsertBulk) SetBioUpdatedAt(v time.Time) *UserUpsertBulk {
 func (u *UserUpsertBulk) UpdateBioUpdatedAt() *UserUpsertBulk {
 	return u.Update(func(s *UserUpsert) {
 		s.UpdateBioUpdatedAt()
+	})
+}
+
+// ClearBioUpdatedAt clears the value of the "bio_updated_at" field.
+func (u *UserUpsertBulk) ClearBioUpdatedAt() *UserUpsertBulk {
+	return u.Update(func(s *UserUpsert) {
+		s.ClearBioUpdatedAt()
 	})
 }
 

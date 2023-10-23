@@ -305,6 +305,8 @@ components:
                     type: string
                 isActive:
                     type: boolean
+                bioUpdatedAt:
+                    type: string
         api.users.v1.UserFullReply:
             type: object
             properties:
