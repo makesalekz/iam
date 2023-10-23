@@ -212,6 +212,20 @@ func (uu *UserUpdate) SetBioUpdatedAt(t time.Time) *UserUpdate {
 	return uu
 }
 
+// SetNillableBioUpdatedAt sets the "bio_updated_at" field if the given value is not nil.
+func (uu *UserUpdate) SetNillableBioUpdatedAt(t *time.Time) *UserUpdate {
+	if t != nil {
+		uu.SetBioUpdatedAt(*t)
+	}
+	return uu
+}
+
+// ClearBioUpdatedAt clears the value of the "bio_updated_at" field.
+func (uu *UserUpdate) ClearBioUpdatedAt() *UserUpdate {
+	uu.mutation.ClearBioUpdatedAt()
+	return uu
+}
+
 // Mutation returns the UserMutation object of the builder.
 func (uu *UserUpdate) Mutation() *UserMutation {
 	return uu.mutation
@@ -300,6 +314,9 @@ func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if value, ok := uu.mutation.BioUpdatedAt(); ok {
 		_spec.SetField(user.FieldBioUpdatedAt, field.TypeTime, value)
+	}
+	if uu.mutation.BioUpdatedAtCleared() {
+		_spec.ClearField(user.FieldBioUpdatedAt, field.TypeTime)
 	}
 	if n, err = sqlgraph.UpdateNodes(ctx, uu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
@@ -505,6 +522,20 @@ func (uuo *UserUpdateOne) SetBioUpdatedAt(t time.Time) *UserUpdateOne {
 	return uuo
 }
 
+// SetNillableBioUpdatedAt sets the "bio_updated_at" field if the given value is not nil.
+func (uuo *UserUpdateOne) SetNillableBioUpdatedAt(t *time.Time) *UserUpdateOne {
+	if t != nil {
+		uuo.SetBioUpdatedAt(*t)
+	}
+	return uuo
+}
+
+// ClearBioUpdatedAt clears the value of the "bio_updated_at" field.
+func (uuo *UserUpdateOne) ClearBioUpdatedAt() *UserUpdateOne {
+	uuo.mutation.ClearBioUpdatedAt()
+	return uuo
+}
+
 // Mutation returns the UserMutation object of the builder.
 func (uuo *UserUpdateOne) Mutation() *UserMutation {
 	return uuo.mutation
@@ -623,6 +654,9 @@ func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) 
 	}
 	if value, ok := uuo.mutation.BioUpdatedAt(); ok {
 		_spec.SetField(user.FieldBioUpdatedAt, field.TypeTime, value)
+	}
+	if uuo.mutation.BioUpdatedAtCleared() {
+		_spec.ClearField(user.FieldBioUpdatedAt, field.TypeTime)
 	}
 	_node = &User{config: uuo.config}
 	_spec.Assign = _node.assignValues

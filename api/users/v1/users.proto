@@ -86,7 +86,7 @@ message User {
 	string updatedAt = 9;
 	string lastLoginAt = 10;
 	bool isActive = 11;
-	string bioChangeAt = 12;
+	string bioUpdatedAt = 12;
 }
 
 message UserShort {

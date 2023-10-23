@@ -65,7 +65,7 @@ func (r *usersRepo) UpdateUserData(ctx context.Context, id int64, dto UpdateUser
 	if dto.Bio != "" { // unnecessary to finish the registration
 		shouldUpdate = true
 		query.SetBio(dto.Bio)
-		query.SetBioUpdatedAt(time.Now())
+		query.SetBioUpdatedAt(now)
 	}
 	if dto.Avatar != "" { // unnecessary to finish the registration
 		shouldUpdate = true

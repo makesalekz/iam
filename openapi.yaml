@@ -168,8 +168,7 @@ paths:
                   in: path
                   required: true
                   schema:
-                    type: integer
-                    format: int64
+                    type: string
             responses:
                 "200":
                     description: OK
@@ -187,8 +186,7 @@ paths:
                   in: path
                   required: true
                   schema:
-                    type: integer
-                    format: int64
+                    type: string
             responses:
                 "200":
                     description: OK
@@ -207,16 +205,14 @@ components:
             type: object
             properties:
                 userId:
-                    type: integer
-                    format: int64
+                    type: string
                 code:
                     type: string
         api.auth.v1.AuthByPhoneReply:
             type: object
             properties:
                 userId:
-                    type: integer
-                    format: int64
+                    type: string
         api.auth.v1.AuthByPhoneRequest:
             type: object
             properties:
@@ -266,8 +262,7 @@ components:
                 ids:
                     type: array
                     items:
-                        type: integer
-                        format: int64
+                        type: string
         api.users.v1.UpdateOwnProfileRequest:
             type: object
             properties:
@@ -283,8 +278,7 @@ components:
             type: object
             properties:
                 id:
-                    type: integer
-                    format: int64
+                    type: string
                 phone:
                     type: string
                 email:
@@ -305,6 +299,8 @@ components:
                     type: string
                 isActive:
                     type: boolean
+                bioUpdatedAt:
+                    type: string
         api.users.v1.UserFullReply:
             type: object
             properties:
@@ -319,8 +315,7 @@ components:
             type: object
             properties:
                 id:
-                    type: integer
-                    format: int64
+                    type: string
                 phone:
                     type: string
                 email:

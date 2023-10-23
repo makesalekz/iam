@@ -28,7 +28,7 @@ func (User) Fields() []ent.Field {
 		field.Time("last_login_at").Default(time.Now),
 		field.Time("created_at").Default(time.Now),
 		field.Time("updated_at").Default(time.Now),
-		field.Time("bio_updated_at").Nillable(),
+		field.Time("bio_updated_at").Nillable().Optional(),
 	}
 }
 

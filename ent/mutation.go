@@ -1293,9 +1293,22 @@ func (m *UserMutation) OldBioUpdatedAt(ctx context.Context) (v *time.Time, err e
 	return oldValue.BioUpdatedAt, nil
 }
 
+// ClearBioUpdatedAt clears the value of the "bio_updated_at" field.
+func (m *UserMutation) ClearBioUpdatedAt() {
+	m.bio_updated_at = nil
+	m.clearedFields[user.FieldBioUpdatedAt] = struct{}{}
+}
+
+// BioUpdatedAtCleared returns if the "bio_updated_at" field was cleared in this mutation.
+func (m *UserMutation) BioUpdatedAtCleared() bool {
+	_, ok := m.clearedFields[user.FieldBioUpdatedAt]
+	return ok
+}
+
 // ResetBioUpdatedAt resets all changes to the "bio_updated_at" field.
 func (m *UserMutation) ResetBioUpdatedAt() {
 	m.bio_updated_at = nil
+	delete(m.clearedFields, user.FieldBioUpdatedAt)
 }
 
 // Where appends a list predicates to the UserMutation builder.
@@ -1569,6 +1582,9 @@ func (m *UserMutation) ClearedFields() []string {
 	if m.FieldCleared(user.FieldAvatar) {
 		fields = append(fields, user.FieldAvatar)
 	}
+	if m.FieldCleared(user.FieldBioUpdatedAt) {
+		fields = append(fields, user.FieldBioUpdatedAt)
+	}
 	return fields
 }
 
@@ -1594,6 +1610,9 @@ func (m *UserMutation) ClearField(name string) error {
 		return nil
 	case user.FieldAvatar:
 		m.ClearAvatar()
+		return nil
+	case user.FieldBioUpdatedAt:
+		m.ClearBioUpdatedAt()
 		return nil
 	}
 	return fmt.Errorf("unknown User nullable field %s", name)
