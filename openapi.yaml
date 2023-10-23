@@ -168,7 +168,8 @@ paths:
                   in: path
                   required: true
                   schema:
-                    type: string
+                    type: integer
+                    format: int64
             responses:
                 "200":
                     description: OK
@@ -186,7 +187,8 @@ paths:
                   in: path
                   required: true
                   schema:
-                    type: string
+                    type: integer
+                    format: int64
             responses:
                 "200":
                     description: OK
@@ -205,14 +207,16 @@ components:
             type: object
             properties:
                 userId:
-                    type: string
+                    type: integer
+                    format: int64
                 code:
                     type: string
         api.auth.v1.AuthByPhoneReply:
             type: object
             properties:
                 userId:
-                    type: string
+                    type: integer
+                    format: int64
         api.auth.v1.AuthByPhoneRequest:
             type: object
             properties:
@@ -262,7 +266,8 @@ components:
                 ids:
                     type: array
                     items:
-                        type: string
+                        type: integer
+                        format: int64
         api.users.v1.UpdateOwnProfileRequest:
             type: object
             properties:
@@ -278,7 +283,8 @@ components:
             type: object
             properties:
                 id:
-                    type: string
+                    type: integer
+                    format: int64
                 phone:
                     type: string
                 email:
@@ -315,7 +321,8 @@ components:
             type: object
             properties:
                 id:
-                    type: string
+                    type: integer
+                    format: int64
                 phone:
                     type: string
                 email:
