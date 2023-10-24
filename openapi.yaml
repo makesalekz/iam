@@ -285,15 +285,9 @@ components:
                 id:
                     type: integer
                     format: int64
-                phone:
-                    type: string
-                email:
-                    type: string
                 name:
                     type: string
                 bio:
-                    type: string
-                avatar:
                     type: string
                 timezone:
                     type: string
@@ -305,6 +299,12 @@ components:
                     type: string
                 isActive:
                     type: boolean
+                phone:
+                    type: string
+                email:
+                    type: string
+                avatar:
+                    type: string
                 bioUpdatedAt:
                     type: string
         api.users.v1.UserFullReply:
