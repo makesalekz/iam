@@ -263,10 +263,8 @@ components:
         api.iam.v1.GetUserByFilterRequest:
             type: object
             properties:
-                phone:
-                    type: string
-                email:
-                    type: string
+                search:
+                    $ref: '#/components/schemas/api.iam.v1.SearchFilter'
         api.iam.v1.GetUsersReply:
             type: object
             properties:
@@ -303,6 +301,13 @@ components:
                     type: object
                     additionalProperties:
                         type: string
+        api.iam.v1.SearchFilter:
+            type: object
+            properties:
+                phone:
+                    type: string
+                email:
+                    type: string
         api.iam.v1.SettingsReply:
             type: object
             properties:

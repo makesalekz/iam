@@ -187,8 +187,8 @@ func (s *UsersService) GetUsers(ctx context.Context, req *v1.GetUsersRequest) (*
 
 func (s *UsersService) GetUserByFilter(ctx context.Context, req *v1.GetUserByFilterRequest) (*v1.UserReply, error) {
 	filter := data.GetUserFilterDto{
-		Phone: req.GetPhone(),
-		Email: req.GetEmail(),
+		Phone: req.GetSearch().GetPhone(),
+		Email: req.GetSearch().GetEmail(),
 	}
 	user, err := s.uc.GetUserProfile(ctx, filter)
 	if err != nil {
@@ -204,8 +204,8 @@ func (s *UsersService) GetUserByFilter(ctx context.Context, req *v1.GetUserByFil
 
 func (s *UsersService) GetUserByFilterFull(ctx context.Context, req *v1.GetUserByFilterRequest) (*v1.UserFullReply, error) {
 	filter := data.GetUserFilterDto{
-		Phone: req.GetPhone(),
-		Email: req.GetEmail(),
+		Phone: req.GetSearch().GetPhone(),
+		Email: req.GetSearch().GetEmail(),
 	}
 	user, err := s.uc.GetUserProfile(ctx, filter)
 	if err != nil {

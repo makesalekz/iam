@@ -79,8 +79,12 @@ message GetUserRequest {
 }
 
 message GetUserByFilterRequest{
-	optional string phone = 2;
-	optional string email = 3;
+	SearchFilter search = 1;
+}
+
+message SearchFilter{
+	optional string phone = 1;
+	optional string email = 2;
 }
 
 message UserReply {
