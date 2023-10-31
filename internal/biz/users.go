@@ -31,9 +31,9 @@ func NewUsersUsecase(logger log.Logger, c *data.Config, usersRepo data.UsersRepo
 }
 
 func (uc *UsersUsecase) GetUserProfile(ctx context.Context, filter data.GetUserFilterDto) (*ent.User, error) {
-	if filter.Phone != "" && filter.Email == "" {
+	if filter.Phone != "" && filter.Email == "" && filter.UserId == 0 {
 		return uc.usersRepo.GetUserByPhone(ctx, filter.Phone)
-	} else if filter.Email != "" && filter.Phone == "" {
+	} else if filter.Email != "" && filter.Phone == "" && filter.UserId == 0 {
 		return uc.usersRepo.GetUserByEmail(ctx, filter.Email)
 	} else if filter.UserId != 0 && filter.Email == "" && filter.Phone == "" {
 		return uc.usersRepo.GetUserById(ctx, filter.UserId)

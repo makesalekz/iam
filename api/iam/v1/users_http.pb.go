@@ -33,11 +33,13 @@ type UsersHTTPServer interface {
 	// in case of search by phone, id should be equal 0, search.email should not be present
 	// in case of search by email, id should be equal 0, search.phone should not be present
 	GetUser(context.Context, *GetUserRequest) (*UserReply, error)
+	// GetUserFull in case of search by id, only id should be present
+	// in case of search by phone, id should be equal 0, search.email should not be present
+	// in case of search by email, id should be equal 0, search.phone should not be present
 	GetUserFull(context.Context, *GetUserRequest) (*UserFullReply, error)
 	// GetUsers search goes by all fileds
 	// t.m if you declare labels,emails,ids this method will return all
-	// users,  at the same time, if you ommit one of the field, nothing will
-	// break
+	// users that has these fields
 	GetUsers(context.Context, *GetUsersRequest) (*GetUsersReply, error)
 	UpdateOwnProfile(context.Context, *UpdateOwnProfileRequest) (*UserFullReply, error)
 }

@@ -27,6 +27,9 @@ service Users {
 			delete: "/v1/users/me"
 		};
 	};
+	// in case of search by id, only id should be present  
+	// in case of search by phone, id should be equal 0, search.email should not be present  
+	// in case of search by email, id should be equal 0, search.phone should not be present
 	rpc GetUserFull (GetUserRequest) returns (UserFullReply) {
 		option (google.api.http) = {
 			get: "/v1/users/{userId}/full"
@@ -42,8 +45,7 @@ service Users {
 	};
 	// search goes by all fileds  
 	// t.m if you declare labels,emails,ids this method will return all
-	// users,  at the same time, if you ommit one of the field, nothing will
-	// break
+	// users that has these fields
 	rpc GetUsers (GetUsersRequest) returns (GetUsersReply) {
 		option (google.api.http) = {
 			post: "/v1/users/list"

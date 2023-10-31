@@ -34,6 +34,9 @@ type UsersClient interface {
 	GetOwnProfile(ctx context.Context, in *EmptyRequest, opts ...grpc.CallOption) (*UserFullReply, error)
 	UpdateOwnProfile(ctx context.Context, in *UpdateOwnProfileRequest, opts ...grpc.CallOption) (*UserFullReply, error)
 	DeleteOwnProfile(ctx context.Context, in *EmptyRequest, opts ...grpc.CallOption) (*EmptyReply, error)
+	// in case of search by id, only id should be present
+	// in case of search by phone, id should be equal 0, search.email should not be present
+	// in case of search by email, id should be equal 0, search.phone should not be present
 	GetUserFull(ctx context.Context, in *GetUserRequest, opts ...grpc.CallOption) (*UserFullReply, error)
 	// in case of search by id, only id should be present
 	// in case of search by phone, id should be equal 0, search.email should not be present
@@ -41,8 +44,7 @@ type UsersClient interface {
 	GetUser(ctx context.Context, in *GetUserRequest, opts ...grpc.CallOption) (*UserReply, error)
 	// search goes by all fileds
 	// t.m if you declare labels,emails,ids this method will return all
-	// users,  at the same time, if you ommit one of the field, nothing will
-	// break
+	// users that has these fields
 	GetUsers(ctx context.Context, in *GetUsersRequest, opts ...grpc.CallOption) (*GetUsersReply, error)
 }
 
@@ -115,6 +117,9 @@ type UsersServer interface {
 	GetOwnProfile(context.Context, *EmptyRequest) (*UserFullReply, error)
 	UpdateOwnProfile(context.Context, *UpdateOwnProfileRequest) (*UserFullReply, error)
 	DeleteOwnProfile(context.Context, *EmptyRequest) (*EmptyReply, error)
+	// in case of search by id, only id should be present
+	// in case of search by phone, id should be equal 0, search.email should not be present
+	// in case of search by email, id should be equal 0, search.phone should not be present
 	GetUserFull(context.Context, *GetUserRequest) (*UserFullReply, error)
 	// in case of search by id, only id should be present
 	// in case of search by phone, id should be equal 0, search.email should not be present
@@ -122,8 +127,7 @@ type UsersServer interface {
 	GetUser(context.Context, *GetUserRequest) (*UserReply, error)
 	// search goes by all fileds
 	// t.m if you declare labels,emails,ids this method will return all
-	// users,  at the same time, if you ommit one of the field, nothing will
-	// break
+	// users that has these fields
 	GetUsers(context.Context, *GetUsersRequest) (*GetUsersReply, error)
 	mustEmbedUnimplementedUsersServer()
 }

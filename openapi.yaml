@@ -46,7 +46,7 @@ paths:
         post:
             tags:
                 - Users
-            description: "search goes by all fileds  \n t.m if you declare labels,emails,ids this method will return all\n users,  at the same time, if you ommit one of the field, nothing will\n break"
+            description: "search goes by all fileds  \n t.m if you declare labels,emails,ids this method will return all\n users that has these fields"
             operationId: Users_GetUsers
             requestBody:
                 content:
@@ -190,6 +190,7 @@ paths:
         get:
             tags:
                 - Users
+            description: "in case of search by id, only id should be present  \n in case of search by phone, id should be equal 0, search.email should not be present  \n in case of search by email, id should be equal 0, search.phone should not be present"
             operationId: Users_GetUserFull
             parameters:
                 - name: userId
