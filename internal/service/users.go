@@ -84,7 +84,7 @@ func (s *UsersService) GetOwnProfile(ctx context.Context, req *v1.EmptyRequest) 
 		return nil, v1.ErrorUnauthorized("Unauthorized")
 	}
 
-	user, err := s.uc.GetUserProfile(ctx, userId)
+	user, err := s.uc.GetUserProfile(ctx, data.GetUserFilterDto{UserId: userId})
 	if err != nil {
 		_, notFound := err.(*ent.NotFoundError)
 		if notFound {
@@ -139,7 +139,12 @@ func (s *UsersService) DeleteOwnProfile(ctx context.Context, req *v1.EmptyReques
 }
 
 func (s *UsersService) GetUserFull(ctx context.Context, req *v1.GetUserRequest) (*v1.UserFullReply, error) {
-	user, err := s.uc.GetUserProfile(ctx, req.UserId)
+	filter := data.GetUserFilterDto{
+		UserId: req.GetUserId(),
+		Phone:  req.GetSearch().GetPhone(),
+		Email:  req.GetSearch().GetEmail(),
+	}
+	user, err := s.uc.GetUserProfile(ctx, filter)
 	if err != nil {
 		_, notFound := err.(*ent.NotFoundError)
 		if notFound {
@@ -152,7 +157,12 @@ func (s *UsersService) GetUserFull(ctx context.Context, req *v1.GetUserRequest) 
 }
 
 func (s *UsersService) GetUser(ctx context.Context, req *v1.GetUserRequest) (*v1.UserReply, error) {
-	user, err := s.uc.GetUserProfile(ctx, req.UserId)
+	filter := data.GetUserFilterDto{
+		UserId: req.GetUserId(),
+		Phone:  req.GetSearch().GetPhone(),
+		Email:  req.GetSearch().GetEmail(),
+	}
+	user, err := s.uc.GetUserProfile(ctx, filter)
 	if err != nil {
 		_, notFound := err.(*ent.NotFoundError)
 		if notFound {
@@ -165,8 +175,22 @@ func (s *UsersService) GetUser(ctx context.Context, req *v1.GetUserRequest) (*v1
 }
 
 func (s *UsersService) GetUsers(ctx context.Context, req *v1.GetUsersRequest) (*v1.GetUsersReply, error) {
-	s.log.Infof("GetUsers: %v", req.Ids)
-	users, err := s.uc.GetUsers(ctx, req.Ids)
+	phones, emails := make([]string, 0), make([]string, 0)
+	for _, search := range req.GetSearch() {
+		if search.GetPhone() != "" {
+			phones = append(phones, search.GetPhone())
+		}
+		if search.GetEmail() != "" {
+			emails = append(emails, search.GetEmail())
+		}
+	}
+	filter := data.GetUsersFilterDto{
+		UsersIds: req.GetIds(),
+		Phones:   phones,
+		Emails:   emails,
+	}
+	s.log.Infof("GetUsers: %v", filter)
+	users, err := s.uc.GetUsers(ctx, filter)
 	if err != nil {
 		return nil, v1.ErrorDatabaseQuery("Internal error")
 	}

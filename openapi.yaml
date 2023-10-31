@@ -46,6 +46,7 @@ paths:
         post:
             tags:
                 - Users
+            description: "search goes by all fileds  \n t.m if you declare labels,emails,ids this method will return all\n users,  at the same time, if you ommit one of the field, nothing will\n break"
             operationId: Users_GetUsers
             requestBody:
                 content:
@@ -162,11 +163,20 @@ paths:
         get:
             tags:
                 - Users
+            description: "in case of search by id, only id should be present  \n in case of search by phone, id should be equal 0, search.email should not be present  \n in case of search by email, id should be equal 0, search.phone should not be present"
             operationId: Users_GetUser
             parameters:
                 - name: userId
                   in: path
                   required: true
+                  schema:
+                    type: string
+                - name: search.phone
+                  in: query
+                  schema:
+                    type: string
+                - name: search.email
+                  in: query
                   schema:
                     type: string
             responses:
@@ -185,6 +195,14 @@ paths:
                 - name: userId
                   in: path
                   required: true
+                  schema:
+                    type: string
+                - name: search.phone
+                  in: query
+                  schema:
+                    type: string
+                - name: search.email
+                  in: query
                   schema:
                     type: string
             responses:
@@ -235,6 +253,10 @@ components:
                     type: array
                     items:
                         type: string
+                search:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/api.iam.v1.SearchFilter'
         api.iam.v1.PrivacyReply:
             type: object
             properties:
@@ -249,6 +271,13 @@ components:
                     type: object
                     additionalProperties:
                         type: string
+        api.iam.v1.SearchFilter:
+            type: object
+            properties:
+                phone:
+                    type: string
+                email:
+                    type: string
         api.iam.v1.SettingsReply:
             type: object
             properties:
