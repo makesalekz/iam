@@ -1,10 +1,7 @@
 package server
 
 import (
-	auth_v1 "iam/api/auth/v1"
-	privacy_v1 "iam/api/privacy/v1"
-	settings_v1 "iam/api/settings/v1"
-	users_v1 "iam/api/users/v1"
+	v1 "iam/api/iam/v1"
 	"iam/internal/conf"
 	"iam/internal/data"
 	"iam/internal/service"
@@ -39,10 +36,10 @@ func NewGRPCServer(c *conf.Bootstrap, logger log.Logger, jwtp *data.JwtProcessor
 	}
 	srv := grpc.NewServer(opts...)
 
-	auth_v1.RegisterAuthServer(srv, auth)
-	users_v1.RegisterUsersServer(srv, users)
-	privacy_v1.RegisterPrivacyServer(srv, privacy)
-	settings_v1.RegisterSettingsServer(srv, settings)
+	v1.RegisterAuthServer(srv, auth)
+	v1.RegisterUsersServer(srv, users)
+	v1.RegisterPrivacyServer(srv, privacy)
+	v1.RegisterSettingsServer(srv, settings)
 
 	return srv
 }

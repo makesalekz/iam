@@ -1,13 +1,13 @@
 syntax = "proto3";
 
-package api.auth.v1;
+package api.iam.v1;
 
 import "google/api/annotations.proto";
-import "errors/errors.proto";
+import "iam/v1/users.proto";
 
-option go_package = "iam/api/auth/v1;auth_v1";
+option go_package = "iam/api/iam/v1;iam_v1";
 option java_multiple_files = true;
-option java_package = "api.auth.v1";
+option java_package = "api.iam.v1";
 
 service Auth {
 	rpc AuthByPhone (AuthByPhoneRequest) returns (AuthByPhoneReply) {
@@ -37,22 +37,4 @@ message AuthByCodeRequest {
 }
 message AuthByCodeReply {
 	string token = 1;
-}
-
-enum ErrorReason {
-  // Set default error code.
-  option (errors.default_code) = 500;
-
-  // Set the error code separately for an enumeration.
-  INTERNAL = 0;
-  GRPC_CONNECTION = 1;
-  SERVICE_FAILED = 2;
-  DATABASE_QUERY = 3;
-  
-  INVALID_REQUEST = 10 [(errors.code) = 400];
-  INVALID_PHONE_NUMBER = 11 [(errors.code) = 400];
-  INVALID_TOKEN = 12 [(errors.code) = 401];
-  INVALID_CODE = 13 [(errors.code) = 401];
-  
-  USER_NOT_FOUND = 20 [(errors.code) = 404];
 }

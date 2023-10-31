@@ -1,13 +1,13 @@
 syntax = "proto3";
 
-package api.users.v1;
+package api.iam.v1;
 
 import "google/api/annotations.proto";
 import "errors/errors.proto";
 
-option go_package = "iam/api/users/v1;users_v1";
+option go_package = "iam/api/iam/v1;iam_v1";
 option java_multiple_files = true;
-option java_package = "api.users.v1";
+option java_package = "api.iam.v1";
 
 service Users {
 	rpc GetOwnProfile (EmptyRequest) returns (UserFullReply) {
@@ -109,6 +109,10 @@ enum ErrorReason {
   DATABASE_QUERY = 3;
   
   UNAUTHORIZED = 10 [(errors.code) = 401];
-  
+  INVALID_PHONE_NUMBER = 11 [(errors.code) = 400];
+  INVALID_TOKEN = 12 [(errors.code) = 401];
+  INVALID_CODE = 13 [(errors.code) = 401];
+
   USER_NOT_FOUND = 20 [(errors.code) = 404];
+  INVALID_REQUEST = 21 [(errors.code) = 400];
 }

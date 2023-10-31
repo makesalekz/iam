@@ -7,7 +7,7 @@ import (
 	"os"
 	"time"
 
-	auth "iam/api/auth/v1"
+	auth "iam/api/iam/v1"
 	"iam/ent"
 	"iam/ent/property"
 	"iam/internal/conf"
