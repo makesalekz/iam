@@ -159,24 +159,53 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/api.iam.v1.SettingsReply'
+    /v1/users/user:
+        post:
+            tags:
+                - Users
+            description: "in case of search by phone, search.email should not be present  \n in case of search by email, search.phone should not be present"
+            operationId: Users_GetUserByFilter
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/api.iam.v1.GetUserByFilterRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/api.iam.v1.UserReply'
+    /v1/users/user/full:
+        post:
+            tags:
+                - Users
+            description: "in case of search by phone, search.email should not be present  \n in case of search by email, search.phone should not be present"
+            operationId: Users_GetUserByFilterFull
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/api.iam.v1.GetUserByFilterRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/api.iam.v1.UserFullReply'
     /v1/users/{userId}:
         get:
             tags:
                 - Users
-            description: "in case of search by id, only id should be present  \n in case of search by phone, id should be equal 0, search.email should not be present  \n in case of search by email, id should be equal 0, search.phone should not be present"
             operationId: Users_GetUser
             parameters:
                 - name: userId
                   in: path
                   required: true
-                  schema:
-                    type: string
-                - name: search.phone
-                  in: query
-                  schema:
-                    type: string
-                - name: search.email
-                  in: query
                   schema:
                     type: string
             responses:
@@ -190,20 +219,11 @@ paths:
         get:
             tags:
                 - Users
-            description: "in case of search by id, only id should be present  \n in case of search by phone, id should be equal 0, search.email should not be present  \n in case of search by email, id should be equal 0, search.phone should not be present"
             operationId: Users_GetUserFull
             parameters:
                 - name: userId
                   in: path
                   required: true
-                  schema:
-                    type: string
-                - name: search.phone
-                  in: query
-                  schema:
-                    type: string
-                - name: search.email
-                  in: query
                   schema:
                     type: string
             responses:
@@ -240,6 +260,13 @@ components:
         api.iam.v1.EmptyReply:
             type: object
             properties: {}
+        api.iam.v1.GetUserByFilterRequest:
+            type: object
+            properties:
+                phone:
+                    type: string
+                email:
+                    type: string
         api.iam.v1.GetUsersReply:
             type: object
             properties:

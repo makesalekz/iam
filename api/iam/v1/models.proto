@@ -2,7 +2,6 @@ syntax = "proto3";
 
 package api.iam.v1;
 
-import "google/api/annotations.proto";
 import "errors/errors.proto";
 
 option go_package = "iam/api/iam/v1;iam_v1";

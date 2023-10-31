@@ -141,8 +141,6 @@ func (s *UsersService) DeleteOwnProfile(ctx context.Context, req *v1.EmptyReques
 func (s *UsersService) GetUserFull(ctx context.Context, req *v1.GetUserRequest) (*v1.UserFullReply, error) {
 	filter := data.GetUserFilterDto{
 		UserId: req.GetUserId(),
-		Phone:  req.GetSearch().GetPhone(),
-		Email:  req.GetSearch().GetEmail(),
 	}
 	user, err := s.uc.GetUserProfile(ctx, filter)
 	if err != nil {
@@ -159,8 +157,6 @@ func (s *UsersService) GetUserFull(ctx context.Context, req *v1.GetUserRequest) 
 func (s *UsersService) GetUser(ctx context.Context, req *v1.GetUserRequest) (*v1.UserReply, error) {
 	filter := data.GetUserFilterDto{
 		UserId: req.GetUserId(),
-		Phone:  req.GetSearch().GetPhone(),
-		Email:  req.GetSearch().GetEmail(),
 	}
 	user, err := s.uc.GetUserProfile(ctx, filter)
 	if err != nil {
@@ -187,4 +183,38 @@ func (s *UsersService) GetUsers(ctx context.Context, req *v1.GetUsersRequest) (*
 	}
 
 	return &v1.GetUsersReply{Users: replyUsers(users)}, nil
+}
+
+func (s *UsersService) GetUserByFilter(ctx context.Context, req *v1.GetUserByFilterRequest) (*v1.UserReply, error) {
+	filter := data.GetUserFilterDto{
+		Phone: req.GetPhone(),
+		Email: req.GetEmail(),
+	}
+	user, err := s.uc.GetUserProfile(ctx, filter)
+	if err != nil {
+		_, notFound := err.(*ent.NotFoundError)
+		if notFound {
+			return nil, v1.ErrorUserNotFound("User not found: %v", err)
+		}
+		return nil, v1.ErrorDatabaseQuery("Internal error")
+	}
+
+	return &v1.UserReply{User: replyUserShort(user)}, nil
+}
+
+func (s *UsersService) GetUserByFilterFull(ctx context.Context, req *v1.GetUserByFilterRequest) (*v1.UserFullReply, error) {
+	filter := data.GetUserFilterDto{
+		Phone: req.GetPhone(),
+		Email: req.GetEmail(),
+	}
+	user, err := s.uc.GetUserProfile(ctx, filter)
+	if err != nil {
+		_, notFound := err.(*ent.NotFoundError)
+		if notFound {
+			return nil, v1.ErrorUserNotFound("User not found: %v", err)
+		}
+		return nil, v1.ErrorDatabaseQuery("Internal error")
+	}
+
+	return &v1.UserFullReply{User: replyUser(user)}, nil
 }

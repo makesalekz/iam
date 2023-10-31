@@ -19,12 +19,14 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	Users_GetOwnProfile_FullMethodName    = "/api.iam.v1.Users/GetOwnProfile"
-	Users_UpdateOwnProfile_FullMethodName = "/api.iam.v1.Users/UpdateOwnProfile"
-	Users_DeleteOwnProfile_FullMethodName = "/api.iam.v1.Users/DeleteOwnProfile"
-	Users_GetUserFull_FullMethodName      = "/api.iam.v1.Users/GetUserFull"
-	Users_GetUser_FullMethodName          = "/api.iam.v1.Users/GetUser"
-	Users_GetUsers_FullMethodName         = "/api.iam.v1.Users/GetUsers"
+	Users_GetOwnProfile_FullMethodName       = "/api.iam.v1.Users/GetOwnProfile"
+	Users_UpdateOwnProfile_FullMethodName    = "/api.iam.v1.Users/UpdateOwnProfile"
+	Users_DeleteOwnProfile_FullMethodName    = "/api.iam.v1.Users/DeleteOwnProfile"
+	Users_GetUserFull_FullMethodName         = "/api.iam.v1.Users/GetUserFull"
+	Users_GetUserByFilterFull_FullMethodName = "/api.iam.v1.Users/GetUserByFilterFull"
+	Users_GetUser_FullMethodName             = "/api.iam.v1.Users/GetUser"
+	Users_GetUserByFilter_FullMethodName     = "/api.iam.v1.Users/GetUserByFilter"
+	Users_GetUsers_FullMethodName            = "/api.iam.v1.Users/GetUsers"
 )
 
 // UsersClient is the client API for Users service.
@@ -34,14 +36,14 @@ type UsersClient interface {
 	GetOwnProfile(ctx context.Context, in *EmptyRequest, opts ...grpc.CallOption) (*UserFullReply, error)
 	UpdateOwnProfile(ctx context.Context, in *UpdateOwnProfileRequest, opts ...grpc.CallOption) (*UserFullReply, error)
 	DeleteOwnProfile(ctx context.Context, in *EmptyRequest, opts ...grpc.CallOption) (*EmptyReply, error)
-	// in case of search by id, only id should be present
-	// in case of search by phone, id should be equal 0, search.email should not be present
-	// in case of search by email, id should be equal 0, search.phone should not be present
 	GetUserFull(ctx context.Context, in *GetUserRequest, opts ...grpc.CallOption) (*UserFullReply, error)
-	// in case of search by id, only id should be present
-	// in case of search by phone, id should be equal 0, search.email should not be present
-	// in case of search by email, id should be equal 0, search.phone should not be present
+	// in case of search by phone, search.email should not be present
+	// in case of search by email, search.phone should not be present
+	GetUserByFilterFull(ctx context.Context, in *GetUserByFilterRequest, opts ...grpc.CallOption) (*UserFullReply, error)
 	GetUser(ctx context.Context, in *GetUserRequest, opts ...grpc.CallOption) (*UserReply, error)
+	// in case of search by phone, search.email should not be present
+	// in case of search by email, search.phone should not be present
+	GetUserByFilter(ctx context.Context, in *GetUserByFilterRequest, opts ...grpc.CallOption) (*UserReply, error)
 	// search goes by all fileds
 	// t.m if you declare labels,emails,ids this method will return all
 	// users that has these fields
@@ -92,9 +94,27 @@ func (c *usersClient) GetUserFull(ctx context.Context, in *GetUserRequest, opts 
 	return out, nil
 }
 
+func (c *usersClient) GetUserByFilterFull(ctx context.Context, in *GetUserByFilterRequest, opts ...grpc.CallOption) (*UserFullReply, error) {
+	out := new(UserFullReply)
+	err := c.cc.Invoke(ctx, Users_GetUserByFilterFull_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *usersClient) GetUser(ctx context.Context, in *GetUserRequest, opts ...grpc.CallOption) (*UserReply, error) {
 	out := new(UserReply)
 	err := c.cc.Invoke(ctx, Users_GetUser_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *usersClient) GetUserByFilter(ctx context.Context, in *GetUserByFilterRequest, opts ...grpc.CallOption) (*UserReply, error) {
+	out := new(UserReply)
+	err := c.cc.Invoke(ctx, Users_GetUserByFilter_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -117,14 +137,14 @@ type UsersServer interface {
 	GetOwnProfile(context.Context, *EmptyRequest) (*UserFullReply, error)
 	UpdateOwnProfile(context.Context, *UpdateOwnProfileRequest) (*UserFullReply, error)
 	DeleteOwnProfile(context.Context, *EmptyRequest) (*EmptyReply, error)
-	// in case of search by id, only id should be present
-	// in case of search by phone, id should be equal 0, search.email should not be present
-	// in case of search by email, id should be equal 0, search.phone should not be present
 	GetUserFull(context.Context, *GetUserRequest) (*UserFullReply, error)
-	// in case of search by id, only id should be present
-	// in case of search by phone, id should be equal 0, search.email should not be present
-	// in case of search by email, id should be equal 0, search.phone should not be present
+	// in case of search by phone, search.email should not be present
+	// in case of search by email, search.phone should not be present
+	GetUserByFilterFull(context.Context, *GetUserByFilterRequest) (*UserFullReply, error)
 	GetUser(context.Context, *GetUserRequest) (*UserReply, error)
+	// in case of search by phone, search.email should not be present
+	// in case of search by email, search.phone should not be present
+	GetUserByFilter(context.Context, *GetUserByFilterRequest) (*UserReply, error)
 	// search goes by all fileds
 	// t.m if you declare labels,emails,ids this method will return all
 	// users that has these fields
@@ -148,8 +168,14 @@ func (UnimplementedUsersServer) DeleteOwnProfile(context.Context, *EmptyRequest)
 func (UnimplementedUsersServer) GetUserFull(context.Context, *GetUserRequest) (*UserFullReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetUserFull not implemented")
 }
+func (UnimplementedUsersServer) GetUserByFilterFull(context.Context, *GetUserByFilterRequest) (*UserFullReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetUserByFilterFull not implemented")
+}
 func (UnimplementedUsersServer) GetUser(context.Context, *GetUserRequest) (*UserReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetUser not implemented")
+}
+func (UnimplementedUsersServer) GetUserByFilter(context.Context, *GetUserByFilterRequest) (*UserReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetUserByFilter not implemented")
 }
 func (UnimplementedUsersServer) GetUsers(context.Context, *GetUsersRequest) (*GetUsersReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetUsers not implemented")
@@ -239,6 +265,24 @@ func _Users_GetUserFull_Handler(srv interface{}, ctx context.Context, dec func(i
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Users_GetUserByFilterFull_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetUserByFilterRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UsersServer).GetUserByFilterFull(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Users_GetUserByFilterFull_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UsersServer).GetUserByFilterFull(ctx, req.(*GetUserByFilterRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _Users_GetUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(GetUserRequest)
 	if err := dec(in); err != nil {
@@ -253,6 +297,24 @@ func _Users_GetUser_Handler(srv interface{}, ctx context.Context, dec func(inter
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(UsersServer).GetUser(ctx, req.(*GetUserRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Users_GetUserByFilter_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetUserByFilterRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UsersServer).GetUserByFilter(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Users_GetUserByFilter_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UsersServer).GetUserByFilter(ctx, req.(*GetUserByFilterRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -299,8 +361,16 @@ var Users_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _Users_GetUserFull_Handler,
 		},
 		{
+			MethodName: "GetUserByFilterFull",
+			Handler:    _Users_GetUserByFilterFull_Handler,
+		},
+		{
 			MethodName: "GetUser",
 			Handler:    _Users_GetUser_Handler,
+		},
+		{
+			MethodName: "GetUserByFilter",
+			Handler:    _Users_GetUserByFilter_Handler,
 		},
 		{
 			MethodName: "GetUsers",

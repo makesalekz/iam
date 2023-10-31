@@ -3,7 +3,6 @@ syntax = "proto3";
 package api.iam.v1;
 
 import "google/api/annotations.proto";
-import "errors/errors.proto";
 import "iam/v1/models.proto";
 
 option go_package = "iam/api/iam/v1;iam_v1";
@@ -27,20 +26,30 @@ service Users {
 			delete: "/v1/users/me"
 		};
 	};
-	// in case of search by id, only id should be present  
-	// in case of search by phone, id should be equal 0, search.email should not be present  
-	// in case of search by email, id should be equal 0, search.phone should not be present
 	rpc GetUserFull (GetUserRequest) returns (UserFullReply) {
 		option (google.api.http) = {
 			get: "/v1/users/{userId}/full"
 		};
 	};
-	// in case of search by id, only id should be present  
-	// in case of search by phone, id should be equal 0, search.email should not be present  
-	// in case of search by email, id should be equal 0, search.phone should not be present
+	// in case of search by phone, search.email should not be present  
+	// in case of search by email, search.phone should not be present
+	rpc GetUserByFilterFull (GetUserByFilterRequest) returns (UserFullReply) {
+		option (google.api.http) = {
+			post: "/v1/users/user/full"
+			body: "*"
+		};
+	};
 	rpc GetUser (GetUserRequest) returns (UserReply) {
 		option (google.api.http) = {
 			get: "/v1/users/{userId}"
+		};
+	}; 
+	// in case of search by phone, search.email should not be present  
+	// in case of search by email, search.phone should not be present
+	rpc GetUserByFilter (GetUserByFilterRequest) returns (UserReply) {
+		option (google.api.http) = {
+			post: "/v1/users/user"
+			body: "*"
 		};
 	};
 	// search goes by all fileds  
@@ -67,10 +76,9 @@ message UpdateOwnProfileRequest {
 
 message GetUserRequest {
 	int64 userId = 1;
-	optional SearchFilter search = 2;
 }
 
-message SearchFilter{
+message GetUserByFilterRequest{
 	optional string phone = 2;
 	optional string email = 3;
 }
