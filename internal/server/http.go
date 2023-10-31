@@ -3,10 +3,7 @@ package server
 import (
 	"context"
 
-	auth_v1 "iam/api/auth/v1"
-	privacy_v1 "iam/api/privacy/v1"
-	settings_v1 "iam/api/settings/v1"
-	users_v1 "iam/api/users/v1"
+	v1 "iam/api/iam/v1"
 	"iam/internal/conf"
 	"iam/internal/data"
 	"iam/internal/service"
@@ -59,10 +56,10 @@ func NewHTTPServer(c *conf.Bootstrap, logger log.Logger, jwtp *data.JwtProcessor
 	}
 	srv := khttp.NewServer(opts...)
 
-	auth_v1.RegisterAuthHTTPServer(srv, auth)
-	users_v1.RegisterUsersHTTPServer(srv, users)
-	privacy_v1.RegisterPrivacyHTTPServer(srv, privacy)
-	settings_v1.RegisterSettingsHTTPServer(srv, settings)
+	v1.RegisterAuthHTTPServer(srv, auth)
+	v1.RegisterUsersHTTPServer(srv, users)
+	v1.RegisterPrivacyHTTPServer(srv, privacy)
+	v1.RegisterSettingsHTTPServer(srv, settings)
 
 	return srv
 }

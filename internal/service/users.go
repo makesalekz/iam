@@ -4,7 +4,7 @@ import (
 	"context"
 	"time"
 
-	v1 "iam/api/users/v1"
+	v1 "iam/api/iam/v1"
 	"iam/ent"
 	"iam/internal/biz"
 	"iam/internal/data"

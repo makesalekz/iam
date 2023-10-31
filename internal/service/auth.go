@@ -5,7 +5,7 @@ import (
 	"strconv"
 	"time"
 
-	v1 "iam/api/auth/v1"
+	v1 "iam/api/iam/v1"
 	"iam/internal/biz"
 	"iam/internal/data"
 

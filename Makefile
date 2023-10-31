@@ -64,10 +64,10 @@ config:
 .PHONY: errors
 # generate internal proto
 errors:
-	protoc --proto_path=. \
+	protoc --proto_path=./api \
 			--proto_path=./third_party \
-			--go_out=paths=source_relative:. \
-			--go-errors_out=paths=source_relative:. \
+			--go_out=paths=source_relative:./api \
+			--go-errors_out=paths=source_relative:./api \
 			$(API_PROTO_FILES)
 
 .PHONY: ent

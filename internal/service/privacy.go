@@ -3,7 +3,7 @@ package service
 import (
 	"context"
 
-	v1 "iam/api/privacy/v1"
+	v1 "iam/api/iam/v1"
 	"iam/ent"
 	"iam/internal/biz"
 	"iam/internal/data"
