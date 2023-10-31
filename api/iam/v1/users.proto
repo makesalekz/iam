@@ -81,7 +81,8 @@ message UserReply {
 
 message GetUsersRequest {
 	repeated int64 ids = 1;
-	repeated SearchFilter search = 2;
+	repeated string phones = 2;
+	repeated string emails = 3;
 }
 
 message GetUsersReply {

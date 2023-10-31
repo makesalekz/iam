@@ -254,10 +254,14 @@ components:
                     type: array
                     items:
                         type: string
-                search:
+                phones:
                     type: array
                     items:
-                        $ref: '#/components/schemas/api.iam.v1.SearchFilter'
+                        type: string
+                emails:
+                    type: array
+                    items:
+                        type: string
         api.iam.v1.PrivacyReply:
             type: object
             properties:
@@ -272,13 +276,6 @@ components:
                     type: object
                     additionalProperties:
                         type: string
-        api.iam.v1.SearchFilter:
-            type: object
-            properties:
-                phone:
-                    type: string
-                email:
-                    type: string
         api.iam.v1.SettingsReply:
             type: object
             properties:

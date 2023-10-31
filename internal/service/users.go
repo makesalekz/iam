@@ -175,19 +175,10 @@ func (s *UsersService) GetUser(ctx context.Context, req *v1.GetUserRequest) (*v1
 }
 
 func (s *UsersService) GetUsers(ctx context.Context, req *v1.GetUsersRequest) (*v1.GetUsersReply, error) {
-	phones, emails := make([]string, 0), make([]string, 0)
-	for _, search := range req.GetSearch() {
-		if search.GetPhone() != "" {
-			phones = append(phones, search.GetPhone())
-		}
-		if search.GetEmail() != "" {
-			emails = append(emails, search.GetEmail())
-		}
-	}
 	filter := data.GetUsersFilterDto{
 		UsersIds: req.GetIds(),
-		Phones:   phones,
-		Emails:   emails,
+		Phones:   req.GetPhones(),
+		Emails:   req.GetEmails(),
 	}
 	s.log.Infof("GetUsers: %v", filter)
 	users, err := s.uc.GetUsers(ctx, filter)
