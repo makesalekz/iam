@@ -22,6 +22,8 @@ const _ = http.SupportPackageIsVersion1
 const OperationUsersDeleteOwnProfile = "/api.iam.v1.Users/DeleteOwnProfile"
 const OperationUsersGetOwnProfile = "/api.iam.v1.Users/GetOwnProfile"
 const OperationUsersGetUser = "/api.iam.v1.Users/GetUser"
+const OperationUsersGetUserByFilter = "/api.iam.v1.Users/GetUserByFilter"
+const OperationUsersGetUserByFilterFull = "/api.iam.v1.Users/GetUserByFilterFull"
 const OperationUsersGetUserFull = "/api.iam.v1.Users/GetUserFull"
 const OperationUsersGetUsers = "/api.iam.v1.Users/GetUsers"
 const OperationUsersUpdateOwnProfile = "/api.iam.v1.Users/UpdateOwnProfile"
@@ -30,7 +32,16 @@ type UsersHTTPServer interface {
 	DeleteOwnProfile(context.Context, *EmptyRequest) (*EmptyReply, error)
 	GetOwnProfile(context.Context, *EmptyRequest) (*UserFullReply, error)
 	GetUser(context.Context, *GetUserRequest) (*UserReply, error)
+	// GetUserByFilter in case of search by phone, search.email should not be present
+	// in case of search by email, search.phone should not be present
+	GetUserByFilter(context.Context, *GetUserByFilterRequest) (*UserReply, error)
+	// GetUserByFilterFull in case of search by phone, search.email should not be present
+	// in case of search by email, search.phone should not be present
+	GetUserByFilterFull(context.Context, *GetUserByFilterRequest) (*UserFullReply, error)
 	GetUserFull(context.Context, *GetUserRequest) (*UserFullReply, error)
+	// GetUsers search goes by all fileds
+	// t.m if you declare labels,emails,ids this method will return all
+	// users that has these fields
 	GetUsers(context.Context, *GetUsersRequest) (*GetUsersReply, error)
 	UpdateOwnProfile(context.Context, *UpdateOwnProfileRequest) (*UserFullReply, error)
 }
@@ -41,7 +52,9 @@ func RegisterUsersHTTPServer(s *http.Server, srv UsersHTTPServer) {
 	r.POST("/v1/users/me", _Users_UpdateOwnProfile0_HTTP_Handler(srv))
 	r.DELETE("/v1/users/me", _Users_DeleteOwnProfile0_HTTP_Handler(srv))
 	r.GET("/v1/users/{userId}/full", _Users_GetUserFull0_HTTP_Handler(srv))
+	r.POST("/v1/users/user/full", _Users_GetUserByFilterFull0_HTTP_Handler(srv))
 	r.GET("/v1/users/{userId}", _Users_GetUser0_HTTP_Handler(srv))
+	r.POST("/v1/users/user", _Users_GetUserByFilter0_HTTP_Handler(srv))
 	r.POST("/v1/users/list", _Users_GetUsers0_HTTP_Handler(srv))
 }
 
@@ -127,6 +140,28 @@ func _Users_GetUserFull0_HTTP_Handler(srv UsersHTTPServer) func(ctx http.Context
 	}
 }
 
+func _Users_GetUserByFilterFull0_HTTP_Handler(srv UsersHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in GetUserByFilterRequest
+		if err := ctx.Bind(&in); err != nil {
+			return err
+		}
+		if err := ctx.BindQuery(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, OperationUsersGetUserByFilterFull)
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.GetUserByFilterFull(ctx, req.(*GetUserByFilterRequest))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*UserFullReply)
+		return ctx.Result(200, reply)
+	}
+}
+
 func _Users_GetUser0_HTTP_Handler(srv UsersHTTPServer) func(ctx http.Context) error {
 	return func(ctx http.Context) error {
 		var in GetUserRequest
@@ -139,6 +174,28 @@ func _Users_GetUser0_HTTP_Handler(srv UsersHTTPServer) func(ctx http.Context) er
 		http.SetOperation(ctx, OperationUsersGetUser)
 		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
 			return srv.GetUser(ctx, req.(*GetUserRequest))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*UserReply)
+		return ctx.Result(200, reply)
+	}
+}
+
+func _Users_GetUserByFilter0_HTTP_Handler(srv UsersHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in GetUserByFilterRequest
+		if err := ctx.Bind(&in); err != nil {
+			return err
+		}
+		if err := ctx.BindQuery(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, OperationUsersGetUserByFilter)
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.GetUserByFilter(ctx, req.(*GetUserByFilterRequest))
 		})
 		out, err := h(ctx, &in)
 		if err != nil {
@@ -175,6 +232,8 @@ type UsersHTTPClient interface {
 	DeleteOwnProfile(ctx context.Context, req *EmptyRequest, opts ...http.CallOption) (rsp *EmptyReply, err error)
 	GetOwnProfile(ctx context.Context, req *EmptyRequest, opts ...http.CallOption) (rsp *UserFullReply, err error)
 	GetUser(ctx context.Context, req *GetUserRequest, opts ...http.CallOption) (rsp *UserReply, err error)
+	GetUserByFilter(ctx context.Context, req *GetUserByFilterRequest, opts ...http.CallOption) (rsp *UserReply, err error)
+	GetUserByFilterFull(ctx context.Context, req *GetUserByFilterRequest, opts ...http.CallOption) (rsp *UserFullReply, err error)
 	GetUserFull(ctx context.Context, req *GetUserRequest, opts ...http.CallOption) (rsp *UserFullReply, err error)
 	GetUsers(ctx context.Context, req *GetUsersRequest, opts ...http.CallOption) (rsp *GetUsersReply, err error)
 	UpdateOwnProfile(ctx context.Context, req *UpdateOwnProfileRequest, opts ...http.CallOption) (rsp *UserFullReply, err error)
@@ -221,6 +280,32 @@ func (c *UsersHTTPClientImpl) GetUser(ctx context.Context, in *GetUserRequest, o
 	opts = append(opts, http.Operation(OperationUsersGetUser))
 	opts = append(opts, http.PathTemplate(pattern))
 	err := c.cc.Invoke(ctx, "GET", path, nil, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, err
+}
+
+func (c *UsersHTTPClientImpl) GetUserByFilter(ctx context.Context, in *GetUserByFilterRequest, opts ...http.CallOption) (*UserReply, error) {
+	var out UserReply
+	pattern := "/v1/users/user"
+	path := binding.EncodeURL(pattern, in, false)
+	opts = append(opts, http.Operation(OperationUsersGetUserByFilter))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "POST", path, in, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, err
+}
+
+func (c *UsersHTTPClientImpl) GetUserByFilterFull(ctx context.Context, in *GetUserByFilterRequest, opts ...http.CallOption) (*UserFullReply, error) {
+	var out UserFullReply
+	pattern := "/v1/users/user/full"
+	path := binding.EncodeURL(pattern, in, false)
+	opts = append(opts, http.Operation(OperationUsersGetUserByFilterFull))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "POST", path, in, &out, opts...)
 	if err != nil {
 		return nil, err
 	}

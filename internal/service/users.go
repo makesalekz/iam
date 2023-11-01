@@ -84,7 +84,7 @@ func (s *UsersService) GetOwnProfile(ctx context.Context, req *v1.EmptyRequest) 
 		return nil, v1.ErrorUnauthorized("Unauthorized")
 	}
 
-	user, err := s.uc.GetUserProfile(ctx, userId)
+	user, err := s.uc.GetUserProfile(ctx, data.GetUserFilterDto{UserId: userId})
 	if err != nil {
 		_, notFound := err.(*ent.NotFoundError)
 		if notFound {
@@ -139,7 +139,10 @@ func (s *UsersService) DeleteOwnProfile(ctx context.Context, req *v1.EmptyReques
 }
 
 func (s *UsersService) GetUserFull(ctx context.Context, req *v1.GetUserRequest) (*v1.UserFullReply, error) {
-	user, err := s.uc.GetUserProfile(ctx, req.UserId)
+	filter := data.GetUserFilterDto{
+		UserId: req.GetUserId(),
+	}
+	user, err := s.uc.GetUserProfile(ctx, filter)
 	if err != nil {
 		_, notFound := err.(*ent.NotFoundError)
 		if notFound {
@@ -152,7 +155,10 @@ func (s *UsersService) GetUserFull(ctx context.Context, req *v1.GetUserRequest) 
 }
 
 func (s *UsersService) GetUser(ctx context.Context, req *v1.GetUserRequest) (*v1.UserReply, error) {
-	user, err := s.uc.GetUserProfile(ctx, req.UserId)
+	filter := data.GetUserFilterDto{
+		UserId: req.GetUserId(),
+	}
+	user, err := s.uc.GetUserProfile(ctx, filter)
 	if err != nil {
 		_, notFound := err.(*ent.NotFoundError)
 		if notFound {
@@ -165,11 +171,50 @@ func (s *UsersService) GetUser(ctx context.Context, req *v1.GetUserRequest) (*v1
 }
 
 func (s *UsersService) GetUsers(ctx context.Context, req *v1.GetUsersRequest) (*v1.GetUsersReply, error) {
-	s.log.Infof("GetUsers: %v", req.Ids)
-	users, err := s.uc.GetUsers(ctx, req.Ids)
+	filter := data.GetUsersFilterDto{
+		UsersIds: req.GetIds(),
+		Phones:   req.GetPhones(),
+		Emails:   req.GetEmails(),
+	}
+	s.log.Infof("GetUsers: %v", filter)
+	users, err := s.uc.GetUsers(ctx, filter)
 	if err != nil {
 		return nil, v1.ErrorDatabaseQuery("Internal error")
 	}
 
 	return &v1.GetUsersReply{Users: replyUsers(users)}, nil
+}
+
+func (s *UsersService) GetUserByFilter(ctx context.Context, req *v1.GetUserByFilterRequest) (*v1.UserReply, error) {
+	filter := data.GetUserFilterDto{
+		Phone: req.GetSearch().GetPhone(),
+		Email: req.GetSearch().GetEmail(),
+	}
+	user, err := s.uc.GetUserProfile(ctx, filter)
+	if err != nil {
+		_, notFound := err.(*ent.NotFoundError)
+		if notFound {
+			return nil, v1.ErrorUserNotFound("User not found: %v", err)
+		}
+		return nil, v1.ErrorDatabaseQuery("Internal error")
+	}
+
+	return &v1.UserReply{User: replyUserShort(user)}, nil
+}
+
+func (s *UsersService) GetUserByFilterFull(ctx context.Context, req *v1.GetUserByFilterRequest) (*v1.UserFullReply, error) {
+	filter := data.GetUserFilterDto{
+		Phone: req.GetSearch().GetPhone(),
+		Email: req.GetSearch().GetEmail(),
+	}
+	user, err := s.uc.GetUserProfile(ctx, filter)
+	if err != nil {
+		_, notFound := err.(*ent.NotFoundError)
+		if notFound {
+			return nil, v1.ErrorUserNotFound("User not found: %v", err)
+		}
+		return nil, v1.ErrorDatabaseQuery("Internal error")
+	}
+
+	return &v1.UserFullReply{User: replyUser(user)}, nil
 }

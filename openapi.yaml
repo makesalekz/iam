@@ -46,6 +46,7 @@ paths:
         post:
             tags:
                 - Users
+            description: "search goes by all fileds  \n t.m if you declare labels,emails,ids this method will return all\n users that has these fields"
             operationId: Users_GetUsers
             requestBody:
                 content:
@@ -158,6 +159,44 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/api.iam.v1.SettingsReply'
+    /v1/users/user:
+        post:
+            tags:
+                - Users
+            description: "in case of search by phone, search.email should not be present  \n in case of search by email, search.phone should not be present"
+            operationId: Users_GetUserByFilter
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/api.iam.v1.GetUserByFilterRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/api.iam.v1.UserReply'
+    /v1/users/user/full:
+        post:
+            tags:
+                - Users
+            description: "in case of search by phone, search.email should not be present  \n in case of search by email, search.phone should not be present"
+            operationId: Users_GetUserByFilterFull
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/api.iam.v1.GetUserByFilterRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/api.iam.v1.UserFullReply'
     /v1/users/{userId}:
         get:
             tags:
@@ -221,6 +260,11 @@ components:
         api.iam.v1.EmptyReply:
             type: object
             properties: {}
+        api.iam.v1.GetUserByFilterRequest:
+            type: object
+            properties:
+                search:
+                    $ref: '#/components/schemas/api.iam.v1.SearchFilter'
         api.iam.v1.GetUsersReply:
             type: object
             properties:
@@ -232,6 +276,14 @@ components:
             type: object
             properties:
                 ids:
+                    type: array
+                    items:
+                        type: string
+                phones:
+                    type: array
+                    items:
+                        type: string
+                emails:
                     type: array
                     items:
                         type: string
@@ -249,6 +301,13 @@ components:
                     type: object
                     additionalProperties:
                         type: string
+        api.iam.v1.SearchFilter:
+            type: object
+            properties:
+                phone:
+                    type: string
+                email:
+                    type: string
         api.iam.v1.SettingsReply:
             type: object
             properties:

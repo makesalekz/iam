@@ -3,7 +3,7 @@ syntax = "proto3";
 package api.iam.v1;
 
 import "google/api/annotations.proto";
-import "iam/v1/users.proto";
+import "iam/v1/models.proto";
 
 option go_package = "iam/api/iam/v1;iam_v1";
 option java_multiple_files = true;
