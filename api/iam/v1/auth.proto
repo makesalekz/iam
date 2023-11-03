@@ -16,10 +16,20 @@ service Auth {
 			body: "*"
 		};
 	};
-	rpc AuthByCode (AuthByCodeRequest) returns (AuthByCodeReply) {
+	rpc AuthByCode (AuthByCodeRequest) returns (TokenReply) {
 		option (google.api.http) = {
 			post: "/v1/auth/code"
 			body: "*"
+		};
+	};
+	rpc RefreshPersonalToken (EmptyRequest) returns (TokenReply) {
+		option (google.api.http) = {
+			get: "/v1/auth/personal"
+		};
+	};
+	rpc RefreshTenantToken (TenantRequest) returns (TokenReply) {
+		option (google.api.http) = {
+			get: "/v1/auth/tenant/{tenant_id}"
 		};
 	};
 }
@@ -27,6 +37,7 @@ service Auth {
 message AuthByPhoneRequest {
 	string phone = 1;
 }
+
 message AuthByPhoneReply {
 	int64 user_id = 1;
 }
@@ -35,6 +46,12 @@ message AuthByCodeRequest {
 	int64 user_id = 1;
 	string code = 2;
 }
-message AuthByCodeReply {
-	string token = 1;
+
+message TenantRequest {
+	int64 tenant_id = 1;
+}
+
+message TokenReply {
+	string access_token = 1;
+	string refresh_token = 2;
 }

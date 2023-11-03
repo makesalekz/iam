@@ -32,4 +32,7 @@ message Db {
 
 message Discovery {
   string notifications = 1;
+  google.protobuf.Duration notifications_timeout = 2;
+  string tenants = 3;
+  google.protobuf.Duration tenants_timeout = 4;
 }

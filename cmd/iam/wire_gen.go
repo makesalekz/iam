@@ -32,18 +32,22 @@ func wireApp(bootstrap *conf.Bootstrap, logger log.Logger) (*kratos.App, func(),
 	if err != nil {
 		return nil, nil, err
 	}
+	dialer, err := data.NewDialer(config, jwtProcessor)
+	if err != nil {
+		return nil, nil, err
+	}
 	dataData, cleanup, err := data.NewData(bootstrap, logger)
 	if err != nil {
 		return nil, nil, err
 	}
 	usersRepo := data.NewUsersRepo(dataData, logger)
 	otpRepo := data.NewOtpRepo(dataData)
-	authUsecase, err := biz.NewAuthUsecase(logger, config, usersRepo, otpRepo)
+	authUsecase, err := biz.NewAuthUsecase(logger, jwtProcessor, dialer, usersRepo, otpRepo)
 	if err != nil {
 		cleanup()
 		return nil, nil, err
 	}
-	authService := service.NewAuthService(logger, jwtProcessor, authUsecase)
+	authService := service.NewAuthService(logger, authUsecase)
 	usersUsecase, err := biz.NewUsersUsecase(logger, config, usersRepo, otpRepo)
 	if err != nil {
 		cleanup()

@@ -2,32 +2,23 @@ package service
 
 import (
 	"context"
-	"strconv"
-	"time"
 
 	v1 "iam/api/iam/v1"
 	"iam/internal/biz"
-	"iam/internal/data"
 
-	"github.com/go-kratos/kratos/v2/errors"
 	"github.com/go-kratos/kratos/v2/log"
-	jwtv4 "github.com/golang-jwt/jwt/v4"
 )
-
-const TOKEN_DURATION = 24 * time.Hour
 
 type AuthService struct {
 	v1.UnimplementedAuthServer
 
 	log *log.Helper
-	jwt *data.JwtProcessor
 	au  *biz.AuthUsecase
 }
 
-func NewAuthService(logger log.Logger, jwt *data.JwtProcessor, au *biz.AuthUsecase) *AuthService {
+func NewAuthService(logger log.Logger, au *biz.AuthUsecase) *AuthService {
 	return &AuthService{
 		log: log.NewHelper(logger),
-		jwt: jwt,
 		au:  au,
 	}
 }
@@ -39,36 +30,78 @@ func (s *AuthService) AuthByPhone(ctx context.Context, req *v1.AuthByPhoneReques
 			return nil, err
 		}
 		s.log.Errorf("au.AuthUserByPhone: ", err)
-		return nil, errors.InternalServer("internal", "internal error")
+		return nil, v1.ErrorInternal("internal error")
 	}
 
 	return &v1.AuthByPhoneReply{UserId: userId}, nil
 }
 
-func (s *AuthService) AuthByCode(ctx context.Context, req *v1.AuthByCodeRequest) (*v1.AuthByCodeReply, error) {
+func (s *AuthService) AuthByCode(ctx context.Context, req *v1.AuthByCodeRequest) (*v1.TokenReply, error) {
 	err := s.au.AuthUserByCode(ctx, req.UserId, req.Code)
 	if err != nil {
 		if v1.IsInvalidCode(err) {
 			return nil, err
 		}
 		s.log.Errorf("au.AuthUserByCode: ", err)
-		return nil, errors.InternalServer("internal", "internal error")
+		return nil, v1.ErrorInternal("internal error")
 	}
 
-	claims := &jwtv4.RegisteredClaims{
-		Issuer:    "iam",
-		Audience:  jwtv4.ClaimStrings{"personal"},
-		Subject:   strconv.FormatInt(req.UserId, 10),
-		IssuedAt:  jwtv4.NewNumericDate(time.Now()),
-		ExpiresAt: jwtv4.NewNumericDate(time.Now().Add(TOKEN_DURATION)),
-	}
-	token := jwtv4.NewWithClaims(jwtv4.SigningMethodHS256, claims)
-
-	tokenString, err := token.SignedString(s.jwt.GetSecret())
+	accessToken, err := s.au.GenerateAccessToken(ctx, req.UserId)
 	if err != nil {
-		s.log.Errorf("token.SignedString: ", err)
-		return nil, errors.InternalServer("internal", "internal error")
+		return nil, err
 	}
 
-	return &v1.AuthByCodeReply{Token: tokenString}, nil
+	refreshToken, err := s.au.GenerateIdToken(ctx, req.UserId)
+	if err != nil {
+		return nil, err
+	}
+
+	return &v1.TokenReply{
+		AccessToken:  accessToken,
+		RefreshToken: refreshToken,
+	}, nil
+}
+
+func (s *AuthService) RefreshPersonalToken(ctx context.Context, req *v1.EmptyRequest) (*v1.TokenReply, error) {
+	userId, err := s.au.CheckIdToken(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	accessToken, err := s.au.GenerateAccessToken(ctx, userId)
+	if err != nil {
+		return nil, err
+	}
+
+	refreshToken, err := s.au.GenerateIdToken(ctx, userId)
+	if err != nil {
+		return nil, err
+	}
+
+	return &v1.TokenReply{
+		AccessToken:  accessToken,
+		RefreshToken: refreshToken,
+	}, nil
+}
+
+func (s *AuthService) RefreshTenantToken(ctx context.Context, req *v1.TenantRequest) (*v1.TokenReply, error) {
+	userId, err := s.au.CheckIdToken(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	accessToken, err := s.au.GenerateTenantToken(ctx, userId, req.TenantId)
+	if err != nil {
+		return nil, err
+	}
+
+	refreshToken, err := s.au.GenerateIdToken(ctx, userId)
+	if err != nil {
+		return nil, err
+	}
+
+	return &v1.TokenReply{
+		AccessToken:  accessToken,
+		RefreshToken: refreshToken,
+	}, nil
 }
