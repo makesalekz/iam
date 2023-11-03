@@ -1,0 +1,42 @@
+syntax = "proto3";
+
+package api.contacts.v1;
+
+import "google/api/annotations.proto";
+import "contacts/v1/models.proto";
+
+option go_package = "contacts/api/contacts/v1;contacts_v1";
+option java_multiple_files = true;
+option java_package = "api.contacts.v1";
+
+service Relations {
+  rpc GetBlockedUsers(EmptyRequest) returns (BlockedUsersReply){
+    option (google.api.http) = {
+      get: "/v1/contacts/users/blocked/list"
+    };
+  };
+  rpc BlockUser (BlockUserRequest) returns (EmptyReply){
+    option (google.api.http) = {
+      put: "/v1/contacts/users/{userId}/block"
+      body: "*"
+    };
+  };
+  rpc UnblockUser (UnblockUserRequest) returns (EmptyReply){
+    option (google.api.http) = {
+      put: "/v1/contacts/users/{userId}/unblock"
+      body: "*"
+    };
+  };
+}
+
+message BlockUserRequest{
+  int64 userId = 1;
+}
+
+message UnblockUserRequest{
+  int64 userId = 1;
+}
+
+message BlockedUsersReply{
+  repeated int64 userIds = 1;
+}

@@ -2,6 +2,8 @@ module iam
 
 go 1.21.1
 
+replace contacts => ./third_party/contacts
+
 require (
 	entgo.io/ent v0.12.3
 	github.com/go-kratos/consul v0.1.5

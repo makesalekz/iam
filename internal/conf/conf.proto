@@ -32,4 +32,6 @@ message Db {
 
 message Discovery {
   string notifications = 1;
+  string contacts = 2;
+  google.protobuf.Duration contacts_timeout = 3;
 }

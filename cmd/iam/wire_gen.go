@@ -44,7 +44,12 @@ func wireApp(bootstrap *conf.Bootstrap, logger log.Logger) (*kratos.App, func(),
 		return nil, nil, err
 	}
 	authService := service.NewAuthService(logger, jwtProcessor, authUsecase)
-	usersUsecase, err := biz.NewUsersUsecase(logger, config, usersRepo, otpRepo)
+	dialer, err := data.NewDialer(config, jwtProcessor)
+	if err != nil {
+		cleanup()
+		return nil, nil, err
+	}
+	usersUsecase, err := biz.NewUsersUsecase(logger, config, jwtProcessor, usersRepo, otpRepo, dialer)
 	if err != nil {
 		cleanup()
 		return nil, nil, err

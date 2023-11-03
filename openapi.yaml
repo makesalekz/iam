@@ -257,6 +257,11 @@ components:
             properties:
                 phone:
                     type: string
+        api.iam.v1.Contact:
+            type: object
+            properties:
+                label:
+                    type: string
         api.iam.v1.EmptyReply:
             type: object
             properties: {}
@@ -385,6 +390,8 @@ components:
                     type: string
                 lastLoginAt:
                     type: string
+                contact:
+                    $ref: '#/components/schemas/api.iam.v1.Contact'
 tags:
     - name: Auth
     - name: Privacy

@@ -30,13 +30,8 @@ func (j *JwtProcessor) GetSecret() []byte {
 }
 
 func (j *JwtProcessor) GetUserIdFromContext(ctx context.Context) (int64, bool) {
-	token, ok := jwt.FromContext(ctx)
-	if !ok {
-		return 0, false
-	}
-
-	claims, ok := token.(*jwtv4.RegisteredClaims)
-	if !ok {
+	claims := j.GetClaimsFromContext(ctx)
+	if claims == nil {
 		return 0, false
 	}
 
@@ -46,4 +41,18 @@ func (j *JwtProcessor) GetUserIdFromContext(ctx context.Context) (int64, bool) {
 	}
 
 	return userId, true
+}
+
+func (j *JwtProcessor) GetClaimsFromContext(ctx context.Context) *jwtv4.RegisteredClaims {
+	token, ok := jwt.FromContext(ctx)
+	if !ok {
+		return nil
+	}
+
+	claims, ok := token.(*jwtv4.RegisteredClaims)
+	if !ok {
+		return nil
+	}
+
+	return claims
 }

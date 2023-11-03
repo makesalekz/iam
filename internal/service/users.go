@@ -166,6 +166,7 @@ func (s *UsersService) GetUser(ctx context.Context, req *v1.GetUserRequest) (*v1
 		}
 		return nil, v1.ErrorDatabaseQuery("Internal error")
 	}
+	label, err := s.uc.GetUserContactLabel(ctx, req.UserId)
 
 	return &v1.UserReply{User: replyUserShort(user)}, nil
 }
