@@ -166,10 +166,10 @@ func (s *UsersService) GetUser(ctx context.Context, req *v1.GetUserRequest) (*v1
 		}
 		return nil, v1.ErrorDatabaseQuery("Internal error")
 	}
-	contactLabel, err := s.uc.GetUserContactLabel(ctx, req.UserId)
-
 	replyUser := replyUserShort(user)
-	replyUser.Contact = &v1.Contact{Label: contactLabel.GetLabel()}
+
+	contactLabel, err := s.uc.GetUserContactLabel(ctx, req.UserId)
+	replyUser.Contact = &v1.Contact{Label: contactLabel.Label}
 
 	return &v1.UserReply{User: replyUser}, nil
 }
