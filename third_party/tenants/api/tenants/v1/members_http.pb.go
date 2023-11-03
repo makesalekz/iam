@@ -31,9 +31,9 @@ type MembersHTTPServer interface {
 
 func RegisterMembersHTTPServer(s *http.Server, srv MembersHTTPServer) {
 	r := s.Route("/")
-	r.POST("/v1/tenants/{tenantId}/members", _Members_CreateMembers0_HTTP_Handler(srv))
-	r.DELETE("/v1/tenants/{tenantId}/members/{memberId}", _Members_DeleteMember0_HTTP_Handler(srv))
-	r.POST("/v1/tenants/{tenantId}/members/list", _Members_ListMembers0_HTTP_Handler(srv))
+	r.POST("/v1/tenants/members", _Members_CreateMembers0_HTTP_Handler(srv))
+	r.DELETE("/v1/tenants/members/{memberId}", _Members_DeleteMember0_HTTP_Handler(srv))
+	r.POST("/v1/tenants/members/list", _Members_ListMembers0_HTTP_Handler(srv))
 }
 
 func _Members_CreateMembers0_HTTP_Handler(srv MembersHTTPServer) func(ctx http.Context) error {
@@ -43,9 +43,6 @@ func _Members_CreateMembers0_HTTP_Handler(srv MembersHTTPServer) func(ctx http.C
 			return err
 		}
 		if err := ctx.BindQuery(&in); err != nil {
-			return err
-		}
-		if err := ctx.BindVars(&in); err != nil {
 			return err
 		}
 		http.SetOperation(ctx, OperationMembersCreateMembers)
@@ -92,9 +89,6 @@ func _Members_ListMembers0_HTTP_Handler(srv MembersHTTPServer) func(ctx http.Con
 		if err := ctx.BindQuery(&in); err != nil {
 			return err
 		}
-		if err := ctx.BindVars(&in); err != nil {
-			return err
-		}
 		http.SetOperation(ctx, OperationMembersListMembers)
 		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
 			return srv.ListMembers(ctx, req.(*ListMembersRequest))
@@ -124,7 +118,7 @@ func NewMembersHTTPClient(client *http.Client) MembersHTTPClient {
 
 func (c *MembersHTTPClientImpl) CreateMembers(ctx context.Context, in *CreateMembersRequest, opts ...http.CallOption) (*EmptyReply, error) {
 	var out EmptyReply
-	pattern := "/v1/tenants/{tenantId}/members"
+	pattern := "/v1/tenants/members"
 	path := binding.EncodeURL(pattern, in, false)
 	opts = append(opts, http.Operation(OperationMembersCreateMembers))
 	opts = append(opts, http.PathTemplate(pattern))
@@ -137,7 +131,7 @@ func (c *MembersHTTPClientImpl) CreateMembers(ctx context.Context, in *CreateMem
 
 func (c *MembersHTTPClientImpl) DeleteMember(ctx context.Context, in *DeleteMemberRequest, opts ...http.CallOption) (*EmptyReply, error) {
 	var out EmptyReply
-	pattern := "/v1/tenants/{tenantId}/members/{memberId}"
+	pattern := "/v1/tenants/members/{memberId}"
 	path := binding.EncodeURL(pattern, in, true)
 	opts = append(opts, http.Operation(OperationMembersDeleteMember))
 	opts = append(opts, http.PathTemplate(pattern))
@@ -150,7 +144,7 @@ func (c *MembersHTTPClientImpl) DeleteMember(ctx context.Context, in *DeleteMemb
 
 func (c *MembersHTTPClientImpl) ListMembers(ctx context.Context, in *ListMembersRequest, opts ...http.CallOption) (*ListMembersReply, error) {
 	var out ListMembersReply
-	pattern := "/v1/tenants/{tenantId}/members/list"
+	pattern := "/v1/tenants/members/list"
 	path := binding.EncodeURL(pattern, in, false)
 	opts = append(opts, http.Operation(OperationMembersListMembers))
 	opts = append(opts, http.PathTemplate(pattern))

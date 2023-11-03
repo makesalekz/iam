@@ -3,16 +3,16 @@ package biz
 import (
 	"context"
 	"fmt"
-	notifications_v1 "notifications/api/notifications/v1"
 	"os"
 	"strconv"
-	tenants_v1 "tenants/api/tenants/v1"
 	"time"
 
 	v1 "iam/api/iam/v1"
 	"iam/ent"
 	"iam/ent/property"
 	"iam/internal/data"
+	notifications_v1 "notifications/api/notifications/v1"
+	tenants_v1 "tenants/api/tenants/v1"
 
 	"github.com/go-kratos/kratos/v2/log"
 	jwtv4 "github.com/golang-jwt/jwt/v4"
@@ -175,21 +175,6 @@ func (uc *AuthUsecase) GenerateTenantToken(ctx context.Context, userId, tenantId
 		duration = REFRESH_TOKEN_DURATION
 	}
 
-	tenantMemberClient, err := uc.dialer.TenantsMembers(ctx)
-	if err != nil {
-		return "", v1.ErrorGrpcConnection("dialer.TenantsMembers: %s", err.Error())
-	}
-
-	reply, err := tenantMemberClient.GetMember(ctx, &tenants_v1.GetMemberRequest{
-		TenantId: tenantId,
-		UserId:   userId,
-	})
-	if err != nil {
-		return "", v1.ErrorServiceFailed("tenantMemberClient.GetMember: %s", err.Error())
-	}
-
-	uc.log.Debugf("reply: %v", reply)
-
 	claims := &data.TenantClaims{
 		RegisteredClaims: jwtv4.RegisteredClaims{
 			Issuer:    "iam",
@@ -198,10 +183,25 @@ func (uc *AuthUsecase) GenerateTenantToken(ctx context.Context, userId, tenantId
 			IssuedAt:  jwtv4.NewNumericDate(time.Now()),
 			ExpiresAt: jwtv4.NewNumericDate(time.Now().Add(duration)),
 		},
-		TenantId:  tenantId,
-		MemberId:  reply.Member,
-		GroupsIds: reply.Groups,
+		TenantId: tenantId,
 	}
+	uc.log.Debugf("claims: %+v", claims)
+
+	tenantMemberClient, err := uc.dialer.TenantsMembers(ctx, claims)
+	if err != nil {
+		return "", v1.ErrorGrpcConnection("dialer.TenantsMembers: %s", err.Error())
+	}
+
+	reply, err := tenantMemberClient.GetMember(ctx, &tenants_v1.GetMemberRequest{
+		UserId: userId,
+	})
+	if err != nil {
+		return "", v1.ErrorServiceFailed("tenantMemberClient.GetMember: %s", err.Error())
+	}
+
+	claims.MemberId = reply.Member
+	claims.GroupsIds = reply.Groups
+
 	token := jwtv4.NewWithClaims(jwtv4.SigningMethodHS256, claims)
 
 	result, err := token.SignedString(uc.jwt.GetSecret())
