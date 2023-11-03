@@ -17,7 +17,6 @@ import (
 // UsersUsecase .
 type UsersUsecase struct {
 	log       *log.Helper
-	jwt       *data.JwtProcessor
 	discovery registry.Discovery
 	usersRepo data.UsersRepo
 	otpRepo   data.OtpRepo
@@ -35,7 +34,6 @@ func NewUsersUsecase(logger log.Logger,
 	return &UsersUsecase{
 		log:       log.NewHelper(logger),
 		discovery: c.GetRegistry(),
-		jwt:       jwt,
 		usersRepo: usersRepo,
 		otpRepo:   otpRepo,
 		dialer:    dialer,
@@ -66,12 +64,7 @@ func (uc *UsersUsecase) GetUsers(ctx context.Context, filter data.GetUsersFilter
 	return uc.usersRepo.GetUsers(ctx, filter)
 }
 
-func (uc *UsersUsecase) GetUserContactLabel(ctx context.Context, userId int64) (*iam_v1.Contact, error) {
-	ownerId, ok := uc.jwt.GetUserIdFromContext(ctx)
-	if !ok {
-		return nil, iam_v1.ErrorUnauthorized("Unauthorized")
-	}
-
+func (uc *UsersUsecase) GetUserContactLabel(ctx context.Context, ownerId, userId int64) (*iam_v1.Contact, error) {
 	contactClient, err := uc.dialer.Contacts(ctx)
 	if err != nil {
 		return &iam_v1.Contact{}, iam_v1.ErrorGrpcConnection("dialer.Users: %s", err.Error())
