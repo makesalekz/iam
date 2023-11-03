@@ -90,7 +90,7 @@ func (uc *UsersUsecase) GetUserContactLabel(ctx context.Context, userId int64) (
 	}
 
 	label := slices.MaxFunc(labels.GetLabels(), func(a, b string) int { return len(a) - len(b) })
-	contact.Label = &label
+	contact.Label = label
 
 	return &contact, nil
 }
