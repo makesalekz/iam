@@ -5,10 +5,10 @@ import (
 	_ "embed"
 	"slices"
 
+	contacts_v1 "contacts/api/contacts/v1"
 	iam_v1 "iam/api/iam/v1"
 	"iam/ent"
 	"iam/internal/data"
-	contacts_v1 "iam/third_party/contacts/api/contacts/v1"
 
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/go-kratos/kratos/v2/registry"

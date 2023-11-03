@@ -21,16 +21,22 @@ const _ = http.SupportPackageIsVersion1
 
 const OperationAuthAuthByCode = "/api.iam.v1.Auth/AuthByCode"
 const OperationAuthAuthByPhone = "/api.iam.v1.Auth/AuthByPhone"
+const OperationAuthRefreshPersonalToken = "/api.iam.v1.Auth/RefreshPersonalToken"
+const OperationAuthRefreshTenantToken = "/api.iam.v1.Auth/RefreshTenantToken"
 
 type AuthHTTPServer interface {
-	AuthByCode(context.Context, *AuthByCodeRequest) (*AuthByCodeReply, error)
+	AuthByCode(context.Context, *AuthByCodeRequest) (*TokenReply, error)
 	AuthByPhone(context.Context, *AuthByPhoneRequest) (*AuthByPhoneReply, error)
+	RefreshPersonalToken(context.Context, *EmptyRequest) (*TokenReply, error)
+	RefreshTenantToken(context.Context, *TenantRequest) (*TokenReply, error)
 }
 
 func RegisterAuthHTTPServer(s *http.Server, srv AuthHTTPServer) {
 	r := s.Route("/")
 	r.POST("/v1/auth/phone", _Auth_AuthByPhone0_HTTP_Handler(srv))
 	r.POST("/v1/auth/code", _Auth_AuthByCode0_HTTP_Handler(srv))
+	r.GET("/v1/auth/personal", _Auth_RefreshPersonalToken0_HTTP_Handler(srv))
+	r.GET("/v1/auth/tenant/{tenant_id}", _Auth_RefreshTenantToken0_HTTP_Handler(srv))
 }
 
 func _Auth_AuthByPhone0_HTTP_Handler(srv AuthHTTPServer) func(ctx http.Context) error {
@@ -72,14 +78,57 @@ func _Auth_AuthByCode0_HTTP_Handler(srv AuthHTTPServer) func(ctx http.Context) e
 		if err != nil {
 			return err
 		}
-		reply := out.(*AuthByCodeReply)
+		reply := out.(*TokenReply)
+		return ctx.Result(200, reply)
+	}
+}
+
+func _Auth_RefreshPersonalToken0_HTTP_Handler(srv AuthHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in EmptyRequest
+		if err := ctx.BindQuery(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, OperationAuthRefreshPersonalToken)
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.RefreshPersonalToken(ctx, req.(*EmptyRequest))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*TokenReply)
+		return ctx.Result(200, reply)
+	}
+}
+
+func _Auth_RefreshTenantToken0_HTTP_Handler(srv AuthHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in TenantRequest
+		if err := ctx.BindQuery(&in); err != nil {
+			return err
+		}
+		if err := ctx.BindVars(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, OperationAuthRefreshTenantToken)
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.RefreshTenantToken(ctx, req.(*TenantRequest))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*TokenReply)
 		return ctx.Result(200, reply)
 	}
 }
 
 type AuthHTTPClient interface {
-	AuthByCode(ctx context.Context, req *AuthByCodeRequest, opts ...http.CallOption) (rsp *AuthByCodeReply, err error)
+	AuthByCode(ctx context.Context, req *AuthByCodeRequest, opts ...http.CallOption) (rsp *TokenReply, err error)
 	AuthByPhone(ctx context.Context, req *AuthByPhoneRequest, opts ...http.CallOption) (rsp *AuthByPhoneReply, err error)
+	RefreshPersonalToken(ctx context.Context, req *EmptyRequest, opts ...http.CallOption) (rsp *TokenReply, err error)
+	RefreshTenantToken(ctx context.Context, req *TenantRequest, opts ...http.CallOption) (rsp *TokenReply, err error)
 }
 
 type AuthHTTPClientImpl struct {
@@ -90,8 +139,8 @@ func NewAuthHTTPClient(client *http.Client) AuthHTTPClient {
 	return &AuthHTTPClientImpl{client}
 }
 
-func (c *AuthHTTPClientImpl) AuthByCode(ctx context.Context, in *AuthByCodeRequest, opts ...http.CallOption) (*AuthByCodeReply, error) {
-	var out AuthByCodeReply
+func (c *AuthHTTPClientImpl) AuthByCode(ctx context.Context, in *AuthByCodeRequest, opts ...http.CallOption) (*TokenReply, error) {
+	var out TokenReply
 	pattern := "/v1/auth/code"
 	path := binding.EncodeURL(pattern, in, false)
 	opts = append(opts, http.Operation(OperationAuthAuthByCode))
@@ -110,6 +159,32 @@ func (c *AuthHTTPClientImpl) AuthByPhone(ctx context.Context, in *AuthByPhoneReq
 	opts = append(opts, http.Operation(OperationAuthAuthByPhone))
 	opts = append(opts, http.PathTemplate(pattern))
 	err := c.cc.Invoke(ctx, "POST", path, in, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, err
+}
+
+func (c *AuthHTTPClientImpl) RefreshPersonalToken(ctx context.Context, in *EmptyRequest, opts ...http.CallOption) (*TokenReply, error) {
+	var out TokenReply
+	pattern := "/v1/auth/personal"
+	path := binding.EncodeURL(pattern, in, true)
+	opts = append(opts, http.Operation(OperationAuthRefreshPersonalToken))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "GET", path, nil, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, err
+}
+
+func (c *AuthHTTPClientImpl) RefreshTenantToken(ctx context.Context, in *TenantRequest, opts ...http.CallOption) (*TokenReply, error) {
+	var out TokenReply
+	pattern := "/v1/auth/tenant/{tenant_id}"
+	path := binding.EncodeURL(pattern, in, true)
+	opts = append(opts, http.Operation(OperationAuthRefreshTenantToken))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "GET", path, nil, &out, opts...)
 	if err != nil {
 		return nil, err
 	}

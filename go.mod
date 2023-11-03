@@ -2,9 +2,14 @@ module iam
 
 go 1.21.1
 
-replace contacts => ./third_party/contacts
+replace (
+	contacts => ./third_party/contacts
+	notifications => ./third_party/notifications
+	tenants => ./third_party/tenants
+)
 
 require (
+	contacts v0.0.0-00010101000000-000000000000
 	entgo.io/ent v0.12.3
 	github.com/go-kratos/consul v0.1.5
 	github.com/go-kratos/kratos/contrib/config/consul/v2 v2.0.0-20230830131453-6c026bce56a9
@@ -20,6 +25,8 @@ require (
 	google.golang.org/genproto/googleapis/api v0.0.0-20230629202037-9506855d4529
 	google.golang.org/grpc v1.57.0
 	google.golang.org/protobuf v1.31.0
+	notifications v1.0.0
+	tenants v1.0.0
 )
 
 require (
