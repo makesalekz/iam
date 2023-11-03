@@ -48,7 +48,7 @@ func (d *Dialer) Notifications(ctx context.Context) (notifications_v1.SenderClie
 	return notifications_v1.NewSenderClient(conn), nil
 }
 
-func (d *Dialer) TenantsMembers(ctx context.Context) (tenants_v1.MembersClient, error) {
+func (d *Dialer) TenantsMembers(ctx context.Context, claims *TenantClaims) (tenants_v1.MembersClient, error) {
 	conn, err := grpc.DialInsecure(
 		ctx,
 		grpc.WithEndpoint(d.conf.Discovery.Tenants),
@@ -58,7 +58,7 @@ func (d *Dialer) TenantsMembers(ctx context.Context) (tenants_v1.MembersClient, 
 			jwt.Client(func(token *jwtv4.Token) (interface{}, error) {
 				return d.jwt.GetSecret(), nil
 			}, jwt.WithSigningMethod(jwtv4.SigningMethodHS256), jwt.WithClaims(func() jwtv4.Claims {
-				return d.jwt.GetClaimsFromContext(ctx)
+				return claims
 			})),
 		),
 	)

@@ -12,37 +12,34 @@ option java_package = "api.tenants.v1";
 service Members {
 	rpc CreateMembers (CreateMembersRequest) returns (EmptyReply) {
 		option (google.api.http) = {
-			post: "/v1/tenants/{tenantId}/members"
+			post: "/v1/tenants/members"
 			body: "*"
 		};
 	};
 	rpc DeleteMember (DeleteMemberRequest) returns (EmptyReply) {
 		option (google.api.http) = {
-			delete: "/v1/tenants/{tenantId}/members/{memberId}"
+			delete: "/v1/tenants/members/{memberId}"
 		};
 	};
 	rpc GetMember (GetMemberRequest) returns (GetMemberReply);
 	rpc ListMembers (ListMembersRequest) returns (ListMembersReply) {
 		option (google.api.http) = {
-			post: "/v1/tenants/{tenantId}/members/list"
+			post: "/v1/tenants/members/list"
 			body: "*"
 		};
 	};
 }
 
 message CreateMembersRequest {
-	int64 tenantId = 1;
-	repeated int64 usersIds = 2;
+	repeated int64 usersIds = 1;
 }
 
 message DeleteMemberRequest {
-	int64 tenantId = 1;
-	string memberId = 2;
+	string memberId = 1;
 }
 
 message GetMemberRequest {
-	int64 tenantId = 1;
-	int64 userId = 2;
+	int64 userId = 1;
 }
 
 message GetMemberReply {
@@ -51,8 +48,7 @@ message GetMemberReply {
 }
 
 message ListMembersRequest {
-	int64 tenantId = 1;
-	PaginateRequest paginate = 2;
+	PaginateRequest paginate = 1;
 }
 
 message ListMembersReply {
