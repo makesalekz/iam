@@ -2,6 +2,11 @@ module iam
 
 go 1.21.1
 
+replace (
+	notifications => ./third_party/notifications
+	tenants => ./third_party/tenants
+)
+
 require (
 	entgo.io/ent v0.12.3
 	github.com/go-kratos/consul v0.1.5
@@ -18,6 +23,8 @@ require (
 	google.golang.org/genproto/googleapis/api v0.0.0-20230629202037-9506855d4529
 	google.golang.org/grpc v1.57.0
 	google.golang.org/protobuf v1.31.0
+	notifications v1.0.0
+	tenants v1.0.0
 )
 
 require (
