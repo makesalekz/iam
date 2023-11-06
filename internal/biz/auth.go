@@ -111,7 +111,7 @@ func (uc *AuthUsecase) AuthUserByCode(ctx context.Context, userId int64, code st
 
 	otp, err := uc.otpRepo.CheckOneTimePassword(ctx, user.ID, code)
 	if err != nil {
-		if v1.IsInvalidCode(err) {
+		if ent.IsNotFound(err) {
 			return err
 		}
 
@@ -120,7 +120,7 @@ func (uc *AuthUsecase) AuthUserByCode(ctx context.Context, userId int64, code st
 
 	err = uc.publishAuthMsgs(UserToUserShort(user), otp)
 	if err != nil {
-		return v1.ErrorDatabaseQuery("DB Error (UsersRepo): %s", err.Error())
+		return err
 	}
 
 	err = uc.setVerified(ctx, UserToUserShort(user), otp)
@@ -139,7 +139,7 @@ func (uc *AuthUsecase) publishAuthMsgs(userShort *v1.UserShort, otp *ent.OneTime
 		uc.queue.GetRemote(QueueContactsEmailVerified).Pub(userShort)
 	}
 
-	return nil
+	return v1.ErrorInternal("uc.publishAuthMsgs unrecognized otpType")
 }
 
 func (uc *AuthUsecase) setVerified(ctx context.Context, userShort *v1.UserShort, otp *ent.OneTimePassword) error {
