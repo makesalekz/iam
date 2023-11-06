@@ -64,13 +64,13 @@ func (uc *UsersUsecase) GetUsers(ctx context.Context, filter data.GetUsersFilter
 	return uc.usersRepo.GetUsers(ctx, filter)
 }
 
-func (uc *UsersUsecase) GetUserContactLabel(ctx context.Context, ownerId, userId int64) (*iam_v1.Contact, error) {
+func (uc *UsersUsecase) GetUserContactLabel(ctx context.Context, userId int64) (*iam_v1.Contact, error) {
 	contactClient, err := uc.dialer.Contacts(ctx)
 	if err != nil {
 		return &iam_v1.Contact{}, iam_v1.ErrorGrpcConnection("dialer.Users: %s", err.Error())
 	}
 
-	labels, err := contactClient.GetLabelsByUserId(ctx, &contacts_v1.GetLabelsByUserIdRequest{UserId: ownerId})
+	labels, err := contactClient.GetLabelsByUserId(ctx, &contacts_v1.GetLabelsByUserIdRequest{UserId: userId})
 	if err != nil {
 		if contacts_v1.IsNotFound(err) {
 			return &iam_v1.Contact{}, iam_v1.ErrorContactNotFound("there is not such contact")

@@ -155,7 +155,7 @@ func (s *UsersService) GetUserFull(ctx context.Context, req *v1.GetUserRequest) 
 }
 
 func (s *UsersService) GetUser(ctx context.Context, req *v1.GetUserRequest) (*v1.UserReply, error) {
-	ownerId, ok := s.jwt.GetUserIdFromContext(ctx)
+	_, ok := s.jwt.GetUserIdFromContext(ctx)
 	if !ok {
 		return nil, v1.ErrorUnauthorized("Unauthorized")
 	}
@@ -173,7 +173,7 @@ func (s *UsersService) GetUser(ctx context.Context, req *v1.GetUserRequest) (*v1
 	}
 	replyUser := replyUserShort(user)
 
-	contactLabel, err := s.uc.GetUserContactLabel(ctx, ownerId, req.UserId)
+	contactLabel, err := s.uc.GetUserContactLabel(ctx, req.UserId)
 	replyUser.Contact = &v1.Contact{Label: contactLabel.Label}
 
 	return &v1.UserReply{User: replyUser}, nil
