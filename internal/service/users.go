@@ -150,16 +150,15 @@ func (s *UsersService) GetUserFull(ctx context.Context, req *v1.GetUserRequest) 
 		}
 		return nil, v1.ErrorDatabaseQuery("Internal error")
 	}
+	replyUser := replyUser(user)
 
-	return &v1.UserFullReply{User: replyUser(user)}, nil
+	contactLabel, err := s.uc.GetUserContactLabel(ctx, req.UserId)
+	replyUser.Contact = &v1.Contact{Label: contactLabel.Label}
+
+	return &v1.UserFullReply{User: replyUser}, nil
 }
 
 func (s *UsersService) GetUser(ctx context.Context, req *v1.GetUserRequest) (*v1.UserReply, error) {
-	_, ok := s.jwt.GetUserIdFromContext(ctx)
-	if !ok {
-		return nil, v1.ErrorUnauthorized("Unauthorized")
-	}
-
 	filter := data.GetUserFilterDto{
 		UserId: req.GetUserId(),
 	}
@@ -171,12 +170,8 @@ func (s *UsersService) GetUser(ctx context.Context, req *v1.GetUserRequest) (*v1
 		}
 		return nil, v1.ErrorDatabaseQuery("Internal error")
 	}
-	replyUser := replyUserShort(user)
 
-	contactLabel, err := s.uc.GetUserContactLabel(ctx, req.UserId)
-	replyUser.Contact = &v1.Contact{Label: contactLabel.Label}
-
-	return &v1.UserReply{User: replyUser}, nil
+	return &v1.UserReply{User: replyUserShort(user)}, nil
 }
 
 func (s *UsersService) GetUsers(ctx context.Context, req *v1.GetUsersRequest) (*v1.GetUsersReply, error) {

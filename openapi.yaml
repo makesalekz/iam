@@ -397,6 +397,8 @@ components:
                     type: string
                 bioUpdatedAt:
                     type: string
+                contact:
+                    $ref: '#/components/schemas/api.iam.v1.Contact'
         api.iam.v1.UserFullReply:
             type: object
             properties:
@@ -422,8 +424,6 @@ components:
                     type: string
                 lastLoginAt:
                     type: string
-                contact:
-                    $ref: '#/components/schemas/api.iam.v1.Contact'
 tags:
     - name: Auth
     - name: Privacy
