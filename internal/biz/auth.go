@@ -112,9 +112,8 @@ func (uc *AuthUsecase) AuthUserByCode(ctx context.Context, userId int64, code st
 	otp, err := uc.otpRepo.CheckOneTimePassword(ctx, user.ID, code)
 	if err != nil {
 		if ent.IsNotFound(err) {
-			return err
+			return v1.ErrorInvalidCode("invalid code")
 		}
-
 		return v1.ErrorDatabaseQuery("DB Error (OtpRepo): %s", err.Error())
 	}
 
