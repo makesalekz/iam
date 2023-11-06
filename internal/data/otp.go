@@ -6,7 +6,6 @@ import (
 	"os"
 	"time"
 
-	iam_v1 "iam/api/iam/v1"
 	"iam/ent"
 	"iam/ent/onetimepassword"
 	"iam/ent/property"
@@ -61,10 +60,6 @@ func (r *otpRepo) CheckOneTimePassword(ctx context.Context, userId int64, code s
 
 	if err != nil {
 		return nil, err
-	}
-
-	if otp == nil {
-		return nil, iam_v1.ErrorInvalidCode("Invalid code")
 	}
 
 	otp, err = otp.Update().SetIsUsed(true).Save(ctx)
