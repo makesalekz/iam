@@ -30,6 +30,10 @@ const (
 	FieldTimezone = "timezone"
 	// FieldIsActive holds the string denoting the is_active field in the database.
 	FieldIsActive = "is_active"
+	// FieldPhoneVerified holds the string denoting the phone_verified field in the database.
+	FieldPhoneVerified = "phone_verified"
+	// FieldEmailVerified holds the string denoting the email_verified field in the database.
+	FieldEmailVerified = "email_verified"
 	// FieldLastLoginAt holds the string denoting the last_login_at field in the database.
 	FieldLastLoginAt = "last_login_at"
 	// FieldCreatedAt holds the string denoting the created_at field in the database.
@@ -53,6 +57,8 @@ var Columns = []string{
 	FieldAvatar,
 	FieldTimezone,
 	FieldIsActive,
+	FieldPhoneVerified,
+	FieldEmailVerified,
 	FieldLastLoginAt,
 	FieldCreatedAt,
 	FieldUpdatedAt,
@@ -85,6 +91,10 @@ var (
 	DefaultTimezone string
 	// DefaultIsActive holds the default value on creation for the "is_active" field.
 	DefaultIsActive bool
+	// DefaultPhoneVerified holds the default value on creation for the "phone_verified" field.
+	DefaultPhoneVerified bool
+	// DefaultEmailVerified holds the default value on creation for the "email_verified" field.
+	DefaultEmailVerified bool
 	// DefaultLastLoginAt holds the default value on creation for the "last_login_at" field.
 	DefaultLastLoginAt func() time.Time
 	// DefaultCreatedAt holds the default value on creation for the "created_at" field.
@@ -139,6 +149,16 @@ func ByTimezone(opts ...sql.OrderTermOption) OrderOption {
 // ByIsActive orders the results by the is_active field.
 func ByIsActive(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldIsActive, opts...).ToFunc()
+}
+
+// ByPhoneVerified orders the results by the phone_verified field.
+func ByPhoneVerified(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldPhoneVerified, opts...).ToFunc()
+}
+
+// ByEmailVerified orders the results by the email_verified field.
+func ByEmailVerified(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldEmailVerified, opts...).ToFunc()
 }
 
 // ByLastLoginAt orders the results by the last_login_at field.

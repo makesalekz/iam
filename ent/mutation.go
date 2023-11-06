@@ -700,6 +700,8 @@ type UserMutation struct {
 	avatar         *string
 	timezone       *string
 	is_active      *bool
+	phone_verified *bool
+	email_verified *bool
 	last_login_at  *time.Time
 	created_at     *time.Time
 	updated_at     *time.Time
@@ -1154,6 +1156,78 @@ func (m *UserMutation) ResetIsActive() {
 	m.is_active = nil
 }
 
+// SetPhoneVerified sets the "phone_verified" field.
+func (m *UserMutation) SetPhoneVerified(b bool) {
+	m.phone_verified = &b
+}
+
+// PhoneVerified returns the value of the "phone_verified" field in the mutation.
+func (m *UserMutation) PhoneVerified() (r bool, exists bool) {
+	v := m.phone_verified
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldPhoneVerified returns the old "phone_verified" field's value of the User entity.
+// If the User object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *UserMutation) OldPhoneVerified(ctx context.Context) (v bool, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldPhoneVerified is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldPhoneVerified requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldPhoneVerified: %w", err)
+	}
+	return oldValue.PhoneVerified, nil
+}
+
+// ResetPhoneVerified resets all changes to the "phone_verified" field.
+func (m *UserMutation) ResetPhoneVerified() {
+	m.phone_verified = nil
+}
+
+// SetEmailVerified sets the "email_verified" field.
+func (m *UserMutation) SetEmailVerified(b bool) {
+	m.email_verified = &b
+}
+
+// EmailVerified returns the value of the "email_verified" field in the mutation.
+func (m *UserMutation) EmailVerified() (r bool, exists bool) {
+	v := m.email_verified
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldEmailVerified returns the old "email_verified" field's value of the User entity.
+// If the User object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *UserMutation) OldEmailVerified(ctx context.Context) (v bool, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldEmailVerified is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldEmailVerified requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldEmailVerified: %w", err)
+	}
+	return oldValue.EmailVerified, nil
+}
+
+// ResetEmailVerified resets all changes to the "email_verified" field.
+func (m *UserMutation) ResetEmailVerified() {
+	m.email_verified = nil
+}
+
 // SetLastLoginAt sets the "last_login_at" field.
 func (m *UserMutation) SetLastLoginAt(t time.Time) {
 	m.last_login_at = &t
@@ -1345,7 +1419,7 @@ func (m *UserMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *UserMutation) Fields() []string {
-	fields := make([]string, 0, 12)
+	fields := make([]string, 0, 14)
 	if m.deleted_at != nil {
 		fields = append(fields, user.FieldDeletedAt)
 	}
@@ -1369,6 +1443,12 @@ func (m *UserMutation) Fields() []string {
 	}
 	if m.is_active != nil {
 		fields = append(fields, user.FieldIsActive)
+	}
+	if m.phone_verified != nil {
+		fields = append(fields, user.FieldPhoneVerified)
+	}
+	if m.email_verified != nil {
+		fields = append(fields, user.FieldEmailVerified)
 	}
 	if m.last_login_at != nil {
 		fields = append(fields, user.FieldLastLoginAt)
@@ -1406,6 +1486,10 @@ func (m *UserMutation) Field(name string) (ent.Value, bool) {
 		return m.Timezone()
 	case user.FieldIsActive:
 		return m.IsActive()
+	case user.FieldPhoneVerified:
+		return m.PhoneVerified()
+	case user.FieldEmailVerified:
+		return m.EmailVerified()
 	case user.FieldLastLoginAt:
 		return m.LastLoginAt()
 	case user.FieldCreatedAt:
@@ -1439,6 +1523,10 @@ func (m *UserMutation) OldField(ctx context.Context, name string) (ent.Value, er
 		return m.OldTimezone(ctx)
 	case user.FieldIsActive:
 		return m.OldIsActive(ctx)
+	case user.FieldPhoneVerified:
+		return m.OldPhoneVerified(ctx)
+	case user.FieldEmailVerified:
+		return m.OldEmailVerified(ctx)
 	case user.FieldLastLoginAt:
 		return m.OldLastLoginAt(ctx)
 	case user.FieldCreatedAt:
@@ -1511,6 +1599,20 @@ func (m *UserMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetIsActive(v)
+		return nil
+	case user.FieldPhoneVerified:
+		v, ok := value.(bool)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetPhoneVerified(v)
+		return nil
+	case user.FieldEmailVerified:
+		v, ok := value.(bool)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetEmailVerified(v)
 		return nil
 	case user.FieldLastLoginAt:
 		v, ok := value.(time.Time)
@@ -1645,6 +1747,12 @@ func (m *UserMutation) ResetField(name string) error {
 		return nil
 	case user.FieldIsActive:
 		m.ResetIsActive()
+		return nil
+	case user.FieldPhoneVerified:
+		m.ResetPhoneVerified()
+		return nil
+	case user.FieldEmailVerified:
+		m.ResetEmailVerified()
 		return nil
 	case user.FieldLastLoginAt:
 		m.ResetLastLoginAt()

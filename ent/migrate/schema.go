@@ -43,6 +43,8 @@ var (
 		{Name: "avatar", Type: field.TypeString, Nullable: true},
 		{Name: "timezone", Type: field.TypeString, Default: "UTC"},
 		{Name: "is_active", Type: field.TypeBool, Default: false},
+		{Name: "phone_verified", Type: field.TypeBool, Default: false},
+		{Name: "email_verified", Type: field.TypeBool, Default: false},
 		{Name: "last_login_at", Type: field.TypeTime},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},

@@ -52,16 +52,24 @@ func init() {
 	userDescIsActive := userFields[7].Descriptor()
 	// user.DefaultIsActive holds the default value on creation for the is_active field.
 	user.DefaultIsActive = userDescIsActive.Default.(bool)
+	// userDescPhoneVerified is the schema descriptor for phone_verified field.
+	userDescPhoneVerified := userFields[8].Descriptor()
+	// user.DefaultPhoneVerified holds the default value on creation for the phone_verified field.
+	user.DefaultPhoneVerified = userDescPhoneVerified.Default.(bool)
+	// userDescEmailVerified is the schema descriptor for email_verified field.
+	userDescEmailVerified := userFields[9].Descriptor()
+	// user.DefaultEmailVerified holds the default value on creation for the email_verified field.
+	user.DefaultEmailVerified = userDescEmailVerified.Default.(bool)
 	// userDescLastLoginAt is the schema descriptor for last_login_at field.
-	userDescLastLoginAt := userFields[8].Descriptor()
+	userDescLastLoginAt := userFields[10].Descriptor()
 	// user.DefaultLastLoginAt holds the default value on creation for the last_login_at field.
 	user.DefaultLastLoginAt = userDescLastLoginAt.Default.(func() time.Time)
 	// userDescCreatedAt is the schema descriptor for created_at field.
-	userDescCreatedAt := userFields[9].Descriptor()
+	userDescCreatedAt := userFields[11].Descriptor()
 	// user.DefaultCreatedAt holds the default value on creation for the created_at field.
 	user.DefaultCreatedAt = userDescCreatedAt.Default.(func() time.Time)
 	// userDescUpdatedAt is the schema descriptor for updated_at field.
-	userDescUpdatedAt := userFields[10].Descriptor()
+	userDescUpdatedAt := userFields[12].Descriptor()
 	// user.DefaultUpdatedAt holds the default value on creation for the updated_at field.
 	user.DefaultUpdatedAt = userDescUpdatedAt.Default.(func() time.Time)
 	userprivacyFields := schema.UserPrivacy{}.Fields()

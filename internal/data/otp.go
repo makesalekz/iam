@@ -6,6 +6,7 @@ import (
 	"os"
 	"time"
 
+	iam_v1 "iam/api/iam/v1"
 	"iam/ent"
 	"iam/ent/onetimepassword"
 	"iam/ent/property"
@@ -16,7 +17,7 @@ const digits = "0123456789"
 // OtpRepo
 type OtpRepo interface {
 	CreateOneTimePassword(ctx context.Context, userId int64, t property.OneTimePasswordType, duration time.Duration) (*ent.OneTimePassword, error)
-	CheckOneTimePassword(ctx context.Context, userId int64, code string) (bool, error)
+	CheckOneTimePassword(ctx context.Context, userId int64, code string) (*ent.OneTimePassword, error)
 }
 
 type otpRepo struct {
@@ -50,7 +51,7 @@ func (r *otpRepo) CreateOneTimePassword(ctx context.Context, userId int64, t pro
 	return r.db.OneTimePassword.Create().SetUserID(userId).SetCode(code).SetType(t).SetExpiresAt(expiresAt).Save(ctx)
 }
 
-func (r *otpRepo) CheckOneTimePassword(ctx context.Context, userId int64, code string) (bool, error) {
+func (r *otpRepo) CheckOneTimePassword(ctx context.Context, userId int64, code string) (*ent.OneTimePassword, error) {
 	otp, err := r.db.OneTimePassword.Query().Where(
 		onetimepassword.UserID(userId),
 		onetimepassword.Code(code),
@@ -59,17 +60,17 @@ func (r *otpRepo) CheckOneTimePassword(ctx context.Context, userId int64, code s
 	).First(ctx)
 
 	if err != nil {
-		return false, err
+		return nil, err
 	}
 
 	if otp == nil {
-		return false, nil
+		return nil, iam_v1.ErrorInvalidCode("Invalid code")
 	}
 
-	_, err = otp.Update().SetIsUsed(true).Save(ctx)
+	otp, err = otp.Update().SetIsUsed(true).Save(ctx)
 	if err != nil {
-		return false, err
+		return nil, err
 	}
 
-	return true, nil
+	return otp, nil
 }

@@ -134,6 +134,34 @@ func (uc *UserCreate) SetNillableIsActive(b *bool) *UserCreate {
 	return uc
 }
 
+// SetPhoneVerified sets the "phone_verified" field.
+func (uc *UserCreate) SetPhoneVerified(b bool) *UserCreate {
+	uc.mutation.SetPhoneVerified(b)
+	return uc
+}
+
+// SetNillablePhoneVerified sets the "phone_verified" field if the given value is not nil.
+func (uc *UserCreate) SetNillablePhoneVerified(b *bool) *UserCreate {
+	if b != nil {
+		uc.SetPhoneVerified(*b)
+	}
+	return uc
+}
+
+// SetEmailVerified sets the "email_verified" field.
+func (uc *UserCreate) SetEmailVerified(b bool) *UserCreate {
+	uc.mutation.SetEmailVerified(b)
+	return uc
+}
+
+// SetNillableEmailVerified sets the "email_verified" field if the given value is not nil.
+func (uc *UserCreate) SetNillableEmailVerified(b *bool) *UserCreate {
+	if b != nil {
+		uc.SetEmailVerified(*b)
+	}
+	return uc
+}
+
 // SetLastLoginAt sets the "last_login_at" field.
 func (uc *UserCreate) SetLastLoginAt(t time.Time) *UserCreate {
 	uc.mutation.SetLastLoginAt(t)
@@ -249,6 +277,14 @@ func (uc *UserCreate) defaults() error {
 		v := user.DefaultIsActive
 		uc.mutation.SetIsActive(v)
 	}
+	if _, ok := uc.mutation.PhoneVerified(); !ok {
+		v := user.DefaultPhoneVerified
+		uc.mutation.SetPhoneVerified(v)
+	}
+	if _, ok := uc.mutation.EmailVerified(); !ok {
+		v := user.DefaultEmailVerified
+		uc.mutation.SetEmailVerified(v)
+	}
 	if _, ok := uc.mutation.LastLoginAt(); !ok {
 		if user.DefaultLastLoginAt == nil {
 			return fmt.Errorf("ent: uninitialized user.DefaultLastLoginAt (forgotten import ent/runtime?)")
@@ -286,6 +322,12 @@ func (uc *UserCreate) check() error {
 	}
 	if _, ok := uc.mutation.IsActive(); !ok {
 		return &ValidationError{Name: "is_active", err: errors.New(`ent: missing required field "User.is_active"`)}
+	}
+	if _, ok := uc.mutation.PhoneVerified(); !ok {
+		return &ValidationError{Name: "phone_verified", err: errors.New(`ent: missing required field "User.phone_verified"`)}
+	}
+	if _, ok := uc.mutation.EmailVerified(); !ok {
+		return &ValidationError{Name: "email_verified", err: errors.New(`ent: missing required field "User.email_verified"`)}
 	}
 	if _, ok := uc.mutation.LastLoginAt(); !ok {
 		return &ValidationError{Name: "last_login_at", err: errors.New(`ent: missing required field "User.last_login_at"`)}
@@ -360,6 +402,14 @@ func (uc *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 	if value, ok := uc.mutation.IsActive(); ok {
 		_spec.SetField(user.FieldIsActive, field.TypeBool, value)
 		_node.IsActive = value
+	}
+	if value, ok := uc.mutation.PhoneVerified(); ok {
+		_spec.SetField(user.FieldPhoneVerified, field.TypeBool, value)
+		_node.PhoneVerified = value
+	}
+	if value, ok := uc.mutation.EmailVerified(); ok {
+		_spec.SetField(user.FieldEmailVerified, field.TypeBool, value)
+		_node.EmailVerified = value
 	}
 	if value, ok := uc.mutation.LastLoginAt(); ok {
 		_spec.SetField(user.FieldLastLoginAt, field.TypeTime, value)
@@ -546,6 +596,30 @@ func (u *UserUpsert) SetIsActive(v bool) *UserUpsert {
 // UpdateIsActive sets the "is_active" field to the value that was provided on create.
 func (u *UserUpsert) UpdateIsActive() *UserUpsert {
 	u.SetExcluded(user.FieldIsActive)
+	return u
+}
+
+// SetPhoneVerified sets the "phone_verified" field.
+func (u *UserUpsert) SetPhoneVerified(v bool) *UserUpsert {
+	u.Set(user.FieldPhoneVerified, v)
+	return u
+}
+
+// UpdatePhoneVerified sets the "phone_verified" field to the value that was provided on create.
+func (u *UserUpsert) UpdatePhoneVerified() *UserUpsert {
+	u.SetExcluded(user.FieldPhoneVerified)
+	return u
+}
+
+// SetEmailVerified sets the "email_verified" field.
+func (u *UserUpsert) SetEmailVerified(v bool) *UserUpsert {
+	u.Set(user.FieldEmailVerified, v)
+	return u
+}
+
+// UpdateEmailVerified sets the "email_verified" field to the value that was provided on create.
+func (u *UserUpsert) UpdateEmailVerified() *UserUpsert {
+	u.SetExcluded(user.FieldEmailVerified)
 	return u
 }
 
@@ -788,6 +862,34 @@ func (u *UserUpsertOne) SetIsActive(v bool) *UserUpsertOne {
 func (u *UserUpsertOne) UpdateIsActive() *UserUpsertOne {
 	return u.Update(func(s *UserUpsert) {
 		s.UpdateIsActive()
+	})
+}
+
+// SetPhoneVerified sets the "phone_verified" field.
+func (u *UserUpsertOne) SetPhoneVerified(v bool) *UserUpsertOne {
+	return u.Update(func(s *UserUpsert) {
+		s.SetPhoneVerified(v)
+	})
+}
+
+// UpdatePhoneVerified sets the "phone_verified" field to the value that was provided on create.
+func (u *UserUpsertOne) UpdatePhoneVerified() *UserUpsertOne {
+	return u.Update(func(s *UserUpsert) {
+		s.UpdatePhoneVerified()
+	})
+}
+
+// SetEmailVerified sets the "email_verified" field.
+func (u *UserUpsertOne) SetEmailVerified(v bool) *UserUpsertOne {
+	return u.Update(func(s *UserUpsert) {
+		s.SetEmailVerified(v)
+	})
+}
+
+// UpdateEmailVerified sets the "email_verified" field to the value that was provided on create.
+func (u *UserUpsertOne) UpdateEmailVerified() *UserUpsertOne {
+	return u.Update(func(s *UserUpsert) {
+		s.UpdateEmailVerified()
 	})
 }
 
@@ -1201,6 +1303,34 @@ func (u *UserUpsertBulk) SetIsActive(v bool) *UserUpsertBulk {
 func (u *UserUpsertBulk) UpdateIsActive() *UserUpsertBulk {
 	return u.Update(func(s *UserUpsert) {
 		s.UpdateIsActive()
+	})
+}
+
+// SetPhoneVerified sets the "phone_verified" field.
+func (u *UserUpsertBulk) SetPhoneVerified(v bool) *UserUpsertBulk {
+	return u.Update(func(s *UserUpsert) {
+		s.SetPhoneVerified(v)
+	})
+}
+
+// UpdatePhoneVerified sets the "phone_verified" field to the value that was provided on create.
+func (u *UserUpsertBulk) UpdatePhoneVerified() *UserUpsertBulk {
+	return u.Update(func(s *UserUpsert) {
+		s.UpdatePhoneVerified()
+	})
+}
+
+// SetEmailVerified sets the "email_verified" field.
+func (u *UserUpsertBulk) SetEmailVerified(v bool) *UserUpsertBulk {
+	return u.Update(func(s *UserUpsert) {
+		s.SetEmailVerified(v)
+	})
+}
+
+// UpdateEmailVerified sets the "email_verified" field to the value that was provided on create.
+func (u *UserUpsertBulk) UpdateEmailVerified() *UserUpsertBulk {
+	return u.Update(func(s *UserUpsert) {
+		s.UpdateEmailVerified()
 	})
 }
 

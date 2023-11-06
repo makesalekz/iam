@@ -27,6 +27,7 @@ const REFRESH_TOKEN_DURATION = 30 * 24 * time.Hour
 // GreeterUsecase is a Greeter usecase.
 type AuthUsecase struct {
 	log       *log.Helper
+	queue     *QueueManager
 	jwt       *data.JwtProcessor
 	dialer    *data.Dialer
 	usersRepo data.UsersRepo
@@ -40,13 +41,18 @@ func NewAuthUsecase(
 	dialer *data.Dialer,
 	usersRepo data.UsersRepo,
 	otpRepo data.OtpRepo,
+	queue *QueueManager,
 ) (*AuthUsecase, error) {
+	queue.GetRemote(QueueContactsPhoneVerified)
+	queue.GetRemote(QueueContactsEmailVerified)
+
 	return &AuthUsecase{
 		log:       log.NewHelper(logger),
 		jwt:       jwt,
 		dialer:    dialer,
 		usersRepo: usersRepo,
 		otpRepo:   otpRepo,
+		queue:     queue,
 	}, nil
 }
 
@@ -103,14 +109,48 @@ func (uc *AuthUsecase) AuthUserByCode(ctx context.Context, userId int64, code st
 		return v1.ErrorDatabaseQuery("DB Error (UsersRepo): %s", err.Error())
 	}
 
-	ok, err := uc.otpRepo.CheckOneTimePassword(ctx, user.ID, code)
+	otp, err := uc.otpRepo.CheckOneTimePassword(ctx, user.ID, code)
 	if err != nil {
+		if v1.IsInvalidCode(err) {
+			return err
+		}
+
 		return v1.ErrorDatabaseQuery("DB Error (OtpRepo): %s", err.Error())
 	}
-	if !ok {
-		return v1.ErrorInvalidCode("Invalid code")
+
+	err = uc.publishAuthMsgs(UserToUserShort(user), otp)
+	if err != nil {
+		return v1.ErrorDatabaseQuery("DB Error (UsersRepo): %s", err.Error())
 	}
+
+	err = uc.setVerified(ctx, UserToUserShort(user), otp)
+	if err != nil {
+		return err
+	}
+
 	return nil
+}
+
+func (uc *AuthUsecase) publishAuthMsgs(userShort *v1.UserShort, otp *ent.OneTimePassword) error {
+	switch otp.Type {
+	case property.Phone:
+		uc.queue.GetRemote(QueueContactsPhoneVerified).Pub(userShort)
+	case property.Email:
+		uc.queue.GetRemote(QueueContactsEmailVerified).Pub(userShort)
+	}
+
+	return nil
+}
+
+func (uc *AuthUsecase) setVerified(ctx context.Context, userShort *v1.UserShort, otp *ent.OneTimePassword) error {
+	switch otp.Type {
+	case property.Phone:
+		return uc.usersRepo.PhoneVerified(ctx, userShort.GetId())
+	case property.Email:
+		return uc.usersRepo.EmailVerified(ctx, userShort.GetId())
+	}
+
+	return v1.ErrorInternal("uc.setVerified unrecognized otpType")
 }
 
 func (uc *AuthUsecase) CheckIdToken(ctx context.Context) (int64, error) {

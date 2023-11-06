@@ -19,27 +19,31 @@ type User struct {
 	ID int64 `json:"id,omitempty"`
 	// DeletedAt holds the value of the "deleted_at" field.
 	DeletedAt *time.Time `json:"deleted_at,omitempty"`
-	// Phone holds the value of the "phone" field.
+	// phone of a user
 	Phone *string `json:"phone,omitempty"`
-	// Email holds the value of the "email" field.
+	// email of a user
 	Email *string `json:"email,omitempty"`
-	// Name holds the value of the "name" field.
+	// this field contains a name that user set up
 	Name string `json:"name,omitempty"`
-	// Bio holds the value of the "bio" field.
+	// this field a biography of a user
 	Bio string `json:"bio,omitempty"`
-	// Avatar holds the value of the "avatar" field.
+	// a string contains link to a profile pic
 	Avatar *string `json:"avatar,omitempty"`
-	// Timezone holds the value of the "timezone" field.
+	// the timezone of a user
 	Timezone string `json:"timezone,omitempty"`
-	// IsActive holds the value of the "is_active" field.
+	// this field indicates that user finished his signup
 	IsActive bool `json:"is_active,omitempty"`
-	// LastLoginAt holds the value of the "last_login_at" field.
+	// this field indicates that phone has been verified
+	PhoneVerified bool `json:"phone_verified,omitempty"`
+	// this field indicates that email has been verified
+	EmailVerified bool `json:"email_verified,omitempty"`
+	// the time when user was last logged in
 	LastLoginAt time.Time `json:"last_login_at,omitempty"`
-	// CreatedAt holds the value of the "created_at" field.
+	// the time when user has been created
 	CreatedAt time.Time `json:"created_at,omitempty"`
-	// UpdatedAt holds the value of the "updated_at" field.
+	// the time when user was last changed
 	UpdatedAt time.Time `json:"updated_at,omitempty"`
-	// BioUpdatedAt holds the value of the "bio_updated_at" field.
+	// the time when user's bio has been changed
 	BioUpdatedAt *time.Time `json:"bio_updated_at,omitempty"`
 	selectValues sql.SelectValues
 }
@@ -49,7 +53,7 @@ func (*User) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case user.FieldIsActive:
+		case user.FieldIsActive, user.FieldPhoneVerified, user.FieldEmailVerified:
 			values[i] = new(sql.NullBool)
 		case user.FieldID:
 			values[i] = new(sql.NullInt64)
@@ -129,6 +133,18 @@ func (u *User) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field is_active", values[i])
 			} else if value.Valid {
 				u.IsActive = value.Bool
+			}
+		case user.FieldPhoneVerified:
+			if value, ok := values[i].(*sql.NullBool); !ok {
+				return fmt.Errorf("unexpected type %T for field phone_verified", values[i])
+			} else if value.Valid {
+				u.PhoneVerified = value.Bool
+			}
+		case user.FieldEmailVerified:
+			if value, ok := values[i].(*sql.NullBool); !ok {
+				return fmt.Errorf("unexpected type %T for field email_verified", values[i])
+			} else if value.Valid {
+				u.EmailVerified = value.Bool
 			}
 		case user.FieldLastLoginAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
@@ -222,6 +238,12 @@ func (u *User) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("is_active=")
 	builder.WriteString(fmt.Sprintf("%v", u.IsActive))
+	builder.WriteString(", ")
+	builder.WriteString("phone_verified=")
+	builder.WriteString(fmt.Sprintf("%v", u.PhoneVerified))
+	builder.WriteString(", ")
+	builder.WriteString("email_verified=")
+	builder.WriteString(fmt.Sprintf("%v", u.EmailVerified))
 	builder.WriteString(", ")
 	builder.WriteString("last_login_at=")
 	builder.WriteString(u.LastLoginAt.Format(time.ANSIC))
