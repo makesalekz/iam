@@ -117,12 +117,7 @@ func (uc *AuthUsecase) AuthUserByCode(ctx context.Context, userId int64, code st
 		return v1.ErrorDatabaseQuery("DB Error (OtpRepo): %s", err.Error())
 	}
 
-	err = uc.publishAuthMsgs(UserToUserShort(user), otp)
-	if err != nil {
-		return err
-	}
-
-	err = uc.setVerified(ctx, UserToUserShort(user), otp)
+	err = uc.handleUserVerification(ctx, user, otp)
 	if err != nil {
 		return err
 	}
@@ -130,26 +125,27 @@ func (uc *AuthUsecase) AuthUserByCode(ctx context.Context, userId int64, code st
 	return nil
 }
 
-func (uc *AuthUsecase) publishAuthMsgs(userShort *v1.UserShort, otp *ent.OneTimePassword) error {
+func (uc *AuthUsecase) handleUserVerification(ctx context.Context, user *ent.User, otp *ent.OneTimePassword) error {
+	userShort := UserToUserShort(user)
+
 	switch otp.Type {
 	case property.Phone:
+		if user.PhoneVerified {
+			return nil
+		}
 		uc.queue.GetRemote(QueueContactsPhoneVerified).Pub(userShort)
-	case property.Email:
-		uc.queue.GetRemote(QueueContactsEmailVerified).Pub(userShort)
-	}
 
-	return v1.ErrorInternal("uc.publishAuthMsgs unrecognized otpType")
-}
-
-func (uc *AuthUsecase) setVerified(ctx context.Context, userShort *v1.UserShort, otp *ent.OneTimePassword) error {
-	switch otp.Type {
-	case property.Phone:
 		return uc.usersRepo.PhoneVerified(ctx, userShort.GetId())
 	case property.Email:
+		if user.EmailVerified {
+			return nil
+		}
+		uc.queue.GetRemote(QueueContactsEmailVerified).Pub(userShort)
+
 		return uc.usersRepo.EmailVerified(ctx, userShort.GetId())
 	}
 
-	return v1.ErrorInternal("uc.setVerified unrecognized otpType")
+	return v1.ErrorInternal("uc.publishAuthMsgs unrecognized otpType")
 }
 
 func (uc *AuthUsecase) CheckIdToken(ctx context.Context) (int64, error) {
