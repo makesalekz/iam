@@ -30,24 +30,12 @@ func NewQueueManager(c *data.Config, nc *data.NatsClient, logger log.Logger) *Qu
 type queueKey struct{}
 
 func (qm *QueueManager) GetLocal(name string) *Queue {
-	qm.ql.RLock()
-
 	subj := qm.appName + "/" + name
 
-	queue, ok := qm.queues[subj]
-	if ok {
-		qm.ql.RUnlock()
-		return queue
+	var queue *Queue
+	if queue = qm.getQueue(subj); queue == nil {
+		queue = qm.initQueue(subj)
 	}
-	qm.ql.RUnlock()
-
-	qm.ql.Lock()
-	queue, ok = qm.queues[subj]
-	if !ok {
-		queue = newQueue(qm.nc, qm.log, subj)
-		qm.queues[subj] = queue
-	}
-	qm.ql.Unlock()
 
 	return queue
 }
@@ -69,22 +57,29 @@ func (qm *QueueManager) AddConsumer(name string, handler func(ctx context.Contex
 }
 
 func (qm *QueueManager) GetRemote(subj string) *Queue {
+	var queue *Queue
+	if queue = qm.getQueue(subj); queue == nil {
+		queue = qm.initQueue(subj)
+	}
+
+	return queue
+}
+
+func (qm *QueueManager) getQueue(subj string) *Queue {
 	qm.ql.RLock()
+	defer qm.ql.RUnlock()
+	return qm.queues[subj]
+}
+
+func (qm *QueueManager) initQueue(subj string) *Queue {
+	qm.ql.Lock()
+	defer qm.ql.Unlock()
 
 	queue, ok := qm.queues[subj]
-	if ok {
-		qm.ql.RUnlock()
-		return queue
-	}
-	qm.ql.RUnlock()
-
-	qm.ql.Lock()
-	queue, ok = qm.queues[subj]
 	if !ok {
 		queue = newQueue(qm.nc, qm.log, subj)
 		qm.queues[subj] = queue
 	}
-	qm.ql.Unlock()
 
 	return queue
 }
