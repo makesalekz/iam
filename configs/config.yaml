@@ -10,5 +10,7 @@ db:
 discovery:
   notifications: discovery:///notifications
   notifications_timeout: 30s
+  contacts: discovery::///contacts
+  contacts_timeout: 30s
   tenants: discovery:///tenants
   tenants_timeout: 30s

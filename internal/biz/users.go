@@ -3,7 +3,9 @@ package biz
 import (
 	"context"
 	_ "embed"
+	"slices"
 
+	contacts_v1 "contacts/api/contacts/v1"
 	iam_v1 "iam/api/iam/v1"
 	"iam/ent"
 	"iam/internal/data"
@@ -18,15 +20,23 @@ type UsersUsecase struct {
 	discovery registry.Discovery
 	usersRepo data.UsersRepo
 	otpRepo   data.OtpRepo
+	dialer    *data.Dialer
 }
 
 // NewUsersUsecase .
-func NewUsersUsecase(logger log.Logger, c *data.Config, usersRepo data.UsersRepo, otpRepo data.OtpRepo) (*UsersUsecase, error) {
+func NewUsersUsecase(logger log.Logger,
+	c *data.Config,
+	jwt *data.JwtProcessor,
+	usersRepo data.UsersRepo,
+	otpRepo data.OtpRepo,
+	dialer *data.Dialer,
+) (*UsersUsecase, error) {
 	return &UsersUsecase{
 		log:       log.NewHelper(logger),
 		discovery: c.GetRegistry(),
 		usersRepo: usersRepo,
 		otpRepo:   otpRepo,
+		dialer:    dialer,
 	}, nil
 }
 
@@ -52,4 +62,28 @@ func (uc *UsersUsecase) DeleteUser(ctx context.Context, userId int64) error {
 
 func (uc *UsersUsecase) GetUsers(ctx context.Context, filter data.GetUsersFilterDto) ([]*ent.User, error) {
 	return uc.usersRepo.GetUsers(ctx, filter)
+}
+
+func (uc *UsersUsecase) GetUserContactLabel(ctx context.Context, userId int64) (*iam_v1.Contact, error) {
+	contactClient, err := uc.dialer.Contacts(ctx)
+	if err != nil {
+		return &iam_v1.Contact{}, iam_v1.ErrorGrpcConnection("dialer.Users: %s", err.Error())
+	}
+
+	labels, err := contactClient.GetLabelsByUserId(ctx, &contacts_v1.GetLabelsByUserIdRequest{UserId: userId})
+	if err != nil {
+		if contacts_v1.IsNotFound(err) {
+			return &iam_v1.Contact{}, iam_v1.ErrorContactNotFound("there is not such contact")
+		}
+	}
+
+	contact := iam_v1.Contact{}
+	if len(labels.GetLabels()) == 0 {
+		return &contact, iam_v1.ErrorContactNotFound("there is not such contact")
+	}
+
+	label := slices.MaxFunc(labels.GetLabels(), func(a, b string) int { return len(a) - len(b) })
+	contact.Label = label
+
+	return &contact, nil
 }

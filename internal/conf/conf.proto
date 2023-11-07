@@ -35,4 +35,6 @@ message Discovery {
   google.protobuf.Duration notifications_timeout = 2;
   string tenants = 3;
   google.protobuf.Duration tenants_timeout = 4;
+  string contacts = 5;
+  google.protobuf.Duration contacts_timeout = 6;
 }

@@ -1,0 +1,58 @@
+syntax = "proto3";
+
+package api.contacts.v1;
+
+import "errors/errors.proto";
+import "iam/api/iam/v1/models.proto";
+
+option go_package = "contacts/api/contacts/v1;contacts_v1";
+option java_multiple_files = true;
+option java_package = "api.contacts.v1";
+
+
+// PaginationRequest: set both FromId and FromLabel  
+// \t use returned ToId and ToLabel in next request to get next page  
+message PaginateRequest {
+	int32 limit = 1;
+	int64 fromId = 2;
+	string fromLabel = 4;
+}
+
+message PaginateReply {
+	optional int32 total = 1;
+	optional string toLabel = 4;
+	optional int64 toId = 6;
+}
+
+message Contact {
+	int64 id = 1;
+	string phone = 2;
+	string label = 3;
+	string updatedAt = 4;
+	optional string email = 5;
+	optional api.iam.v1.UserShort user = 6;
+  
+	string createdAt = 7;
+}
+  
+
+message EmptyRequest{}
+message EmptyReply {}
+
+enum ErrorReason {
+	// Set default error code.
+	option (errors.default_code) = 500;
+  
+	// Set the error code separately for an enumeration.
+	INTERNAL = 0;
+	GRPC_CONNECTION = 1;
+	SERVICE_FAILED = 2;
+	DATABASE_QUERY = 3;
+	FORBIDDEN = 4 [(errors.code) = 403];
+	
+	UNAUTHORIZED = 10 [(errors.code) = 401];
+	NOT_FOUND = 11 [(errors.code) = 404];
+	CREATE_SELF_CONTACT = 12 [(errors.code) = 403];
+	
+	INVALID_REQUEST = 20 [(errors.code) = 400];
+  }

@@ -282,6 +282,11 @@ components:
             properties:
                 phone:
                     type: string
+        api.iam.v1.Contact:
+            type: object
+            properties:
+                label:
+                    type: string
         api.iam.v1.EmptyReply:
             type: object
             properties: {}
@@ -392,6 +397,8 @@ components:
                     type: string
                 bioUpdatedAt:
                     type: string
+                contact:
+                    $ref: '#/components/schemas/api.iam.v1.Contact'
         api.iam.v1.UserFullReply:
             type: object
             properties:

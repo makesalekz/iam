@@ -78,13 +78,15 @@ message GetUserRequest {
 	int64 userId = 1;
 }
 
-message GetUserByFilterRequest{
+message GetUserByFilterRequest {
 	SearchFilter search = 1;
 }
 
-message SearchFilter{
-	optional string phone = 1;
-	optional string email = 2;
+message SearchFilter {
+	oneof fields{
+		string phone = 1;
+		string email = 2;
+	} 
 }
 
 message UserReply {

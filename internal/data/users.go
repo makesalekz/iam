@@ -60,14 +60,9 @@ func (r *usersRepo) CreateUserWithEmail(ctx context.Context, email string) (*ent
 }
 
 func (r *usersRepo) UpdateUserData(ctx context.Context, id int64, dto UpdateUserDto) (*ent.User, error) {
-	user, err := r.db.User.Get(ctx, id)
-	if err != nil {
-		return nil, err
-	}
-
 	shouldUpdate := false
 	now := time.Now()
-	query := user.Update().SetLastLoginAt(now).SetUpdatedAt(now)
+	query := r.db.User.UpdateOneID(id).SetLastLoginAt(now).SetUpdatedAt(now)
 
 	if dto.Name != "" { // unnecessary to finish the registration
 		shouldUpdate = true
@@ -88,10 +83,10 @@ func (r *usersRepo) UpdateUserData(ctx context.Context, id int64, dto UpdateUser
 	}
 
 	if !shouldUpdate {
-		return user, nil
+		return r.db.User.Get(ctx, id)
 	}
 
-	_, err = query.Save(ctx)
+	user, err := query.Save(ctx)
 
 	return user, err
 }
