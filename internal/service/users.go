@@ -4,6 +4,7 @@ import (
 	"context"
 	"time"
 
+	iam_v1 "iam/api/iam/v1"
 	v1 "iam/api/iam/v1"
 	"iam/ent"
 	"iam/internal/biz"
@@ -153,7 +154,13 @@ func (s *UsersService) GetUserFull(ctx context.Context, req *v1.GetUserRequest) 
 	replyUser := replyUser(user)
 
 	contactLabel, err := s.uc.GetUserContactLabel(ctx, req.UserId)
-	replyUser.Contact = &v1.Contact{Label: contactLabel.Label}
+	if err != nil {
+		if !iam_v1.IsContactNotFound(err) {
+			return nil, v1.ErrorInternal("Internal error: %v", err)
+		}
+	} else {
+		replyUser.Contact = &v1.Contact{Label: contactLabel.Label}
+	}
 
 	return &v1.UserFullReply{User: replyUser}, nil
 }
