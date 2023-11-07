@@ -145,7 +145,7 @@ func (uc *AuthUsecase) handleUserVerification(ctx context.Context, user *ent.Use
 		return uc.usersRepo.EmailVerified(ctx, userShort.GetId())
 	}
 
-	return v1.ErrorInternal("uc.publishAuthMsgs unrecognized otpType")
+	return v1.ErrorInternal("unrecognized otpType")
 }
 
 func (uc *AuthUsecase) CheckIdToken(ctx context.Context) (int64, error) {
