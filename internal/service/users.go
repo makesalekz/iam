@@ -158,9 +158,7 @@ func (s *UsersService) GetUserFull(ctx context.Context, req *v1.GetUserRequest) 
 		if !iam_v1.IsContactNotFound(err) {
 			return nil, v1.ErrorInternal("Internal error: %v", err)
 		}
-	}
-
-	if !iam_v1.IsContactNotFound(err) {
+	} else {
 		replyUser.Contact = &v1.Contact{Label: contactLabel.Label}
 	}
 
