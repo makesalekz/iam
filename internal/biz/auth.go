@@ -43,9 +43,6 @@ func NewAuthUsecase(
 	otpRepo data.OtpRepo,
 	queue *QueueManager,
 ) (*AuthUsecase, error) {
-	queue.GetRemote(QueueContactsPhoneVerified)
-	queue.GetRemote(QueueContactsEmailVerified)
-
 	return &AuthUsecase{
 		log:       log.NewHelper(logger),
 		jwt:       jwt,
