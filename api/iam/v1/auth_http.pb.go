@@ -25,7 +25,14 @@ const OperationAuthRefreshPersonalToken = "/api.iam.v1.Auth/RefreshPersonalToken
 const OperationAuthRefreshTenantToken = "/api.iam.v1.Auth/RefreshTenantToken"
 
 type AuthHTTPServer interface {
+	// AuthByCode Auth by Code
+	// after you authorized bu phone, you suppose to enter code that you've got here
+	// request: id from AuthByPhone, code from message
+	// returns: bearer token
 	AuthByCode(context.Context, *AuthByCodeRequest) (*TokenReply, error)
+	// AuthByPhone Auth by Phone
+	// request: phone number
+	// returns: id of newly created otp user
 	AuthByPhone(context.Context, *AuthByPhoneRequest) (*AuthByPhoneReply, error)
 	RefreshPersonalToken(context.Context, *EmptyRequest) (*TokenReply, error)
 	RefreshTenantToken(context.Context, *TenantRequest) (*TokenReply, error)

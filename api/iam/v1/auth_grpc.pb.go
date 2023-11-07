@@ -29,7 +29,14 @@ const (
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type AuthClient interface {
+	// Auth by Phone
+	// request: phone number
+	// returns: id of newly created otp user
 	AuthByPhone(ctx context.Context, in *AuthByPhoneRequest, opts ...grpc.CallOption) (*AuthByPhoneReply, error)
+	// Auth by Code
+	// after you authorized bu phone, you suppose to enter code that you've got here
+	// request: id from AuthByPhone, code from message
+	// returns: bearer token
 	AuthByCode(ctx context.Context, in *AuthByCodeRequest, opts ...grpc.CallOption) (*TokenReply, error)
 	RefreshPersonalToken(ctx context.Context, in *EmptyRequest, opts ...grpc.CallOption) (*TokenReply, error)
 	RefreshTenantToken(ctx context.Context, in *TenantRequest, opts ...grpc.CallOption) (*TokenReply, error)
@@ -83,7 +90,14 @@ func (c *authClient) RefreshTenantToken(ctx context.Context, in *TenantRequest, 
 // All implementations must embed UnimplementedAuthServer
 // for forward compatibility
 type AuthServer interface {
+	// Auth by Phone
+	// request: phone number
+	// returns: id of newly created otp user
 	AuthByPhone(context.Context, *AuthByPhoneRequest) (*AuthByPhoneReply, error)
+	// Auth by Code
+	// after you authorized bu phone, you suppose to enter code that you've got here
+	// request: id from AuthByPhone, code from message
+	// returns: bearer token
 	AuthByCode(context.Context, *AuthByCodeRequest) (*TokenReply, error)
 	RefreshPersonalToken(context.Context, *EmptyRequest) (*TokenReply, error)
 	RefreshTenantToken(context.Context, *TenantRequest) (*TokenReply, error)

@@ -10,22 +10,31 @@ option java_multiple_files = true;
 option java_package = "api.iam.v1";
 
 service Users {
+	// GetOwnProfile  
+	// This is self explanotory, returns own profile
 	rpc GetOwnProfile (EmptyRequest) returns (UserFullReply) {
 		option (google.api.http) = {
 			get: "/v1/users/me"
 		};
 	};
+	// UpdateOwnProfile  
+	// This is self explanotory, update own profile
 	rpc UpdateOwnProfile (UpdateOwnProfileRequest) returns (UserFullReply) {
 		option (google.api.http) = {
 			post: "/v1/users/me"
 			body: "*"
 		};
 	};
+	// DeleteOwnProfile  
+	// This is self explanotory, delete own profile
 	rpc DeleteOwnProfile (EmptyRequest) returns (EmptyReply) {
 		option (google.api.http) = {
 			delete: "/v1/users/me"
 		};
 	};
+	// GetUserFull  
+	// Returns full information about user  
+	// Request: userId of seeking user
 	rpc GetUserFull (GetUserRequest) returns (UserFullReply) {
 		option (google.api.http) = {
 			get: "/v1/users/{userId}/full"
@@ -39,6 +48,8 @@ service Users {
 			body: "*"
 		};
 	};
+	// GetUser  
+	// get single user
 	rpc GetUser (GetUserRequest) returns (UserReply) {
 		option (google.api.http) = {
 			get: "/v1/users/{userId}"
