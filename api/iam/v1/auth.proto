@@ -10,12 +10,19 @@ option java_multiple_files = true;
 option java_package = "api.iam.v1";
 
 service Auth {
+	// Auth by Phone  
+	// request: phone number  
+	// returns: id of newly created otp user
 	rpc AuthByPhone (AuthByPhoneRequest) returns (AuthByPhoneReply) {
 		option (google.api.http) = {
 			post: "/v1/auth/phone"
 			body: "*"
 		};
 	};
+	// Auth by Code  
+	// after you authorized bu phone, you suppose to enter code that you've got here  
+	// request: id from AuthByPhone, code from message  
+	// returns: bearer token
 	rpc AuthByCode (AuthByCodeRequest) returns (TokenReply) {
 		option (google.api.http) = {
 			post: "/v1/auth/code"

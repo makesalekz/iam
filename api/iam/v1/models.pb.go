@@ -176,19 +176,20 @@ type User struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	Id           int64    `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
-	Name         string   `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
-	Bio          string   `protobuf:"bytes,3,opt,name=bio,proto3" json:"bio,omitempty"`
-	Timezone     string   `protobuf:"bytes,4,opt,name=timezone,proto3" json:"timezone,omitempty"`
-	CreatedAt    string   `protobuf:"bytes,5,opt,name=createdAt,proto3" json:"createdAt,omitempty"`
-	UpdatedAt    string   `protobuf:"bytes,6,opt,name=updatedAt,proto3" json:"updatedAt,omitempty"`
-	LastLoginAt  string   `protobuf:"bytes,7,opt,name=lastLoginAt,proto3" json:"lastLoginAt,omitempty"`
-	IsActive     bool     `protobuf:"varint,8,opt,name=isActive,proto3" json:"isActive,omitempty"`
-	Phone        *string  `protobuf:"bytes,9,opt,name=phone,proto3,oneof" json:"phone,omitempty"`
-	Email        *string  `protobuf:"bytes,10,opt,name=email,proto3,oneof" json:"email,omitempty"`
-	Avatar       *string  `protobuf:"bytes,11,opt,name=avatar,proto3,oneof" json:"avatar,omitempty"`
-	BioUpdatedAt *string  `protobuf:"bytes,12,opt,name=bioUpdatedAt,proto3,oneof" json:"bioUpdatedAt,omitempty"`
-	Contact      *Contact `protobuf:"bytes,13,opt,name=contact,proto3" json:"contact,omitempty"`
+	Id           int64   `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	Name         string  `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
+	Bio          string  `protobuf:"bytes,3,opt,name=bio,proto3" json:"bio,omitempty"`
+	Timezone     string  `protobuf:"bytes,4,opt,name=timezone,proto3" json:"timezone,omitempty"`
+	CreatedAt    string  `protobuf:"bytes,5,opt,name=createdAt,proto3" json:"createdAt,omitempty"`
+	UpdatedAt    string  `protobuf:"bytes,6,opt,name=updatedAt,proto3" json:"updatedAt,omitempty"`
+	LastLoginAt  string  `protobuf:"bytes,7,opt,name=lastLoginAt,proto3" json:"lastLoginAt,omitempty"`
+	IsActive     bool    `protobuf:"varint,8,opt,name=isActive,proto3" json:"isActive,omitempty"`
+	Phone        *string `protobuf:"bytes,9,opt,name=phone,proto3,oneof" json:"phone,omitempty"`
+	Email        *string `protobuf:"bytes,10,opt,name=email,proto3,oneof" json:"email,omitempty"`
+	Avatar       *string `protobuf:"bytes,11,opt,name=avatar,proto3,oneof" json:"avatar,omitempty"`
+	BioUpdatedAt *string `protobuf:"bytes,12,opt,name=bioUpdatedAt,proto3,oneof" json:"bioUpdatedAt,omitempty"`
+	// field containing tied contact info
+	Contact *Contact `protobuf:"bytes,13,opt,name=contact,proto3" json:"contact,omitempty"`
 }
 
 func (x *User) Reset() {

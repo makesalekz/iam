@@ -33,13 +33,24 @@ const (
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type UsersClient interface {
+	// GetOwnProfile
+	// This is self explanotory, returns own profile
 	GetOwnProfile(ctx context.Context, in *EmptyRequest, opts ...grpc.CallOption) (*UserFullReply, error)
+	// UpdateOwnProfile
+	// This is self explanotory, update own profile
 	UpdateOwnProfile(ctx context.Context, in *UpdateOwnProfileRequest, opts ...grpc.CallOption) (*UserFullReply, error)
+	// DeleteOwnProfile
+	// This is self explanotory, delete own profile
 	DeleteOwnProfile(ctx context.Context, in *EmptyRequest, opts ...grpc.CallOption) (*EmptyReply, error)
+	// GetUserFull
+	// Returns full information about user
+	// Request: userId of seeking user
 	GetUserFull(ctx context.Context, in *GetUserRequest, opts ...grpc.CallOption) (*UserFullReply, error)
 	// in case of search by phone, search.email should not be present
 	// in case of search by email, search.phone should not be present
 	GetUserByFilterFull(ctx context.Context, in *GetUserByFilterRequest, opts ...grpc.CallOption) (*UserFullReply, error)
+	// GetUser
+	// get single user
 	GetUser(ctx context.Context, in *GetUserRequest, opts ...grpc.CallOption) (*UserReply, error)
 	// in case of search by phone, search.email should not be present
 	// in case of search by email, search.phone should not be present
@@ -134,13 +145,24 @@ func (c *usersClient) GetUsers(ctx context.Context, in *GetUsersRequest, opts ..
 // All implementations must embed UnimplementedUsersServer
 // for forward compatibility
 type UsersServer interface {
+	// GetOwnProfile
+	// This is self explanotory, returns own profile
 	GetOwnProfile(context.Context, *EmptyRequest) (*UserFullReply, error)
+	// UpdateOwnProfile
+	// This is self explanotory, update own profile
 	UpdateOwnProfile(context.Context, *UpdateOwnProfileRequest) (*UserFullReply, error)
+	// DeleteOwnProfile
+	// This is self explanotory, delete own profile
 	DeleteOwnProfile(context.Context, *EmptyRequest) (*EmptyReply, error)
+	// GetUserFull
+	// Returns full information about user
+	// Request: userId of seeking user
 	GetUserFull(context.Context, *GetUserRequest) (*UserFullReply, error)
 	// in case of search by phone, search.email should not be present
 	// in case of search by email, search.phone should not be present
 	GetUserByFilterFull(context.Context, *GetUserByFilterRequest) (*UserFullReply, error)
+	// GetUser
+	// get single user
 	GetUser(context.Context, *GetUserRequest) (*UserReply, error)
 	// in case of search by phone, search.email should not be present
 	// in case of search by email, search.phone should not be present

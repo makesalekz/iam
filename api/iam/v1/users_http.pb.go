@@ -29,8 +29,14 @@ const OperationUsersGetUsers = "/api.iam.v1.Users/GetUsers"
 const OperationUsersUpdateOwnProfile = "/api.iam.v1.Users/UpdateOwnProfile"
 
 type UsersHTTPServer interface {
+	// DeleteOwnProfile DeleteOwnProfile
+	// This is self explanotory, delete own profile
 	DeleteOwnProfile(context.Context, *EmptyRequest) (*EmptyReply, error)
+	// GetOwnProfile GetOwnProfile
+	// This is self explanotory, returns own profile
 	GetOwnProfile(context.Context, *EmptyRequest) (*UserFullReply, error)
+	// GetUser GetUser
+	// get single user
 	GetUser(context.Context, *GetUserRequest) (*UserReply, error)
 	// GetUserByFilter in case of search by phone, search.email should not be present
 	// in case of search by email, search.phone should not be present
@@ -38,11 +44,16 @@ type UsersHTTPServer interface {
 	// GetUserByFilterFull in case of search by phone, search.email should not be present
 	// in case of search by email, search.phone should not be present
 	GetUserByFilterFull(context.Context, *GetUserByFilterRequest) (*UserFullReply, error)
+	// GetUserFull GetUserFull
+	// Returns full information about user
+	// Request: userId of seeking user
 	GetUserFull(context.Context, *GetUserRequest) (*UserFullReply, error)
 	// GetUsers search goes by all fileds
 	// t.m if you declare labels,emails,ids this method will return all
 	// users that has these fields
 	GetUsers(context.Context, *GetUsersRequest) (*GetUsersReply, error)
+	// UpdateOwnProfile UpdateOwnProfile
+	// This is self explanotory, update own profile
 	UpdateOwnProfile(context.Context, *UpdateOwnProfileRequest) (*UserFullReply, error)
 }
 

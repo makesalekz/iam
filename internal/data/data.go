@@ -18,6 +18,7 @@ var ProviderSet = wire.NewSet(
 	NewData,
 	NewConfig,
 	NewJwtProcessor,
+	NewNatsClient,
 	NewUsersRepo,
 	NewOtpRepo,
 	NewPrivacyRepo,

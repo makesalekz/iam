@@ -164,6 +164,34 @@ func (uu *UserUpdate) SetNillableIsActive(b *bool) *UserUpdate {
 	return uu
 }
 
+// SetPhoneVerified sets the "phone_verified" field.
+func (uu *UserUpdate) SetPhoneVerified(b bool) *UserUpdate {
+	uu.mutation.SetPhoneVerified(b)
+	return uu
+}
+
+// SetNillablePhoneVerified sets the "phone_verified" field if the given value is not nil.
+func (uu *UserUpdate) SetNillablePhoneVerified(b *bool) *UserUpdate {
+	if b != nil {
+		uu.SetPhoneVerified(*b)
+	}
+	return uu
+}
+
+// SetEmailVerified sets the "email_verified" field.
+func (uu *UserUpdate) SetEmailVerified(b bool) *UserUpdate {
+	uu.mutation.SetEmailVerified(b)
+	return uu
+}
+
+// SetNillableEmailVerified sets the "email_verified" field if the given value is not nil.
+func (uu *UserUpdate) SetNillableEmailVerified(b *bool) *UserUpdate {
+	if b != nil {
+		uu.SetEmailVerified(*b)
+	}
+	return uu
+}
+
 // SetLastLoginAt sets the "last_login_at" field.
 func (uu *UserUpdate) SetLastLoginAt(t time.Time) *UserUpdate {
 	uu.mutation.SetLastLoginAt(t)
@@ -302,6 +330,12 @@ func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if value, ok := uu.mutation.IsActive(); ok {
 		_spec.SetField(user.FieldIsActive, field.TypeBool, value)
+	}
+	if value, ok := uu.mutation.PhoneVerified(); ok {
+		_spec.SetField(user.FieldPhoneVerified, field.TypeBool, value)
+	}
+	if value, ok := uu.mutation.EmailVerified(); ok {
+		_spec.SetField(user.FieldEmailVerified, field.TypeBool, value)
 	}
 	if value, ok := uu.mutation.LastLoginAt(); ok {
 		_spec.SetField(user.FieldLastLoginAt, field.TypeTime, value)
@@ -474,6 +508,34 @@ func (uuo *UserUpdateOne) SetNillableIsActive(b *bool) *UserUpdateOne {
 	return uuo
 }
 
+// SetPhoneVerified sets the "phone_verified" field.
+func (uuo *UserUpdateOne) SetPhoneVerified(b bool) *UserUpdateOne {
+	uuo.mutation.SetPhoneVerified(b)
+	return uuo
+}
+
+// SetNillablePhoneVerified sets the "phone_verified" field if the given value is not nil.
+func (uuo *UserUpdateOne) SetNillablePhoneVerified(b *bool) *UserUpdateOne {
+	if b != nil {
+		uuo.SetPhoneVerified(*b)
+	}
+	return uuo
+}
+
+// SetEmailVerified sets the "email_verified" field.
+func (uuo *UserUpdateOne) SetEmailVerified(b bool) *UserUpdateOne {
+	uuo.mutation.SetEmailVerified(b)
+	return uuo
+}
+
+// SetNillableEmailVerified sets the "email_verified" field if the given value is not nil.
+func (uuo *UserUpdateOne) SetNillableEmailVerified(b *bool) *UserUpdateOne {
+	if b != nil {
+		uuo.SetEmailVerified(*b)
+	}
+	return uuo
+}
+
 // SetLastLoginAt sets the "last_login_at" field.
 func (uuo *UserUpdateOne) SetLastLoginAt(t time.Time) *UserUpdateOne {
 	uuo.mutation.SetLastLoginAt(t)
@@ -642,6 +704,12 @@ func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) 
 	}
 	if value, ok := uuo.mutation.IsActive(); ok {
 		_spec.SetField(user.FieldIsActive, field.TypeBool, value)
+	}
+	if value, ok := uuo.mutation.PhoneVerified(); ok {
+		_spec.SetField(user.FieldPhoneVerified, field.TypeBool, value)
+	}
+	if value, ok := uuo.mutation.EmailVerified(); ok {
+		_spec.SetField(user.FieldEmailVerified, field.TypeBool, value)
 	}
 	if value, ok := uuo.mutation.LastLoginAt(); ok {
 		_spec.SetField(user.FieldLastLoginAt, field.TypeTime, value)

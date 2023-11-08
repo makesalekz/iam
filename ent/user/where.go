@@ -94,6 +94,16 @@ func IsActive(v bool) predicate.User {
 	return predicate.User(sql.FieldEQ(FieldIsActive, v))
 }
 
+// PhoneVerified applies equality check predicate on the "phone_verified" field. It's identical to PhoneVerifiedEQ.
+func PhoneVerified(v bool) predicate.User {
+	return predicate.User(sql.FieldEQ(FieldPhoneVerified, v))
+}
+
+// EmailVerified applies equality check predicate on the "email_verified" field. It's identical to EmailVerifiedEQ.
+func EmailVerified(v bool) predicate.User {
+	return predicate.User(sql.FieldEQ(FieldEmailVerified, v))
+}
+
 // LastLoginAt applies equality check predicate on the "last_login_at" field. It's identical to LastLoginAtEQ.
 func LastLoginAt(v time.Time) predicate.User {
 	return predicate.User(sql.FieldEQ(FieldLastLoginAt, v))
@@ -592,6 +602,26 @@ func IsActiveEQ(v bool) predicate.User {
 // IsActiveNEQ applies the NEQ predicate on the "is_active" field.
 func IsActiveNEQ(v bool) predicate.User {
 	return predicate.User(sql.FieldNEQ(FieldIsActive, v))
+}
+
+// PhoneVerifiedEQ applies the EQ predicate on the "phone_verified" field.
+func PhoneVerifiedEQ(v bool) predicate.User {
+	return predicate.User(sql.FieldEQ(FieldPhoneVerified, v))
+}
+
+// PhoneVerifiedNEQ applies the NEQ predicate on the "phone_verified" field.
+func PhoneVerifiedNEQ(v bool) predicate.User {
+	return predicate.User(sql.FieldNEQ(FieldPhoneVerified, v))
+}
+
+// EmailVerifiedEQ applies the EQ predicate on the "email_verified" field.
+func EmailVerifiedEQ(v bool) predicate.User {
+	return predicate.User(sql.FieldEQ(FieldEmailVerified, v))
+}
+
+// EmailVerifiedNEQ applies the NEQ predicate on the "email_verified" field.
+func EmailVerifiedNEQ(v bool) predicate.User {
+	return predicate.User(sql.FieldNEQ(FieldEmailVerified, v))
 }
 
 // LastLoginAtEQ applies the EQ predicate on the "last_login_at" field.

@@ -10,6 +10,7 @@ paths:
         post:
             tags:
                 - Auth
+            description: "Auth by Code  \n after you authorized bu phone, you suppose to enter code that you've got here  \n request: id from AuthByPhone, code from message  \n returns: bearer token"
             operationId: Auth_AuthByCode
             requestBody:
                 content:
@@ -40,6 +41,7 @@ paths:
         post:
             tags:
                 - Auth
+            description: "Auth by Phone  \n request: phone number  \n returns: id of newly created otp user"
             operationId: Auth_AuthByPhone
             requestBody:
                 content:
@@ -95,6 +97,7 @@ paths:
         get:
             tags:
                 - Users
+            description: "GetOwnProfile  \n This is self explanotory, returns own profile"
             operationId: Users_GetOwnProfile
             responses:
                 "200":
@@ -106,6 +109,7 @@ paths:
         post:
             tags:
                 - Users
+            description: "UpdateOwnProfile  \n This is self explanotory, update own profile"
             operationId: Users_UpdateOwnProfile
             requestBody:
                 content:
@@ -123,6 +127,7 @@ paths:
         delete:
             tags:
                 - Users
+            description: "DeleteOwnProfile  \n This is self explanotory, delete own profile"
             operationId: Users_DeleteOwnProfile
             responses:
                 "200":
@@ -231,6 +236,7 @@ paths:
         get:
             tags:
                 - Users
+            description: "GetUser  \n get single user"
             operationId: Users_GetUser
             parameters:
                 - name: userId
@@ -249,6 +255,7 @@ paths:
         get:
             tags:
                 - Users
+            description: "GetUserFull  \n Returns full information about user  \n Request: userId of seeking user"
             operationId: Users_GetUserFull
             parameters:
                 - name: userId
@@ -398,7 +405,9 @@ components:
                 bioUpdatedAt:
                     type: string
                 contact:
-                    $ref: '#/components/schemas/api.iam.v1.Contact'
+                    allOf:
+                        - $ref: '#/components/schemas/api.iam.v1.Contact'
+                    description: field containing tied contact info
         api.iam.v1.UserFullReply:
             type: object
             properties:

@@ -38,6 +38,8 @@ type UsersRepo interface {
 	UpdateUserData(ctx context.Context, id int64, dto UpdateUserDto) (*ent.User, error)
 	DeleteUser(ctx context.Context, id int64) error
 	GetUsers(ctx context.Context, filter GetUsersFilterDto) ([]*ent.User, error)
+	PhoneVerified(ctx context.Context, userId int64) error
+	EmailVerified(ctx context.Context, userId int64) error
 }
 
 type usersRepo struct {
@@ -115,4 +117,22 @@ func (r *usersRepo) GetUsers(ctx context.Context, filter GetUsersFilterDto) ([]*
 			user.EmailIn(filter.Emails...),
 		)).
 		All(ctx)
+}
+
+func (r *usersRepo) PhoneVerified(ctx context.Context, userId int64) error {
+	return r.db.User.UpdateOneID(userId).
+		Where(
+			user.PhoneVerified(false),
+		).
+		SetPhoneVerified(true).
+		Exec(ctx)
+}
+
+func (r *usersRepo) EmailVerified(ctx context.Context, userId int64) error {
+	return r.db.User.UpdateOneID(userId).
+		Where(
+			user.EmailVerified(false),
+		).
+		SetEmailVerified(true).
+		Exec(ctx)
 }

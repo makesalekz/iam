@@ -7,6 +7,7 @@ server:
     timeout: 30s
 db:
   address: host=iam_db port=5432 user=me dbname=api password=password sslmode=disable
+nats: nats://nats:4222
 discovery:
   notifications: discovery:///notifications
   notifications_timeout: 30s

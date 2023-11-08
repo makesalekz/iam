@@ -27,6 +27,7 @@ const REFRESH_TOKEN_DURATION = 30 * 24 * time.Hour
 // GreeterUsecase is a Greeter usecase.
 type AuthUsecase struct {
 	log       *log.Helper
+	queue     *QueueManager
 	jwt       *data.JwtProcessor
 	dialer    *data.Dialer
 	usersRepo data.UsersRepo
@@ -40,6 +41,7 @@ func NewAuthUsecase(
 	dialer *data.Dialer,
 	usersRepo data.UsersRepo,
 	otpRepo data.OtpRepo,
+	queue *QueueManager,
 ) (*AuthUsecase, error) {
 	return &AuthUsecase{
 		log:       log.NewHelper(logger),
@@ -47,6 +49,7 @@ func NewAuthUsecase(
 		dialer:    dialer,
 		usersRepo: usersRepo,
 		otpRepo:   otpRepo,
+		queue:     queue,
 	}, nil
 }
 
@@ -103,14 +106,43 @@ func (uc *AuthUsecase) AuthUserByCode(ctx context.Context, userId int64, code st
 		return v1.ErrorDatabaseQuery("DB Error (UsersRepo): %s", err.Error())
 	}
 
-	ok, err := uc.otpRepo.CheckOneTimePassword(ctx, user.ID, code)
+	otp, err := uc.otpRepo.CheckOneTimePassword(ctx, user.ID, code)
 	if err != nil {
+		if ent.IsNotFound(err) {
+			return v1.ErrorInvalidCode("invalid code")
+		}
 		return v1.ErrorDatabaseQuery("DB Error (OtpRepo): %s", err.Error())
 	}
-	if !ok {
-		return v1.ErrorInvalidCode("Invalid code")
+
+	err = uc.handleUserVerification(ctx, user, otp)
+	if err != nil {
+		return err
 	}
+
 	return nil
+}
+
+func (uc *AuthUsecase) handleUserVerification(ctx context.Context, user *ent.User, otp *ent.OneTimePassword) error {
+	userShort := UserToUserShort(user)
+
+	switch otp.Type {
+	case property.Phone:
+		if user.PhoneVerified {
+			return nil
+		}
+		uc.queue.GetRemote(QueueContactsPhoneVerified).Pub(userShort)
+
+		return uc.usersRepo.PhoneVerified(ctx, userShort.GetId())
+	case property.Email:
+		if user.EmailVerified {
+			return nil
+		}
+		uc.queue.GetRemote(QueueContactsEmailVerified).Pub(userShort)
+
+		return uc.usersRepo.EmailVerified(ctx, userShort.GetId())
+	}
+
+	return v1.ErrorInternal("unrecognized otpType")
 }
 
 func (uc *AuthUsecase) CheckIdToken(ctx context.Context) (int64, error) {

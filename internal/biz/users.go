@@ -4,6 +4,7 @@ import (
 	"context"
 	_ "embed"
 	"slices"
+	"time"
 
 	contacts_v1 "contacts/api/contacts/v1"
 	iam_v1 "iam/api/iam/v1"
@@ -86,4 +87,24 @@ func (uc *UsersUsecase) GetUserContactLabel(ctx context.Context, userId int64) (
 	contact.Label = label
 
 	return &contact, nil
+}
+
+func UserToUserShort(user *ent.User) *iam_v1.UserShort {
+	result := &iam_v1.UserShort{
+		Id:          user.ID,
+		Name:        user.Name,
+		LastLoginAt: user.LastLoginAt.Format(time.RFC3339),
+	}
+
+	if user.Phone != nil {
+		result.Phone = *user.Phone
+	}
+	if user.Email != nil {
+		result.Email = *user.Email
+	}
+	if user.Avatar != nil {
+		result.Avatar = *user.Avatar
+	}
+
+	return result
 }
