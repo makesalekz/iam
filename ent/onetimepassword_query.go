@@ -5,14 +5,14 @@ package ent
 import (
 	"context"
 	"fmt"
-	"iam/ent/onetimepassword"
-	"iam/ent/predicate"
-	"iam/ent/user"
 	"math"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"gitlab.calendaria.team/alageum-cloud/iam/ent/onetimepassword"
+	"gitlab.calendaria.team/alageum-cloud/iam/ent/predicate"
+	"gitlab.calendaria.team/alageum-cloud/iam/ent/user"
 )
 
 // OneTimePasswordQuery is the builder for querying OneTimePassword entities.
@@ -23,6 +23,7 @@ type OneTimePasswordQuery struct {
 	inters     []Interceptor
 	predicates []predicate.OneTimePassword
 	withUser   *UserQuery
+	modifiers  []func(*sql.Selector)
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -382,6 +383,9 @@ func (otpq *OneTimePasswordQuery) sqlAll(ctx context.Context, hooks ...queryHook
 		node.Edges.loadedTypes = loadedTypes
 		return node.assignValues(columns, values)
 	}
+	if len(otpq.modifiers) > 0 {
+		_spec.Modifiers = otpq.modifiers
+	}
 	for i := range hooks {
 		hooks[i](ctx, _spec)
 	}
@@ -432,6 +436,9 @@ func (otpq *OneTimePasswordQuery) loadUser(ctx context.Context, query *UserQuery
 
 func (otpq *OneTimePasswordQuery) sqlCount(ctx context.Context) (int, error) {
 	_spec := otpq.querySpec()
+	if len(otpq.modifiers) > 0 {
+		_spec.Modifiers = otpq.modifiers
+	}
 	_spec.Node.Columns = otpq.ctx.Fields
 	if len(otpq.ctx.Fields) > 0 {
 		_spec.Unique = otpq.ctx.Unique != nil && *otpq.ctx.Unique
@@ -497,6 +504,9 @@ func (otpq *OneTimePasswordQuery) sqlQuery(ctx context.Context) *sql.Selector {
 	if otpq.ctx.Unique != nil && *otpq.ctx.Unique {
 		selector.Distinct()
 	}
+	for _, m := range otpq.modifiers {
+		m(selector)
+	}
 	for _, p := range otpq.predicates {
 		p(selector)
 	}
@@ -512,6 +522,12 @@ func (otpq *OneTimePasswordQuery) sqlQuery(ctx context.Context) *sql.Selector {
 		selector.Limit(*limit)
 	}
 	return selector
+}
+
+// Modify adds a query modifier for attaching custom logic to queries.
+func (otpq *OneTimePasswordQuery) Modify(modifiers ...func(s *sql.Selector)) *OneTimePasswordSelect {
+	otpq.modifiers = append(otpq.modifiers, modifiers...)
+	return otpq.Select()
 }
 
 // OneTimePasswordGroupBy is the group-by builder for OneTimePassword entities.
@@ -602,4 +618,10 @@ func (otps *OneTimePasswordSelect) sqlScan(ctx context.Context, root *OneTimePas
 	}
 	defer rows.Close()
 	return sql.ScanSlice(rows, v)
+}
+
+// Modify adds a query modifier for attaching custom logic to queries.
+func (otps *OneTimePasswordSelect) Modify(modifiers ...func(s *sql.Selector)) *OneTimePasswordSelect {
+	otps.modifiers = append(otps.modifiers, modifiers...)
+	return otps
 }

@@ -6,16 +6,16 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"iam/ent/onetimepassword"
-	"iam/ent/user"
-	"iam/ent/userprivacy"
-	"iam/ent/usersettings"
 	"reflect"
 	"sync"
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
+	"gitlab.calendaria.team/alageum-cloud/iam/ent/onetimepassword"
+	"gitlab.calendaria.team/alageum-cloud/iam/ent/user"
+	"gitlab.calendaria.team/alageum-cloud/iam/ent/userprivacy"
+	"gitlab.calendaria.team/alageum-cloud/iam/ent/usersettings"
 )
 
 // ent aliases to avoid import conflicts in user's code.

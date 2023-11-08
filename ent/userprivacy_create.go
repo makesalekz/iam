@@ -6,14 +6,14 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"iam/ent/property"
-	"iam/ent/user"
-	"iam/ent/userprivacy"
 	"time"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"gitlab.calendaria.team/alageum-cloud/iam/ent/property"
+	"gitlab.calendaria.team/alageum-cloud/iam/ent/user"
+	"gitlab.calendaria.team/alageum-cloud/iam/ent/userprivacy"
 )
 
 // UserPrivacyCreate is the builder for creating a UserPrivacy entity.

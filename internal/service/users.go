@@ -4,11 +4,11 @@ import (
 	"context"
 	"time"
 
-	iam_v1 "iam/api/iam/v1"
-	v1 "iam/api/iam/v1"
-	"iam/ent"
-	"iam/internal/biz"
-	"iam/internal/data"
+	iam_v1 "gitlab.calendaria.team/alageum-cloud/iam/api/iam/v1"
+	v1 "gitlab.calendaria.team/alageum-cloud/iam/api/iam/v1"
+	"gitlab.calendaria.team/alageum-cloud/iam/ent"
+	"gitlab.calendaria.team/alageum-cloud/iam/internal/biz"
+	"gitlab.calendaria.team/alageum-cloud/iam/internal/data"
 
 	"github.com/go-kratos/kratos/v2/log"
 )

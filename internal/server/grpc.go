@@ -1,10 +1,10 @@
 package server
 
 import (
-	v1 "iam/api/iam/v1"
-	"iam/internal/conf"
-	"iam/internal/data"
-	"iam/internal/service"
+	v1 "gitlab.calendaria.team/alageum-cloud/iam/api/iam/v1"
+	"gitlab.calendaria.team/alageum-cloud/iam/internal/conf"
+	"gitlab.calendaria.team/alageum-cloud/iam/internal/data"
+	"gitlab.calendaria.team/alageum-cloud/iam/internal/service"
 
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/go-kratos/kratos/v2/middleware/auth/jwt"

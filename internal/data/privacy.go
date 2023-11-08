@@ -4,9 +4,9 @@ import (
 	"context"
 	"slices"
 
-	"iam/ent"
-	"iam/ent/property"
-	"iam/ent/userprivacy"
+	"gitlab.calendaria.team/alageum-cloud/iam/ent"
+	"gitlab.calendaria.team/alageum-cloud/iam/ent/property"
+	"gitlab.calendaria.team/alageum-cloud/iam/ent/userprivacy"
 
 	"entgo.io/ent/dialect/sql"
 )

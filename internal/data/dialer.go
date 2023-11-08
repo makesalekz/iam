@@ -4,8 +4,9 @@ import (
 	"context"
 
 	contacts_v1 "contacts/api/contacts/v1"
-	"iam/internal/conf"
 	tenants_v1 "tenants/api/tenants/v1"
+
+	"gitlab.calendaria.team/alageum-cloud/iam/internal/conf"
 
 	notifications_v1 "notifications/api/notifications/v1"
 

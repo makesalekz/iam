@@ -7,12 +7,13 @@ import (
 	"strconv"
 	"time"
 
-	v1 "iam/api/iam/v1"
-	"iam/ent"
-	"iam/ent/property"
-	"iam/internal/data"
 	notifications_v1 "notifications/api/notifications/v1"
 	tenants_v1 "tenants/api/tenants/v1"
+
+	v1 "gitlab.calendaria.team/alageum-cloud/iam/api/iam/v1"
+	"gitlab.calendaria.team/alageum-cloud/iam/ent"
+	"gitlab.calendaria.team/alageum-cloud/iam/ent/property"
+	"gitlab.calendaria.team/alageum-cloud/iam/internal/data"
 
 	"github.com/go-kratos/kratos/v2/log"
 	jwtv4 "github.com/golang-jwt/jwt/v4"

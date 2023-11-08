@@ -6,17 +6,17 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"iam/ent/onetimepassword"
-	"iam/ent/predicate"
-	"iam/ent/property"
-	"iam/ent/user"
-	"iam/ent/userprivacy"
-	"iam/ent/usersettings"
 	"sync"
 	"time"
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
+	"gitlab.calendaria.team/alageum-cloud/iam/ent/onetimepassword"
+	"gitlab.calendaria.team/alageum-cloud/iam/ent/predicate"
+	"gitlab.calendaria.team/alageum-cloud/iam/ent/property"
+	"gitlab.calendaria.team/alageum-cloud/iam/ent/user"
+	"gitlab.calendaria.team/alageum-cloud/iam/ent/userprivacy"
+	"gitlab.calendaria.team/alageum-cloud/iam/ent/usersettings"
 )
 
 const (

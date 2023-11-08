@@ -4,11 +4,11 @@ package usersettings
 
 import (
 	"fmt"
-	"iam/ent/property"
 	"time"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
+	"gitlab.calendaria.team/alageum-cloud/iam/ent/property"
 )
 
 const (

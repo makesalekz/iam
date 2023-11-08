@@ -6,14 +6,14 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"iam/ent/onetimepassword"
-	"iam/ent/property"
-	"iam/ent/user"
 	"time"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"gitlab.calendaria.team/alageum-cloud/iam/ent/onetimepassword"
+	"gitlab.calendaria.team/alageum-cloud/iam/ent/property"
+	"gitlab.calendaria.team/alageum-cloud/iam/ent/user"
 )
 
 // OneTimePasswordCreate is the builder for creating a OneTimePassword entity.

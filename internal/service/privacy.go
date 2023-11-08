@@ -3,10 +3,10 @@ package service
 import (
 	"context"
 
-	v1 "iam/api/iam/v1"
-	"iam/ent"
-	"iam/internal/biz"
-	"iam/internal/data"
+	v1 "gitlab.calendaria.team/alageum-cloud/iam/api/iam/v1"
+	"gitlab.calendaria.team/alageum-cloud/iam/ent"
+	"gitlab.calendaria.team/alageum-cloud/iam/internal/biz"
+	"gitlab.calendaria.team/alageum-cloud/iam/internal/data"
 
 	"github.com/go-kratos/kratos/v2/log"
 )

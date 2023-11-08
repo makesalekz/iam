@@ -9,11 +9,11 @@ package main
 import (
 	"github.com/go-kratos/kratos/v2"
 	"github.com/go-kratos/kratos/v2/log"
-	"iam/internal/biz"
-	"iam/internal/conf"
-	"iam/internal/data"
-	"iam/internal/server"
-	"iam/internal/service"
+	"gitlab.calendaria.team/alageum-cloud/iam/internal/biz"
+	"gitlab.calendaria.team/alageum-cloud/iam/internal/conf"
+	"gitlab.calendaria.team/alageum-cloud/iam/internal/data"
+	"gitlab.calendaria.team/alageum-cloud/iam/internal/server"
+	"gitlab.calendaria.team/alageum-cloud/iam/internal/service"
 )
 
 import (

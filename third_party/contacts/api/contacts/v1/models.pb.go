@@ -10,7 +10,7 @@ import (
 	_ "github.com/go-kratos/kratos/v2/errors"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
-	v1 "iam/api/iam/v1"
+	v1 "gitlab.calendaria.team/alageum-cloud/iam/api/iam/v1"
 	reflect "reflect"
 	sync "sync"
 )

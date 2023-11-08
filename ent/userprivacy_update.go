@@ -6,22 +6,23 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"iam/ent/predicate"
-	"iam/ent/property"
-	"iam/ent/user"
-	"iam/ent/userprivacy"
 	"time"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"gitlab.calendaria.team/alageum-cloud/iam/ent/predicate"
+	"gitlab.calendaria.team/alageum-cloud/iam/ent/property"
+	"gitlab.calendaria.team/alageum-cloud/iam/ent/user"
+	"gitlab.calendaria.team/alageum-cloud/iam/ent/userprivacy"
 )
 
 // UserPrivacyUpdate is the builder for updating UserPrivacy entities.
 type UserPrivacyUpdate struct {
 	config
-	hooks    []Hook
-	mutation *UserPrivacyMutation
+	hooks     []Hook
+	mutation  *UserPrivacyMutation
+	modifiers []func(*sql.UpdateBuilder)
 }
 
 // Where appends a list predicates to the UserPrivacyUpdate builder.
@@ -123,6 +124,12 @@ func (upu *UserPrivacyUpdate) check() error {
 	return nil
 }
 
+// Modify adds a statement modifier for attaching custom logic to the UPDATE statement.
+func (upu *UserPrivacyUpdate) Modify(modifiers ...func(u *sql.UpdateBuilder)) *UserPrivacyUpdate {
+	upu.modifiers = append(upu.modifiers, modifiers...)
+	return upu
+}
+
 func (upu *UserPrivacyUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if err := upu.check(); err != nil {
 		return n, err
@@ -173,6 +180,7 @@ func (upu *UserPrivacyUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	_spec.AddModifiers(upu.modifiers...)
 	if n, err = sqlgraph.UpdateNodes(ctx, upu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{userprivacy.Label}
@@ -188,9 +196,10 @@ func (upu *UserPrivacyUpdate) sqlSave(ctx context.Context) (n int, err error) {
 // UserPrivacyUpdateOne is the builder for updating a single UserPrivacy entity.
 type UserPrivacyUpdateOne struct {
 	config
-	fields   []string
-	hooks    []Hook
-	mutation *UserPrivacyMutation
+	fields    []string
+	hooks     []Hook
+	mutation  *UserPrivacyMutation
+	modifiers []func(*sql.UpdateBuilder)
 }
 
 // SetUserID sets the "user_id" field.
@@ -299,6 +308,12 @@ func (upuo *UserPrivacyUpdateOne) check() error {
 	return nil
 }
 
+// Modify adds a statement modifier for attaching custom logic to the UPDATE statement.
+func (upuo *UserPrivacyUpdateOne) Modify(modifiers ...func(u *sql.UpdateBuilder)) *UserPrivacyUpdateOne {
+	upuo.modifiers = append(upuo.modifiers, modifiers...)
+	return upuo
+}
+
 func (upuo *UserPrivacyUpdateOne) sqlSave(ctx context.Context) (_node *UserPrivacy, err error) {
 	if err := upuo.check(); err != nil {
 		return _node, err
@@ -366,6 +381,7 @@ func (upuo *UserPrivacyUpdateOne) sqlSave(ctx context.Context) (_node *UserPriva
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	_spec.AddModifiers(upuo.modifiers...)
 	_node = &UserPrivacy{config: upuo.config}
 	_spec.Assign = _node.assignValues
 	_spec.ScanValues = _node.scanValues

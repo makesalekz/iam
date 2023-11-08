@@ -8,17 +8,16 @@ import (
 	"fmt"
 	"log"
 
-	"iam/ent/migrate"
-
-	"iam/ent/onetimepassword"
-	"iam/ent/user"
-	"iam/ent/userprivacy"
-	"iam/ent/usersettings"
+	"gitlab.calendaria.team/alageum-cloud/iam/ent/migrate"
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect"
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
+	"gitlab.calendaria.team/alageum-cloud/iam/ent/onetimepassword"
+	"gitlab.calendaria.team/alageum-cloud/iam/ent/user"
+	"gitlab.calendaria.team/alageum-cloud/iam/ent/userprivacy"
+	"gitlab.calendaria.team/alageum-cloud/iam/ent/usersettings"
 )
 
 // Client is the client that holds all ent builders.

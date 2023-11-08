@@ -4,7 +4,7 @@ import (
 	"context"
 	"sync"
 
-	"iam/internal/data"
+	"gitlab.calendaria.team/alageum-cloud/iam/internal/data"
 
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/nats-io/nats.go"

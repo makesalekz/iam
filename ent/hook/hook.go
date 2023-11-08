@@ -5,7 +5,8 @@ package hook
 import (
 	"context"
 	"fmt"
-	"iam/ent"
+
+	"gitlab.calendaria.team/alageum-cloud/iam/ent"
 )
 
 // The OneTimePasswordFunc type is an adapter to allow the use of ordinary
