@@ -32,8 +32,8 @@ type queueKey struct{}
 func (qm *QueueManager) GetLocal(name string) *Queue {
 	subj := qm.appName + "/" + name
 
-	var queue *Queue
-	if queue = qm.getQueue(subj); queue == nil {
+	queue := qm.getQueue(subj)
+	if queue == nil {
 		queue = qm.initQueue(subj)
 	}
 
@@ -57,8 +57,8 @@ func (qm *QueueManager) AddConsumer(name string, handler func(ctx context.Contex
 }
 
 func (qm *QueueManager) GetRemote(subj string) *Queue {
-	var queue *Queue
-	if queue = qm.getQueue(subj); queue == nil {
+	queue := qm.getQueue(subj)
+	if queue == nil {
 		queue = qm.initQueue(subj)
 	}
 
