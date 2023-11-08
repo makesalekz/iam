@@ -1,6 +1,7 @@
 package service
 
 import (
+	contacts_v1 "contacts/api/contacts/v1"
 	"context"
 	"time"
 
@@ -162,6 +163,11 @@ func (s *UsersService) GetUserFull(ctx context.Context, req *v1.GetUserRequest) 
 		replyUser.Contact = &v1.Contact{Label: contactLabel.Label}
 	}
 
+	err = s.includeRelationsToFull(ctx, replyUser)
+	if err != nil {
+		return nil, err
+	}
+
 	return &v1.UserFullReply{User: replyUser}, nil
 }
 
@@ -178,7 +184,14 @@ func (s *UsersService) GetUser(ctx context.Context, req *v1.GetUserRequest) (*v1
 		return nil, v1.ErrorDatabaseQuery("Internal error")
 	}
 
-	return &v1.UserReply{User: replyUserShort(user)}, nil
+	userShort := replyUserShort(user)
+
+	err = s.includeRelationsToShort(ctx, userShort)
+	if err != nil {
+		return nil, err
+	}
+
+	return &v1.UserReply{User: userShort}, nil
 }
 
 func (s *UsersService) GetUsers(ctx context.Context, req *v1.GetUsersRequest) (*v1.GetUsersReply, error) {
@@ -192,8 +205,78 @@ func (s *UsersService) GetUsers(ctx context.Context, req *v1.GetUsersRequest) (*
 	if err != nil {
 		return nil, v1.ErrorDatabaseQuery("Internal error")
 	}
+	replyUsers := replyUsers(users)
 
-	return &v1.GetUsersReply{Users: replyUsers(users)}, nil
+	if req.GetInclude().GetRelations() {
+		err = s.includeRelationsToShort(ctx, replyUsers...)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	return &v1.GetUsersReply{Users: replyUsers}, nil
+}
+
+func (s *UsersService) includeRelationsToShort(ctx context.Context, users ...*iam_v1.UserShort) error {
+	userIds := make([]int64, len(users))
+	for i, user := range users {
+		userIds[i] = user.GetId()
+	}
+
+	relations, err := s.uc.GetUsersRelations(ctx, userIds)
+	if err != nil {
+		return err
+	}
+
+	relationMap := make(map[int64]*contacts_v1.Relation, 0)
+	for _, relation := range relations {
+		relationMap[relation.GetUserId()] = relation
+	}
+
+	for _, user := range users {
+		relation, ok := relationMap[user.GetId()]
+		if !ok {
+			continue
+		}
+
+		user.Relation = &iam_v1.Relation{
+			IsBlocked: relation.GetIsBlocked(),
+			IsMuted:   relation.GetIsMuted(),
+		}
+	}
+
+	return nil
+}
+
+func (s *UsersService) includeRelationsToFull(ctx context.Context, users ...*iam_v1.User) error {
+	userIds := make([]int64, len(users))
+	for i, user := range users {
+		userIds[i] = user.GetId()
+	}
+
+	relations, err := s.uc.GetUsersRelations(ctx, userIds)
+	if err != nil {
+		return err
+	}
+
+	relationMap := make(map[int64]*contacts_v1.Relation, 0)
+	for _, relation := range relations {
+		relationMap[relation.GetUserId()] = relation
+	}
+
+	for _, user := range users {
+		relation, ok := relationMap[user.GetId()]
+		if !ok {
+			continue
+		}
+
+		user.Relation = &iam_v1.Relation{
+			IsBlocked: relation.GetIsBlocked(),
+			IsMuted:   relation.GetIsMuted(),
+		}
+	}
+
+	return nil
 }
 
 func (s *UsersService) GetUserByFilter(ctx context.Context, req *v1.GetUserByFilterRequest) (*v1.UserReply, error) {

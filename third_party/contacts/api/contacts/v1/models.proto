@@ -34,7 +34,12 @@ message Contact {
   
 	string createdAt = 7;
 }
-  
+
+message Relation {
+	int64 userId = 1;
+	bool isMuted = 2;
+	bool isBlocked = 3;
+}
 
 message EmptyRequest{}
 message EmptyReply {}

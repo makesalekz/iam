@@ -89,6 +89,22 @@ func (uc *UsersUsecase) GetUserContactLabel(ctx context.Context, userId int64) (
 	return &contact, nil
 }
 
+func (uc *UsersUsecase) GetUsersRelations(ctx context.Context, userIds []int64) ([]*contacts_v1.Relation, error) {
+	relationsClient, err := uc.dialer.Relations(ctx)
+	if err != nil {
+		return nil, iam_v1.ErrorGrpcConnection("dialer.Users: %s", err.Error())
+	}
+
+	relations, err := relationsClient.GetRelations(ctx, &contacts_v1.GetRelationsRequest{UserIds: userIds})
+	if err != nil {
+		if contacts_v1.IsNotFound(err) {
+			return nil, iam_v1.ErrorContactNotFound("there is not such contact")
+		}
+	}
+
+	return relations.GetRelations(), nil
+}
+
 func UserToUserShort(user *ent.User) *iam_v1.UserShort {
 	result := &iam_v1.UserShort{
 		Id:          user.ID,
