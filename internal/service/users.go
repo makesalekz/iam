@@ -2,12 +2,12 @@ package service
 
 import (
 	"context"
+	"time"
 
 	v1 "iam/api/iam/v1"
 	"iam/ent"
 	"iam/internal/biz"
 	"iam/internal/data"
-	"iam/internal/utils"
 
 	"github.com/go-kratos/kratos/v2/log"
 )
@@ -39,7 +39,7 @@ func (s *UsersService) GetOwnProfile(ctx context.Context, req *v1.EmptyRequest) 
 		return nil, err
 	}
 
-	return &v1.UserFullReply{User: user}, nil
+	return &v1.UserFullReply{User: userItemToV1User(user)}, nil
 }
 
 func (s *UsersService) UpdateOwnProfile(ctx context.Context, req *v1.UpdateOwnProfileRequest) (*v1.UserFullReply, error) {
@@ -58,7 +58,7 @@ func (s *UsersService) UpdateOwnProfile(ctx context.Context, req *v1.UpdateOwnPr
 		return nil, err
 	}
 
-	return &v1.UserFullReply{User: user}, nil
+	return &v1.UserFullReply{User: userItemToV1User(user)}, nil
 }
 
 func (s *UsersService) DeleteOwnProfile(ctx context.Context, req *v1.EmptyRequest) (*v1.EmptyReply, error) {
@@ -92,7 +92,7 @@ func (s *UsersService) GetUserFull(ctx context.Context, req *v1.GetUserRequest) 
 		return nil, err
 	}
 
-	return &v1.UserFullReply{User: user}, nil
+	return &v1.UserFullReply{User: userItemToV1User(user)}, nil
 }
 
 func (s *UsersService) GetUser(ctx context.Context, req *v1.GetUserRequest) (*v1.UserReply, error) {
@@ -106,7 +106,7 @@ func (s *UsersService) GetUser(ctx context.Context, req *v1.GetUserRequest) (*v1
 		return nil, err
 	}
 
-	return &v1.UserReply{User: utils.UserToUserShort(user)}, nil
+	return &v1.UserReply{User: userItemToV1ShortUser(user)}, nil
 }
 
 func (s *UsersService) GetUsers(ctx context.Context, req *v1.GetUsersRequest) (*v1.GetUsersReply, error) {
@@ -122,7 +122,7 @@ func (s *UsersService) GetUsers(ctx context.Context, req *v1.GetUsersRequest) (*
 		return nil, err
 	}
 
-	return &v1.GetUsersReply{Users: users}, nil
+	return &v1.GetUsersReply{Users: userItemsToV1ShortUser(users)}, nil
 }
 
 func (s *UsersService) GetUserByFilter(ctx context.Context, req *v1.GetUserByFilterRequest) (*v1.UserReply, error) {
@@ -136,7 +136,7 @@ func (s *UsersService) GetUserByFilter(ctx context.Context, req *v1.GetUserByFil
 		return nil, err
 	}
 
-	return &v1.UserReply{User: utils.UserToUserShort(user)}, nil
+	return &v1.UserReply{User: userItemToV1ShortUser(user)}, nil
 }
 
 func (s *UsersService) GetUserByFilterFull(ctx context.Context, req *v1.GetUserByFilterRequest) (*v1.UserFullReply, error) {
@@ -150,5 +150,69 @@ func (s *UsersService) GetUserByFilterFull(ctx context.Context, req *v1.GetUserB
 		return nil, err
 	}
 
-	return &v1.UserFullReply{User: user}, nil
+	return &v1.UserFullReply{User: userItemToV1User(user)}, nil
+}
+
+func userItemToV1User(user biz.UserItem) *v1.User {
+	replyUser := &v1.User{
+		Id:          user.ID,
+		Phone:       user.Phone,
+		Email:       user.Email,
+		Name:        user.Name,
+		Bio:         user.Bio,
+		Avatar:      user.Avatar,
+		Timezone:    user.Timezone,
+		CreatedAt:   user.CreatedAt.Format(time.RFC3339),
+		UpdatedAt:   user.UpdatedAt.Format(time.RFC3339),
+		LastLoginAt: user.LastLoginAt.Format(time.RFC3339),
+		IsActive:    user.IsActive,
+	}
+
+	if user.BioUpdatedAt != nil {
+		bioUpdatedAt := user.BioUpdatedAt.Format(time.RFC3339)
+		replyUser.BioUpdatedAt = &bioUpdatedAt
+	}
+
+	if user.Relation != nil {
+		replyUser.Relation = user.Relation
+	}
+
+	if user.Contact != nil {
+		replyUser.Contact = user.Contact
+	}
+
+	return replyUser
+}
+
+func userItemToV1ShortUser(user biz.UserItem) *v1.UserShort {
+	replyUser := &v1.UserShort{
+		Id:          user.ID,
+		Name:        user.Name,
+		LastLoginAt: user.LastLoginAt.Format(time.RFC3339),
+	}
+
+	if user.Phone != nil {
+		replyUser.Phone = *user.Phone
+	}
+	if user.Email != nil {
+		replyUser.Email = *user.Email
+	}
+	if user.Avatar != nil {
+		replyUser.Avatar = *user.Avatar
+	}
+
+	if user.Relation != nil {
+		replyUser.Relation = user.Relation
+	}
+
+	return replyUser
+}
+
+func userItemsToV1ShortUser(users []biz.UserItem) []*v1.UserShort {
+	replyUsers := make([]*v1.UserShort, len(users))
+	for i, user := range users {
+		replyUsers[i] = userItemToV1ShortUser(user)
+	}
+
+	return replyUsers
 }

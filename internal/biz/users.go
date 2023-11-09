@@ -9,11 +9,17 @@ import (
 	v1 "iam/api/iam/v1"
 	"iam/ent"
 	"iam/internal/data"
-	"iam/internal/utils"
 
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/go-kratos/kratos/v2/registry"
 )
+
+type UserItem struct {
+	*ent.User
+
+	Relation *v1.Relation
+	Contact  *v1.Contact
+}
 
 // UsersUsecase .
 type UsersUsecase struct {
@@ -41,7 +47,7 @@ func NewUsersUsecase(logger log.Logger,
 	}, nil
 }
 
-func (uc *UsersUsecase) GetUserProfile(ctx context.Context, filter data.GetUserFilterDto) (*v1.User, error) {
+func (uc *UsersUsecase) GetUserProfile(ctx context.Context, filter data.GetUserFilterDto) (UserItem, error) {
 	var user *ent.User
 	var err error
 
@@ -52,22 +58,24 @@ func (uc *UsersUsecase) GetUserProfile(ctx context.Context, filter data.GetUserF
 	} else if filter.UserId != 0 && filter.Email == "" && filter.Phone == "" {
 		user, err = uc.usersRepo.GetUserById(ctx, filter.UserId)
 	} else {
-		return nil, v1.ErrorInvalidRequest("Invalid request, please read documentations")
+		return UserItem{}, v1.ErrorInvalidRequest("Invalid request, please read documentations")
 	}
 
 	if err != nil {
 		if ent.IsNotFound(err) {
-			return nil, v1.ErrorUserNotFound("User not found: %v", err)
+			return UserItem{}, v1.ErrorUserNotFound("User not found: %v", err)
 		}
-		return nil, v1.ErrorDatabaseQuery("Internal error")
+		return UserItem{}, v1.ErrorDatabaseQuery("Internal error")
 	}
-	replyUser := utils.UserFromDto(user)
+	replyUser := UserItem{
+		User: user,
+	}
 
 	if filter.WithContact {
-		contactLabel, err := uc.GetUserContactLabel(ctx, filter.UserId)
+		contactLabel, err := uc.getUserContactLabel(ctx, filter.UserId)
 		if err != nil {
 			if !v1.IsContactNotFound(err) {
-				return nil, err
+				return UserItem{}, err
 			}
 		} else {
 			replyUser.Contact = &v1.Contact{Label: contactLabel.Label}
@@ -77,36 +85,42 @@ func (uc *UsersUsecase) GetUserProfile(ctx context.Context, filter data.GetUserF
 	if filter.WithRelation {
 		err = uc.includeRelations(ctx, replyUser)
 		if err != nil {
-			return nil, err
+			return UserItem{}, err
 		}
 	}
 
-	return replyUser, nil
+	return UserItem{}, nil
 }
 
-func (uc *UsersUsecase) UpdateUserProfile(ctx context.Context, userId int64, data data.UpdateUserDto) (*v1.User, error) {
+func (uc *UsersUsecase) UpdateUserProfile(ctx context.Context, userId int64, data data.UpdateUserDto) (UserItem, error) {
 	user, err := uc.usersRepo.UpdateUserData(ctx, userId, data)
 	if err != nil {
 		if ent.IsNotFound(err) {
-			return nil, v1.ErrorUserNotFound("User not found: %v", err)
+			return UserItem{}, v1.ErrorUserNotFound("User not found: %v", err)
 		}
-		return nil, v1.ErrorDatabaseQuery("Internal error")
+		return UserItem{}, v1.ErrorDatabaseQuery("Internal error")
 	}
 
-	return utils.UserFromDto(user), nil
+	return UserItem{
+		User: user,
+	}, nil
 }
 
 func (uc *UsersUsecase) DeleteUser(ctx context.Context, userId int64) error {
 	return uc.usersRepo.DeleteUser(ctx, userId)
 }
 
-func (uc *UsersUsecase) GetUsers(ctx context.Context, filter data.GetUsersFilterDto) ([]*v1.UserShort, error) {
+func (uc *UsersUsecase) GetUsers(ctx context.Context, filter data.GetUsersFilterDto) ([]UserItem, error) {
 	users, err := uc.usersRepo.GetUsers(ctx, filter)
 	if err != nil {
 		return nil, v1.ErrorDatabaseQuery("Internal error")
 	}
 
-	replyUsers := utils.UsersFromDtos(users)
+	replyUsers := make([]UserItem, len(users))
+	for i, user := range users {
+		replyUsers[i].User = user
+	}
+
 	if filter.WithRelation {
 		err = uc.includeRelations(ctx, replyUsers...)
 		if err != nil {
@@ -114,10 +128,10 @@ func (uc *UsersUsecase) GetUsers(ctx context.Context, filter data.GetUsersFilter
 		}
 	}
 
-	return utils.UsersToUsersShort(replyUsers), nil
+	return replyUsers, nil
 }
 
-func (uc *UsersUsecase) GetUserContactLabel(ctx context.Context, userId int64) (*v1.Contact, error) {
+func (uc *UsersUsecase) getUserContactLabel(ctx context.Context, userId int64) (*v1.Contact, error) {
 	contactClient, err := uc.dialer.Contacts(ctx)
 	if err != nil {
 		return &v1.Contact{}, v1.ErrorGrpcConnection("dialer.Users: %s", err.Error())
@@ -142,7 +156,38 @@ func (uc *UsersUsecase) GetUserContactLabel(ctx context.Context, userId int64) (
 	return &contact, nil
 }
 
-func (uc *UsersUsecase) GetUsersRelations(ctx context.Context, userIds []int64) ([]*contacts_v1.Relation, error) {
+func (uc *UsersUsecase) includeRelations(ctx context.Context, users ...UserItem) error {
+	userIds := make([]int64, len(users))
+	for i, user := range users {
+		userIds[i] = user.User.ID
+	}
+
+	relations, err := uc.getUsersRelations(ctx, userIds)
+	if err != nil {
+		return err
+	}
+
+	relationMap := make(map[int64]*contacts_v1.Relation)
+	for _, relation := range relations {
+		relationMap[relation.GetUserId()] = relation
+	}
+
+	for _, user := range users {
+		relation, ok := relationMap[user.User.ID]
+		if !ok {
+			continue
+		}
+
+		user.Relation = &v1.Relation{
+			IsBlocked: relation.GetIsBlocked(),
+			IsMuted:   relation.GetIsMuted(),
+		}
+	}
+
+	return nil
+}
+
+func (uc *UsersUsecase) getUsersRelations(ctx context.Context, userIds []int64) ([]*contacts_v1.Relation, error) {
 	relationsClient, err := uc.dialer.Relations(ctx)
 	if err != nil {
 		return nil, v1.ErrorGrpcConnection("dialer.Users: %s", err.Error())
@@ -157,35 +202,4 @@ func (uc *UsersUsecase) GetUsersRelations(ctx context.Context, userIds []int64) 
 	}
 
 	return relations.GetRelations(), nil
-}
-
-func (uc *UsersUsecase) includeRelations(ctx context.Context, users ...*v1.User) error {
-	userIds := make([]int64, len(users))
-	for i, user := range users {
-		userIds[i] = user.GetId()
-	}
-
-	relations, err := uc.GetUsersRelations(ctx, userIds)
-	if err != nil {
-		return err
-	}
-
-	relationMap := make(map[int64]*contacts_v1.Relation)
-	for _, relation := range relations {
-		relationMap[relation.GetUserId()] = relation
-	}
-
-	for _, user := range users {
-		relation, ok := relationMap[user.GetId()]
-		if !ok {
-			continue
-		}
-
-		user.Relation = &v1.Relation{
-			IsBlocked: relation.GetIsBlocked(),
-			IsMuted:   relation.GetIsMuted(),
-		}
-	}
-
-	return nil
 }
