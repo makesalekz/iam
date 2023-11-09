@@ -22,7 +22,7 @@ const (
 	Relations_GetBlockedUsers_FullMethodName = "/api.contacts.v1.Relations/GetBlockedUsers"
 	Relations_BlockUser_FullMethodName       = "/api.contacts.v1.Relations/BlockUser"
 	Relations_UnblockUser_FullMethodName     = "/api.contacts.v1.Relations/UnblockUser"
-	Relations_MuteContact_FullMethodName     = "/api.contacts.v1.Relations/MuteContact"
+	Relations_MuteUser_FullMethodName        = "/api.contacts.v1.Relations/MuteUser"
 	Relations_UnmuteContact_FullMethodName   = "/api.contacts.v1.Relations/UnmuteContact"
 	Relations_GetRelations_FullMethodName    = "/api.contacts.v1.Relations/GetRelations"
 )
@@ -32,10 +32,10 @@ const (
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type RelationsClient interface {
 	GetBlockedUsers(ctx context.Context, in *EmptyRequest, opts ...grpc.CallOption) (*BlockedUsersReply, error)
-	BlockUser(ctx context.Context, in *BlockUserRequest, opts ...grpc.CallOption) (*EmptyReply, error)
-	UnblockUser(ctx context.Context, in *UnblockUserRequest, opts ...grpc.CallOption) (*EmptyReply, error)
-	MuteContact(ctx context.Context, in *MuteUserRequest, opts ...grpc.CallOption) (*EmptyReply, error)
-	UnmuteContact(ctx context.Context, in *UnmuteUserRequest, opts ...grpc.CallOption) (*EmptyReply, error)
+	BlockUser(ctx context.Context, in *RelationUserRequest, opts ...grpc.CallOption) (*EmptyReply, error)
+	UnblockUser(ctx context.Context, in *RelationUserRequest, opts ...grpc.CallOption) (*EmptyReply, error)
+	MuteUser(ctx context.Context, in *RelationUserRequest, opts ...grpc.CallOption) (*EmptyReply, error)
+	UnmuteContact(ctx context.Context, in *RelationUserRequest, opts ...grpc.CallOption) (*EmptyReply, error)
 	GetRelations(ctx context.Context, in *GetRelationsRequest, opts ...grpc.CallOption) (*UserRelationsReply, error)
 }
 
@@ -56,7 +56,7 @@ func (c *relationsClient) GetBlockedUsers(ctx context.Context, in *EmptyRequest,
 	return out, nil
 }
 
-func (c *relationsClient) BlockUser(ctx context.Context, in *BlockUserRequest, opts ...grpc.CallOption) (*EmptyReply, error) {
+func (c *relationsClient) BlockUser(ctx context.Context, in *RelationUserRequest, opts ...grpc.CallOption) (*EmptyReply, error) {
 	out := new(EmptyReply)
 	err := c.cc.Invoke(ctx, Relations_BlockUser_FullMethodName, in, out, opts...)
 	if err != nil {
@@ -65,7 +65,7 @@ func (c *relationsClient) BlockUser(ctx context.Context, in *BlockUserRequest, o
 	return out, nil
 }
 
-func (c *relationsClient) UnblockUser(ctx context.Context, in *UnblockUserRequest, opts ...grpc.CallOption) (*EmptyReply, error) {
+func (c *relationsClient) UnblockUser(ctx context.Context, in *RelationUserRequest, opts ...grpc.CallOption) (*EmptyReply, error) {
 	out := new(EmptyReply)
 	err := c.cc.Invoke(ctx, Relations_UnblockUser_FullMethodName, in, out, opts...)
 	if err != nil {
@@ -74,16 +74,16 @@ func (c *relationsClient) UnblockUser(ctx context.Context, in *UnblockUserReques
 	return out, nil
 }
 
-func (c *relationsClient) MuteContact(ctx context.Context, in *MuteUserRequest, opts ...grpc.CallOption) (*EmptyReply, error) {
+func (c *relationsClient) MuteUser(ctx context.Context, in *RelationUserRequest, opts ...grpc.CallOption) (*EmptyReply, error) {
 	out := new(EmptyReply)
-	err := c.cc.Invoke(ctx, Relations_MuteContact_FullMethodName, in, out, opts...)
+	err := c.cc.Invoke(ctx, Relations_MuteUser_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *relationsClient) UnmuteContact(ctx context.Context, in *UnmuteUserRequest, opts ...grpc.CallOption) (*EmptyReply, error) {
+func (c *relationsClient) UnmuteContact(ctx context.Context, in *RelationUserRequest, opts ...grpc.CallOption) (*EmptyReply, error) {
 	out := new(EmptyReply)
 	err := c.cc.Invoke(ctx, Relations_UnmuteContact_FullMethodName, in, out, opts...)
 	if err != nil {
@@ -106,10 +106,10 @@ func (c *relationsClient) GetRelations(ctx context.Context, in *GetRelationsRequ
 // for forward compatibility
 type RelationsServer interface {
 	GetBlockedUsers(context.Context, *EmptyRequest) (*BlockedUsersReply, error)
-	BlockUser(context.Context, *BlockUserRequest) (*EmptyReply, error)
-	UnblockUser(context.Context, *UnblockUserRequest) (*EmptyReply, error)
-	MuteContact(context.Context, *MuteUserRequest) (*EmptyReply, error)
-	UnmuteContact(context.Context, *UnmuteUserRequest) (*EmptyReply, error)
+	BlockUser(context.Context, *RelationUserRequest) (*EmptyReply, error)
+	UnblockUser(context.Context, *RelationUserRequest) (*EmptyReply, error)
+	MuteUser(context.Context, *RelationUserRequest) (*EmptyReply, error)
+	UnmuteContact(context.Context, *RelationUserRequest) (*EmptyReply, error)
 	GetRelations(context.Context, *GetRelationsRequest) (*UserRelationsReply, error)
 	mustEmbedUnimplementedRelationsServer()
 }
@@ -121,16 +121,16 @@ type UnimplementedRelationsServer struct {
 func (UnimplementedRelationsServer) GetBlockedUsers(context.Context, *EmptyRequest) (*BlockedUsersReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetBlockedUsers not implemented")
 }
-func (UnimplementedRelationsServer) BlockUser(context.Context, *BlockUserRequest) (*EmptyReply, error) {
+func (UnimplementedRelationsServer) BlockUser(context.Context, *RelationUserRequest) (*EmptyReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method BlockUser not implemented")
 }
-func (UnimplementedRelationsServer) UnblockUser(context.Context, *UnblockUserRequest) (*EmptyReply, error) {
+func (UnimplementedRelationsServer) UnblockUser(context.Context, *RelationUserRequest) (*EmptyReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UnblockUser not implemented")
 }
-func (UnimplementedRelationsServer) MuteContact(context.Context, *MuteUserRequest) (*EmptyReply, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method MuteContact not implemented")
+func (UnimplementedRelationsServer) MuteUser(context.Context, *RelationUserRequest) (*EmptyReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method MuteUser not implemented")
 }
-func (UnimplementedRelationsServer) UnmuteContact(context.Context, *UnmuteUserRequest) (*EmptyReply, error) {
+func (UnimplementedRelationsServer) UnmuteContact(context.Context, *RelationUserRequest) (*EmptyReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UnmuteContact not implemented")
 }
 func (UnimplementedRelationsServer) GetRelations(context.Context, *GetRelationsRequest) (*UserRelationsReply, error) {
@@ -168,7 +168,7 @@ func _Relations_GetBlockedUsers_Handler(srv interface{}, ctx context.Context, de
 }
 
 func _Relations_BlockUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(BlockUserRequest)
+	in := new(RelationUserRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -180,13 +180,13 @@ func _Relations_BlockUser_Handler(srv interface{}, ctx context.Context, dec func
 		FullMethod: Relations_BlockUser_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(RelationsServer).BlockUser(ctx, req.(*BlockUserRequest))
+		return srv.(RelationsServer).BlockUser(ctx, req.(*RelationUserRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _Relations_UnblockUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(UnblockUserRequest)
+	in := new(RelationUserRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -198,31 +198,31 @@ func _Relations_UnblockUser_Handler(srv interface{}, ctx context.Context, dec fu
 		FullMethod: Relations_UnblockUser_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(RelationsServer).UnblockUser(ctx, req.(*UnblockUserRequest))
+		return srv.(RelationsServer).UnblockUser(ctx, req.(*RelationUserRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Relations_MuteContact_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(MuteUserRequest)
+func _Relations_MuteUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(RelationUserRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(RelationsServer).MuteContact(ctx, in)
+		return srv.(RelationsServer).MuteUser(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: Relations_MuteContact_FullMethodName,
+		FullMethod: Relations_MuteUser_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(RelationsServer).MuteContact(ctx, req.(*MuteUserRequest))
+		return srv.(RelationsServer).MuteUser(ctx, req.(*RelationUserRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _Relations_UnmuteContact_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(UnmuteUserRequest)
+	in := new(RelationUserRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -234,7 +234,7 @@ func _Relations_UnmuteContact_Handler(srv interface{}, ctx context.Context, dec 
 		FullMethod: Relations_UnmuteContact_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(RelationsServer).UnmuteContact(ctx, req.(*UnmuteUserRequest))
+		return srv.(RelationsServer).UnmuteContact(ctx, req.(*RelationUserRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -277,8 +277,8 @@ var Relations_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _Relations_UnblockUser_Handler,
 		},
 		{
-			MethodName: "MuteContact",
-			Handler:    _Relations_MuteContact_Handler,
+			MethodName: "MuteUser",
+			Handler:    _Relations_MuteUser_Handler,
 		},
 		{
 			MethodName: "UnmuteContact",

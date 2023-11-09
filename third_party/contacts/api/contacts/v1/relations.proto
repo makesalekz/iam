@@ -16,25 +16,25 @@ service Relations {
       get: "/v1/contacts/users/blocked/list"
     };
   };
-  rpc BlockUser (BlockUserRequest) returns (EmptyReply){
+  rpc BlockUser (RelationUserRequest) returns (EmptyReply){
     option (google.api.http) = {
       put: "/v1/contacts/users/{userId}/block"
       body: "*"
     };
   };
-  rpc UnblockUser (UnblockUserRequest) returns (EmptyReply){
+  rpc UnblockUser (RelationUserRequest) returns (EmptyReply){
     option (google.api.http) = {
       put: "/v1/contacts/users/{userId}/unblock"
       body: "*"
     };
   };
-  rpc MuteContact (MuteUserRequest) returns (EmptyReply){
+  rpc MuteUser (RelationUserRequest) returns (EmptyReply){
     option (google.api.http) = {
       put: "/v1/contacts/users/{userId}/mute"
       body: "*"
     };
   }
-  rpc UnmuteContact (UnmuteUserRequest) returns (EmptyReply){
+  rpc UnmuteContact (RelationUserRequest) returns (EmptyReply){
     option (google.api.http) = {
       put: "/v1/contacts/users/{userId}/unmute"
       body: "*"
@@ -44,19 +44,7 @@ service Relations {
   rpc GetRelations(GetRelationsRequest) returns (UserRelationsReply);
 }
 
-message BlockUserRequest {
-  int64 userId = 1;
-}
-
-message UnblockUserRequest {
-  int64 userId = 1;
-}
-
-message MuteUserRequest {
-  int64 userId = 1;
-}
-
-message UnmuteUserRequest {
+message RelationUserRequest {
   int64 userId = 1;
 }
 
