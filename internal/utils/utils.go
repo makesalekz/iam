@@ -50,8 +50,8 @@ func UserShortFromDto(user *ent.User) *v1.UserShort {
 
 func UsersShortFromDtos(users []*ent.User) []*v1.UserShort {
 	replies := make([]*v1.UserShort, len(users))
-	for _, user := range users {
-		replies = append(replies, UserShortFromDto(user))
+	for i, user := range users {
+		replies[i] = UserShortFromDto(user)
 	}
 
 	return replies
@@ -59,16 +59,15 @@ func UsersShortFromDtos(users []*ent.User) []*v1.UserShort {
 
 func UsersFromDtos(users []*ent.User) []*v1.User {
 	replies := make([]*v1.User, len(users))
-	for _, user := range users {
-		replies = append(replies, UserFromDto(user))
+	for i, user := range users {
+		replies[i] = UserFromDto(user)
 	}
 
 	return replies
 }
 
 func UserToUserShort(user *v1.User) *v1.UserShort {
-	replyUser := &v1.UserShort{}
-	replyUser = &v1.UserShort{
+	replyUser := &v1.UserShort{
 		Id:          user.Id,
 		Name:        user.Name,
 		LastLoginAt: user.LastLoginAt,
@@ -97,8 +96,8 @@ func UserToUserShort(user *v1.User) *v1.UserShort {
 
 func UsersToUsersShort(users []*v1.User) []*v1.UserShort {
 	replies := make([]*v1.UserShort, len(users))
-	for _, user := range users {
-		UserToUserShort(user)
+	for i, user := range users {
+		replies[i] = UserToUserShort(user)
 	}
 
 	return replies
