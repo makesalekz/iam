@@ -106,7 +106,7 @@ func (s *UsersService) GetUser(ctx context.Context, req *v1.GetUserRequest) (*v1
 		return nil, err
 	}
 
-	return &v1.UserReply{User: userItemToV1ShortUser(user)}, nil
+	return &v1.UserReply{User: userItemToV1ShortUser(&user)}, nil
 }
 
 func (s *UsersService) GetUsers(ctx context.Context, req *v1.GetUsersRequest) (*v1.GetUsersReply, error) {
@@ -136,7 +136,7 @@ func (s *UsersService) GetUserByFilter(ctx context.Context, req *v1.GetUserByFil
 		return nil, err
 	}
 
-	return &v1.UserReply{User: userItemToV1ShortUser(user)}, nil
+	return &v1.UserReply{User: userItemToV1ShortUser(&user)}, nil
 }
 
 func (s *UsersService) GetUserByFilterFull(ctx context.Context, req *v1.GetUserByFilterRequest) (*v1.UserFullReply, error) {
@@ -184,7 +184,7 @@ func userItemToV1User(user biz.UserItem) *v1.User {
 	return replyUser
 }
 
-func userItemToV1ShortUser(user biz.UserItem) *v1.UserShort {
+func userItemToV1ShortUser(user *biz.UserItem) *v1.UserShort {
 	replyUser := &v1.UserShort{
 		Id:          user.ID,
 		Name:        user.Name,
@@ -208,7 +208,7 @@ func userItemToV1ShortUser(user biz.UserItem) *v1.UserShort {
 	return replyUser
 }
 
-func userItemsToV1ShortUser(users []biz.UserItem) []*v1.UserShort {
+func userItemsToV1ShortUser(users []*biz.UserItem) []*v1.UserShort {
 	replyUsers := make([]*v1.UserShort, len(users))
 	for i, user := range users {
 		replyUsers[i] = userItemToV1ShortUser(user)

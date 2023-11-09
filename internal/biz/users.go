@@ -83,13 +83,13 @@ func (uc *UsersUsecase) GetUserProfile(ctx context.Context, filter data.GetUserF
 	}
 
 	if filter.WithRelation {
-		err = uc.includeRelations(ctx, replyUser)
+		err = uc.includeRelations(ctx, &replyUser)
 		if err != nil {
-			return UserItem{}, err
+			return replyUser, err
 		}
 	}
 
-	return UserItem{}, nil
+	return replyUser, nil
 }
 
 func (uc *UsersUsecase) UpdateUserProfile(ctx context.Context, userId int64, data data.UpdateUserDto) (UserItem, error) {
@@ -110,15 +110,15 @@ func (uc *UsersUsecase) DeleteUser(ctx context.Context, userId int64) error {
 	return uc.usersRepo.DeleteUser(ctx, userId)
 }
 
-func (uc *UsersUsecase) GetUsers(ctx context.Context, filter data.GetUsersFilterDto) ([]UserItem, error) {
+func (uc *UsersUsecase) GetUsers(ctx context.Context, filter data.GetUsersFilterDto) ([]*UserItem, error) {
 	users, err := uc.usersRepo.GetUsers(ctx, filter)
 	if err != nil {
 		return nil, v1.ErrorDatabaseQuery("Internal error")
 	}
 
-	replyUsers := make([]UserItem, len(users))
+	replyUsers := make([]*UserItem, len(users))
 	for i, user := range users {
-		replyUsers[i].User = user
+		replyUsers[i] = &UserItem{User: user}
 	}
 
 	if filter.WithRelation {
@@ -156,7 +156,7 @@ func (uc *UsersUsecase) getUserContactLabel(ctx context.Context, userId int64) (
 	return &contact, nil
 }
 
-func (uc *UsersUsecase) includeRelations(ctx context.Context, users ...UserItem) error {
+func (uc *UsersUsecase) includeRelations(ctx context.Context, users ...*UserItem) error {
 	userIds := make([]int64, len(users))
 	for i, user := range users {
 		userIds[i] = user.User.ID
