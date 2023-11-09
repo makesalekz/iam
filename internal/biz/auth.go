@@ -11,6 +11,7 @@ import (
 	"iam/ent"
 	"iam/ent/property"
 	"iam/internal/data"
+	"iam/internal/utils"
 	notifications_v1 "notifications/api/notifications/v1"
 	tenants_v1 "tenants/api/tenants/v1"
 
@@ -123,7 +124,7 @@ func (uc *AuthUsecase) AuthUserByCode(ctx context.Context, userId int64, code st
 }
 
 func (uc *AuthUsecase) handleUserVerification(ctx context.Context, user *ent.User, otp *ent.OneTimePassword) error {
-	userShort := UserToUserShort(user)
+	userShort := utils.UserShortFromDto(user)
 
 	switch otp.Type {
 	case property.Phone:

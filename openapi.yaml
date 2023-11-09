@@ -324,8 +324,8 @@ components:
                     type: array
                     items:
                         type: string
-                include:
-                    $ref: '#/components/schemas/api.iam.v1.UserInclude'
+                withRelation:
+                    type: boolean
         api.iam.v1.PrivacyReply:
             type: object
             properties:
@@ -424,11 +424,6 @@ components:
             properties:
                 user:
                     $ref: '#/components/schemas/api.iam.v1.User'
-        api.iam.v1.UserInclude:
-            type: object
-            properties:
-                relations:
-                    type: boolean
         api.iam.v1.UserReply:
             type: object
             properties:
