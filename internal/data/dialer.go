@@ -138,6 +138,26 @@ func (d *Dialer) Chats(ctx context.Context) (chats_v1.ChatsClient, error) {
 	return chats_v1.NewChatsClient(conn), nil
 }
 
+func (d *Dialer) Members(ctx context.Context) (chats_v1.MembersClient, error) {
+	conn, err := grpc.DialInsecure(
+		ctx,
+		grpc.WithEndpoint(d.conf.Discovery.Chats),
+		grpc.WithDiscovery(d.discovery),
+		grpc.WithTimeout(d.conf.Discovery.ChatsTimeout.AsDuration()),
+		grpc.WithMiddleware(
+			jwt.Client(func(token *jwtv4.Token) (interface{}, error) {
+				return d.jwt.GetSecret(), nil
+			}, jwt.WithSigningMethod(jwtv4.SigningMethodHS256), jwt.WithClaims(func() jwtv4.Claims {
+				return d.jwt.GetClaimsFromContext(ctx)
+			})),
+		),
+	)
+	if err != nil {
+		return nil, err
+	}
+	return chats_v1.NewMembersClient(conn), nil
+}
+
 func FromChatsMembershipToIamMembership(membership *chats_v1.Membership) *iam_v1.Membership {
 	if membership == nil {
 		return nil
@@ -149,8 +169,8 @@ func FromChatsMembershipToIamMembership(membership *chats_v1.Membership) *iam_v1
 		Role:       membership.Role,
 		IsPinned:   membership.IsPinned,
 		IsMuted:    membership.IsMuted,
-		MutedTill:  &membership.MutedTill,
-		ArchivedAt: &membership.ArchivedAt,
+		MutedTill:  membership.MutedTill,
+		ArchivedAt: membership.ArchivedAt,
 		AutoSave:   membership.AutoSave,
 	}
 }

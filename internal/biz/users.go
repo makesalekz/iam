@@ -75,12 +75,12 @@ func (uc *UsersUsecase) getUserContactLabel(ctx context.Context, userId int64) (
 }
 
 func (uc *UsersUsecase) getUsersMembership(ctx context.Context, userId int64) (*chats_v1.Membership, error) {
-	chatsClient, err := uc.dialer.Chats(ctx)
+	membersClient, err := uc.dialer.Members(ctx)
 	if err != nil {
 		return nil, v1.ErrorGrpcConnection("dialer.Users: %s", err.Error())
 	}
 
-	chatMembership, err := chatsClient.GetDirectChatMembership(ctx, &chats_v1.DirectChatMembershipRequest{UserId: userId})
+	chatMembership, err := membersClient.GetDirectChatMembership(ctx, &chats_v1.DirectChatMembershipRequest{UserId: userId})
 	if err != nil {
 		if chats_v1.IsNotFound(err) {
 			return nil, v1.ErrorDirectChatNotFound("there is not such chat")

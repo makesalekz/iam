@@ -74,7 +74,6 @@ service Chats {
       body: "*"
     };
   };
-  rpc GetDirectChatMembership (DirectChatMembershipRequest) returns (MembershipReply);
 }
 
 message CreateDirectChatRequest {
@@ -144,12 +143,4 @@ message ListChatEventsRequest {
 message ListChatEventsReply {
   repeated api.events.v1.Event events = 1;
   PaginateReply paginate = 2;
-}
-
-message DirectChatMembershipRequest {
-  int64 userId = 1;
-}
-
-message MembershipReply {
-  Membership membership = 1;
 }

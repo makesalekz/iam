@@ -52,6 +52,7 @@ service Members {
       body: "*"
     };
   };
+  rpc GetDirectChatMembership (DirectChatMembershipRequest) returns (MembershipReply);
 }
 
 message InviteMembersRequest {
@@ -84,4 +85,11 @@ message ChangeMemberRoleRequest {
 message ChangeMemberAutosaveRequest {
   int64 chatId = 1;
   bool autoSave = 2;
+}
+
+message DirectChatMembershipRequest {
+  int64 userId = 1;
+}
+message MembershipReply {
+  Membership membership = 1;
 }
