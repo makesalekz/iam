@@ -3,7 +3,9 @@ package data
 import (
 	"context"
 
+	chats_v1 "chats/api/chats/v1"
 	contacts_v1 "contacts/api/contacts/v1"
+	iam_v1 "iam/api/iam/v1"
 	"iam/internal/conf"
 	tenants_v1 "tenants/api/tenants/v1"
 
@@ -114,4 +116,41 @@ func (d *Dialer) TenantsMembers(ctx context.Context, claims *TenantClaims) (tena
 		return nil, err
 	}
 	return tenants_v1.NewMembersClient(conn), nil
+}
+
+func (d *Dialer) Chats(ctx context.Context) (chats_v1.ChatsClient, error) {
+	conn, err := grpc.DialInsecure(
+		ctx,
+		grpc.WithEndpoint(d.conf.Discovery.Chats),
+		grpc.WithDiscovery(d.discovery),
+		grpc.WithTimeout(d.conf.Discovery.ChatsTimeout.AsDuration()),
+		grpc.WithMiddleware(
+			jwt.Client(func(token *jwtv4.Token) (interface{}, error) {
+				return d.jwt.GetSecret(), nil
+			}, jwt.WithSigningMethod(jwtv4.SigningMethodHS256), jwt.WithClaims(func() jwtv4.Claims {
+				return d.jwt.GetClaimsFromContext(ctx)
+			})),
+		),
+	)
+	if err != nil {
+		return nil, err
+	}
+	return chats_v1.NewChatsClient(conn), nil
+}
+
+func FromChatsMembershipToIamMembership(membership *chats_v1.Membership) *iam_v1.Membership {
+	if membership == nil {
+		return nil
+	}
+
+	return &iam_v1.Membership{
+		ChatId:     membership.ChatId,
+		Status:     membership.Status,
+		Role:       membership.Role,
+		IsPinned:   membership.IsPinned,
+		IsMuted:    membership.IsMuted,
+		MutedTill:  &membership.MutedTill,
+		ArchivedAt: &membership.ArchivedAt,
+		AutoSave:   membership.AutoSave,
+	}
 }

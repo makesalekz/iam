@@ -82,4 +82,6 @@ enum ErrorReason {
     USER_NOT_FOUND = 20 [(errors.code) = 404];
     INVALID_REQUEST = 21 [(errors.code) = 400];
 	CONTACT_NOT_FOUND = 22 [(errors.code) = 404];
+	RELATION_NOT_FOUND = 23 [(errors.code) = 404];
+	DIRECT_CHAT_NOT_FOUND = 24 [(errors.code) = 404];
   }

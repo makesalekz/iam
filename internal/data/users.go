@@ -17,11 +17,12 @@ type UpdateUserDto struct {
 	Timezone string
 }
 type GetUserFilterDto struct {
-	WithRelation bool
-	WithContact  bool
-	UserId       int64
-	Phone        string
-	Email        string
+	WithRelation   bool
+	WithContact    bool
+	WithMembership bool
+	UserId         int64
+	Phone          string
+	Email          string
 }
 
 type GetUsersFilterDto struct {

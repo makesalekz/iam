@@ -144,3 +144,27 @@ func IsContactNotFound(err error) bool {
 func ErrorContactNotFound(format string, args ...interface{}) *errors.Error {
 	return errors.New(404, ErrorReason_CONTACT_NOT_FOUND.String(), fmt.Sprintf(format, args...))
 }
+
+func IsRelationNotFound(err error) bool {
+	if err == nil {
+		return false
+	}
+	e := errors.FromError(err)
+	return e.Reason == ErrorReason_RELATION_NOT_FOUND.String() && e.Code == 404
+}
+
+func ErrorRelationNotFound(format string, args ...interface{}) *errors.Error {
+	return errors.New(404, ErrorReason_RELATION_NOT_FOUND.String(), fmt.Sprintf(format, args...))
+}
+
+func IsDirectChatNotFound(err error) bool {
+	if err == nil {
+		return false
+	}
+	e := errors.FromError(err)
+	return e.Reason == ErrorReason_DIRECT_CHAT_NOT_FOUND.String() && e.Code == 404
+}
+
+func ErrorDirectChatNotFound(format string, args ...interface{}) *errors.Error {
+	return errors.New(404, ErrorReason_DIRECT_CHAT_NOT_FOUND.String(), fmt.Sprintf(format, args...))
+}

@@ -12,6 +12,7 @@ replace (
 )
 
 require (
+	chats v0.0.0-00010101000000-000000000000
 	contacts v0.0.0-00010101000000-000000000000
 	entgo.io/ent v0.12.3
 	github.com/go-kratos/consul v0.1.5
@@ -35,6 +36,7 @@ require (
 
 require (
 	ariga.io/atlas v0.10.2-0.20230427182402-87a07dfb83bf // indirect
+	events v0.0.0-00010101000000-000000000000 // indirect
 	github.com/agext/levenshtein v1.2.1 // indirect
 	github.com/apparentlymart/go-textseg/v13 v13.0.0 // indirect
 	github.com/armon/go-metrics v0.4.1 // indirect
@@ -93,4 +95,5 @@ require (
 	google.golang.org/genproto v0.0.0-20230629202037-9506855d4529 // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20230629202037-9506855d4529 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
+	media v0.0.0-00010101000000-000000000000 // indirect
 )
