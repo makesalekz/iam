@@ -1,0 +1,87 @@
+syntax = "proto3";
+
+package api.chats.v1;
+
+import "google/api/annotations.proto";
+import "chats/v1/models.proto";
+
+option go_package = "chats/api/chats/v1;chats_v1";
+option java_multiple_files = true;
+option java_package = "api.members.v1";
+
+service Members {
+  rpc InviteMembers (InviteMembersRequest) returns (EmptyReply) {
+    option (google.api.http) = {
+      post: "/v1/chats/{chatId}/members"
+      body: "*"
+    };
+  };
+  rpc ListMembers (ListMembersRequest) returns (ListMembersReply) {
+    option (google.api.http) = {
+      post: "/v1/chats/{chatId}/members/list"
+      body: "*"
+    };
+  };
+  rpc JoinChat (ChatRequest) returns (EmptyReply) {
+    option (google.api.http) = {
+      post: "/v1/chats/{chatId}/join"
+      body: "*"
+    };
+  };
+  rpc LeaveChat (ChatRequest) returns (EmptyReply) {
+    option (google.api.http) = {
+      post: "/v1/chats/{chatId}/leave"
+      body: "*"
+    };
+  };
+  rpc KickMember (ChatMemberRequest) returns (EmptyReply) {
+    option (google.api.http) = {
+      post: "/v1/chats/{chatId}/member/kick"
+      body: "*"
+    };
+  };
+  rpc ChangeMemberRole (ChangeMemberRoleRequest) returns (EmptyReply) {
+    option (google.api.http) = {
+      put: "/v1/chats/{chatId}/member/role"
+      body: "*"
+    };
+  };
+  rpc ChangeMemberAutosave (ChangeMemberAutosaveRequest) returns (EmptyReply) {
+    option (google.api.http) = {
+      put: "/v1/chats/{chatId}/member/autosave"
+      body: "*"
+    };
+  };
+}
+
+message InviteMembersRequest {
+  int64 chatId = 1;
+  repeated int64 members = 2;
+}
+
+message ListMembersRequest {
+  int64 chatId = 1;
+  bool adminsOnly = 2;
+  bool ownersOnly = 3;
+  PaginateRequest paginate = 4;
+}
+message ListMembersReply {
+  repeated Member members = 1;
+  PaginateReply paginate = 2;
+}
+
+message ChatMemberRequest {
+  int64 chatId = 1;
+  int64 userId = 2;
+}
+
+message ChangeMemberRoleRequest {
+  int64 chatId = 1;
+  int64 userId = 2;
+  string role = 3;
+}
+
+message ChangeMemberAutosaveRequest {
+  int64 chatId = 1;
+  bool autoSave = 2;
+}

@@ -1,0 +1,155 @@
+syntax = "proto3";
+
+package api.chats.v1;
+
+import "google/api/annotations.proto";
+import "iam/api/iam/v1/users.proto";
+import "chats/v1/models.proto";
+import "events/api/events/v1/models.proto";
+
+option go_package = "chats/api/chats/v1;chats_v1";
+option java_multiple_files = true;
+option java_package = "api.chats.v1";
+
+service Chats {
+  rpc CreateDirectChat (CreateDirectChatRequest) returns (CreateChatReply) {
+    option (google.api.http) = {
+      post: "/v1/chats"
+      body: "*"
+    };
+  };
+  rpc CreateGroupChat (CreateGroupChatRequest) returns (CreateChatReply) {
+    option (google.api.http) = {
+      post: "/v1/chats/group"
+      body: "*"
+    };
+  };
+  rpc CreateEventChat (CreateEventChatRequest) returns (CreateChatReply) {
+    option (google.api.http) = {
+      post: "/v1/chats/event"
+      body: "*"
+    };
+  };
+  rpc UpdateGroupChat (UpdateGroupChatRequest) returns (EmptyReply) {
+    option (google.api.http) = {
+      put: "/v1/chats/{chatId}"
+      body: "*"
+    };
+  };
+  rpc GetChat (ChatRequest) returns (ChatReply) {
+    option (google.api.http) = {
+      get: "/v1/chats/{chatId}"
+    };
+  };
+  rpc DeleteChat (ChatRequest) returns (EmptyReply) {
+    option (google.api.http) = {
+      delete: "/v1/chats/{chatId}"
+    };
+  };
+  rpc DoActionOnChat (ChatActionRequest) returns (EmptyReply) {
+    option (google.api.http) = {
+      put: "/v1/chats/{chatId}/action"
+      body: "*"
+    };
+  };
+  rpc ListChats (ListChatsRequest) returns (ListChatsReply) {
+    option (google.api.http) = {
+      post: "/v1/chats/list"
+      body: "*"
+    };
+  };
+  rpc ChatLocationsList (ChatLocationsListRequest) returns (ChatLocationsListReply) {
+    option (google.api.http) = {
+      get: "/v1/chats/{chatId}/locations"
+    };
+  };
+  rpc ChatLinksList (ChatLinksListRequest) returns (ChatLinksListReply) {
+    option (google.api.http) = {
+      get: "/v1/chats/{chatId}/links"
+    };
+  };
+  rpc ListChatEvents (ListChatEventsRequest) returns (ListChatEventsReply) {
+    option (google.api.http) = {
+      post: "/v1/chats/{chatId}/events"
+      body: "*"
+    };
+  };
+  rpc GetDirectChatMembership (DirectChatMembershipRequest) returns (MembershipReply);
+}
+
+message CreateDirectChatRequest {
+  int64 userId = 1;
+}
+
+message CreateGroupChatRequest {
+  string title = 1;
+  string description = 2;
+  string coverImage = 3;
+}
+
+message CreateEventChatRequest {
+  int64 eventId = 1;
+}
+
+message CreateChatReply {
+  int64 chatId = 1;
+  api.iam.v1.UserShort companion = 2;
+}
+
+message UpdateGroupChatRequest {
+  int64 chatId = 1;
+  string title = 2;
+  string description = 3;
+  string coverImage = 4;
+}
+
+message ChatActionRequest {
+  int64 chatId = 1;
+  string action = 2;
+  string muteTill = 3;
+}
+
+message ChatReply {
+  ChatMemberInfo chat = 1;
+  api.iam.v1.UserShort companion = 2;
+}
+
+message ListChatsRequest {
+  PaginateRequest paginate = 1;
+}
+message ListChatsReply {
+  repeated ChatItem chats = 1;
+  PaginateReply paginate = 2;
+}
+
+message ChatLocationsListRequest {
+  int64 chatId = 1;
+}
+message ChatLocationsListReply {
+  repeated Location locations = 1;
+}
+
+message ChatLinksListRequest {
+  int64 chatId = 1;
+}
+message ChatLinksListReply {
+  repeated Link links = 1;
+  repeated api.iam.v1.UserShort users = 2;
+}
+
+message ListChatEventsRequest {
+  int64 chatId = 1;
+  PaginateRequest paginate = 2;
+}
+message ListChatEventsReply {
+  repeated api.events.v1.Event events = 1;
+  PaginateReply paginate = 2;
+}
+
+message DirectChatMembershipRequest {
+  int64 userId = 1;
+}
+
+message MembershipReply {
+  Membership membership = 1;
+}

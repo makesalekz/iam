@@ -1,0 +1,73 @@
+syntax = "proto3";
+
+package api.chats.v1;
+
+import "google/api/annotations.proto";
+import "iam/api/iam/v1/users.proto";
+import "chats/v1/models.proto";
+
+option go_package = "chats/api/chats/v1;chats_v1";
+option java_multiple_files = true;
+option java_package = "api.chats.v1";
+
+service Messages {
+  rpc SendMessage (SendMessageRequest) returns (SendMessageReply) {
+    option (google.api.http) = {
+      post: "/v1/chats/{chatId}/messages"
+      body: "*"
+    };
+  };
+  rpc ListMessages (ListMessagesRequest) returns (ListMessagesReply) {
+    option (google.api.http) = {
+      post: "/v1/chats/{chatId}/messages/list"
+      body: "*"
+    };
+  };
+  rpc DeleteMessage (MessageRequest) returns (EmptyReply) {
+    option (google.api.http) = {
+      delete: "/v1/chats/messages/{messageId}"
+    };
+  };
+  rpc DoActionOnMessage (MessageActionRequest) returns (EmptyReply) {
+    option (google.api.http) = {
+      put: "/v1/chats/messages/{messageId}/{action}"
+      body: "*"
+    };
+  };
+}
+
+message SendMessageRequest {
+  int64 chatId = 1;
+  string cid = 2;
+  string text = 3;
+  optional int64 replyTo = 4;
+  optional int64 eventId = 5;
+  optional int64  contactId = 6;
+  repeated int64 mediaIds = 7;
+  optional LocationDto location = 8;
+  repeated MessageAdditions additions = 9;
+}
+message SendMessageReply {
+  Message message = 1;
+  api.iam.v1.UserShort user = 2;
+}
+
+message ListMessagesRequest {
+  int64 chatId = 1;
+  bool pinnedOnly = 2;
+  PaginateRequest paginate = 3;
+}
+message ListMessagesReply {
+  repeated Message messages = 1;
+  repeated api.iam.v1.UserShort users = 2;
+  PaginateReply paginate = 3;
+}
+
+message MessageRequest {
+  int64 messageId = 1;
+}
+
+message MessageActionRequest {
+  int64 messageId = 1;
+  string action = 2;
+}

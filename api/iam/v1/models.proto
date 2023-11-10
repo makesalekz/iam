@@ -3,6 +3,7 @@ syntax = "proto3";
 package api.iam.v1;
 
 import "errors/errors.proto";
+import "chats/api/chats/v1/models.proto";
 
 option go_package = "iam/api/iam/v1;iam_v1";
 option java_multiple_files = true;
@@ -25,9 +26,12 @@ message User {
 	optional string avatar = 11;
 	optional string bioUpdatedAt = 12;
 
-	// field containing tied contact info
+	// field contains contact info
 	optional Contact contact = 13;
+	// field contains relation info
 	optional Relation relation = 14;
+	// field contains directChat info
+	optional api.chats.v1.Membership directChat = 15;
 }
 
 message UserShort {
