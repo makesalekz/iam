@@ -106,7 +106,7 @@ func (s *UsersService) GetUser(ctx context.Context, req *v1.GetUserRequest) (*v1
 		return nil, err
 	}
 
-	return &v1.UserReply{User: userItemToV1ShortUser(&user)}, nil
+	return &v1.UserReply{User: userItemToV1ShortUser(user)}, nil
 }
 
 func (s *UsersService) GetUsers(ctx context.Context, req *v1.GetUsersRequest) (*v1.GetUsersReply, error) {
@@ -136,7 +136,7 @@ func (s *UsersService) GetUserByFilter(ctx context.Context, req *v1.GetUserByFil
 		return nil, err
 	}
 
-	return &v1.UserReply{User: userItemToV1ShortUser(&user)}, nil
+	return &v1.UserReply{User: userItemToV1ShortUser(user)}, nil
 }
 
 func (s *UsersService) GetUserByFilterFull(ctx context.Context, req *v1.GetUserByFilterRequest) (*v1.UserFullReply, error) {
@@ -153,7 +153,11 @@ func (s *UsersService) GetUserByFilterFull(ctx context.Context, req *v1.GetUserB
 	return &v1.UserFullReply{User: userItemToV1User(user)}, nil
 }
 
-func userItemToV1User(user biz.UserItem) *v1.User {
+func userItemToV1User(user *biz.UserItem) *v1.User {
+	if user == nil {
+		return &v1.User{}
+	}
+
 	replyUser := &v1.User{
 		Id:          user.ID,
 		Phone:       user.Phone,

@@ -47,7 +47,7 @@ func NewUsersUsecase(logger log.Logger,
 	}, nil
 }
 
-func (uc *UsersUsecase) GetUserProfile(ctx context.Context, filter data.GetUserFilterDto) (UserItem, error) {
+func (uc *UsersUsecase) GetUserProfile(ctx context.Context, filter data.GetUserFilterDto) (*UserItem, error) {
 	var user *ent.User
 	var err error
 
@@ -58,16 +58,16 @@ func (uc *UsersUsecase) GetUserProfile(ctx context.Context, filter data.GetUserF
 	} else if filter.UserId != 0 && filter.Email == "" && filter.Phone == "" {
 		user, err = uc.usersRepo.GetUserById(ctx, filter.UserId)
 	} else {
-		return UserItem{}, v1.ErrorInvalidRequest("Invalid request, please read documentations")
+		return nil, v1.ErrorInvalidRequest("Invalid request, please read documentations")
 	}
 
 	if err != nil {
 		if ent.IsNotFound(err) {
-			return UserItem{}, v1.ErrorUserNotFound("User not found: %v", err)
+			return nil, v1.ErrorUserNotFound("User not found: %v", err)
 		}
-		return UserItem{}, v1.ErrorDatabaseQuery("Internal error")
+		return nil, v1.ErrorDatabaseQuery("Internal error")
 	}
-	replyUser := UserItem{
+	replyUser := &UserItem{
 		User: user,
 	}
 
@@ -75,7 +75,7 @@ func (uc *UsersUsecase) GetUserProfile(ctx context.Context, filter data.GetUserF
 		contactLabel, err := uc.getUserContactLabel(ctx, filter.UserId)
 		if err != nil {
 			if !v1.IsContactNotFound(err) {
-				return UserItem{}, err
+				return nil, err
 			}
 		} else {
 			replyUser.Contact = &v1.Contact{Label: contactLabel.Label}
@@ -83,7 +83,7 @@ func (uc *UsersUsecase) GetUserProfile(ctx context.Context, filter data.GetUserF
 	}
 
 	if filter.WithRelation {
-		err = uc.includeRelations(ctx, &replyUser)
+		err = uc.includeRelations(ctx, replyUser)
 		if err != nil {
 			return replyUser, err
 		}
@@ -92,16 +92,16 @@ func (uc *UsersUsecase) GetUserProfile(ctx context.Context, filter data.GetUserF
 	return replyUser, nil
 }
 
-func (uc *UsersUsecase) UpdateUserProfile(ctx context.Context, userId int64, data data.UpdateUserDto) (UserItem, error) {
+func (uc *UsersUsecase) UpdateUserProfile(ctx context.Context, userId int64, data data.UpdateUserDto) (*UserItem, error) {
 	user, err := uc.usersRepo.UpdateUserData(ctx, userId, data)
 	if err != nil {
 		if ent.IsNotFound(err) {
-			return UserItem{}, v1.ErrorUserNotFound("User not found: %v", err)
+			return nil, v1.ErrorUserNotFound("User not found: %v", err)
 		}
-		return UserItem{}, v1.ErrorDatabaseQuery("Internal error")
+		return nil, v1.ErrorDatabaseQuery("Internal error")
 	}
 
-	return UserItem{
+	return &UserItem{
 		User: user,
 	}, nil
 }
@@ -134,26 +134,26 @@ func (uc *UsersUsecase) GetUsers(ctx context.Context, filter data.GetUsersFilter
 func (uc *UsersUsecase) getUserContactLabel(ctx context.Context, userId int64) (*v1.Contact, error) {
 	contactClient, err := uc.dialer.Contacts(ctx)
 	if err != nil {
-		return &v1.Contact{}, v1.ErrorGrpcConnection("dialer.Users: %s", err.Error())
+		return nil, v1.ErrorGrpcConnection("dialer.Users: %s", err.Error())
 	}
 
 	labels, err := contactClient.GetLabelsByUserId(ctx, &contacts_v1.GetLabelsByUserIdRequest{UserId: userId})
 	if err != nil {
 		if contacts_v1.IsNotFound(err) {
-			return &v1.Contact{}, v1.ErrorContactNotFound("there is not such contact")
+			return nil, v1.ErrorContactNotFound("there is not such contact")
 		}
-		return &v1.Contact{}, v1.ErrorGrpcConnection("Contact user internal error")
+		return nil, v1.ErrorGrpcConnection("Contact user internal error")
 	}
 
-	contact := v1.Contact{}
+	contact := &v1.Contact{}
 	if len(labels.GetLabels()) == 0 {
-		return &contact, v1.ErrorContactNotFound("there is not such contact")
+		return nil, v1.ErrorContactNotFound("there is not such contact")
 	}
 
 	label := slices.MaxFunc(labels.GetLabels(), func(a, b string) int { return len(a) - len(b) })
 	contact.Label = label
 
-	return &contact, nil
+	return contact, nil
 }
 
 func (uc *UsersUsecase) includeRelations(ctx context.Context, users ...*UserItem) error {
