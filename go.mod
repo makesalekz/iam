@@ -5,6 +5,8 @@ go 1.21.1
 replace (
 	chats => ./third_party/chats
 	contacts => ./third_party/contacts
+	events => ./third_party/events
+	media => ./third_party/media
 	notifications => ./third_party/notifications
 	tenants => ./third_party/tenants
 )

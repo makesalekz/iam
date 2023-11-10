@@ -28,8 +28,8 @@ const (
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type AttachmentsClient interface {
-	CreateAttachment(ctx context.Context, in *CreateAttachmentsRequest, opts ...grpc.CallOption) (*CreateAttachmentsReply, error)
-	DeleteAttachment(ctx context.Context, in *DeleteAttachmentRequest, opts ...grpc.CallOption) (*DeleteAttachmentReply, error)
+	CreateAttachment(ctx context.Context, in *CreateAttachmentsRequest, opts ...grpc.CallOption) (*EmptyReply, error)
+	DeleteAttachment(ctx context.Context, in *DeleteAttachmentRequest, opts ...grpc.CallOption) (*EmptyReply, error)
 	ListAttachments(ctx context.Context, in *ListAttachmentsRequest, opts ...grpc.CallOption) (*ListAttachmentsReply, error)
 }
 
@@ -41,8 +41,8 @@ func NewAttachmentsClient(cc grpc.ClientConnInterface) AttachmentsClient {
 	return &attachmentsClient{cc}
 }
 
-func (c *attachmentsClient) CreateAttachment(ctx context.Context, in *CreateAttachmentsRequest, opts ...grpc.CallOption) (*CreateAttachmentsReply, error) {
-	out := new(CreateAttachmentsReply)
+func (c *attachmentsClient) CreateAttachment(ctx context.Context, in *CreateAttachmentsRequest, opts ...grpc.CallOption) (*EmptyReply, error) {
+	out := new(EmptyReply)
 	err := c.cc.Invoke(ctx, Attachments_CreateAttachment_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -50,8 +50,8 @@ func (c *attachmentsClient) CreateAttachment(ctx context.Context, in *CreateAtta
 	return out, nil
 }
 
-func (c *attachmentsClient) DeleteAttachment(ctx context.Context, in *DeleteAttachmentRequest, opts ...grpc.CallOption) (*DeleteAttachmentReply, error) {
-	out := new(DeleteAttachmentReply)
+func (c *attachmentsClient) DeleteAttachment(ctx context.Context, in *DeleteAttachmentRequest, opts ...grpc.CallOption) (*EmptyReply, error) {
+	out := new(EmptyReply)
 	err := c.cc.Invoke(ctx, Attachments_DeleteAttachment_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -72,8 +72,8 @@ func (c *attachmentsClient) ListAttachments(ctx context.Context, in *ListAttachm
 // All implementations must embed UnimplementedAttachmentsServer
 // for forward compatibility
 type AttachmentsServer interface {
-	CreateAttachment(context.Context, *CreateAttachmentsRequest) (*CreateAttachmentsReply, error)
-	DeleteAttachment(context.Context, *DeleteAttachmentRequest) (*DeleteAttachmentReply, error)
+	CreateAttachment(context.Context, *CreateAttachmentsRequest) (*EmptyReply, error)
+	DeleteAttachment(context.Context, *DeleteAttachmentRequest) (*EmptyReply, error)
 	ListAttachments(context.Context, *ListAttachmentsRequest) (*ListAttachmentsReply, error)
 	mustEmbedUnimplementedAttachmentsServer()
 }
@@ -82,10 +82,10 @@ type AttachmentsServer interface {
 type UnimplementedAttachmentsServer struct {
 }
 
-func (UnimplementedAttachmentsServer) CreateAttachment(context.Context, *CreateAttachmentsRequest) (*CreateAttachmentsReply, error) {
+func (UnimplementedAttachmentsServer) CreateAttachment(context.Context, *CreateAttachmentsRequest) (*EmptyReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateAttachment not implemented")
 }
-func (UnimplementedAttachmentsServer) DeleteAttachment(context.Context, *DeleteAttachmentRequest) (*DeleteAttachmentReply, error) {
+func (UnimplementedAttachmentsServer) DeleteAttachment(context.Context, *DeleteAttachmentRequest) (*EmptyReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteAttachment not implemented")
 }
 func (UnimplementedAttachmentsServer) ListAttachments(context.Context, *ListAttachmentsRequest) (*ListAttachmentsReply, error) {

@@ -3,7 +3,6 @@ syntax = "proto3";
 package api.iam.v1;
 
 import "errors/errors.proto";
-import "chats/api/chats/v1/models.proto";
 
 option go_package = "iam/api/iam/v1;iam_v1";
 option java_multiple_files = true;
@@ -31,7 +30,7 @@ message User {
 	// field contains relation info
 	optional Relation relation = 14;
 	// field contains directChat info
-	optional api.chats.v1.Membership directChat = 15;
+	optional Membership directChat = 15;
 }
 
 message UserShort {
@@ -53,6 +52,17 @@ message Relation {
 	bool isBlocked = 1;
 	bool isMuted = 2;
 }
+
+message Membership {
+	int64 chatId = 1;
+	string status = 2;
+	string role = 3;
+	bool isPinned = 4;
+	bool isMuted = 5;
+	optional string mutedTill = 6;
+	optional string archivedAt = 7;
+	bool autoSave = 8;
+  }
 
 enum ErrorReason {
     // Set default error code.

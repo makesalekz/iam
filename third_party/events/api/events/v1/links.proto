@@ -17,7 +17,7 @@ service Links {
       body: "*"
     };
   };
-  rpc DeleteLinks (DeleteLinksRequest) returns (DeleteLinksReply) {
+  rpc DeleteLinks (DeleteLinksRequest) returns (EmptyReply) {
     option (google.api.http) = {
       delete: "/v1/events/{eventId}/links/{linkId}"
     };
@@ -42,7 +42,6 @@ message DeleteLinksRequest {
   int64 eventId = 1;
   int64 linkId = 2;
 }
-message DeleteLinksReply {}
 
 message ListLinksRequest {
   int64 eventId = 1;

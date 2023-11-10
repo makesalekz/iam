@@ -98,8 +98,8 @@ message Membership {
   string role = 3;
   bool isPinned = 4;
   bool isMuted = 5;
-  optional string mutedTill = 6;
-  optional string archivedAt = 7;
+  string mutedTill = 6;
+  string archivedAt = 7;
   bool autoSave = 8;
 }
 

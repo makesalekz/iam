@@ -29,7 +29,7 @@ const (
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type LinksClient interface {
 	CreateLinks(ctx context.Context, in *CreateLinksRequest, opts ...grpc.CallOption) (*CreateLinksReply, error)
-	DeleteLinks(ctx context.Context, in *DeleteLinksRequest, opts ...grpc.CallOption) (*DeleteLinksReply, error)
+	DeleteLinks(ctx context.Context, in *DeleteLinksRequest, opts ...grpc.CallOption) (*EmptyReply, error)
 	ListLinks(ctx context.Context, in *ListLinksRequest, opts ...grpc.CallOption) (*ListLinksReply, error)
 }
 
@@ -50,8 +50,8 @@ func (c *linksClient) CreateLinks(ctx context.Context, in *CreateLinksRequest, o
 	return out, nil
 }
 
-func (c *linksClient) DeleteLinks(ctx context.Context, in *DeleteLinksRequest, opts ...grpc.CallOption) (*DeleteLinksReply, error) {
-	out := new(DeleteLinksReply)
+func (c *linksClient) DeleteLinks(ctx context.Context, in *DeleteLinksRequest, opts ...grpc.CallOption) (*EmptyReply, error) {
+	out := new(EmptyReply)
 	err := c.cc.Invoke(ctx, Links_DeleteLinks_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -73,7 +73,7 @@ func (c *linksClient) ListLinks(ctx context.Context, in *ListLinksRequest, opts 
 // for forward compatibility
 type LinksServer interface {
 	CreateLinks(context.Context, *CreateLinksRequest) (*CreateLinksReply, error)
-	DeleteLinks(context.Context, *DeleteLinksRequest) (*DeleteLinksReply, error)
+	DeleteLinks(context.Context, *DeleteLinksRequest) (*EmptyReply, error)
 	ListLinks(context.Context, *ListLinksRequest) (*ListLinksReply, error)
 	mustEmbedUnimplementedLinksServer()
 }
@@ -85,7 +85,7 @@ type UnimplementedLinksServer struct {
 func (UnimplementedLinksServer) CreateLinks(context.Context, *CreateLinksRequest) (*CreateLinksReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateLinks not implemented")
 }
-func (UnimplementedLinksServer) DeleteLinks(context.Context, *DeleteLinksRequest) (*DeleteLinksReply, error) {
+func (UnimplementedLinksServer) DeleteLinks(context.Context, *DeleteLinksRequest) (*EmptyReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteLinks not implemented")
 }
 func (UnimplementedLinksServer) ListLinks(context.Context, *ListLinksRequest) (*ListLinksReply, error) {

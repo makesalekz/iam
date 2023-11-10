@@ -17,31 +17,31 @@ service Members {
       body: "*"
     };
   };
-  rpc UpdateMemberStatus (UpdateMemberStatusRequest) returns (UpdateMemberStatusReply) {
+  rpc UpdateMemberStatus (UpdateMemberStatusRequest) returns (EmptyReply) {
     option (google.api.http) = {
       put: "/v1/events/{eventId}/members/status"
       body: "*"
     };
   };
-  rpc UpdateMemberRemind (UpdateMemberRemindRequest) returns (UpdateMemberRemindReply) {
+  rpc UpdateMemberRemind (UpdateMemberRemindRequest) returns (EmptyReply) {
     option (google.api.http) = {
       put: "/v1/events/{eventId}/members/remind"
       body: "*"
     };
   };
-  rpc UpdateMemberRole (UpdateMemberRoleRequest) returns (UpdateMemberRoleReply) {
+  rpc UpdateMemberRole (UpdateMemberRoleRequest) returns (EmptyReply) {
     option (google.api.http) = {
       put: "/v1/events/{eventId}/members/role"
       body: "*"
     };
   };
-  rpc KickMember (KickMemberRequest) returns (KickMemberReply) {
+  rpc KickMember (KickMemberRequest) returns (EmptyReply) {
     option (google.api.http) = {
       put: "/v1/events/{eventId}/members/kick"
       body: "*"
     };
   };
-  rpc GetMember (GetMembersRequest) returns (GetMembersReply) {
+  rpc GetMember (GetMemberRequest) returns (GetMemberReply) {
     option (google.api.http) = {
       get: "/v1/events/{eventId}/members/{userId}"
     };
@@ -64,38 +64,36 @@ message InviteMembersRequest {
   int64 eventId = 1;
   repeated int64 members = 2;
 }
-message InviteMembersReply {}
+message InviteMembersReply {
+  bool status = 1;
+}
 
 message UpdateMemberStatusRequest {
   int64 eventId = 1;
   string status = 2;
 }
-message UpdateMemberStatusReply {}
 
 message UpdateMemberRemindRequest {
   int64 eventId = 1;
   int32 remind = 2;
 }
-message UpdateMemberRemindReply {}
 
 message UpdateMemberRoleRequest {
   int64 eventId = 1;
   int64 userId = 2;
   string role = 3;
 }
-message UpdateMemberRoleReply {}
 
 message KickMemberRequest {
   int64 eventId = 1;
   int64 userId = 2;
 }
-message KickMemberReply {}
 
-message GetMembersRequest {
+message GetMemberRequest {
   int64 eventId = 1;
   int64 userId = 2;
 }
-message GetMembersReply {
+message GetMemberReply {
   Member member = 1;
 }
 

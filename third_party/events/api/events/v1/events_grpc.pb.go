@@ -26,6 +26,7 @@ const (
 	Events_DeleteEventLocation_FullMethodName = "/api.events.v1.Events/DeleteEventLocation"
 	Events_GetEvent_FullMethodName            = "/api.events.v1.Events/GetEvent"
 	Events_ListEvents_FullMethodName          = "/api.events.v1.Events/ListEvents"
+	Events_CommonEvents_FullMethodName        = "/api.events.v1.Events/CommonEvents"
 	Events_GetEvents_FullMethodName           = "/api.events.v1.Events/GetEvents"
 )
 
@@ -33,13 +34,14 @@ const (
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type EventsClient interface {
-	CreateEvent(ctx context.Context, in *CreateEventsRequest, opts ...grpc.CallOption) (*CreateEventsReply, error)
-	UpdateEvent(ctx context.Context, in *UpdateEventsRequest, opts ...grpc.CallOption) (*UpdateEventsReply, error)
-	DeleteEvent(ctx context.Context, in *DeleteEventsRequest, opts ...grpc.CallOption) (*DeleteEventsReply, error)
-	DeleteEventCover(ctx context.Context, in *DeleteEventsRequest, opts ...grpc.CallOption) (*DeleteEventsReply, error)
-	DeleteEventLocation(ctx context.Context, in *DeleteEventsRequest, opts ...grpc.CallOption) (*DeleteEventsReply, error)
-	GetEvent(ctx context.Context, in *GetEventRequest, opts ...grpc.CallOption) (*GetEventReply, error)
+	CreateEvent(ctx context.Context, in *CreateEventsRequest, opts ...grpc.CallOption) (*EventReply, error)
+	UpdateEvent(ctx context.Context, in *UpdateEventsRequest, opts ...grpc.CallOption) (*EventReply, error)
+	DeleteEvent(ctx context.Context, in *EventRequest, opts ...grpc.CallOption) (*EmptyReply, error)
+	DeleteEventCover(ctx context.Context, in *EventRequest, opts ...grpc.CallOption) (*EmptyReply, error)
+	DeleteEventLocation(ctx context.Context, in *EventRequest, opts ...grpc.CallOption) (*EmptyReply, error)
+	GetEvent(ctx context.Context, in *EventRequest, opts ...grpc.CallOption) (*EventReply, error)
 	ListEvents(ctx context.Context, in *ListEventsRequest, opts ...grpc.CallOption) (*ListEventsReply, error)
+	CommonEvents(ctx context.Context, in *CommonEventsRequest, opts ...grpc.CallOption) (*ListEventsReply, error)
 	GetEvents(ctx context.Context, in *GetEventsRequest, opts ...grpc.CallOption) (*GetEventsReply, error)
 }
 
@@ -51,8 +53,8 @@ func NewEventsClient(cc grpc.ClientConnInterface) EventsClient {
 	return &eventsClient{cc}
 }
 
-func (c *eventsClient) CreateEvent(ctx context.Context, in *CreateEventsRequest, opts ...grpc.CallOption) (*CreateEventsReply, error) {
-	out := new(CreateEventsReply)
+func (c *eventsClient) CreateEvent(ctx context.Context, in *CreateEventsRequest, opts ...grpc.CallOption) (*EventReply, error) {
+	out := new(EventReply)
 	err := c.cc.Invoke(ctx, Events_CreateEvent_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -60,8 +62,8 @@ func (c *eventsClient) CreateEvent(ctx context.Context, in *CreateEventsRequest,
 	return out, nil
 }
 
-func (c *eventsClient) UpdateEvent(ctx context.Context, in *UpdateEventsRequest, opts ...grpc.CallOption) (*UpdateEventsReply, error) {
-	out := new(UpdateEventsReply)
+func (c *eventsClient) UpdateEvent(ctx context.Context, in *UpdateEventsRequest, opts ...grpc.CallOption) (*EventReply, error) {
+	out := new(EventReply)
 	err := c.cc.Invoke(ctx, Events_UpdateEvent_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -69,8 +71,8 @@ func (c *eventsClient) UpdateEvent(ctx context.Context, in *UpdateEventsRequest,
 	return out, nil
 }
 
-func (c *eventsClient) DeleteEvent(ctx context.Context, in *DeleteEventsRequest, opts ...grpc.CallOption) (*DeleteEventsReply, error) {
-	out := new(DeleteEventsReply)
+func (c *eventsClient) DeleteEvent(ctx context.Context, in *EventRequest, opts ...grpc.CallOption) (*EmptyReply, error) {
+	out := new(EmptyReply)
 	err := c.cc.Invoke(ctx, Events_DeleteEvent_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -78,8 +80,8 @@ func (c *eventsClient) DeleteEvent(ctx context.Context, in *DeleteEventsRequest,
 	return out, nil
 }
 
-func (c *eventsClient) DeleteEventCover(ctx context.Context, in *DeleteEventsRequest, opts ...grpc.CallOption) (*DeleteEventsReply, error) {
-	out := new(DeleteEventsReply)
+func (c *eventsClient) DeleteEventCover(ctx context.Context, in *EventRequest, opts ...grpc.CallOption) (*EmptyReply, error) {
+	out := new(EmptyReply)
 	err := c.cc.Invoke(ctx, Events_DeleteEventCover_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -87,8 +89,8 @@ func (c *eventsClient) DeleteEventCover(ctx context.Context, in *DeleteEventsReq
 	return out, nil
 }
 
-func (c *eventsClient) DeleteEventLocation(ctx context.Context, in *DeleteEventsRequest, opts ...grpc.CallOption) (*DeleteEventsReply, error) {
-	out := new(DeleteEventsReply)
+func (c *eventsClient) DeleteEventLocation(ctx context.Context, in *EventRequest, opts ...grpc.CallOption) (*EmptyReply, error) {
+	out := new(EmptyReply)
 	err := c.cc.Invoke(ctx, Events_DeleteEventLocation_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -96,8 +98,8 @@ func (c *eventsClient) DeleteEventLocation(ctx context.Context, in *DeleteEvents
 	return out, nil
 }
 
-func (c *eventsClient) GetEvent(ctx context.Context, in *GetEventRequest, opts ...grpc.CallOption) (*GetEventReply, error) {
-	out := new(GetEventReply)
+func (c *eventsClient) GetEvent(ctx context.Context, in *EventRequest, opts ...grpc.CallOption) (*EventReply, error) {
+	out := new(EventReply)
 	err := c.cc.Invoke(ctx, Events_GetEvent_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -108,6 +110,15 @@ func (c *eventsClient) GetEvent(ctx context.Context, in *GetEventRequest, opts .
 func (c *eventsClient) ListEvents(ctx context.Context, in *ListEventsRequest, opts ...grpc.CallOption) (*ListEventsReply, error) {
 	out := new(ListEventsReply)
 	err := c.cc.Invoke(ctx, Events_ListEvents_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *eventsClient) CommonEvents(ctx context.Context, in *CommonEventsRequest, opts ...grpc.CallOption) (*ListEventsReply, error) {
+	out := new(ListEventsReply)
+	err := c.cc.Invoke(ctx, Events_CommonEvents_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -127,13 +138,14 @@ func (c *eventsClient) GetEvents(ctx context.Context, in *GetEventsRequest, opts
 // All implementations must embed UnimplementedEventsServer
 // for forward compatibility
 type EventsServer interface {
-	CreateEvent(context.Context, *CreateEventsRequest) (*CreateEventsReply, error)
-	UpdateEvent(context.Context, *UpdateEventsRequest) (*UpdateEventsReply, error)
-	DeleteEvent(context.Context, *DeleteEventsRequest) (*DeleteEventsReply, error)
-	DeleteEventCover(context.Context, *DeleteEventsRequest) (*DeleteEventsReply, error)
-	DeleteEventLocation(context.Context, *DeleteEventsRequest) (*DeleteEventsReply, error)
-	GetEvent(context.Context, *GetEventRequest) (*GetEventReply, error)
+	CreateEvent(context.Context, *CreateEventsRequest) (*EventReply, error)
+	UpdateEvent(context.Context, *UpdateEventsRequest) (*EventReply, error)
+	DeleteEvent(context.Context, *EventRequest) (*EmptyReply, error)
+	DeleteEventCover(context.Context, *EventRequest) (*EmptyReply, error)
+	DeleteEventLocation(context.Context, *EventRequest) (*EmptyReply, error)
+	GetEvent(context.Context, *EventRequest) (*EventReply, error)
 	ListEvents(context.Context, *ListEventsRequest) (*ListEventsReply, error)
+	CommonEvents(context.Context, *CommonEventsRequest) (*ListEventsReply, error)
 	GetEvents(context.Context, *GetEventsRequest) (*GetEventsReply, error)
 	mustEmbedUnimplementedEventsServer()
 }
@@ -142,26 +154,29 @@ type EventsServer interface {
 type UnimplementedEventsServer struct {
 }
 
-func (UnimplementedEventsServer) CreateEvent(context.Context, *CreateEventsRequest) (*CreateEventsReply, error) {
+func (UnimplementedEventsServer) CreateEvent(context.Context, *CreateEventsRequest) (*EventReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateEvent not implemented")
 }
-func (UnimplementedEventsServer) UpdateEvent(context.Context, *UpdateEventsRequest) (*UpdateEventsReply, error) {
+func (UnimplementedEventsServer) UpdateEvent(context.Context, *UpdateEventsRequest) (*EventReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateEvent not implemented")
 }
-func (UnimplementedEventsServer) DeleteEvent(context.Context, *DeleteEventsRequest) (*DeleteEventsReply, error) {
+func (UnimplementedEventsServer) DeleteEvent(context.Context, *EventRequest) (*EmptyReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteEvent not implemented")
 }
-func (UnimplementedEventsServer) DeleteEventCover(context.Context, *DeleteEventsRequest) (*DeleteEventsReply, error) {
+func (UnimplementedEventsServer) DeleteEventCover(context.Context, *EventRequest) (*EmptyReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteEventCover not implemented")
 }
-func (UnimplementedEventsServer) DeleteEventLocation(context.Context, *DeleteEventsRequest) (*DeleteEventsReply, error) {
+func (UnimplementedEventsServer) DeleteEventLocation(context.Context, *EventRequest) (*EmptyReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteEventLocation not implemented")
 }
-func (UnimplementedEventsServer) GetEvent(context.Context, *GetEventRequest) (*GetEventReply, error) {
+func (UnimplementedEventsServer) GetEvent(context.Context, *EventRequest) (*EventReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetEvent not implemented")
 }
 func (UnimplementedEventsServer) ListEvents(context.Context, *ListEventsRequest) (*ListEventsReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListEvents not implemented")
+}
+func (UnimplementedEventsServer) CommonEvents(context.Context, *CommonEventsRequest) (*ListEventsReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CommonEvents not implemented")
 }
 func (UnimplementedEventsServer) GetEvents(context.Context, *GetEventsRequest) (*GetEventsReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetEvents not implemented")
@@ -216,7 +231,7 @@ func _Events_UpdateEvent_Handler(srv interface{}, ctx context.Context, dec func(
 }
 
 func _Events_DeleteEvent_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(DeleteEventsRequest)
+	in := new(EventRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -228,13 +243,13 @@ func _Events_DeleteEvent_Handler(srv interface{}, ctx context.Context, dec func(
 		FullMethod: Events_DeleteEvent_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(EventsServer).DeleteEvent(ctx, req.(*DeleteEventsRequest))
+		return srv.(EventsServer).DeleteEvent(ctx, req.(*EventRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _Events_DeleteEventCover_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(DeleteEventsRequest)
+	in := new(EventRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -246,13 +261,13 @@ func _Events_DeleteEventCover_Handler(srv interface{}, ctx context.Context, dec 
 		FullMethod: Events_DeleteEventCover_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(EventsServer).DeleteEventCover(ctx, req.(*DeleteEventsRequest))
+		return srv.(EventsServer).DeleteEventCover(ctx, req.(*EventRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _Events_DeleteEventLocation_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(DeleteEventsRequest)
+	in := new(EventRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -264,13 +279,13 @@ func _Events_DeleteEventLocation_Handler(srv interface{}, ctx context.Context, d
 		FullMethod: Events_DeleteEventLocation_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(EventsServer).DeleteEventLocation(ctx, req.(*DeleteEventsRequest))
+		return srv.(EventsServer).DeleteEventLocation(ctx, req.(*EventRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _Events_GetEvent_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetEventRequest)
+	in := new(EventRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -282,7 +297,7 @@ func _Events_GetEvent_Handler(srv interface{}, ctx context.Context, dec func(int
 		FullMethod: Events_GetEvent_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(EventsServer).GetEvent(ctx, req.(*GetEventRequest))
+		return srv.(EventsServer).GetEvent(ctx, req.(*EventRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -301,6 +316,24 @@ func _Events_ListEvents_Handler(srv interface{}, ctx context.Context, dec func(i
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(EventsServer).ListEvents(ctx, req.(*ListEventsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Events_CommonEvents_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CommonEventsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(EventsServer).CommonEvents(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Events_CommonEvents_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(EventsServer).CommonEvents(ctx, req.(*CommonEventsRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -357,6 +390,10 @@ var Events_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "ListEvents",
 			Handler:    _Events_ListEvents_Handler,
+		},
+		{
+			MethodName: "CommonEvents",
+			Handler:    _Events_CommonEvents_Handler,
 		},
 		{
 			MethodName: "GetEvents",

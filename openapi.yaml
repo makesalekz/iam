@@ -326,6 +326,25 @@ components:
                         type: string
                 withRelation:
                     type: boolean
+        api.iam.v1.Membership:
+            type: object
+            properties:
+                chatId:
+                    type: string
+                status:
+                    type: string
+                role:
+                    type: string
+                isPinned:
+                    type: boolean
+                isMuted:
+                    type: boolean
+                mutedTill:
+                    type: string
+                archivedAt:
+                    type: string
+                autoSave:
+                    type: boolean
         api.iam.v1.PrivacyReply:
             type: object
             properties:
@@ -416,9 +435,15 @@ components:
                 contact:
                     allOf:
                         - $ref: '#/components/schemas/api.iam.v1.Contact'
-                    description: field containing tied contact info
+                    description: field contains contact info
                 relation:
-                    $ref: '#/components/schemas/api.iam.v1.Relation'
+                    allOf:
+                        - $ref: '#/components/schemas/api.iam.v1.Relation'
+                    description: field contains relation info
+                directChat:
+                    allOf:
+                        - $ref: '#/components/schemas/api.iam.v1.Membership'
+                    description: field contains directChat info
         api.iam.v1.UserFullReply:
             type: object
             properties:

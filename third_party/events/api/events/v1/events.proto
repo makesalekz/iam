@@ -10,34 +10,34 @@ option java_multiple_files = true;
 option java_package = "api.events.v1";
 
 service Events {
-  rpc CreateEvent (CreateEventsRequest) returns (CreateEventsReply) {
+  rpc CreateEvent (CreateEventsRequest) returns (EventReply) {
     option (google.api.http) = {
       post: "/v1/events"
       body: "*"
     };
   };
-  rpc UpdateEvent (UpdateEventsRequest) returns (UpdateEventsReply) {
+  rpc UpdateEvent (UpdateEventsRequest) returns (EventReply) {
     option (google.api.http) = {
       put: "/v1/events/{eventId}"
       body: "*"
     };
   };
-  rpc DeleteEvent (DeleteEventsRequest) returns (DeleteEventsReply) {
+  rpc DeleteEvent (EventRequest) returns (EmptyReply) {
     option (google.api.http) = {
       delete: "/v1/events/{eventId}"
     };
   };
-  rpc DeleteEventCover (DeleteEventsRequest) returns (DeleteEventsReply) {
+  rpc DeleteEventCover (EventRequest) returns (EmptyReply) {
     option (google.api.http) = {
       delete: "/v1/events/{eventId}/cover"
     };
   };
-  rpc DeleteEventLocation (DeleteEventsRequest) returns (DeleteEventsReply) {
+  rpc DeleteEventLocation (EventRequest) returns (EmptyReply) {
     option (google.api.http) = {
       delete: "/v1/events/{eventId}/location"
     };
   };
-  rpc GetEvent (GetEventRequest) returns (GetEventReply) {
+  rpc GetEvent (EventRequest) returns (EventReply) {
     option (google.api.http) = {
       get: "/v1/events/{eventId}"
     };
@@ -48,34 +48,22 @@ service Events {
       body: "*"
     };
   };
+  rpc CommonEvents (CommonEventsRequest) returns (ListEventsReply) {
+    option (google.api.http) = {
+      post: "/v1/events/common/{userId}"
+      body: "*"
+    };
+  };
   rpc GetEvents (GetEventsRequest) returns (GetEventsReply);
 }
 
 message CreateEventsRequest {
   EventDto event = 1;
 }
-message CreateEventsReply {
-  Event event = 1;
-}
 
 message UpdateEventsRequest {
   int64 eventId = 1;
   EventDto event = 2;
-}
-message UpdateEventsReply {
-  Event event = 1;
-}
-
-message DeleteEventsRequest {
-  int64 eventId = 1;
-}
-message DeleteEventsReply {}
-
-message GetEventRequest {
-  int64 eventId = 1;
-}
-message GetEventReply {
-  Event event = 1;
 }
 
 message ListEventsRequest {
@@ -85,8 +73,13 @@ message ListEventsRequest {
   optional bool isSetRemind = 4;
   optional string fromDateTime = 5;
   optional string toDateTime = 6;
+  optional bool byMemberId = 7;
 
-  PaginateRequest paginate = 7;
+  PaginateRequest paginate = 8;
+}
+message CommonEventsRequest {
+  int64 userId = 1;
+  PaginateRequest paginate = 2;
 }
 message ListEventsReply {
   repeated Event events = 1;

@@ -34,11 +34,11 @@ const (
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type MembersClient interface {
 	InviteMembers(ctx context.Context, in *InviteMembersRequest, opts ...grpc.CallOption) (*InviteMembersReply, error)
-	UpdateMemberStatus(ctx context.Context, in *UpdateMemberStatusRequest, opts ...grpc.CallOption) (*UpdateMemberStatusReply, error)
-	UpdateMemberRemind(ctx context.Context, in *UpdateMemberRemindRequest, opts ...grpc.CallOption) (*UpdateMemberRemindReply, error)
-	UpdateMemberRole(ctx context.Context, in *UpdateMemberRoleRequest, opts ...grpc.CallOption) (*UpdateMemberRoleReply, error)
-	KickMember(ctx context.Context, in *KickMemberRequest, opts ...grpc.CallOption) (*KickMemberReply, error)
-	GetMember(ctx context.Context, in *GetMembersRequest, opts ...grpc.CallOption) (*GetMembersReply, error)
+	UpdateMemberStatus(ctx context.Context, in *UpdateMemberStatusRequest, opts ...grpc.CallOption) (*EmptyReply, error)
+	UpdateMemberRemind(ctx context.Context, in *UpdateMemberRemindRequest, opts ...grpc.CallOption) (*EmptyReply, error)
+	UpdateMemberRole(ctx context.Context, in *UpdateMemberRoleRequest, opts ...grpc.CallOption) (*EmptyReply, error)
+	KickMember(ctx context.Context, in *KickMemberRequest, opts ...grpc.CallOption) (*EmptyReply, error)
+	GetMember(ctx context.Context, in *GetMemberRequest, opts ...grpc.CallOption) (*GetMemberReply, error)
 	ListMembers(ctx context.Context, in *ListMembersRequest, opts ...grpc.CallOption) (*ListMembersReply, error)
 	GetMemberHistory(ctx context.Context, in *GetMemberHistoryRequest, opts ...grpc.CallOption) (*GetMemberHistoryReply, error)
 }
@@ -60,8 +60,8 @@ func (c *membersClient) InviteMembers(ctx context.Context, in *InviteMembersRequ
 	return out, nil
 }
 
-func (c *membersClient) UpdateMemberStatus(ctx context.Context, in *UpdateMemberStatusRequest, opts ...grpc.CallOption) (*UpdateMemberStatusReply, error) {
-	out := new(UpdateMemberStatusReply)
+func (c *membersClient) UpdateMemberStatus(ctx context.Context, in *UpdateMemberStatusRequest, opts ...grpc.CallOption) (*EmptyReply, error) {
+	out := new(EmptyReply)
 	err := c.cc.Invoke(ctx, Members_UpdateMemberStatus_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -69,8 +69,8 @@ func (c *membersClient) UpdateMemberStatus(ctx context.Context, in *UpdateMember
 	return out, nil
 }
 
-func (c *membersClient) UpdateMemberRemind(ctx context.Context, in *UpdateMemberRemindRequest, opts ...grpc.CallOption) (*UpdateMemberRemindReply, error) {
-	out := new(UpdateMemberRemindReply)
+func (c *membersClient) UpdateMemberRemind(ctx context.Context, in *UpdateMemberRemindRequest, opts ...grpc.CallOption) (*EmptyReply, error) {
+	out := new(EmptyReply)
 	err := c.cc.Invoke(ctx, Members_UpdateMemberRemind_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -78,8 +78,8 @@ func (c *membersClient) UpdateMemberRemind(ctx context.Context, in *UpdateMember
 	return out, nil
 }
 
-func (c *membersClient) UpdateMemberRole(ctx context.Context, in *UpdateMemberRoleRequest, opts ...grpc.CallOption) (*UpdateMemberRoleReply, error) {
-	out := new(UpdateMemberRoleReply)
+func (c *membersClient) UpdateMemberRole(ctx context.Context, in *UpdateMemberRoleRequest, opts ...grpc.CallOption) (*EmptyReply, error) {
+	out := new(EmptyReply)
 	err := c.cc.Invoke(ctx, Members_UpdateMemberRole_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -87,8 +87,8 @@ func (c *membersClient) UpdateMemberRole(ctx context.Context, in *UpdateMemberRo
 	return out, nil
 }
 
-func (c *membersClient) KickMember(ctx context.Context, in *KickMemberRequest, opts ...grpc.CallOption) (*KickMemberReply, error) {
-	out := new(KickMemberReply)
+func (c *membersClient) KickMember(ctx context.Context, in *KickMemberRequest, opts ...grpc.CallOption) (*EmptyReply, error) {
+	out := new(EmptyReply)
 	err := c.cc.Invoke(ctx, Members_KickMember_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -96,8 +96,8 @@ func (c *membersClient) KickMember(ctx context.Context, in *KickMemberRequest, o
 	return out, nil
 }
 
-func (c *membersClient) GetMember(ctx context.Context, in *GetMembersRequest, opts ...grpc.CallOption) (*GetMembersReply, error) {
-	out := new(GetMembersReply)
+func (c *membersClient) GetMember(ctx context.Context, in *GetMemberRequest, opts ...grpc.CallOption) (*GetMemberReply, error) {
+	out := new(GetMemberReply)
 	err := c.cc.Invoke(ctx, Members_GetMember_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -128,11 +128,11 @@ func (c *membersClient) GetMemberHistory(ctx context.Context, in *GetMemberHisto
 // for forward compatibility
 type MembersServer interface {
 	InviteMembers(context.Context, *InviteMembersRequest) (*InviteMembersReply, error)
-	UpdateMemberStatus(context.Context, *UpdateMemberStatusRequest) (*UpdateMemberStatusReply, error)
-	UpdateMemberRemind(context.Context, *UpdateMemberRemindRequest) (*UpdateMemberRemindReply, error)
-	UpdateMemberRole(context.Context, *UpdateMemberRoleRequest) (*UpdateMemberRoleReply, error)
-	KickMember(context.Context, *KickMemberRequest) (*KickMemberReply, error)
-	GetMember(context.Context, *GetMembersRequest) (*GetMembersReply, error)
+	UpdateMemberStatus(context.Context, *UpdateMemberStatusRequest) (*EmptyReply, error)
+	UpdateMemberRemind(context.Context, *UpdateMemberRemindRequest) (*EmptyReply, error)
+	UpdateMemberRole(context.Context, *UpdateMemberRoleRequest) (*EmptyReply, error)
+	KickMember(context.Context, *KickMemberRequest) (*EmptyReply, error)
+	GetMember(context.Context, *GetMemberRequest) (*GetMemberReply, error)
 	ListMembers(context.Context, *ListMembersRequest) (*ListMembersReply, error)
 	GetMemberHistory(context.Context, *GetMemberHistoryRequest) (*GetMemberHistoryReply, error)
 	mustEmbedUnimplementedMembersServer()
@@ -145,19 +145,19 @@ type UnimplementedMembersServer struct {
 func (UnimplementedMembersServer) InviteMembers(context.Context, *InviteMembersRequest) (*InviteMembersReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method InviteMembers not implemented")
 }
-func (UnimplementedMembersServer) UpdateMemberStatus(context.Context, *UpdateMemberStatusRequest) (*UpdateMemberStatusReply, error) {
+func (UnimplementedMembersServer) UpdateMemberStatus(context.Context, *UpdateMemberStatusRequest) (*EmptyReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateMemberStatus not implemented")
 }
-func (UnimplementedMembersServer) UpdateMemberRemind(context.Context, *UpdateMemberRemindRequest) (*UpdateMemberRemindReply, error) {
+func (UnimplementedMembersServer) UpdateMemberRemind(context.Context, *UpdateMemberRemindRequest) (*EmptyReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateMemberRemind not implemented")
 }
-func (UnimplementedMembersServer) UpdateMemberRole(context.Context, *UpdateMemberRoleRequest) (*UpdateMemberRoleReply, error) {
+func (UnimplementedMembersServer) UpdateMemberRole(context.Context, *UpdateMemberRoleRequest) (*EmptyReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateMemberRole not implemented")
 }
-func (UnimplementedMembersServer) KickMember(context.Context, *KickMemberRequest) (*KickMemberReply, error) {
+func (UnimplementedMembersServer) KickMember(context.Context, *KickMemberRequest) (*EmptyReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method KickMember not implemented")
 }
-func (UnimplementedMembersServer) GetMember(context.Context, *GetMembersRequest) (*GetMembersReply, error) {
+func (UnimplementedMembersServer) GetMember(context.Context, *GetMemberRequest) (*GetMemberReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetMember not implemented")
 }
 func (UnimplementedMembersServer) ListMembers(context.Context, *ListMembersRequest) (*ListMembersReply, error) {
@@ -270,7 +270,7 @@ func _Members_KickMember_Handler(srv interface{}, ctx context.Context, dec func(
 }
 
 func _Members_GetMember_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetMembersRequest)
+	in := new(GetMemberRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -282,7 +282,7 @@ func _Members_GetMember_Handler(srv interface{}, ctx context.Context, dec func(i
 		FullMethod: Members_GetMember_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MembersServer).GetMember(ctx, req.(*GetMembersRequest))
+		return srv.(MembersServer).GetMember(ctx, req.(*GetMemberRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
