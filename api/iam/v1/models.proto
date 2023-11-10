@@ -24,8 +24,10 @@ message User {
 	optional string email = 10;
 	optional string avatar = 11;
 	optional string bioUpdatedAt = 12;
+
 	// field containing tied contact info
-	Contact contact = 13;
+	optional Contact contact = 13;
+	optional Relation relation = 14;
 }
 
 message UserShort {
@@ -35,10 +37,17 @@ message UserShort {
 	string name = 4;
 	string avatar = 6;
 	string lastLoginAt = 7;
+
+	optional Relation relation = 8;
 }
 
 message Contact {
 	string label = 1;
+}
+
+message Relation {
+	bool isBlocked = 1;
+	bool isMuted = 2;
 }
 
 enum ErrorReason {

@@ -21,12 +21,16 @@ const _ = http.SupportPackageIsVersion1
 
 const OperationRelationsBlockUser = "/api.contacts.v1.Relations/BlockUser"
 const OperationRelationsGetBlockedUsers = "/api.contacts.v1.Relations/GetBlockedUsers"
+const OperationRelationsMuteUser = "/api.contacts.v1.Relations/MuteUser"
 const OperationRelationsUnblockUser = "/api.contacts.v1.Relations/UnblockUser"
+const OperationRelationsUnmuteContact = "/api.contacts.v1.Relations/UnmuteContact"
 
 type RelationsHTTPServer interface {
-	BlockUser(context.Context, *BlockUserRequest) (*EmptyReply, error)
+	BlockUser(context.Context, *RelationUserRequest) (*EmptyReply, error)
 	GetBlockedUsers(context.Context, *EmptyRequest) (*BlockedUsersReply, error)
-	UnblockUser(context.Context, *UnblockUserRequest) (*EmptyReply, error)
+	MuteUser(context.Context, *RelationUserRequest) (*EmptyReply, error)
+	UnblockUser(context.Context, *RelationUserRequest) (*EmptyReply, error)
+	UnmuteContact(context.Context, *RelationUserRequest) (*EmptyReply, error)
 }
 
 func RegisterRelationsHTTPServer(s *http.Server, srv RelationsHTTPServer) {
@@ -34,6 +38,8 @@ func RegisterRelationsHTTPServer(s *http.Server, srv RelationsHTTPServer) {
 	r.GET("/v1/contacts/users/blocked/list", _Relations_GetBlockedUsers0_HTTP_Handler(srv))
 	r.PUT("/v1/contacts/users/{userId}/block", _Relations_BlockUser0_HTTP_Handler(srv))
 	r.PUT("/v1/contacts/users/{userId}/unblock", _Relations_UnblockUser0_HTTP_Handler(srv))
+	r.PUT("/v1/contacts/users/{userId}/mute", _Relations_MuteUser0_HTTP_Handler(srv))
+	r.PUT("/v1/contacts/users/{userId}/unmute", _Relations_UnmuteContact0_HTTP_Handler(srv))
 }
 
 func _Relations_GetBlockedUsers0_HTTP_Handler(srv RelationsHTTPServer) func(ctx http.Context) error {
@@ -57,7 +63,7 @@ func _Relations_GetBlockedUsers0_HTTP_Handler(srv RelationsHTTPServer) func(ctx 
 
 func _Relations_BlockUser0_HTTP_Handler(srv RelationsHTTPServer) func(ctx http.Context) error {
 	return func(ctx http.Context) error {
-		var in BlockUserRequest
+		var in RelationUserRequest
 		if err := ctx.Bind(&in); err != nil {
 			return err
 		}
@@ -69,7 +75,7 @@ func _Relations_BlockUser0_HTTP_Handler(srv RelationsHTTPServer) func(ctx http.C
 		}
 		http.SetOperation(ctx, OperationRelationsBlockUser)
 		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
-			return srv.BlockUser(ctx, req.(*BlockUserRequest))
+			return srv.BlockUser(ctx, req.(*RelationUserRequest))
 		})
 		out, err := h(ctx, &in)
 		if err != nil {
@@ -82,7 +88,7 @@ func _Relations_BlockUser0_HTTP_Handler(srv RelationsHTTPServer) func(ctx http.C
 
 func _Relations_UnblockUser0_HTTP_Handler(srv RelationsHTTPServer) func(ctx http.Context) error {
 	return func(ctx http.Context) error {
-		var in UnblockUserRequest
+		var in RelationUserRequest
 		if err := ctx.Bind(&in); err != nil {
 			return err
 		}
@@ -94,7 +100,57 @@ func _Relations_UnblockUser0_HTTP_Handler(srv RelationsHTTPServer) func(ctx http
 		}
 		http.SetOperation(ctx, OperationRelationsUnblockUser)
 		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
-			return srv.UnblockUser(ctx, req.(*UnblockUserRequest))
+			return srv.UnblockUser(ctx, req.(*RelationUserRequest))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*EmptyReply)
+		return ctx.Result(200, reply)
+	}
+}
+
+func _Relations_MuteUser0_HTTP_Handler(srv RelationsHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in RelationUserRequest
+		if err := ctx.Bind(&in); err != nil {
+			return err
+		}
+		if err := ctx.BindQuery(&in); err != nil {
+			return err
+		}
+		if err := ctx.BindVars(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, OperationRelationsMuteUser)
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.MuteUser(ctx, req.(*RelationUserRequest))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*EmptyReply)
+		return ctx.Result(200, reply)
+	}
+}
+
+func _Relations_UnmuteContact0_HTTP_Handler(srv RelationsHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in RelationUserRequest
+		if err := ctx.Bind(&in); err != nil {
+			return err
+		}
+		if err := ctx.BindQuery(&in); err != nil {
+			return err
+		}
+		if err := ctx.BindVars(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, OperationRelationsUnmuteContact)
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.UnmuteContact(ctx, req.(*RelationUserRequest))
 		})
 		out, err := h(ctx, &in)
 		if err != nil {
@@ -106,9 +162,11 @@ func _Relations_UnblockUser0_HTTP_Handler(srv RelationsHTTPServer) func(ctx http
 }
 
 type RelationsHTTPClient interface {
-	BlockUser(ctx context.Context, req *BlockUserRequest, opts ...http.CallOption) (rsp *EmptyReply, err error)
+	BlockUser(ctx context.Context, req *RelationUserRequest, opts ...http.CallOption) (rsp *EmptyReply, err error)
 	GetBlockedUsers(ctx context.Context, req *EmptyRequest, opts ...http.CallOption) (rsp *BlockedUsersReply, err error)
-	UnblockUser(ctx context.Context, req *UnblockUserRequest, opts ...http.CallOption) (rsp *EmptyReply, err error)
+	MuteUser(ctx context.Context, req *RelationUserRequest, opts ...http.CallOption) (rsp *EmptyReply, err error)
+	UnblockUser(ctx context.Context, req *RelationUserRequest, opts ...http.CallOption) (rsp *EmptyReply, err error)
+	UnmuteContact(ctx context.Context, req *RelationUserRequest, opts ...http.CallOption) (rsp *EmptyReply, err error)
 }
 
 type RelationsHTTPClientImpl struct {
@@ -119,7 +177,7 @@ func NewRelationsHTTPClient(client *http.Client) RelationsHTTPClient {
 	return &RelationsHTTPClientImpl{client}
 }
 
-func (c *RelationsHTTPClientImpl) BlockUser(ctx context.Context, in *BlockUserRequest, opts ...http.CallOption) (*EmptyReply, error) {
+func (c *RelationsHTTPClientImpl) BlockUser(ctx context.Context, in *RelationUserRequest, opts ...http.CallOption) (*EmptyReply, error) {
 	var out EmptyReply
 	pattern := "/v1/contacts/users/{userId}/block"
 	path := binding.EncodeURL(pattern, in, false)
@@ -145,11 +203,37 @@ func (c *RelationsHTTPClientImpl) GetBlockedUsers(ctx context.Context, in *Empty
 	return &out, err
 }
 
-func (c *RelationsHTTPClientImpl) UnblockUser(ctx context.Context, in *UnblockUserRequest, opts ...http.CallOption) (*EmptyReply, error) {
+func (c *RelationsHTTPClientImpl) MuteUser(ctx context.Context, in *RelationUserRequest, opts ...http.CallOption) (*EmptyReply, error) {
+	var out EmptyReply
+	pattern := "/v1/contacts/users/{userId}/mute"
+	path := binding.EncodeURL(pattern, in, false)
+	opts = append(opts, http.Operation(OperationRelationsMuteUser))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "PUT", path, in, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, err
+}
+
+func (c *RelationsHTTPClientImpl) UnblockUser(ctx context.Context, in *RelationUserRequest, opts ...http.CallOption) (*EmptyReply, error) {
 	var out EmptyReply
 	pattern := "/v1/contacts/users/{userId}/unblock"
 	path := binding.EncodeURL(pattern, in, false)
 	opts = append(opts, http.Operation(OperationRelationsUnblockUser))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "PUT", path, in, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, err
+}
+
+func (c *RelationsHTTPClientImpl) UnmuteContact(ctx context.Context, in *RelationUserRequest, opts ...http.CallOption) (*EmptyReply, error) {
+	var out EmptyReply
+	pattern := "/v1/contacts/users/{userId}/unmute"
+	path := binding.EncodeURL(pattern, in, false)
+	opts = append(opts, http.Operation(OperationRelationsUnmuteContact))
 	opts = append(opts, http.PathTemplate(pattern))
 	err := c.cc.Invoke(ctx, "PUT", path, in, &out, opts...)
 	if err != nil {

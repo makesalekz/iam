@@ -4,6 +4,7 @@ package api.contacts.v1;
 
 import "google/api/annotations.proto";
 import "contacts/v1/models.proto";
+import "iam/api/iam/v1/models.proto";
 
 option go_package = "contacts/api/contacts/v1;contacts_v1";
 option java_multiple_files = true;
@@ -15,28 +16,46 @@ service Relations {
       get: "/v1/contacts/users/blocked/list"
     };
   };
-  rpc BlockUser (BlockUserRequest) returns (EmptyReply){
+  rpc BlockUser (RelationUserRequest) returns (EmptyReply){
     option (google.api.http) = {
       put: "/v1/contacts/users/{userId}/block"
       body: "*"
     };
   };
-  rpc UnblockUser (UnblockUserRequest) returns (EmptyReply){
+  rpc UnblockUser (RelationUserRequest) returns (EmptyReply){
     option (google.api.http) = {
       put: "/v1/contacts/users/{userId}/unblock"
       body: "*"
     };
   };
+  rpc MuteUser (RelationUserRequest) returns (EmptyReply){
+    option (google.api.http) = {
+      put: "/v1/contacts/users/{userId}/mute"
+      body: "*"
+    };
+  }
+  rpc UnmuteContact (RelationUserRequest) returns (EmptyReply){
+    option (google.api.http) = {
+      put: "/v1/contacts/users/{userId}/unmute"
+      body: "*"
+    };
+  }
+
+  rpc GetRelations(GetRelationsRequest) returns (UserRelationsReply);
 }
 
-message BlockUserRequest{
+message RelationUserRequest {
   int64 userId = 1;
 }
 
-message UnblockUserRequest{
-  int64 userId = 1;
+message BlockedUsersReply {
+  repeated api.iam.v1.UserShort users = 1;
 }
 
-message BlockedUsersReply{
+message GetRelationsRequest {
   repeated int64 userIds = 1;
+}
+
+message UserRelationsReply {
+  repeated Relation relations = 1;
 }
