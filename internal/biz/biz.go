@@ -5,8 +5,8 @@ import (
 )
 
 const (
-	QueueContactsPhoneVerified = "gitlab.calendaria.team/services/contacts/confirmed_phone"
-	QueueContactsEmailVerified = "gitlab.calendaria.team/services/contacts/confirmed_emails"
+	QueueContactsPhoneVerified = "contacts/confirmed_phone"
+	QueueContactsEmailVerified = "contacts/confirmed_emails"
 )
 
 // ProviderSet is biz providers.
