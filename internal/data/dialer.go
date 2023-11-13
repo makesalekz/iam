@@ -5,13 +5,13 @@ import (
 
 	contacts_v1 "contacts/api/contacts/v1"
 	notifications_v1 "notifications/api/notifications/v1"
-	tenants_v1 "tenants/api/tenants/v1"
 
 	consul "github.com/go-kratos/consul/registry"
 	"github.com/go-kratos/kratos/v2/middleware/auth/jwt"
 	"github.com/go-kratos/kratos/v2/transport/grpc"
 	jwtv4 "github.com/golang-jwt/jwt/v4"
 	"gitlab.calendaria.team/services/iam/internal/conf"
+	tenants_v1 "gitlab.calendaria.team/services/tenants/api/tenants/v1"
 )
 
 type Dialer struct {

@@ -370,6 +370,7 @@ func (m *OneTimePasswordMutation) ResetCreatedAt() {
 // ClearUser clears the "user" edge to the User entity.
 func (m *OneTimePasswordMutation) ClearUser() {
 	m.cleareduser = true
+	m.clearedFields[onetimepassword.FieldUserID] = struct{}{}
 }
 
 // UserCleared reports if the "user" edge to the User entity was cleared.
@@ -2080,6 +2081,7 @@ func (m *UserPrivacyMutation) ResetUpdatedAt() {
 // ClearUser clears the "user" edge to the User entity.
 func (m *UserPrivacyMutation) ClearUser() {
 	m.cleareduser = true
+	m.clearedFields[userprivacy.FieldUserID] = struct{}{}
 }
 
 // UserCleared reports if the "user" edge to the User entity was cleared.
@@ -2624,6 +2626,7 @@ func (m *UserSettingsMutation) ResetUpdatedAt() {
 // ClearUser clears the "user" edge to the User entity.
 func (m *UserSettingsMutation) ClearUser() {
 	m.cleareduser = true
+	m.clearedFields[usersettings.FieldUserID] = struct{}{}
 }
 
 // UserCleared reports if the "user" edge to the User entity was cleared.

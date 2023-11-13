@@ -412,12 +412,16 @@ func (u *UserSettingsUpsertOne) IDX(ctx context.Context) int64 {
 // UserSettingsCreateBulk is the builder for creating many UserSettings entities in bulk.
 type UserSettingsCreateBulk struct {
 	config
+	err      error
 	builders []*UserSettingsCreate
 	conflict []sql.ConflictOption
 }
 
 // Save creates the UserSettings entities in the database.
 func (uscb *UserSettingsCreateBulk) Save(ctx context.Context) ([]*UserSettings, error) {
+	if uscb.err != nil {
+		return nil, uscb.err
+	}
 	specs := make([]*sqlgraph.CreateSpec, len(uscb.builders))
 	nodes := make([]*UserSettings, len(uscb.builders))
 	mutators := make([]Mutator, len(uscb.builders))
@@ -634,6 +638,9 @@ func (u *UserSettingsUpsertBulk) UpdateUpdatedAt() *UserSettingsUpsertBulk {
 
 // Exec executes the query.
 func (u *UserSettingsUpsertBulk) Exec(ctx context.Context) error {
+	if u.create.err != nil {
+		return u.create.err
+	}
 	for i, b := range u.create.builders {
 		if len(b.conflict) != 0 {
 			return fmt.Errorf("ent: OnConflict was set for builder %d. Set it on the UserSettingsCreateBulk instead", i)

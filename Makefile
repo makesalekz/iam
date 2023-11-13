@@ -30,7 +30,7 @@ init:
 # run
 run:	
 	set -a && source .env && set +a && \
-	kratos run
+	GOFLAGS='-mod=readonly' kratos run
 
 .PHONY: db
 # db
@@ -79,7 +79,7 @@ migrations:
 # generate api proto
 api:
 	go mod vendor;
-#	find vendor/gitlab.calendaria.team -name '*.proto' -exec sh -c 'f="{}"; d="third_party/$$(dirname "$$f" | awk -F/ "{print \$$(NF-1)\"/\"\$$NF}")"; mkdir -p "$$d"; rsync -a "$$f" "$$d"' \;
+	find vendor/gitlab.calendaria.team -name '*.proto' -exec sh -c 'f="{}"; d="third_party/$$(dirname "$$f" | awk -F/ "{print \$$(NF-1)\"/\"\$$NF}")"; mkdir -p "$$d"; rsync -a "$$f" "$$d"' \;
 	protoc --proto_path=. \
 		   --proto_path=./third_party \
  	       --go_out=paths=source_relative:. \
