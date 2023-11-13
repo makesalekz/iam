@@ -124,7 +124,7 @@ func (uc *AuthUsecase) AuthUserByCode(ctx context.Context, userId int64, code st
 }
 
 func (uc *AuthUsecase) handleUserVerification(ctx context.Context, user *ent.User, otp *ent.OneTimePassword) error {
-	userShort := UserToUserShort(user)
+	userShort := userShortFromDto(user)
 
 	switch otp.Type {
 	case property.Phone:
@@ -244,4 +244,24 @@ func (uc *AuthUsecase) GenerateTenantToken(ctx context.Context, userId, tenantId
 	}
 
 	return result, nil
+}
+
+func userShortFromDto(user *ent.User) *v1.UserShort {
+	replyUser := &v1.UserShort{
+		Id:          user.ID,
+		Name:        user.Name,
+		LastLoginAt: user.LastLoginAt.Format(time.RFC3339),
+	}
+
+	if user.Phone != nil {
+		replyUser.Phone = *user.Phone
+	}
+	if user.Email != nil {
+		replyUser.Email = *user.Email
+	}
+	if user.Avatar != nil {
+		replyUser.Avatar = *user.Avatar
+	}
+
+	return replyUser
 }

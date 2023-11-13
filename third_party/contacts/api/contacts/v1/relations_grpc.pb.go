@@ -20,8 +20,8 @@ const _ = grpc.SupportPackageIsVersion7
 
 const (
 	Relations_GetBlockedUsers_FullMethodName = "/api.contacts.v1.Relations/GetBlockedUsers"
-	Relations_BlockUser_FullMethodName       = "/api.contacts.v1.Relations/BlockUser"
-	Relations_UnblockUser_FullMethodName     = "/api.contacts.v1.Relations/UnblockUser"
+	Relations_UpdateRelation_FullMethodName  = "/api.contacts.v1.Relations/UpdateRelation"
+	Relations_GetRelations_FullMethodName    = "/api.contacts.v1.Relations/GetRelations"
 )
 
 // RelationsClient is the client API for Relations service.
@@ -29,8 +29,8 @@ const (
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type RelationsClient interface {
 	GetBlockedUsers(ctx context.Context, in *EmptyRequest, opts ...grpc.CallOption) (*BlockedUsersReply, error)
-	BlockUser(ctx context.Context, in *BlockUserRequest, opts ...grpc.CallOption) (*EmptyReply, error)
-	UnblockUser(ctx context.Context, in *UnblockUserRequest, opts ...grpc.CallOption) (*EmptyReply, error)
+	UpdateRelation(ctx context.Context, in *RelationUserRequest, opts ...grpc.CallOption) (*EmptyReply, error)
+	GetRelations(ctx context.Context, in *GetRelationsRequest, opts ...grpc.CallOption) (*UserRelationsReply, error)
 }
 
 type relationsClient struct {
@@ -50,18 +50,18 @@ func (c *relationsClient) GetBlockedUsers(ctx context.Context, in *EmptyRequest,
 	return out, nil
 }
 
-func (c *relationsClient) BlockUser(ctx context.Context, in *BlockUserRequest, opts ...grpc.CallOption) (*EmptyReply, error) {
+func (c *relationsClient) UpdateRelation(ctx context.Context, in *RelationUserRequest, opts ...grpc.CallOption) (*EmptyReply, error) {
 	out := new(EmptyReply)
-	err := c.cc.Invoke(ctx, Relations_BlockUser_FullMethodName, in, out, opts...)
+	err := c.cc.Invoke(ctx, Relations_UpdateRelation_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *relationsClient) UnblockUser(ctx context.Context, in *UnblockUserRequest, opts ...grpc.CallOption) (*EmptyReply, error) {
-	out := new(EmptyReply)
-	err := c.cc.Invoke(ctx, Relations_UnblockUser_FullMethodName, in, out, opts...)
+func (c *relationsClient) GetRelations(ctx context.Context, in *GetRelationsRequest, opts ...grpc.CallOption) (*UserRelationsReply, error) {
+	out := new(UserRelationsReply)
+	err := c.cc.Invoke(ctx, Relations_GetRelations_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -73,8 +73,8 @@ func (c *relationsClient) UnblockUser(ctx context.Context, in *UnblockUserReques
 // for forward compatibility
 type RelationsServer interface {
 	GetBlockedUsers(context.Context, *EmptyRequest) (*BlockedUsersReply, error)
-	BlockUser(context.Context, *BlockUserRequest) (*EmptyReply, error)
-	UnblockUser(context.Context, *UnblockUserRequest) (*EmptyReply, error)
+	UpdateRelation(context.Context, *RelationUserRequest) (*EmptyReply, error)
+	GetRelations(context.Context, *GetRelationsRequest) (*UserRelationsReply, error)
 	mustEmbedUnimplementedRelationsServer()
 }
 
@@ -85,11 +85,11 @@ type UnimplementedRelationsServer struct {
 func (UnimplementedRelationsServer) GetBlockedUsers(context.Context, *EmptyRequest) (*BlockedUsersReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetBlockedUsers not implemented")
 }
-func (UnimplementedRelationsServer) BlockUser(context.Context, *BlockUserRequest) (*EmptyReply, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method BlockUser not implemented")
+func (UnimplementedRelationsServer) UpdateRelation(context.Context, *RelationUserRequest) (*EmptyReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateRelation not implemented")
 }
-func (UnimplementedRelationsServer) UnblockUser(context.Context, *UnblockUserRequest) (*EmptyReply, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method UnblockUser not implemented")
+func (UnimplementedRelationsServer) GetRelations(context.Context, *GetRelationsRequest) (*UserRelationsReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetRelations not implemented")
 }
 func (UnimplementedRelationsServer) mustEmbedUnimplementedRelationsServer() {}
 
@@ -122,38 +122,38 @@ func _Relations_GetBlockedUsers_Handler(srv interface{}, ctx context.Context, de
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Relations_BlockUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(BlockUserRequest)
+func _Relations_UpdateRelation_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(RelationUserRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(RelationsServer).BlockUser(ctx, in)
+		return srv.(RelationsServer).UpdateRelation(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: Relations_BlockUser_FullMethodName,
+		FullMethod: Relations_UpdateRelation_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(RelationsServer).BlockUser(ctx, req.(*BlockUserRequest))
+		return srv.(RelationsServer).UpdateRelation(ctx, req.(*RelationUserRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Relations_UnblockUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(UnblockUserRequest)
+func _Relations_GetRelations_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetRelationsRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(RelationsServer).UnblockUser(ctx, in)
+		return srv.(RelationsServer).GetRelations(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: Relations_UnblockUser_FullMethodName,
+		FullMethod: Relations_GetRelations_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(RelationsServer).UnblockUser(ctx, req.(*UnblockUserRequest))
+		return srv.(RelationsServer).GetRelations(ctx, req.(*GetRelationsRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -170,12 +170,12 @@ var Relations_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _Relations_GetBlockedUsers_Handler,
 		},
 		{
-			MethodName: "BlockUser",
-			Handler:    _Relations_BlockUser_Handler,
+			MethodName: "UpdateRelation",
+			Handler:    _Relations_UpdateRelation_Handler,
 		},
 		{
-			MethodName: "UnblockUser",
-			Handler:    _Relations_UnblockUser_Handler,
+			MethodName: "GetRelations",
+			Handler:    _Relations_GetRelations_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

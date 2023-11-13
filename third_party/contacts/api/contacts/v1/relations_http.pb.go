@@ -19,21 +19,18 @@ var _ = binding.EncodeURL
 
 const _ = http.SupportPackageIsVersion1
 
-const OperationRelationsBlockUser = "/api.contacts.v1.Relations/BlockUser"
 const OperationRelationsGetBlockedUsers = "/api.contacts.v1.Relations/GetBlockedUsers"
-const OperationRelationsUnblockUser = "/api.contacts.v1.Relations/UnblockUser"
+const OperationRelationsUpdateRelation = "/api.contacts.v1.Relations/UpdateRelation"
 
 type RelationsHTTPServer interface {
-	BlockUser(context.Context, *BlockUserRequest) (*EmptyReply, error)
 	GetBlockedUsers(context.Context, *EmptyRequest) (*BlockedUsersReply, error)
-	UnblockUser(context.Context, *UnblockUserRequest) (*EmptyReply, error)
+	UpdateRelation(context.Context, *RelationUserRequest) (*EmptyReply, error)
 }
 
 func RegisterRelationsHTTPServer(s *http.Server, srv RelationsHTTPServer) {
 	r := s.Route("/")
 	r.GET("/v1/contacts/users/blocked/list", _Relations_GetBlockedUsers0_HTTP_Handler(srv))
-	r.PUT("/v1/contacts/users/{userId}/block", _Relations_BlockUser0_HTTP_Handler(srv))
-	r.PUT("/v1/contacts/users/{userId}/unblock", _Relations_UnblockUser0_HTTP_Handler(srv))
+	r.PUT("/v1/contacts/users/{userId}/action", _Relations_UpdateRelation0_HTTP_Handler(srv))
 }
 
 func _Relations_GetBlockedUsers0_HTTP_Handler(srv RelationsHTTPServer) func(ctx http.Context) error {
@@ -55,9 +52,9 @@ func _Relations_GetBlockedUsers0_HTTP_Handler(srv RelationsHTTPServer) func(ctx 
 	}
 }
 
-func _Relations_BlockUser0_HTTP_Handler(srv RelationsHTTPServer) func(ctx http.Context) error {
+func _Relations_UpdateRelation0_HTTP_Handler(srv RelationsHTTPServer) func(ctx http.Context) error {
 	return func(ctx http.Context) error {
-		var in BlockUserRequest
+		var in RelationUserRequest
 		if err := ctx.Bind(&in); err != nil {
 			return err
 		}
@@ -67,34 +64,9 @@ func _Relations_BlockUser0_HTTP_Handler(srv RelationsHTTPServer) func(ctx http.C
 		if err := ctx.BindVars(&in); err != nil {
 			return err
 		}
-		http.SetOperation(ctx, OperationRelationsBlockUser)
+		http.SetOperation(ctx, OperationRelationsUpdateRelation)
 		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
-			return srv.BlockUser(ctx, req.(*BlockUserRequest))
-		})
-		out, err := h(ctx, &in)
-		if err != nil {
-			return err
-		}
-		reply := out.(*EmptyReply)
-		return ctx.Result(200, reply)
-	}
-}
-
-func _Relations_UnblockUser0_HTTP_Handler(srv RelationsHTTPServer) func(ctx http.Context) error {
-	return func(ctx http.Context) error {
-		var in UnblockUserRequest
-		if err := ctx.Bind(&in); err != nil {
-			return err
-		}
-		if err := ctx.BindQuery(&in); err != nil {
-			return err
-		}
-		if err := ctx.BindVars(&in); err != nil {
-			return err
-		}
-		http.SetOperation(ctx, OperationRelationsUnblockUser)
-		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
-			return srv.UnblockUser(ctx, req.(*UnblockUserRequest))
+			return srv.UpdateRelation(ctx, req.(*RelationUserRequest))
 		})
 		out, err := h(ctx, &in)
 		if err != nil {
@@ -106,9 +78,8 @@ func _Relations_UnblockUser0_HTTP_Handler(srv RelationsHTTPServer) func(ctx http
 }
 
 type RelationsHTTPClient interface {
-	BlockUser(ctx context.Context, req *BlockUserRequest, opts ...http.CallOption) (rsp *EmptyReply, err error)
 	GetBlockedUsers(ctx context.Context, req *EmptyRequest, opts ...http.CallOption) (rsp *BlockedUsersReply, err error)
-	UnblockUser(ctx context.Context, req *UnblockUserRequest, opts ...http.CallOption) (rsp *EmptyReply, err error)
+	UpdateRelation(ctx context.Context, req *RelationUserRequest, opts ...http.CallOption) (rsp *EmptyReply, err error)
 }
 
 type RelationsHTTPClientImpl struct {
@@ -117,19 +88,6 @@ type RelationsHTTPClientImpl struct {
 
 func NewRelationsHTTPClient(client *http.Client) RelationsHTTPClient {
 	return &RelationsHTTPClientImpl{client}
-}
-
-func (c *RelationsHTTPClientImpl) BlockUser(ctx context.Context, in *BlockUserRequest, opts ...http.CallOption) (*EmptyReply, error) {
-	var out EmptyReply
-	pattern := "/v1/contacts/users/{userId}/block"
-	path := binding.EncodeURL(pattern, in, false)
-	opts = append(opts, http.Operation(OperationRelationsBlockUser))
-	opts = append(opts, http.PathTemplate(pattern))
-	err := c.cc.Invoke(ctx, "PUT", path, in, &out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return &out, err
 }
 
 func (c *RelationsHTTPClientImpl) GetBlockedUsers(ctx context.Context, in *EmptyRequest, opts ...http.CallOption) (*BlockedUsersReply, error) {
@@ -145,11 +103,11 @@ func (c *RelationsHTTPClientImpl) GetBlockedUsers(ctx context.Context, in *Empty
 	return &out, err
 }
 
-func (c *RelationsHTTPClientImpl) UnblockUser(ctx context.Context, in *UnblockUserRequest, opts ...http.CallOption) (*EmptyReply, error) {
+func (c *RelationsHTTPClientImpl) UpdateRelation(ctx context.Context, in *RelationUserRequest, opts ...http.CallOption) (*EmptyReply, error) {
 	var out EmptyReply
-	pattern := "/v1/contacts/users/{userId}/unblock"
+	pattern := "/v1/contacts/users/{userId}/action"
 	path := binding.EncodeURL(pattern, in, false)
-	opts = append(opts, http.Operation(OperationRelationsUnblockUser))
+	opts = append(opts, http.Operation(OperationRelationsUpdateRelation))
 	opts = append(opts, http.PathTemplate(pattern))
 	err := c.cc.Invoke(ctx, "PUT", path, in, &out, opts...)
 	if err != nil {

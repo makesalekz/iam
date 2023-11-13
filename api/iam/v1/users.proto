@@ -108,6 +108,7 @@ message GetUsersRequest {
 	repeated int64 ids = 1;
 	repeated string phones = 2;
 	repeated string emails = 3;
+	optional bool withRelation = 4;
 }
 
 message GetUsersReply {

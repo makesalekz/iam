@@ -3,7 +3,7 @@ syntax = "proto3";
 package api.contacts.v1;
 
 import "errors/errors.proto";
-import "iam/v1/models.proto";
+import "iam/api/iam/v1/models.proto";
 
 option go_package = "contacts/api/contacts/v1;contacts_v1";
 option java_multiple_files = true;
@@ -34,7 +34,12 @@ message Contact {
   
 	string createdAt = 7;
 }
-  
+
+message Relation {
+	int64 userId = 1;
+	bool isMuted = 2;
+	bool isBlocked = 3;
+}
 
 message EmptyRequest{}
 message EmptyReply {}
@@ -53,6 +58,8 @@ enum ErrorReason {
 	UNAUTHORIZED = 10 [(errors.code) = 401];
 	NOT_FOUND = 11 [(errors.code) = 404];
 	CREATE_SELF_CONTACT = 12 [(errors.code) = 403];
-	
+	SELF_BLOCK = 13 [(errors.code) = 403];
+	SELF_MUTE = 14 [(errors.code) = 403];
+
 	INVALID_REQUEST = 20 [(errors.code) = 400];
   }

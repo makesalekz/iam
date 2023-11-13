@@ -324,6 +324,8 @@ components:
                     type: array
                     items:
                         type: string
+                withRelation:
+                    type: boolean
         iam.v1.PrivacyReply:
             type: object
             properties:
@@ -338,6 +340,13 @@ components:
                     type: object
                     additionalProperties:
                         type: string
+        iam.v1.Relation:
+            type: object
+            properties:
+                isBlocked:
+                    type: boolean
+                isMuted:
+                    type: boolean
         iam.v1.SearchFilter:
             type: object
             properties:
@@ -408,6 +417,8 @@ components:
                     allOf:
                         - $ref: '#/components/schemas/iam.v1.Contact'
                     description: field containing tied contact info
+                relation:
+                    $ref: '#/components/schemas/iam.v1.Relation'
         iam.v1.UserFullReply:
             type: object
             properties:
@@ -433,6 +444,8 @@ components:
                     type: string
                 lastLoginAt:
                     type: string
+                relation:
+                    $ref: '#/components/schemas/iam.v1.Relation'
 tags:
     - name: Auth
     - name: Privacy

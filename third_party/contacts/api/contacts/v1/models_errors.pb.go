@@ -109,6 +109,30 @@ func ErrorCreateSelfContact(format string, args ...interface{}) *errors.Error {
 	return errors.New(403, ErrorReason_CREATE_SELF_CONTACT.String(), fmt.Sprintf(format, args...))
 }
 
+func IsSelfBlock(err error) bool {
+	if err == nil {
+		return false
+	}
+	e := errors.FromError(err)
+	return e.Reason == ErrorReason_SELF_BLOCK.String() && e.Code == 403
+}
+
+func ErrorSelfBlock(format string, args ...interface{}) *errors.Error {
+	return errors.New(403, ErrorReason_SELF_BLOCK.String(), fmt.Sprintf(format, args...))
+}
+
+func IsSelfMute(err error) bool {
+	if err == nil {
+		return false
+	}
+	e := errors.FromError(err)
+	return e.Reason == ErrorReason_SELF_MUTE.String() && e.Code == 403
+}
+
+func ErrorSelfMute(format string, args ...interface{}) *errors.Error {
+	return errors.New(403, ErrorReason_SELF_MUTE.String(), fmt.Sprintf(format, args...))
+}
+
 func IsInvalidRequest(err error) bool {
 	if err == nil {
 		return false
