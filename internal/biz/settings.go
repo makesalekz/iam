@@ -2,7 +2,6 @@ package biz
 
 import (
 	"context"
-	_ "embed"
 
 	"gitlab.calendaria.team/services/iam/internal/data"
 )

@@ -7,8 +7,6 @@ import (
 	"strconv"
 	"time"
 
-	notifications_v1 "notifications/api/notifications/v1"
-
 	"github.com/go-kratos/kratos/v2/log"
 	jwtv4 "github.com/golang-jwt/jwt/v4"
 	"github.com/nyaruka/phonenumbers"
@@ -16,6 +14,7 @@ import (
 	"gitlab.calendaria.team/services/iam/ent"
 	"gitlab.calendaria.team/services/iam/ent/property"
 	"gitlab.calendaria.team/services/iam/internal/data"
+	notifications_v1 "gitlab.calendaria.team/services/notifications/api/notifications/v1"
 	tenants_v1 "gitlab.calendaria.team/services/tenants/api/tenants/v1"
 )
 

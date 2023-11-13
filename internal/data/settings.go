@@ -4,11 +4,10 @@ import (
 	"context"
 	"slices"
 
+	"entgo.io/ent/dialect/sql"
 	"gitlab.calendaria.team/services/iam/ent"
 	"gitlab.calendaria.team/services/iam/ent/property"
 	"gitlab.calendaria.team/services/iam/ent/usersettings"
-
-	"entgo.io/ent/dialect/sql"
 )
 
 type SettingsData map[string]string

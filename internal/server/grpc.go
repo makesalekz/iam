@@ -1,17 +1,16 @@
 package server
 
 import (
-	v1 "gitlab.calendaria.team/services/iam/api/iam/v1"
-	"gitlab.calendaria.team/services/iam/internal/conf"
-	"gitlab.calendaria.team/services/iam/internal/data"
-	"gitlab.calendaria.team/services/iam/internal/service"
-
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/go-kratos/kratos/v2/middleware/auth/jwt"
 	"github.com/go-kratos/kratos/v2/middleware/metadata"
 	"github.com/go-kratos/kratos/v2/middleware/recovery"
 	"github.com/go-kratos/kratos/v2/transport/grpc"
 	jwtv4 "github.com/golang-jwt/jwt/v4"
+	v1 "gitlab.calendaria.team/services/iam/api/iam/v1"
+	"gitlab.calendaria.team/services/iam/internal/conf"
+	"gitlab.calendaria.team/services/iam/internal/data"
+	"gitlab.calendaria.team/services/iam/internal/service"
 )
 
 // NewGRPCServer new a gRPC server.

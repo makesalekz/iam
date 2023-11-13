@@ -4,10 +4,9 @@ import (
 	"context"
 	"sync"
 
-	"gitlab.calendaria.team/services/iam/internal/data"
-
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/nats-io/nats.go"
+	"gitlab.calendaria.team/services/iam/internal/data"
 )
 
 type QueueManager struct {

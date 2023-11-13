@@ -4,9 +4,6 @@ import (
 	"flag"
 	"os"
 
-	"gitlab.calendaria.team/services/iam/internal/conf"
-	"gitlab.calendaria.team/services/iam/internal/data"
-
 	"github.com/go-kratos/kratos/v2"
 	"github.com/go-kratos/kratos/v2/config"
 	"github.com/go-kratos/kratos/v2/config/file"
@@ -14,6 +11,8 @@ import (
 	"github.com/go-kratos/kratos/v2/middleware/tracing"
 	"github.com/go-kratos/kratos/v2/transport/grpc"
 	"github.com/go-kratos/kratos/v2/transport/http"
+	"gitlab.calendaria.team/services/iam/internal/conf"
+	"gitlab.calendaria.team/services/iam/internal/data"
 
 	_ "go.uber.org/automaxprocs"
 )
