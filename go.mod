@@ -2,17 +2,13 @@ module gitlab.calendaria.team/services/iam
 
 go 1.21.1
 
-replace (
-	contacts => ./third_party/contacts
-	notifications => ./third_party/notifications
-)
+replace notifications => ./third_party/notifications
 
 require (
-	contacts v0.0.0-00010101000000-000000000000
 	entgo.io/ent v0.12.4
 	github.com/go-kratos/consul v0.1.5
 	github.com/go-kratos/kratos/contrib/config/consul/v2 v2.0.0-20230830131453-6c026bce56a9
-	github.com/go-kratos/kratos/v2 v2.7.0
+	github.com/go-kratos/kratos/v2 v2.7.1
 	github.com/golang-jwt/jwt/v4 v4.5.0
 	github.com/google/wire v0.5.0
 	github.com/hashicorp/consul/api v1.24.0
@@ -21,6 +17,7 @@ require (
 	github.com/lib/pq v1.10.9
 	github.com/nats-io/nats.go v1.31.0
 	github.com/nyaruka/phonenumbers v1.1.8
+	gitlab.calendaria.team/services/contacts v0.1.0
 	gitlab.calendaria.team/services/tenants v0.1.0
 	go.uber.org/automaxprocs v1.5.3
 	google.golang.org/genproto/googleapis/api v0.0.0-20230629202037-9506855d4529
