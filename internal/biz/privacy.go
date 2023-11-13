@@ -4,7 +4,7 @@ import (
 	"context"
 	_ "embed"
 
-	"gitlab.calendaria.team/alageum-cloud/iam/internal/data"
+	"gitlab.calendaria.team/services/iam/internal/data"
 )
 
 // PrivacyUsecase .

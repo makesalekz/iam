@@ -4,9 +4,9 @@ import (
 	"context"
 	"os"
 
-	"gitlab.calendaria.team/alageum-cloud/iam/ent"
-	_ "gitlab.calendaria.team/alageum-cloud/iam/ent/runtime"
-	"gitlab.calendaria.team/alageum-cloud/iam/internal/conf"
+	"gitlab.calendaria.team/services/iam/ent"
+	_ "gitlab.calendaria.team/services/iam/ent/runtime"
+	"gitlab.calendaria.team/services/iam/internal/conf"
 
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/google/wire"

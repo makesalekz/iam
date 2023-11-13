@@ -1,4 +1,4 @@
-module gitlab.calendaria.team/alageum-cloud/iam
+module gitlab.calendaria.team/services/iam
 
 go 1.21.1
 

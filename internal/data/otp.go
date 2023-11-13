@@ -6,9 +6,9 @@ import (
 	"os"
 	"time"
 
-	"gitlab.calendaria.team/alageum-cloud/iam/ent"
-	"gitlab.calendaria.team/alageum-cloud/iam/ent/onetimepassword"
-	"gitlab.calendaria.team/alageum-cloud/iam/ent/property"
+	"gitlab.calendaria.team/services/iam/ent"
+	"gitlab.calendaria.team/services/iam/ent/onetimepassword"
+	"gitlab.calendaria.team/services/iam/ent/property"
 )
 
 const digits = "0123456789"

@@ -4,8 +4,8 @@ import (
 	"flag"
 	"os"
 
-	"gitlab.calendaria.team/alageum-cloud/iam/internal/conf"
-	"gitlab.calendaria.team/alageum-cloud/iam/internal/data"
+	"gitlab.calendaria.team/services/iam/internal/conf"
+	"gitlab.calendaria.team/services/iam/internal/data"
 
 	"github.com/go-kratos/kratos/v2"
 	"github.com/go-kratos/kratos/v2/config"

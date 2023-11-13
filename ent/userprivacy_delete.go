@@ -8,8 +8,8 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"gitlab.calendaria.team/alageum-cloud/iam/ent/predicate"
-	"gitlab.calendaria.team/alageum-cloud/iam/ent/userprivacy"
+	"gitlab.calendaria.team/services/iam/ent/predicate"
+	"gitlab.calendaria.team/services/iam/ent/userprivacy"
 )
 
 // UserPrivacyDelete is the builder for deleting a UserPrivacy entity.

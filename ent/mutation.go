@@ -11,12 +11,12 @@ import (
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
-	"gitlab.calendaria.team/alageum-cloud/iam/ent/onetimepassword"
-	"gitlab.calendaria.team/alageum-cloud/iam/ent/predicate"
-	"gitlab.calendaria.team/alageum-cloud/iam/ent/property"
-	"gitlab.calendaria.team/alageum-cloud/iam/ent/user"
-	"gitlab.calendaria.team/alageum-cloud/iam/ent/userprivacy"
-	"gitlab.calendaria.team/alageum-cloud/iam/ent/usersettings"
+	"gitlab.calendaria.team/services/iam/ent/onetimepassword"
+	"gitlab.calendaria.team/services/iam/ent/predicate"
+	"gitlab.calendaria.team/services/iam/ent/property"
+	"gitlab.calendaria.team/services/iam/ent/user"
+	"gitlab.calendaria.team/services/iam/ent/userprivacy"
+	"gitlab.calendaria.team/services/iam/ent/usersettings"
 )
 
 const (

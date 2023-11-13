@@ -9,9 +9,9 @@ import (
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
-	"gitlab.calendaria.team/alageum-cloud/iam/ent/property"
-	"gitlab.calendaria.team/alageum-cloud/iam/ent/user"
-	"gitlab.calendaria.team/alageum-cloud/iam/ent/usersettings"
+	"gitlab.calendaria.team/services/iam/ent/property"
+	"gitlab.calendaria.team/services/iam/ent/user"
+	"gitlab.calendaria.team/services/iam/ent/usersettings"
 )
 
 // UserSettings is the model entity for the UserSettings schema.

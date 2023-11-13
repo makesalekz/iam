@@ -5,9 +5,9 @@ import (
 	"fmt"
 	"time"
 
-	iam "gitlab.calendaria.team/alageum-cloud/iam/ent"
-	"gitlab.calendaria.team/alageum-cloud/iam/ent/hook"
-	"gitlab.calendaria.team/alageum-cloud/iam/ent/intercept"
+	iam "gitlab.calendaria.team/services/iam/ent"
+	"gitlab.calendaria.team/services/iam/ent/hook"
+	"gitlab.calendaria.team/services/iam/ent/intercept"
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"

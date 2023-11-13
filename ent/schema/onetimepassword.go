@@ -3,7 +3,7 @@ package schema
 import (
 	"time"
 
-	"gitlab.calendaria.team/alageum-cloud/iam/ent/property"
+	"gitlab.calendaria.team/services/iam/ent/property"
 
 	"entgo.io/ent"
 	"entgo.io/ent/schema/edge"

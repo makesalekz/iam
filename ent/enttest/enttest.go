@@ -5,12 +5,12 @@ package enttest
 import (
 	"context"
 
-	"gitlab.calendaria.team/alageum-cloud/iam/ent"
+	"gitlab.calendaria.team/services/iam/ent"
 	// required by schema hooks.
-	_ "gitlab.calendaria.team/alageum-cloud/iam/ent/runtime"
+	_ "gitlab.calendaria.team/services/iam/ent/runtime"
 
 	"entgo.io/ent/dialect/sql/schema"
-	"gitlab.calendaria.team/alageum-cloud/iam/ent/migrate"
+	"gitlab.calendaria.team/services/iam/ent/migrate"
 )
 
 type (

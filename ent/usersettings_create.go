@@ -11,9 +11,9 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"gitlab.calendaria.team/alageum-cloud/iam/ent/property"
-	"gitlab.calendaria.team/alageum-cloud/iam/ent/user"
-	"gitlab.calendaria.team/alageum-cloud/iam/ent/usersettings"
+	"gitlab.calendaria.team/services/iam/ent/property"
+	"gitlab.calendaria.team/services/iam/ent/user"
+	"gitlab.calendaria.team/services/iam/ent/usersettings"
 )
 
 // UserSettingsCreate is the builder for creating a UserSettings entity.

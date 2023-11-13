@@ -79,7 +79,7 @@ func ValidColumn(column string) bool {
 // package on the initialization of the application. Therefore,
 // it should be imported in the main as follows:
 //
-//	import _ "gitlab.calendaria.team/alageum-cloud/iam/ent/runtime"
+//	import _ "gitlab.calendaria.team/services/iam/ent/runtime"
 var (
 	Hooks        [1]ent.Hook
 	Interceptors [1]ent.Interceptor

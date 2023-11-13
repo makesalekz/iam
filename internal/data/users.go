@@ -4,8 +4,8 @@ import (
 	"context"
 	"time"
 
-	"gitlab.calendaria.team/alageum-cloud/iam/ent"
-	"gitlab.calendaria.team/alageum-cloud/iam/ent/user"
+	"gitlab.calendaria.team/services/iam/ent"
+	"gitlab.calendaria.team/services/iam/ent/user"
 
 	"github.com/go-kratos/kratos/v2/log"
 )

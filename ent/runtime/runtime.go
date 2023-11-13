@@ -5,11 +5,11 @@ package runtime
 import (
 	"time"
 
-	"gitlab.calendaria.team/alageum-cloud/iam/ent/onetimepassword"
-	"gitlab.calendaria.team/alageum-cloud/iam/ent/schema"
-	"gitlab.calendaria.team/alageum-cloud/iam/ent/user"
-	"gitlab.calendaria.team/alageum-cloud/iam/ent/userprivacy"
-	"gitlab.calendaria.team/alageum-cloud/iam/ent/usersettings"
+	"gitlab.calendaria.team/services/iam/ent/onetimepassword"
+	"gitlab.calendaria.team/services/iam/ent/schema"
+	"gitlab.calendaria.team/services/iam/ent/user"
+	"gitlab.calendaria.team/services/iam/ent/userprivacy"
+	"gitlab.calendaria.team/services/iam/ent/usersettings"
 )
 
 // The init function reads all schema descriptors with runtime code

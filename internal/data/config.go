@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"os"
 
-	"gitlab.calendaria.team/alageum-cloud/iam/internal/conf"
+	"gitlab.calendaria.team/services/iam/internal/conf"
 
 	"github.com/go-kratos/consul/registry"
 	"github.com/go-kratos/kratos/contrib/config/consul/v2"

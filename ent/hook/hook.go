@@ -6,7 +6,7 @@ import (
 	"context"
 	"fmt"
 
-	"gitlab.calendaria.team/alageum-cloud/iam/ent"
+	"gitlab.calendaria.team/services/iam/ent"
 )
 
 // The OneTimePasswordFunc type is an adapter to allow the use of ordinary
