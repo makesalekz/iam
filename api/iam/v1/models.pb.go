@@ -199,7 +199,7 @@ type User struct {
 	// field contains relation info
 	Relation *Relation `protobuf:"bytes,14,opt,name=relation,proto3,oneof" json:"relation,omitempty"`
 	// field contains directChat info
-	DirectChat *Membership `protobuf:"bytes,15,opt,name=directChat,proto3,oneof" json:"directChat,omitempty"`
+	DirectChat *DirectChat `protobuf:"bytes,15,opt,name=directChat,proto3,oneof" json:"directChat,omitempty"`
 }
 
 func (x *User) Reset() {
@@ -332,7 +332,7 @@ func (x *User) GetRelation() *Relation {
 	return nil
 }
 
-func (x *User) GetDirectChat() *Membership {
+func (x *User) GetDirectChat() *DirectChat {
 	if x != nil {
 		return x.DirectChat
 	}
@@ -536,7 +536,7 @@ func (x *Relation) GetIsMuted() bool {
 	return false
 }
 
-type Membership struct {
+type DirectChat struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
@@ -551,8 +551,8 @@ type Membership struct {
 	AutoSave   bool    `protobuf:"varint,8,opt,name=autoSave,proto3" json:"autoSave,omitempty"`
 }
 
-func (x *Membership) Reset() {
-	*x = Membership{}
+func (x *DirectChat) Reset() {
+	*x = DirectChat{}
 	if protoimpl.UnsafeEnabled {
 		mi := &file_iam_v1_models_proto_msgTypes[6]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -560,13 +560,13 @@ func (x *Membership) Reset() {
 	}
 }
 
-func (x *Membership) String() string {
+func (x *DirectChat) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*Membership) ProtoMessage() {}
+func (*DirectChat) ProtoMessage() {}
 
-func (x *Membership) ProtoReflect() protoreflect.Message {
+func (x *DirectChat) ProtoReflect() protoreflect.Message {
 	mi := &file_iam_v1_models_proto_msgTypes[6]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -578,61 +578,61 @@ func (x *Membership) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use Membership.ProtoReflect.Descriptor instead.
-func (*Membership) Descriptor() ([]byte, []int) {
+// Deprecated: Use DirectChat.ProtoReflect.Descriptor instead.
+func (*DirectChat) Descriptor() ([]byte, []int) {
 	return file_iam_v1_models_proto_rawDescGZIP(), []int{6}
 }
 
-func (x *Membership) GetChatId() int64 {
+func (x *DirectChat) GetChatId() int64 {
 	if x != nil {
 		return x.ChatId
 	}
 	return 0
 }
 
-func (x *Membership) GetStatus() string {
+func (x *DirectChat) GetStatus() string {
 	if x != nil {
 		return x.Status
 	}
 	return ""
 }
 
-func (x *Membership) GetRole() string {
+func (x *DirectChat) GetRole() string {
 	if x != nil {
 		return x.Role
 	}
 	return ""
 }
 
-func (x *Membership) GetIsPinned() bool {
+func (x *DirectChat) GetIsPinned() bool {
 	if x != nil {
 		return x.IsPinned
 	}
 	return false
 }
 
-func (x *Membership) GetIsMuted() bool {
+func (x *DirectChat) GetIsMuted() bool {
 	if x != nil {
 		return x.IsMuted
 	}
 	return false
 }
 
-func (x *Membership) GetMutedTill() string {
+func (x *DirectChat) GetMutedTill() string {
 	if x != nil && x.MutedTill != nil {
 		return *x.MutedTill
 	}
 	return ""
 }
 
-func (x *Membership) GetArchivedAt() string {
+func (x *DirectChat) GetArchivedAt() string {
 	if x != nil && x.ArchivedAt != nil {
 		return *x.ArchivedAt
 	}
 	return ""
 }
 
-func (x *Membership) GetAutoSave() bool {
+func (x *DirectChat) GetAutoSave() bool {
 	if x != nil {
 		return x.AutoSave
 	}
@@ -677,7 +677,7 @@ var file_iam_v1_models_proto_rawDesc = []byte{
 	0x6e, 0x48, 0x05, 0x52, 0x08, 0x72, 0x65, 0x6c, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x88, 0x01, 0x01,
 	0x12, 0x3b, 0x0a, 0x0a, 0x64, 0x69, 0x72, 0x65, 0x63, 0x74, 0x43, 0x68, 0x61, 0x74, 0x18, 0x0f,
 	0x20, 0x01, 0x28, 0x0b, 0x32, 0x16, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x69, 0x61, 0x6d, 0x2e, 0x76,
-	0x31, 0x2e, 0x4d, 0x65, 0x6d, 0x62, 0x65, 0x72, 0x73, 0x68, 0x69, 0x70, 0x48, 0x06, 0x52, 0x0a,
+	0x31, 0x2e, 0x44, 0x69, 0x72, 0x65, 0x63, 0x74, 0x43, 0x68, 0x61, 0x74, 0x48, 0x06, 0x52, 0x0a,
 	0x64, 0x69, 0x72, 0x65, 0x63, 0x74, 0x43, 0x68, 0x61, 0x74, 0x88, 0x01, 0x01, 0x42, 0x08, 0x0a,
 	0x06, 0x5f, 0x70, 0x68, 0x6f, 0x6e, 0x65, 0x42, 0x08, 0x0a, 0x06, 0x5f, 0x65, 0x6d, 0x61, 0x69,
 	0x6c, 0x42, 0x09, 0x0a, 0x07, 0x5f, 0x61, 0x76, 0x61, 0x74, 0x61, 0x72, 0x42, 0x0f, 0x0a, 0x0d,
@@ -704,8 +704,8 @@ var file_iam_v1_models_proto_rawDesc = []byte{
 	0x0a, 0x09, 0x69, 0x73, 0x42, 0x6c, 0x6f, 0x63, 0x6b, 0x65, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28,
 	0x08, 0x52, 0x09, 0x69, 0x73, 0x42, 0x6c, 0x6f, 0x63, 0x6b, 0x65, 0x64, 0x12, 0x18, 0x0a, 0x07,
 	0x69, 0x73, 0x4d, 0x75, 0x74, 0x65, 0x64, 0x18, 0x02, 0x20, 0x01, 0x28, 0x08, 0x52, 0x07, 0x69,
-	0x73, 0x4d, 0x75, 0x74, 0x65, 0x64, 0x22, 0x87, 0x02, 0x0a, 0x0a, 0x4d, 0x65, 0x6d, 0x62, 0x65,
-	0x72, 0x73, 0x68, 0x69, 0x70, 0x12, 0x16, 0x0a, 0x06, 0x63, 0x68, 0x61, 0x74, 0x49, 0x64, 0x18,
+	0x73, 0x4d, 0x75, 0x74, 0x65, 0x64, 0x22, 0x87, 0x02, 0x0a, 0x0a, 0x44, 0x69, 0x72, 0x65, 0x63,
+	0x74, 0x43, 0x68, 0x61, 0x74, 0x12, 0x16, 0x0a, 0x06, 0x63, 0x68, 0x61, 0x74, 0x49, 0x64, 0x18,
 	0x01, 0x20, 0x01, 0x28, 0x03, 0x52, 0x06, 0x63, 0x68, 0x61, 0x74, 0x49, 0x64, 0x12, 0x16, 0x0a,
 	0x06, 0x73, 0x74, 0x61, 0x74, 0x75, 0x73, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x06, 0x73,
 	0x74, 0x61, 0x74, 0x75, 0x73, 0x12, 0x12, 0x0a, 0x04, 0x72, 0x6f, 0x6c, 0x65, 0x18, 0x03, 0x20,
@@ -770,12 +770,12 @@ var file_iam_v1_models_proto_goTypes = []interface{}{
 	(*UserShort)(nil),    // 4: api.iam.v1.UserShort
 	(*Contact)(nil),      // 5: api.iam.v1.Contact
 	(*Relation)(nil),     // 6: api.iam.v1.Relation
-	(*Membership)(nil),   // 7: api.iam.v1.Membership
+	(*DirectChat)(nil),   // 7: api.iam.v1.DirectChat
 }
 var file_iam_v1_models_proto_depIdxs = []int32{
 	5, // 0: api.iam.v1.User.contact:type_name -> api.iam.v1.Contact
 	6, // 1: api.iam.v1.User.relation:type_name -> api.iam.v1.Relation
-	7, // 2: api.iam.v1.User.directChat:type_name -> api.iam.v1.Membership
+	7, // 2: api.iam.v1.User.directChat:type_name -> api.iam.v1.DirectChat
 	6, // 3: api.iam.v1.UserShort.relation:type_name -> api.iam.v1.Relation
 	4, // [4:4] is the sub-list for method output_type
 	4, // [4:4] is the sub-list for method input_type
@@ -863,7 +863,7 @@ func file_iam_v1_models_proto_init() {
 			}
 		}
 		file_iam_v1_models_proto_msgTypes[6].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*Membership); i {
+			switch v := v.(*DirectChat); i {
 			case 0:
 				return &v.state
 			case 1:

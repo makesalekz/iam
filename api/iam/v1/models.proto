@@ -30,7 +30,7 @@ message User {
 	// field contains relation info
 	optional Relation relation = 14;
 	// field contains directChat info
-	optional Membership directChat = 15;
+	optional DirectChat directChat = 15;
 }
 
 message UserShort {
@@ -53,7 +53,7 @@ message Relation {
 	bool isMuted = 2;
 }
 
-message Membership {
+message DirectChat {
 	int64 chatId = 1;
 	string status = 2;
 	string role = 3;

@@ -20,7 +20,7 @@ type UserItem struct {
 
 	Relation   *v1.Relation
 	Contact    *v1.Contact
-	DirectChat *v1.Membership
+	DirectChat *v1.DirectChat
 }
 
 // UsersUsecase .
@@ -74,7 +74,7 @@ func (uc *UsersUsecase) getUserContactLabel(ctx context.Context, userId int64) (
 	return contact, nil
 }
 
-func (uc *UsersUsecase) getUsersMembership(ctx context.Context, userId int64) (*chats_v1.Membership, error) {
+func (uc *UsersUsecase) getChatMembership(ctx context.Context, userId int64) (*chats_v1.Membership, error) {
 	membersClient, err := uc.dialer.Members(ctx)
 	if err != nil {
 		return nil, v1.ErrorGrpcConnection("dialer.Users: %s", err.Error())
@@ -186,13 +186,13 @@ func (uc *UsersUsecase) GetUserProfile(ctx context.Context, filter data.GetUserF
 	}
 
 	if filter.WithMembership {
-		membership, err := uc.getUsersMembership(ctx, user.ID)
+		membership, err := uc.getChatMembership(ctx, user.ID)
 		if err != nil {
 			if !v1.IsDirectChatNotFound(err) {
 				return nil, err
 			}
 		} else {
-			replyUser.DirectChat = data.FromChatsMembershipToIamMembership(membership)
+			replyUser.DirectChat = data.FromChatsToIam(membership)
 		}
 	}
 

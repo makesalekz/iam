@@ -294,6 +294,25 @@ components:
             properties:
                 label:
                     type: string
+        api.iam.v1.DirectChat:
+            type: object
+            properties:
+                chatId:
+                    type: string
+                status:
+                    type: string
+                role:
+                    type: string
+                isPinned:
+                    type: boolean
+                isMuted:
+                    type: boolean
+                mutedTill:
+                    type: string
+                archivedAt:
+                    type: string
+                autoSave:
+                    type: boolean
         api.iam.v1.EmptyReply:
             type: object
             properties: {}
@@ -325,25 +344,6 @@ components:
                     items:
                         type: string
                 withRelation:
-                    type: boolean
-        api.iam.v1.Membership:
-            type: object
-            properties:
-                chatId:
-                    type: string
-                status:
-                    type: string
-                role:
-                    type: string
-                isPinned:
-                    type: boolean
-                isMuted:
-                    type: boolean
-                mutedTill:
-                    type: string
-                archivedAt:
-                    type: string
-                autoSave:
                     type: boolean
         api.iam.v1.PrivacyReply:
             type: object
@@ -442,7 +442,7 @@ components:
                     description: field contains relation info
                 directChat:
                     allOf:
-                        - $ref: '#/components/schemas/api.iam.v1.Membership'
+                        - $ref: '#/components/schemas/api.iam.v1.DirectChat'
                     description: field contains directChat info
         api.iam.v1.UserFullReply:
             type: object

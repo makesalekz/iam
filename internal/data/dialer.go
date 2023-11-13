@@ -158,12 +158,12 @@ func (d *Dialer) Members(ctx context.Context) (chats_v1.MembersClient, error) {
 	return chats_v1.NewMembersClient(conn), nil
 }
 
-func FromChatsMembershipToIamMembership(membership *chats_v1.Membership) *iam_v1.Membership {
+func FromChatsToIam(membership *chats_v1.Membership) *iam_v1.DirectChat {
 	if membership == nil {
 		return nil
 	}
 
-	return &iam_v1.Membership{
+	return &iam_v1.DirectChat{
 		ChatId:     membership.ChatId,
 		Status:     membership.Status,
 		Role:       membership.Role,
