@@ -4,14 +4,14 @@ package ent
 
 import (
 	"fmt"
-	"iam/ent/onetimepassword"
-	"iam/ent/property"
-	"iam/ent/user"
 	"strings"
 	"time"
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
+	"gitlab.calendaria.team/services/iam/ent/onetimepassword"
+	"gitlab.calendaria.team/services/iam/ent/property"
+	"gitlab.calendaria.team/services/iam/ent/user"
 )
 
 // OneTimePassword is the model entity for the OneTimePassword schema.

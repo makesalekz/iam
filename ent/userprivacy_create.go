@@ -6,14 +6,14 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"iam/ent/property"
-	"iam/ent/user"
-	"iam/ent/userprivacy"
 	"time"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"gitlab.calendaria.team/services/iam/ent/property"
+	"gitlab.calendaria.team/services/iam/ent/user"
+	"gitlab.calendaria.team/services/iam/ent/userprivacy"
 )
 
 // UserPrivacyCreate is the builder for creating a UserPrivacy entity.
@@ -417,12 +417,16 @@ func (u *UserPrivacyUpsertOne) IDX(ctx context.Context) int64 {
 // UserPrivacyCreateBulk is the builder for creating many UserPrivacy entities in bulk.
 type UserPrivacyCreateBulk struct {
 	config
+	err      error
 	builders []*UserPrivacyCreate
 	conflict []sql.ConflictOption
 }
 
 // Save creates the UserPrivacy entities in the database.
 func (upcb *UserPrivacyCreateBulk) Save(ctx context.Context) ([]*UserPrivacy, error) {
+	if upcb.err != nil {
+		return nil, upcb.err
+	}
 	specs := make([]*sqlgraph.CreateSpec, len(upcb.builders))
 	nodes := make([]*UserPrivacy, len(upcb.builders))
 	mutators := make([]Mutator, len(upcb.builders))
@@ -639,6 +643,9 @@ func (u *UserPrivacyUpsertBulk) UpdateUpdatedAt() *UserPrivacyUpsertBulk {
 
 // Exec executes the query.
 func (u *UserPrivacyUpsertBulk) Exec(ctx context.Context) error {
+	if u.create.err != nil {
+		return u.create.err
+	}
 	for i, b := range u.create.builders {
 		if len(b.conflict) != 0 {
 			return fmt.Errorf("ent: OnConflict was set for builder %d. Set it on the UserPrivacyCreateBulk instead", i)

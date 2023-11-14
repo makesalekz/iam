@@ -1,13 +1,13 @@
 syntax = "proto3";
 
-package api.events.v1;
+package events.v1;
 
-import "iam/api/iam/v1/users.proto";
-import "media/api/media/v1/media.proto";
+import "iam/v1/models.proto";
+import "media/v1/media.proto";
 import "errors/errors.proto";
 
-option go_package = "events/api/events/v1;events_v1";
-option java_package = "api.events.v1";
+option go_package = "gitlab.calendaria.team/services/events/api/events/v1;events_v1";
+option java_package = "events.v1";
 
 //---------------------------------- Models ----------------------------------
 // request/reply
@@ -63,7 +63,7 @@ message Event {
   repeated string avatars = 14;
   int32 membersCount = 15;
 
-  api.iam.v1.UserShort owner = 16;
+  iam.v1.UserShort owner = 16;
   optional Membership membership = 17;
   optional LocationDto location = 18;
 }
@@ -73,7 +73,7 @@ message Attachment {
   string type = 2;
   int64 eventId = 3;
 
-  api.media.v1.Media media = 4;
+  media.v1.Media media = 4;
 }
 
 message Link {
@@ -93,13 +93,13 @@ message Member {
   int32 remind = 6;
   optional string remindAt = 7;
 
-  api.iam.v1.UserShort user = 8;
+  iam.v1.UserShort user = 8;
 }
 message MemberShort {
   int64 id = 1;
   string role = 2;
 
-  api.iam.v1.UserShort user = 3;
+  iam.v1.UserShort user = 3;
 }
 message Membership {
   string status = 1;

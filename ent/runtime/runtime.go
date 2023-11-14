@@ -3,12 +3,13 @@
 package runtime
 
 import (
-	"iam/ent/onetimepassword"
-	"iam/ent/schema"
-	"iam/ent/user"
-	"iam/ent/userprivacy"
-	"iam/ent/usersettings"
 	"time"
+
+	"gitlab.calendaria.team/services/iam/ent/onetimepassword"
+	"gitlab.calendaria.team/services/iam/ent/schema"
+	"gitlab.calendaria.team/services/iam/ent/user"
+	"gitlab.calendaria.team/services/iam/ent/userprivacy"
+	"gitlab.calendaria.team/services/iam/ent/usersettings"
 )
 
 // The init function reads all schema descriptors with runtime code
@@ -87,6 +88,6 @@ func init() {
 }
 
 const (
-	Version = "v0.12.3"                                         // Version of ent codegen.
-	Sum     = "h1:N5lO2EOrHpCH5HYfiMOCHYbo+oh5M8GjT0/cx5x6xkk=" // Sum of ent codegen.
+	Version = "v0.12.4"                                         // Version of ent codegen.
+	Sum     = "h1:LddPnAyxls/O7DTXZvUGDj0NZIdGSu317+aoNLJWbD8=" // Sum of ent codegen.
 )

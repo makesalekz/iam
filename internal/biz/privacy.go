@@ -2,9 +2,8 @@ package biz
 
 import (
 	"context"
-	_ "embed"
 
-	"iam/internal/data"
+	"gitlab.calendaria.team/services/iam/internal/data"
 )
 
 // PrivacyUsecase .

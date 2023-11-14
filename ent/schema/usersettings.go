@@ -1,8 +1,9 @@
 package schema
 
 import (
-	"iam/ent/property"
 	"time"
+
+	"gitlab.calendaria.team/services/iam/ent/property"
 
 	"entgo.io/ent"
 	"entgo.io/ent/schema/edge"

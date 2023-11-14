@@ -2,7 +2,7 @@
 // versions:
 // - protoc-gen-go-http v2.7.1
 // - protoc             v4.23.4
-// source: iam/v1/settings.proto
+// source: api/iam/v1/settings.proto
 
 package iam_v1
 
@@ -19,8 +19,8 @@ var _ = binding.EncodeURL
 
 const _ = http.SupportPackageIsVersion1
 
-const OperationSettingsGetSettings = "/api.iam.v1.Settings/GetSettings"
-const OperationSettingsUpdateSettings = "/api.iam.v1.Settings/UpdateSettings"
+const OperationSettingsGetSettings = "/iam.v1.Settings/GetSettings"
+const OperationSettingsUpdateSettings = "/iam.v1.Settings/UpdateSettings"
 
 type SettingsHTTPServer interface {
 	GetSettings(context.Context, *EmptyRequest) (*SettingsReply, error)

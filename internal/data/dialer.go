@@ -3,18 +3,16 @@ package data
 import (
 	"context"
 
-	chats_v1 "chats/api/chats/v1"
-	contacts_v1 "contacts/api/contacts/v1"
-	iam_v1 "iam/api/iam/v1"
-	"iam/internal/conf"
-	tenants_v1 "tenants/api/tenants/v1"
-
-	notifications_v1 "notifications/api/notifications/v1"
-
 	consul "github.com/go-kratos/consul/registry"
 	"github.com/go-kratos/kratos/v2/middleware/auth/jwt"
 	"github.com/go-kratos/kratos/v2/transport/grpc"
 	jwtv4 "github.com/golang-jwt/jwt/v4"
+	chats_v1 "gitlab.calendaria.team/services/chats/api/chats/v1"
+	contacts_v1 "gitlab.calendaria.team/services/contacts/api/contacts/v1"
+	v1 "gitlab.calendaria.team/services/iam/api/iam/v1"
+	"gitlab.calendaria.team/services/iam/internal/conf"
+	notifications_v1 "gitlab.calendaria.team/services/notifications/api/notifications/v1"
+	tenants_v1 "gitlab.calendaria.team/services/tenants/api/tenants/v1"
 )
 
 type Dialer struct {
@@ -158,12 +156,12 @@ func (d *Dialer) Members(ctx context.Context) (chats_v1.MembersClient, error) {
 	return chats_v1.NewMembersClient(conn), nil
 }
 
-func FromChatsToIam(membership *chats_v1.Membership) *iam_v1.DirectChat {
+func FromChatsToIam(membership *chats_v1.Membership) *v1.DirectChat {
 	if membership == nil {
 		return nil
 	}
 
-	return &iam_v1.DirectChat{
+	return &v1.DirectChat{
 		ChatId:     membership.ChatId,
 		Status:     membership.Status,
 		Role:       membership.Role,

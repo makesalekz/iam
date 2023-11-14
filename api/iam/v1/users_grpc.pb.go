@@ -2,7 +2,7 @@
 // versions:
 // - protoc-gen-go-grpc v1.3.0
 // - protoc             v4.23.4
-// source: iam/v1/users.proto
+// source: api/iam/v1/users.proto
 
 package iam_v1
 
@@ -19,14 +19,14 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	Users_GetOwnProfile_FullMethodName       = "/api.iam.v1.Users/GetOwnProfile"
-	Users_UpdateOwnProfile_FullMethodName    = "/api.iam.v1.Users/UpdateOwnProfile"
-	Users_DeleteOwnProfile_FullMethodName    = "/api.iam.v1.Users/DeleteOwnProfile"
-	Users_GetUserFull_FullMethodName         = "/api.iam.v1.Users/GetUserFull"
-	Users_GetUserByFilterFull_FullMethodName = "/api.iam.v1.Users/GetUserByFilterFull"
-	Users_GetUser_FullMethodName             = "/api.iam.v1.Users/GetUser"
-	Users_GetUserByFilter_FullMethodName     = "/api.iam.v1.Users/GetUserByFilter"
-	Users_GetUsers_FullMethodName            = "/api.iam.v1.Users/GetUsers"
+	Users_GetOwnProfile_FullMethodName       = "/iam.v1.Users/GetOwnProfile"
+	Users_UpdateOwnProfile_FullMethodName    = "/iam.v1.Users/UpdateOwnProfile"
+	Users_DeleteOwnProfile_FullMethodName    = "/iam.v1.Users/DeleteOwnProfile"
+	Users_GetUserFull_FullMethodName         = "/iam.v1.Users/GetUserFull"
+	Users_GetUserByFilterFull_FullMethodName = "/iam.v1.Users/GetUserByFilterFull"
+	Users_GetUser_FullMethodName             = "/iam.v1.Users/GetUser"
+	Users_GetUserByFilter_FullMethodName     = "/iam.v1.Users/GetUserByFilter"
+	Users_GetUsers_FullMethodName            = "/iam.v1.Users/GetUsers"
 )
 
 // UsersClient is the client API for Users service.
@@ -363,7 +363,7 @@ func _Users_GetUsers_Handler(srv interface{}, ctx context.Context, dec func(inte
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var Users_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "api.iam.v1.Users",
+	ServiceName: "iam.v1.Users",
 	HandlerType: (*UsersServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
@@ -400,5 +400,5 @@ var Users_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "iam/v1/users.proto",
+	Metadata: "api/iam/v1/users.proto",
 }

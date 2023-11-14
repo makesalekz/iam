@@ -30,7 +30,7 @@ Auth by Code
 
 |Name|In|Type|Required|Description|
 |---|---|---|---|---|
-|body|body|[api.iam.v1.AuthByCodeRequest](#schemaapi.iam.v1.authbycoderequest)|true|none|
+|body|body|[iam.v1.AuthByCodeRequest](#schemaiam.v1.authbycoderequest)|true|none|
 
 > Example responses
 
@@ -47,7 +47,7 @@ Auth by Code
 
 |Status|Meaning|Description|Schema|
 |---|---|---|---|
-|200|[OK](https://tools.ietf.org/html/rfc7231#section-6.3.1)|OK|[api.iam.v1.TokenReply](#schemaapi.iam.v1.tokenreply)|
+|200|[OK](https://tools.ietf.org/html/rfc7231#section-6.3.1)|OK|[iam.v1.TokenReply](#schemaiam.v1.tokenreply)|
 
 <aside class="success">
 This operation does not require authentication
@@ -74,7 +74,7 @@ This operation does not require authentication
 
 |Status|Meaning|Description|Schema|
 |---|---|---|---|
-|200|[OK](https://tools.ietf.org/html/rfc7231#section-6.3.1)|OK|[api.iam.v1.TokenReply](#schemaapi.iam.v1.tokenreply)|
+|200|[OK](https://tools.ietf.org/html/rfc7231#section-6.3.1)|OK|[iam.v1.TokenReply](#schemaiam.v1.tokenreply)|
 
 <aside class="success">
 This operation does not require authentication
@@ -102,7 +102,7 @@ Auth by Phone
 
 |Name|In|Type|Required|Description|
 |---|---|---|---|---|
-|body|body|[api.iam.v1.AuthByPhoneRequest](#schemaapi.iam.v1.authbyphonerequest)|true|none|
+|body|body|[iam.v1.AuthByPhoneRequest](#schemaiam.v1.authbyphonerequest)|true|none|
 
 > Example responses
 
@@ -118,7 +118,7 @@ Auth by Phone
 
 |Status|Meaning|Description|Schema|
 |---|---|---|---|
-|200|[OK](https://tools.ietf.org/html/rfc7231#section-6.3.1)|OK|[api.iam.v1.AuthByPhoneReply](#schemaapi.iam.v1.authbyphonereply)|
+|200|[OK](https://tools.ietf.org/html/rfc7231#section-6.3.1)|OK|[iam.v1.AuthByPhoneReply](#schemaiam.v1.authbyphonereply)|
 
 <aside class="success">
 This operation does not require authentication
@@ -151,7 +151,7 @@ This operation does not require authentication
 
 |Status|Meaning|Description|Schema|
 |---|---|---|---|
-|200|[OK](https://tools.ietf.org/html/rfc7231#section-6.3.1)|OK|[api.iam.v1.TokenReply](#schemaapi.iam.v1.tokenreply)|
+|200|[OK](https://tools.ietf.org/html/rfc7231#section-6.3.1)|OK|[iam.v1.TokenReply](#schemaiam.v1.tokenreply)|
 
 <aside class="success">
 This operation does not require authentication
@@ -182,7 +182,7 @@ This operation does not require authentication
 
 |Status|Meaning|Description|Schema|
 |---|---|---|---|
-|200|[OK](https://tools.ietf.org/html/rfc7231#section-6.3.1)|OK|[api.iam.v1.PrivacyReply](#schemaapi.iam.v1.privacyreply)|
+|200|[OK](https://tools.ietf.org/html/rfc7231#section-6.3.1)|OK|[iam.v1.PrivacyReply](#schemaiam.v1.privacyreply)|
 
 <aside class="success">
 This operation does not require authentication
@@ -209,7 +209,7 @@ This operation does not require authentication
 
 |Name|In|Type|Required|Description|
 |---|---|---|---|---|
-|body|body|[api.iam.v1.PrivacyRequest](#schemaapi.iam.v1.privacyrequest)|true|none|
+|body|body|[iam.v1.PrivacyRequest](#schemaiam.v1.privacyrequest)|true|none|
 
 > Example responses
 
@@ -228,7 +228,7 @@ This operation does not require authentication
 
 |Status|Meaning|Description|Schema|
 |---|---|---|---|
-|200|[OK](https://tools.ietf.org/html/rfc7231#section-6.3.1)|OK|[api.iam.v1.PrivacyReply](#schemaapi.iam.v1.privacyreply)|
+|200|[OK](https://tools.ietf.org/html/rfc7231#section-6.3.1)|OK|[iam.v1.PrivacyReply](#schemaiam.v1.privacyreply)|
 
 <aside class="success">
 This operation does not require authentication
@@ -259,7 +259,7 @@ This operation does not require authentication
 
 |Status|Meaning|Description|Schema|
 |---|---|---|---|
-|200|[OK](https://tools.ietf.org/html/rfc7231#section-6.3.1)|OK|[api.iam.v1.SettingsReply](#schemaapi.iam.v1.settingsreply)|
+|200|[OK](https://tools.ietf.org/html/rfc7231#section-6.3.1)|OK|[iam.v1.SettingsReply](#schemaiam.v1.settingsreply)|
 
 <aside class="success">
 This operation does not require authentication
@@ -286,7 +286,7 @@ This operation does not require authentication
 
 |Name|In|Type|Required|Description|
 |---|---|---|---|---|
-|body|body|[api.iam.v1.SettingsRequest](#schemaapi.iam.v1.settingsrequest)|true|none|
+|body|body|[iam.v1.SettingsRequest](#schemaiam.v1.settingsrequest)|true|none|
 
 > Example responses
 
@@ -305,7 +305,7 @@ This operation does not require authentication
 
 |Status|Meaning|Description|Schema|
 |---|---|---|---|
-|200|[OK](https://tools.ietf.org/html/rfc7231#section-6.3.1)|OK|[api.iam.v1.SettingsReply](#schemaapi.iam.v1.settingsreply)|
+|200|[OK](https://tools.ietf.org/html/rfc7231#section-6.3.1)|OK|[iam.v1.SettingsReply](#schemaiam.v1.settingsreply)|
 
 <aside class="success">
 This operation does not require authentication
@@ -335,7 +335,8 @@ search goes by all fileds
   ],
   "emails": [
     "string"
-  ]
+  ],
+  "withRelation": true
 }
 ```
 
@@ -343,7 +344,7 @@ search goes by all fileds
 
 |Name|In|Type|Required|Description|
 |---|---|---|---|---|
-|body|body|[api.iam.v1.GetUsersRequest](#schemaapi.iam.v1.getusersrequest)|true|none|
+|body|body|[iam.v1.GetUsersRequest](#schemaiam.v1.getusersrequest)|true|none|
 
 > Example responses
 
@@ -358,7 +359,11 @@ search goes by all fileds
       "email": "string",
       "name": "string",
       "avatar": "string",
-      "lastLoginAt": "string"
+      "lastLoginAt": "string",
+      "relation": {
+        "isBlocked": true,
+        "isMuted": true
+      }
     }
   ]
 }
@@ -368,7 +373,7 @@ search goes by all fileds
 
 |Status|Meaning|Description|Schema|
 |---|---|---|---|
-|200|[OK](https://tools.ietf.org/html/rfc7231#section-6.3.1)|OK|[api.iam.v1.GetUsersReply](#schemaapi.iam.v1.getusersreply)|
+|200|[OK](https://tools.ietf.org/html/rfc7231#section-6.3.1)|OK|[iam.v1.GetUsersReply](#schemaiam.v1.getusersreply)|
 
 <aside class="success">
 This operation does not require authentication
@@ -404,6 +409,20 @@ GetOwnProfile
     "bioUpdatedAt": "string",
     "contact": {
       "label": "string"
+    },
+    "relation": {
+      "isBlocked": true,
+      "isMuted": true
+    },
+    "directChat": {
+      "chatId": "string",
+      "status": "string",
+      "role": "string",
+      "isPinned": true,
+      "isMuted": true,
+      "mutedTill": "string",
+      "archivedAt": "string",
+      "autoSave": true
     }
   }
 }
@@ -413,7 +432,7 @@ GetOwnProfile
 
 |Status|Meaning|Description|Schema|
 |---|---|---|---|
-|200|[OK](https://tools.ietf.org/html/rfc7231#section-6.3.1)|OK|[api.iam.v1.UserFullReply](#schemaapi.iam.v1.userfullreply)|
+|200|[OK](https://tools.ietf.org/html/rfc7231#section-6.3.1)|OK|[iam.v1.UserFullReply](#schemaiam.v1.userfullreply)|
 
 <aside class="success">
 This operation does not require authentication
@@ -443,7 +462,7 @@ UpdateOwnProfile
 
 |Name|In|Type|Required|Description|
 |---|---|---|---|---|
-|body|body|[api.iam.v1.UpdateOwnProfileRequest](#schemaapi.iam.v1.updateownprofilerequest)|true|none|
+|body|body|[iam.v1.UpdateOwnProfileRequest](#schemaiam.v1.updateownprofilerequest)|true|none|
 
 > Example responses
 
@@ -466,6 +485,20 @@ UpdateOwnProfile
     "bioUpdatedAt": "string",
     "contact": {
       "label": "string"
+    },
+    "relation": {
+      "isBlocked": true,
+      "isMuted": true
+    },
+    "directChat": {
+      "chatId": "string",
+      "status": "string",
+      "role": "string",
+      "isPinned": true,
+      "isMuted": true,
+      "mutedTill": "string",
+      "archivedAt": "string",
+      "autoSave": true
     }
   }
 }
@@ -475,7 +508,7 @@ UpdateOwnProfile
 
 |Status|Meaning|Description|Schema|
 |---|---|---|---|
-|200|[OK](https://tools.ietf.org/html/rfc7231#section-6.3.1)|OK|[api.iam.v1.UserFullReply](#schemaapi.iam.v1.userfullreply)|
+|200|[OK](https://tools.ietf.org/html/rfc7231#section-6.3.1)|OK|[iam.v1.UserFullReply](#schemaiam.v1.userfullreply)|
 
 <aside class="success">
 This operation does not require authentication
@@ -502,7 +535,7 @@ DeleteOwnProfile
 
 |Status|Meaning|Description|Schema|
 |---|---|---|---|
-|200|[OK](https://tools.ietf.org/html/rfc7231#section-6.3.1)|OK|[api.iam.v1.EmptyReply](#schemaapi.iam.v1.emptyreply)|
+|200|[OK](https://tools.ietf.org/html/rfc7231#section-6.3.1)|OK|[iam.v1.EmptyReply](#schemaiam.v1.emptyreply)|
 
 <aside class="success">
 This operation does not require authentication
@@ -532,7 +565,7 @@ in case of search by phone, search.email should not be present
 
 |Name|In|Type|Required|Description|
 |---|---|---|---|---|
-|body|body|[api.iam.v1.GetUserByFilterRequest](#schemaapi.iam.v1.getuserbyfilterrequest)|true|none|
+|body|body|[iam.v1.GetUserByFilterRequest](#schemaiam.v1.getuserbyfilterrequest)|true|none|
 
 > Example responses
 
@@ -546,7 +579,11 @@ in case of search by phone, search.email should not be present
     "email": "string",
     "name": "string",
     "avatar": "string",
-    "lastLoginAt": "string"
+    "lastLoginAt": "string",
+    "relation": {
+      "isBlocked": true,
+      "isMuted": true
+    }
   }
 }
 ```
@@ -555,7 +592,7 @@ in case of search by phone, search.email should not be present
 
 |Status|Meaning|Description|Schema|
 |---|---|---|---|
-|200|[OK](https://tools.ietf.org/html/rfc7231#section-6.3.1)|OK|[api.iam.v1.UserReply](#schemaapi.iam.v1.userreply)|
+|200|[OK](https://tools.ietf.org/html/rfc7231#section-6.3.1)|OK|[iam.v1.UserReply](#schemaiam.v1.userreply)|
 
 <aside class="success">
 This operation does not require authentication
@@ -585,7 +622,7 @@ in case of search by phone, search.email should not be present
 
 |Name|In|Type|Required|Description|
 |---|---|---|---|---|
-|body|body|[api.iam.v1.GetUserByFilterRequest](#schemaapi.iam.v1.getuserbyfilterrequest)|true|none|
+|body|body|[iam.v1.GetUserByFilterRequest](#schemaiam.v1.getuserbyfilterrequest)|true|none|
 
 > Example responses
 
@@ -608,6 +645,20 @@ in case of search by phone, search.email should not be present
     "bioUpdatedAt": "string",
     "contact": {
       "label": "string"
+    },
+    "relation": {
+      "isBlocked": true,
+      "isMuted": true
+    },
+    "directChat": {
+      "chatId": "string",
+      "status": "string",
+      "role": "string",
+      "isPinned": true,
+      "isMuted": true,
+      "mutedTill": "string",
+      "archivedAt": "string",
+      "autoSave": true
     }
   }
 }
@@ -617,7 +668,7 @@ in case of search by phone, search.email should not be present
 
 |Status|Meaning|Description|Schema|
 |---|---|---|---|
-|200|[OK](https://tools.ietf.org/html/rfc7231#section-6.3.1)|OK|[api.iam.v1.UserFullReply](#schemaapi.iam.v1.userfullreply)|
+|200|[OK](https://tools.ietf.org/html/rfc7231#section-6.3.1)|OK|[iam.v1.UserFullReply](#schemaiam.v1.userfullreply)|
 
 <aside class="success">
 This operation does not require authentication
@@ -650,7 +701,11 @@ GetUser
     "email": "string",
     "name": "string",
     "avatar": "string",
-    "lastLoginAt": "string"
+    "lastLoginAt": "string",
+    "relation": {
+      "isBlocked": true,
+      "isMuted": true
+    }
   }
 }
 ```
@@ -659,7 +714,7 @@ GetUser
 
 |Status|Meaning|Description|Schema|
 |---|---|---|---|
-|200|[OK](https://tools.ietf.org/html/rfc7231#section-6.3.1)|OK|[api.iam.v1.UserReply](#schemaapi.iam.v1.userreply)|
+|200|[OK](https://tools.ietf.org/html/rfc7231#section-6.3.1)|OK|[iam.v1.UserReply](#schemaiam.v1.userreply)|
 
 <aside class="success">
 This operation does not require authentication
@@ -702,6 +757,20 @@ GetUserFull
     "bioUpdatedAt": "string",
     "contact": {
       "label": "string"
+    },
+    "relation": {
+      "isBlocked": true,
+      "isMuted": true
+    },
+    "directChat": {
+      "chatId": "string",
+      "status": "string",
+      "role": "string",
+      "isPinned": true,
+      "isMuted": true,
+      "mutedTill": "string",
+      "archivedAt": "string",
+      "autoSave": true
     }
   }
 }
@@ -711,7 +780,7 @@ GetUserFull
 
 |Status|Meaning|Description|Schema|
 |---|---|---|---|
-|200|[OK](https://tools.ietf.org/html/rfc7231#section-6.3.1)|OK|[api.iam.v1.UserFullReply](#schemaapi.iam.v1.userfullreply)|
+|200|[OK](https://tools.ietf.org/html/rfc7231#section-6.3.1)|OK|[iam.v1.UserFullReply](#schemaiam.v1.userfullreply)|
 
 <aside class="success">
 This operation does not require authentication
@@ -719,12 +788,12 @@ This operation does not require authentication
 
 # Schemas
 
-<h2 id="tocS_api.iam.v1.AuthByCodeRequest">api.iam.v1.AuthByCodeRequest</h2>
+<h2 id="tocS_iam.v1.AuthByCodeRequest">iam.v1.AuthByCodeRequest</h2>
 <!-- backwards compatibility -->
-<a id="schemaapi.iam.v1.authbycoderequest"></a>
-<a id="schema_api.iam.v1.AuthByCodeRequest"></a>
-<a id="tocSapi.iam.v1.authbycoderequest"></a>
-<a id="tocsapi.iam.v1.authbycoderequest"></a>
+<a id="schemaiam.v1.authbycoderequest"></a>
+<a id="schema_iam.v1.AuthByCodeRequest"></a>
+<a id="tocSiam.v1.authbycoderequest"></a>
+<a id="tocsiam.v1.authbycoderequest"></a>
 
 ```json
 {
@@ -741,12 +810,12 @@ This operation does not require authentication
 |userId|string|false|none|none|
 |code|string|false|none|none|
 
-<h2 id="tocS_api.iam.v1.AuthByPhoneReply">api.iam.v1.AuthByPhoneReply</h2>
+<h2 id="tocS_iam.v1.AuthByPhoneReply">iam.v1.AuthByPhoneReply</h2>
 <!-- backwards compatibility -->
-<a id="schemaapi.iam.v1.authbyphonereply"></a>
-<a id="schema_api.iam.v1.AuthByPhoneReply"></a>
-<a id="tocSapi.iam.v1.authbyphonereply"></a>
-<a id="tocsapi.iam.v1.authbyphonereply"></a>
+<a id="schemaiam.v1.authbyphonereply"></a>
+<a id="schema_iam.v1.AuthByPhoneReply"></a>
+<a id="tocSiam.v1.authbyphonereply"></a>
+<a id="tocsiam.v1.authbyphonereply"></a>
 
 ```json
 {
@@ -761,12 +830,12 @@ This operation does not require authentication
 |---|---|---|---|---|
 |userId|string|false|none|none|
 
-<h2 id="tocS_api.iam.v1.AuthByPhoneRequest">api.iam.v1.AuthByPhoneRequest</h2>
+<h2 id="tocS_iam.v1.AuthByPhoneRequest">iam.v1.AuthByPhoneRequest</h2>
 <!-- backwards compatibility -->
-<a id="schemaapi.iam.v1.authbyphonerequest"></a>
-<a id="schema_api.iam.v1.AuthByPhoneRequest"></a>
-<a id="tocSapi.iam.v1.authbyphonerequest"></a>
-<a id="tocsapi.iam.v1.authbyphonerequest"></a>
+<a id="schemaiam.v1.authbyphonerequest"></a>
+<a id="schema_iam.v1.AuthByPhoneRequest"></a>
+<a id="tocSiam.v1.authbyphonerequest"></a>
+<a id="tocsiam.v1.authbyphonerequest"></a>
 
 ```json
 {
@@ -781,12 +850,12 @@ This operation does not require authentication
 |---|---|---|---|---|
 |phone|string|false|none|none|
 
-<h2 id="tocS_api.iam.v1.Contact">api.iam.v1.Contact</h2>
+<h2 id="tocS_iam.v1.Contact">iam.v1.Contact</h2>
 <!-- backwards compatibility -->
-<a id="schemaapi.iam.v1.contact"></a>
-<a id="schema_api.iam.v1.Contact"></a>
-<a id="tocSapi.iam.v1.contact"></a>
-<a id="tocsapi.iam.v1.contact"></a>
+<a id="schemaiam.v1.contact"></a>
+<a id="schema_iam.v1.Contact"></a>
+<a id="tocSiam.v1.contact"></a>
+<a id="tocsiam.v1.contact"></a>
 
 ```json
 {
@@ -801,12 +870,46 @@ This operation does not require authentication
 |---|---|---|---|---|
 |label|string|false|none|none|
 
-<h2 id="tocS_api.iam.v1.EmptyReply">api.iam.v1.EmptyReply</h2>
+<h2 id="tocS_iam.v1.DirectChat">iam.v1.DirectChat</h2>
 <!-- backwards compatibility -->
-<a id="schemaapi.iam.v1.emptyreply"></a>
-<a id="schema_api.iam.v1.EmptyReply"></a>
-<a id="tocSapi.iam.v1.emptyreply"></a>
-<a id="tocsapi.iam.v1.emptyreply"></a>
+<a id="schemaiam.v1.directchat"></a>
+<a id="schema_iam.v1.DirectChat"></a>
+<a id="tocSiam.v1.directchat"></a>
+<a id="tocsiam.v1.directchat"></a>
+
+```json
+{
+  "chatId": "string",
+  "status": "string",
+  "role": "string",
+  "isPinned": true,
+  "isMuted": true,
+  "mutedTill": "string",
+  "archivedAt": "string",
+  "autoSave": true
+}
+
+```
+
+### Properties
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|chatId|string|false|none|none|
+|status|string|false|none|none|
+|role|string|false|none|none|
+|isPinned|boolean|false|none|none|
+|isMuted|boolean|false|none|none|
+|mutedTill|string|false|none|none|
+|archivedAt|string|false|none|none|
+|autoSave|boolean|false|none|none|
+
+<h2 id="tocS_iam.v1.EmptyReply">iam.v1.EmptyReply</h2>
+<!-- backwards compatibility -->
+<a id="schemaiam.v1.emptyreply"></a>
+<a id="schema_iam.v1.EmptyReply"></a>
+<a id="tocSiam.v1.emptyreply"></a>
+<a id="tocsiam.v1.emptyreply"></a>
 
 ```json
 {}
@@ -817,12 +920,12 @@ This operation does not require authentication
 
 *None*
 
-<h2 id="tocS_api.iam.v1.GetUserByFilterRequest">api.iam.v1.GetUserByFilterRequest</h2>
+<h2 id="tocS_iam.v1.GetUserByFilterRequest">iam.v1.GetUserByFilterRequest</h2>
 <!-- backwards compatibility -->
-<a id="schemaapi.iam.v1.getuserbyfilterrequest"></a>
-<a id="schema_api.iam.v1.GetUserByFilterRequest"></a>
-<a id="tocSapi.iam.v1.getuserbyfilterrequest"></a>
-<a id="tocsapi.iam.v1.getuserbyfilterrequest"></a>
+<a id="schemaiam.v1.getuserbyfilterrequest"></a>
+<a id="schema_iam.v1.GetUserByFilterRequest"></a>
+<a id="tocSiam.v1.getuserbyfilterrequest"></a>
+<a id="tocsiam.v1.getuserbyfilterrequest"></a>
 
 ```json
 {
@@ -838,14 +941,14 @@ This operation does not require authentication
 
 |Name|Type|Required|Restrictions|Description|
 |---|---|---|---|---|
-|search|[api.iam.v1.SearchFilter](#schemaapi.iam.v1.searchfilter)|false|none|none|
+|search|[iam.v1.SearchFilter](#schemaiam.v1.searchfilter)|false|none|none|
 
-<h2 id="tocS_api.iam.v1.GetUsersReply">api.iam.v1.GetUsersReply</h2>
+<h2 id="tocS_iam.v1.GetUsersReply">iam.v1.GetUsersReply</h2>
 <!-- backwards compatibility -->
-<a id="schemaapi.iam.v1.getusersreply"></a>
-<a id="schema_api.iam.v1.GetUsersReply"></a>
-<a id="tocSapi.iam.v1.getusersreply"></a>
-<a id="tocsapi.iam.v1.getusersreply"></a>
+<a id="schemaiam.v1.getusersreply"></a>
+<a id="schema_iam.v1.GetUsersReply"></a>
+<a id="tocSiam.v1.getusersreply"></a>
+<a id="tocsiam.v1.getusersreply"></a>
 
 ```json
 {
@@ -856,7 +959,11 @@ This operation does not require authentication
       "email": "string",
       "name": "string",
       "avatar": "string",
-      "lastLoginAt": "string"
+      "lastLoginAt": "string",
+      "relation": {
+        "isBlocked": true,
+        "isMuted": true
+      }
     }
   ]
 }
@@ -867,14 +974,14 @@ This operation does not require authentication
 
 |Name|Type|Required|Restrictions|Description|
 |---|---|---|---|---|
-|users|[[api.iam.v1.UserShort](#schemaapi.iam.v1.usershort)]|false|none|none|
+|users|[[iam.v1.UserShort](#schemaiam.v1.usershort)]|false|none|none|
 
-<h2 id="tocS_api.iam.v1.GetUsersRequest">api.iam.v1.GetUsersRequest</h2>
+<h2 id="tocS_iam.v1.GetUsersRequest">iam.v1.GetUsersRequest</h2>
 <!-- backwards compatibility -->
-<a id="schemaapi.iam.v1.getusersrequest"></a>
-<a id="schema_api.iam.v1.GetUsersRequest"></a>
-<a id="tocSapi.iam.v1.getusersrequest"></a>
-<a id="tocsapi.iam.v1.getusersrequest"></a>
+<a id="schemaiam.v1.getusersrequest"></a>
+<a id="schema_iam.v1.GetUsersRequest"></a>
+<a id="tocSiam.v1.getusersrequest"></a>
+<a id="tocsiam.v1.getusersrequest"></a>
 
 ```json
 {
@@ -886,7 +993,8 @@ This operation does not require authentication
   ],
   "emails": [
     "string"
-  ]
+  ],
+  "withRelation": true
 }
 
 ```
@@ -898,13 +1006,14 @@ This operation does not require authentication
 |ids|[string]|false|none|none|
 |phones|[string]|false|none|none|
 |emails|[string]|false|none|none|
+|withRelation|boolean|false|none|none|
 
-<h2 id="tocS_api.iam.v1.PrivacyReply">api.iam.v1.PrivacyReply</h2>
+<h2 id="tocS_iam.v1.PrivacyReply">iam.v1.PrivacyReply</h2>
 <!-- backwards compatibility -->
-<a id="schemaapi.iam.v1.privacyreply"></a>
-<a id="schema_api.iam.v1.PrivacyReply"></a>
-<a id="tocSapi.iam.v1.privacyreply"></a>
-<a id="tocsapi.iam.v1.privacyreply"></a>
+<a id="schemaiam.v1.privacyreply"></a>
+<a id="schema_iam.v1.PrivacyReply"></a>
+<a id="tocSiam.v1.privacyreply"></a>
+<a id="tocsiam.v1.privacyreply"></a>
 
 ```json
 {
@@ -923,12 +1032,12 @@ This operation does not require authentication
 |settings|object|false|none|none|
 |» **additionalProperties**|string|false|none|none|
 
-<h2 id="tocS_api.iam.v1.PrivacyRequest">api.iam.v1.PrivacyRequest</h2>
+<h2 id="tocS_iam.v1.PrivacyRequest">iam.v1.PrivacyRequest</h2>
 <!-- backwards compatibility -->
-<a id="schemaapi.iam.v1.privacyrequest"></a>
-<a id="schema_api.iam.v1.PrivacyRequest"></a>
-<a id="tocSapi.iam.v1.privacyrequest"></a>
-<a id="tocsapi.iam.v1.privacyrequest"></a>
+<a id="schemaiam.v1.privacyrequest"></a>
+<a id="schema_iam.v1.PrivacyRequest"></a>
+<a id="tocSiam.v1.privacyrequest"></a>
+<a id="tocsiam.v1.privacyrequest"></a>
 
 ```json
 {
@@ -947,12 +1056,34 @@ This operation does not require authentication
 |settings|object|false|none|none|
 |» **additionalProperties**|string|false|none|none|
 
-<h2 id="tocS_api.iam.v1.SearchFilter">api.iam.v1.SearchFilter</h2>
+<h2 id="tocS_iam.v1.Relation">iam.v1.Relation</h2>
 <!-- backwards compatibility -->
-<a id="schemaapi.iam.v1.searchfilter"></a>
-<a id="schema_api.iam.v1.SearchFilter"></a>
-<a id="tocSapi.iam.v1.searchfilter"></a>
-<a id="tocsapi.iam.v1.searchfilter"></a>
+<a id="schemaiam.v1.relation"></a>
+<a id="schema_iam.v1.Relation"></a>
+<a id="tocSiam.v1.relation"></a>
+<a id="tocsiam.v1.relation"></a>
+
+```json
+{
+  "isBlocked": true,
+  "isMuted": true
+}
+
+```
+
+### Properties
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|isBlocked|boolean|false|none|none|
+|isMuted|boolean|false|none|none|
+
+<h2 id="tocS_iam.v1.SearchFilter">iam.v1.SearchFilter</h2>
+<!-- backwards compatibility -->
+<a id="schemaiam.v1.searchfilter"></a>
+<a id="schema_iam.v1.SearchFilter"></a>
+<a id="tocSiam.v1.searchfilter"></a>
+<a id="tocsiam.v1.searchfilter"></a>
 
 ```json
 {
@@ -969,12 +1100,12 @@ This operation does not require authentication
 |phone|string|false|none|none|
 |email|string|false|none|none|
 
-<h2 id="tocS_api.iam.v1.SettingsReply">api.iam.v1.SettingsReply</h2>
+<h2 id="tocS_iam.v1.SettingsReply">iam.v1.SettingsReply</h2>
 <!-- backwards compatibility -->
-<a id="schemaapi.iam.v1.settingsreply"></a>
-<a id="schema_api.iam.v1.SettingsReply"></a>
-<a id="tocSapi.iam.v1.settingsreply"></a>
-<a id="tocsapi.iam.v1.settingsreply"></a>
+<a id="schemaiam.v1.settingsreply"></a>
+<a id="schema_iam.v1.SettingsReply"></a>
+<a id="tocSiam.v1.settingsreply"></a>
+<a id="tocsiam.v1.settingsreply"></a>
 
 ```json
 {
@@ -993,12 +1124,12 @@ This operation does not require authentication
 |settings|object|false|none|none|
 |» **additionalProperties**|string|false|none|none|
 
-<h2 id="tocS_api.iam.v1.SettingsRequest">api.iam.v1.SettingsRequest</h2>
+<h2 id="tocS_iam.v1.SettingsRequest">iam.v1.SettingsRequest</h2>
 <!-- backwards compatibility -->
-<a id="schemaapi.iam.v1.settingsrequest"></a>
-<a id="schema_api.iam.v1.SettingsRequest"></a>
-<a id="tocSapi.iam.v1.settingsrequest"></a>
-<a id="tocsapi.iam.v1.settingsrequest"></a>
+<a id="schemaiam.v1.settingsrequest"></a>
+<a id="schema_iam.v1.SettingsRequest"></a>
+<a id="tocSiam.v1.settingsrequest"></a>
+<a id="tocsiam.v1.settingsrequest"></a>
 
 ```json
 {
@@ -1017,12 +1148,12 @@ This operation does not require authentication
 |settings|object|false|none|none|
 |» **additionalProperties**|string|false|none|none|
 
-<h2 id="tocS_api.iam.v1.TokenReply">api.iam.v1.TokenReply</h2>
+<h2 id="tocS_iam.v1.TokenReply">iam.v1.TokenReply</h2>
 <!-- backwards compatibility -->
-<a id="schemaapi.iam.v1.tokenreply"></a>
-<a id="schema_api.iam.v1.TokenReply"></a>
-<a id="tocSapi.iam.v1.tokenreply"></a>
-<a id="tocsapi.iam.v1.tokenreply"></a>
+<a id="schemaiam.v1.tokenreply"></a>
+<a id="schema_iam.v1.TokenReply"></a>
+<a id="tocSiam.v1.tokenreply"></a>
+<a id="tocsiam.v1.tokenreply"></a>
 
 ```json
 {
@@ -1039,12 +1170,12 @@ This operation does not require authentication
 |accessToken|string|false|none|none|
 |refreshToken|string|false|none|none|
 
-<h2 id="tocS_api.iam.v1.UpdateOwnProfileRequest">api.iam.v1.UpdateOwnProfileRequest</h2>
+<h2 id="tocS_iam.v1.UpdateOwnProfileRequest">iam.v1.UpdateOwnProfileRequest</h2>
 <!-- backwards compatibility -->
-<a id="schemaapi.iam.v1.updateownprofilerequest"></a>
-<a id="schema_api.iam.v1.UpdateOwnProfileRequest"></a>
-<a id="tocSapi.iam.v1.updateownprofilerequest"></a>
-<a id="tocsapi.iam.v1.updateownprofilerequest"></a>
+<a id="schemaiam.v1.updateownprofilerequest"></a>
+<a id="schema_iam.v1.UpdateOwnProfileRequest"></a>
+<a id="tocSiam.v1.updateownprofilerequest"></a>
+<a id="tocsiam.v1.updateownprofilerequest"></a>
 
 ```json
 {
@@ -1065,12 +1196,12 @@ This operation does not require authentication
 |avatar|string|false|none|none|
 |timezone|string|false|none|none|
 
-<h2 id="tocS_api.iam.v1.User">api.iam.v1.User</h2>
+<h2 id="tocS_iam.v1.User">iam.v1.User</h2>
 <!-- backwards compatibility -->
-<a id="schemaapi.iam.v1.user"></a>
-<a id="schema_api.iam.v1.User"></a>
-<a id="tocSapi.iam.v1.user"></a>
-<a id="tocsapi.iam.v1.user"></a>
+<a id="schemaiam.v1.user"></a>
+<a id="schema_iam.v1.User"></a>
+<a id="tocSiam.v1.user"></a>
+<a id="tocsiam.v1.user"></a>
 
 ```json
 {
@@ -1088,6 +1219,20 @@ This operation does not require authentication
   "bioUpdatedAt": "string",
   "contact": {
     "label": "string"
+  },
+  "relation": {
+    "isBlocked": true,
+    "isMuted": true
+  },
+  "directChat": {
+    "chatId": "string",
+    "status": "string",
+    "role": "string",
+    "isPinned": true,
+    "isMuted": true,
+    "mutedTill": "string",
+    "archivedAt": "string",
+    "autoSave": true
   }
 }
 
@@ -1109,14 +1254,16 @@ This operation does not require authentication
 |email|string|false|none|none|
 |avatar|string|false|none|none|
 |bioUpdatedAt|string|false|none|none|
-|contact|[api.iam.v1.Contact](#schemaapi.iam.v1.contact)|false|none|field containing tied contact info|
+|contact|[iam.v1.Contact](#schemaiam.v1.contact)|false|none|field contains contact info|
+|relation|[iam.v1.Relation](#schemaiam.v1.relation)|false|none|field contains relation info|
+|directChat|[iam.v1.DirectChat](#schemaiam.v1.directchat)|false|none|field contains directChat info|
 
-<h2 id="tocS_api.iam.v1.UserFullReply">api.iam.v1.UserFullReply</h2>
+<h2 id="tocS_iam.v1.UserFullReply">iam.v1.UserFullReply</h2>
 <!-- backwards compatibility -->
-<a id="schemaapi.iam.v1.userfullreply"></a>
-<a id="schema_api.iam.v1.UserFullReply"></a>
-<a id="tocSapi.iam.v1.userfullreply"></a>
-<a id="tocsapi.iam.v1.userfullreply"></a>
+<a id="schemaiam.v1.userfullreply"></a>
+<a id="schema_iam.v1.UserFullReply"></a>
+<a id="tocSiam.v1.userfullreply"></a>
+<a id="tocsiam.v1.userfullreply"></a>
 
 ```json
 {
@@ -1135,6 +1282,20 @@ This operation does not require authentication
     "bioUpdatedAt": "string",
     "contact": {
       "label": "string"
+    },
+    "relation": {
+      "isBlocked": true,
+      "isMuted": true
+    },
+    "directChat": {
+      "chatId": "string",
+      "status": "string",
+      "role": "string",
+      "isPinned": true,
+      "isMuted": true,
+      "mutedTill": "string",
+      "archivedAt": "string",
+      "autoSave": true
     }
   }
 }
@@ -1145,14 +1306,14 @@ This operation does not require authentication
 
 |Name|Type|Required|Restrictions|Description|
 |---|---|---|---|---|
-|user|[api.iam.v1.User](#schemaapi.iam.v1.user)|false|none|none|
+|user|[iam.v1.User](#schemaiam.v1.user)|false|none|none|
 
-<h2 id="tocS_api.iam.v1.UserReply">api.iam.v1.UserReply</h2>
+<h2 id="tocS_iam.v1.UserReply">iam.v1.UserReply</h2>
 <!-- backwards compatibility -->
-<a id="schemaapi.iam.v1.userreply"></a>
-<a id="schema_api.iam.v1.UserReply"></a>
-<a id="tocSapi.iam.v1.userreply"></a>
-<a id="tocsapi.iam.v1.userreply"></a>
+<a id="schemaiam.v1.userreply"></a>
+<a id="schema_iam.v1.UserReply"></a>
+<a id="tocSiam.v1.userreply"></a>
+<a id="tocsiam.v1.userreply"></a>
 
 ```json
 {
@@ -1162,7 +1323,11 @@ This operation does not require authentication
     "email": "string",
     "name": "string",
     "avatar": "string",
-    "lastLoginAt": "string"
+    "lastLoginAt": "string",
+    "relation": {
+      "isBlocked": true,
+      "isMuted": true
+    }
   }
 }
 
@@ -1172,14 +1337,14 @@ This operation does not require authentication
 
 |Name|Type|Required|Restrictions|Description|
 |---|---|---|---|---|
-|user|[api.iam.v1.UserShort](#schemaapi.iam.v1.usershort)|false|none|none|
+|user|[iam.v1.UserShort](#schemaiam.v1.usershort)|false|none|none|
 
-<h2 id="tocS_api.iam.v1.UserShort">api.iam.v1.UserShort</h2>
+<h2 id="tocS_iam.v1.UserShort">iam.v1.UserShort</h2>
 <!-- backwards compatibility -->
-<a id="schemaapi.iam.v1.usershort"></a>
-<a id="schema_api.iam.v1.UserShort"></a>
-<a id="tocSapi.iam.v1.usershort"></a>
-<a id="tocsapi.iam.v1.usershort"></a>
+<a id="schemaiam.v1.usershort"></a>
+<a id="schema_iam.v1.UserShort"></a>
+<a id="tocSiam.v1.usershort"></a>
+<a id="tocsiam.v1.usershort"></a>
 
 ```json
 {
@@ -1188,7 +1353,11 @@ This operation does not require authentication
   "email": "string",
   "name": "string",
   "avatar": "string",
-  "lastLoginAt": "string"
+  "lastLoginAt": "string",
+  "relation": {
+    "isBlocked": true,
+    "isMuted": true
+  }
 }
 
 ```
@@ -1203,4 +1372,5 @@ This operation does not require authentication
 |name|string|false|none|none|
 |avatar|string|false|none|none|
 |lastLoginAt|string|false|none|none|
+|relation|[iam.v1.Relation](#schemaiam.v1.relation)|false|none|none|
 

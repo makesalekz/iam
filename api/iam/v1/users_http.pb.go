@@ -2,7 +2,7 @@
 // versions:
 // - protoc-gen-go-http v2.7.1
 // - protoc             v4.23.4
-// source: iam/v1/users.proto
+// source: api/iam/v1/users.proto
 
 package iam_v1
 
@@ -19,14 +19,14 @@ var _ = binding.EncodeURL
 
 const _ = http.SupportPackageIsVersion1
 
-const OperationUsersDeleteOwnProfile = "/api.iam.v1.Users/DeleteOwnProfile"
-const OperationUsersGetOwnProfile = "/api.iam.v1.Users/GetOwnProfile"
-const OperationUsersGetUser = "/api.iam.v1.Users/GetUser"
-const OperationUsersGetUserByFilter = "/api.iam.v1.Users/GetUserByFilter"
-const OperationUsersGetUserByFilterFull = "/api.iam.v1.Users/GetUserByFilterFull"
-const OperationUsersGetUserFull = "/api.iam.v1.Users/GetUserFull"
-const OperationUsersGetUsers = "/api.iam.v1.Users/GetUsers"
-const OperationUsersUpdateOwnProfile = "/api.iam.v1.Users/UpdateOwnProfile"
+const OperationUsersDeleteOwnProfile = "/iam.v1.Users/DeleteOwnProfile"
+const OperationUsersGetOwnProfile = "/iam.v1.Users/GetOwnProfile"
+const OperationUsersGetUser = "/iam.v1.Users/GetUser"
+const OperationUsersGetUserByFilter = "/iam.v1.Users/GetUserByFilter"
+const OperationUsersGetUserByFilterFull = "/iam.v1.Users/GetUserByFilterFull"
+const OperationUsersGetUserFull = "/iam.v1.Users/GetUserFull"
+const OperationUsersGetUsers = "/iam.v1.Users/GetUsers"
+const OperationUsersUpdateOwnProfile = "/iam.v1.Users/UpdateOwnProfile"
 
 type UsersHTTPServer interface {
 	// DeleteOwnProfile DeleteOwnProfile
