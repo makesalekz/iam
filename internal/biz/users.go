@@ -227,12 +227,5 @@ func (uc *UsersUsecase) GetUsers(ctx context.Context, filter data.GetUsersFilter
 		replyUsers[i] = &UserItem{User: user}
 	}
 
-	if filter.WithRelation {
-		err = uc.includeRelations(ctx, replyUsers...)
-		if err != nil {
-			return nil, err
-		}
-	}
-
 	return replyUsers, nil
 }

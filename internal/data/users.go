@@ -25,10 +25,9 @@ type GetUserFilterDto struct {
 }
 
 type GetUsersFilterDto struct {
-	WithRelation bool
-	UsersIds     []int64
-	Phones       []string
-	Emails       []string
+	UsersIds []int64
+	Phones   []string
+	Emails   []string
 }
 
 // UsersRepo

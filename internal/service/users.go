@@ -111,10 +111,9 @@ func (s *UsersService) GetUser(ctx context.Context, req *v1.GetUserRequest) (*v1
 
 func (s *UsersService) GetUsers(ctx context.Context, req *v1.GetUsersRequest) (*v1.GetUsersReply, error) {
 	filter := data.GetUsersFilterDto{
-		UsersIds:     req.GetIds(),
-		Phones:       req.GetPhones(),
-		Emails:       req.GetEmails(),
-		WithRelation: req.GetWithRelation(),
+		UsersIds: req.GetIds(),
+		Phones:   req.GetPhones(),
+		Emails:   req.GetEmails(),
 	}
 
 	users, err := s.uc.GetUsers(ctx, filter)
