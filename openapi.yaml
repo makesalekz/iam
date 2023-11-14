@@ -16,7 +16,7 @@ paths:
                 content:
                     application/json:
                         schema:
-                            $ref: '#/components/schemas/api.iam.v1.AuthByCodeRequest'
+                            $ref: '#/components/schemas/iam.v1.AuthByCodeRequest'
                 required: true
             responses:
                 "200":
@@ -24,7 +24,7 @@ paths:
                     content:
                         application/json:
                             schema:
-                                $ref: '#/components/schemas/api.iam.v1.TokenReply'
+                                $ref: '#/components/schemas/iam.v1.TokenReply'
     /v1/auth/personal:
         get:
             tags:
@@ -36,7 +36,7 @@ paths:
                     content:
                         application/json:
                             schema:
-                                $ref: '#/components/schemas/api.iam.v1.TokenReply'
+                                $ref: '#/components/schemas/iam.v1.TokenReply'
     /v1/auth/phone:
         post:
             tags:
@@ -47,7 +47,7 @@ paths:
                 content:
                     application/json:
                         schema:
-                            $ref: '#/components/schemas/api.iam.v1.AuthByPhoneRequest'
+                            $ref: '#/components/schemas/iam.v1.AuthByPhoneRequest'
                 required: true
             responses:
                 "200":
@@ -55,7 +55,7 @@ paths:
                     content:
                         application/json:
                             schema:
-                                $ref: '#/components/schemas/api.iam.v1.AuthByPhoneReply'
+                                $ref: '#/components/schemas/iam.v1.AuthByPhoneReply'
     /v1/auth/tenant/{tenantId}:
         get:
             tags:
@@ -73,7 +73,7 @@ paths:
                     content:
                         application/json:
                             schema:
-                                $ref: '#/components/schemas/api.iam.v1.TokenReply'
+                                $ref: '#/components/schemas/iam.v1.TokenReply'
     /v1/users/list:
         post:
             tags:
@@ -84,7 +84,7 @@ paths:
                 content:
                     application/json:
                         schema:
-                            $ref: '#/components/schemas/api.iam.v1.GetUsersRequest'
+                            $ref: '#/components/schemas/iam.v1.GetUsersRequest'
                 required: true
             responses:
                 "200":
@@ -92,7 +92,7 @@ paths:
                     content:
                         application/json:
                             schema:
-                                $ref: '#/components/schemas/api.iam.v1.GetUsersReply'
+                                $ref: '#/components/schemas/iam.v1.GetUsersReply'
     /v1/users/me:
         get:
             tags:
@@ -105,7 +105,7 @@ paths:
                     content:
                         application/json:
                             schema:
-                                $ref: '#/components/schemas/api.iam.v1.UserFullReply'
+                                $ref: '#/components/schemas/iam.v1.UserFullReply'
         post:
             tags:
                 - Users
@@ -115,7 +115,7 @@ paths:
                 content:
                     application/json:
                         schema:
-                            $ref: '#/components/schemas/api.iam.v1.UpdateOwnProfileRequest'
+                            $ref: '#/components/schemas/iam.v1.UpdateOwnProfileRequest'
                 required: true
             responses:
                 "200":
@@ -123,7 +123,7 @@ paths:
                     content:
                         application/json:
                             schema:
-                                $ref: '#/components/schemas/api.iam.v1.UserFullReply'
+                                $ref: '#/components/schemas/iam.v1.UserFullReply'
         delete:
             tags:
                 - Users
@@ -135,7 +135,7 @@ paths:
                     content:
                         application/json:
                             schema:
-                                $ref: '#/components/schemas/api.iam.v1.EmptyReply'
+                                $ref: '#/components/schemas/iam.v1.EmptyReply'
     /v1/users/me/privacy:
         get:
             tags:
@@ -147,7 +147,7 @@ paths:
                     content:
                         application/json:
                             schema:
-                                $ref: '#/components/schemas/api.iam.v1.PrivacyReply'
+                                $ref: '#/components/schemas/iam.v1.PrivacyReply'
         put:
             tags:
                 - Privacy
@@ -156,7 +156,7 @@ paths:
                 content:
                     application/json:
                         schema:
-                            $ref: '#/components/schemas/api.iam.v1.PrivacyRequest'
+                            $ref: '#/components/schemas/iam.v1.PrivacyRequest'
                 required: true
             responses:
                 "200":
@@ -164,7 +164,7 @@ paths:
                     content:
                         application/json:
                             schema:
-                                $ref: '#/components/schemas/api.iam.v1.PrivacyReply'
+                                $ref: '#/components/schemas/iam.v1.PrivacyReply'
     /v1/users/me/settings:
         get:
             tags:
@@ -176,7 +176,7 @@ paths:
                     content:
                         application/json:
                             schema:
-                                $ref: '#/components/schemas/api.iam.v1.SettingsReply'
+                                $ref: '#/components/schemas/iam.v1.SettingsReply'
         put:
             tags:
                 - Settings
@@ -185,7 +185,7 @@ paths:
                 content:
                     application/json:
                         schema:
-                            $ref: '#/components/schemas/api.iam.v1.SettingsRequest'
+                            $ref: '#/components/schemas/iam.v1.SettingsRequest'
                 required: true
             responses:
                 "200":
@@ -193,7 +193,7 @@ paths:
                     content:
                         application/json:
                             schema:
-                                $ref: '#/components/schemas/api.iam.v1.SettingsReply'
+                                $ref: '#/components/schemas/iam.v1.SettingsReply'
     /v1/users/user:
         post:
             tags:
@@ -204,7 +204,7 @@ paths:
                 content:
                     application/json:
                         schema:
-                            $ref: '#/components/schemas/api.iam.v1.GetUserByFilterRequest'
+                            $ref: '#/components/schemas/iam.v1.GetUserByFilterRequest'
                 required: true
             responses:
                 "200":
@@ -212,7 +212,7 @@ paths:
                     content:
                         application/json:
                             schema:
-                                $ref: '#/components/schemas/api.iam.v1.UserReply'
+                                $ref: '#/components/schemas/iam.v1.UserReply'
     /v1/users/user/full:
         post:
             tags:
@@ -223,7 +223,7 @@ paths:
                 content:
                     application/json:
                         schema:
-                            $ref: '#/components/schemas/api.iam.v1.GetUserByFilterRequest'
+                            $ref: '#/components/schemas/iam.v1.GetUserByFilterRequest'
                 required: true
             responses:
                 "200":
@@ -231,7 +231,7 @@ paths:
                     content:
                         application/json:
                             schema:
-                                $ref: '#/components/schemas/api.iam.v1.UserFullReply'
+                                $ref: '#/components/schemas/iam.v1.UserFullReply'
     /v1/users/{userId}:
         get:
             tags:
@@ -250,7 +250,7 @@ paths:
                     content:
                         application/json:
                             schema:
-                                $ref: '#/components/schemas/api.iam.v1.UserReply'
+                                $ref: '#/components/schemas/iam.v1.UserReply'
     /v1/users/{userId}/full:
         get:
             tags:
@@ -269,47 +269,47 @@ paths:
                     content:
                         application/json:
                             schema:
-                                $ref: '#/components/schemas/api.iam.v1.UserFullReply'
+                                $ref: '#/components/schemas/iam.v1.UserFullReply'
 components:
     schemas:
-        api.iam.v1.AuthByCodeRequest:
+        iam.v1.AuthByCodeRequest:
             type: object
             properties:
                 userId:
                     type: string
                 code:
                     type: string
-        api.iam.v1.AuthByPhoneReply:
+        iam.v1.AuthByPhoneReply:
             type: object
             properties:
                 userId:
                     type: string
-        api.iam.v1.AuthByPhoneRequest:
+        iam.v1.AuthByPhoneRequest:
             type: object
             properties:
                 phone:
                     type: string
-        api.iam.v1.Contact:
+        iam.v1.Contact:
             type: object
             properties:
                 label:
                     type: string
-        api.iam.v1.EmptyReply:
+        iam.v1.EmptyReply:
             type: object
             properties: {}
-        api.iam.v1.GetUserByFilterRequest:
+        iam.v1.GetUserByFilterRequest:
             type: object
             properties:
                 search:
-                    $ref: '#/components/schemas/api.iam.v1.SearchFilter'
-        api.iam.v1.GetUsersReply:
+                    $ref: '#/components/schemas/iam.v1.SearchFilter'
+        iam.v1.GetUsersReply:
             type: object
             properties:
                 users:
                     type: array
                     items:
-                        $ref: '#/components/schemas/api.iam.v1.UserShort'
-        api.iam.v1.GetUsersRequest:
+                        $ref: '#/components/schemas/iam.v1.UserShort'
+        iam.v1.GetUsersRequest:
             type: object
             properties:
                 ids:
@@ -326,56 +326,56 @@ components:
                         type: string
                 withRelation:
                     type: boolean
-        api.iam.v1.PrivacyReply:
+        iam.v1.PrivacyReply:
             type: object
             properties:
                 settings:
                     type: object
                     additionalProperties:
                         type: string
-        api.iam.v1.PrivacyRequest:
+        iam.v1.PrivacyRequest:
             type: object
             properties:
                 settings:
                     type: object
                     additionalProperties:
                         type: string
-        api.iam.v1.Relation:
+        iam.v1.Relation:
             type: object
             properties:
                 isBlocked:
                     type: boolean
                 isMuted:
                     type: boolean
-        api.iam.v1.SearchFilter:
+        iam.v1.SearchFilter:
             type: object
             properties:
                 phone:
                     type: string
                 email:
                     type: string
-        api.iam.v1.SettingsReply:
+        iam.v1.SettingsReply:
             type: object
             properties:
                 settings:
                     type: object
                     additionalProperties:
                         type: string
-        api.iam.v1.SettingsRequest:
+        iam.v1.SettingsRequest:
             type: object
             properties:
                 settings:
                     type: object
                     additionalProperties:
                         type: string
-        api.iam.v1.TokenReply:
+        iam.v1.TokenReply:
             type: object
             properties:
                 accessToken:
                     type: string
                 refreshToken:
                     type: string
-        api.iam.v1.UpdateOwnProfileRequest:
+        iam.v1.UpdateOwnProfileRequest:
             type: object
             properties:
                 name:
@@ -386,7 +386,7 @@ components:
                     type: string
                 timezone:
                     type: string
-        api.iam.v1.User:
+        iam.v1.User:
             type: object
             properties:
                 id:
@@ -415,21 +415,21 @@ components:
                     type: string
                 contact:
                     allOf:
-                        - $ref: '#/components/schemas/api.iam.v1.Contact'
+                        - $ref: '#/components/schemas/iam.v1.Contact'
                     description: field containing tied contact info
                 relation:
-                    $ref: '#/components/schemas/api.iam.v1.Relation'
-        api.iam.v1.UserFullReply:
+                    $ref: '#/components/schemas/iam.v1.Relation'
+        iam.v1.UserFullReply:
             type: object
             properties:
                 user:
-                    $ref: '#/components/schemas/api.iam.v1.User'
-        api.iam.v1.UserReply:
+                    $ref: '#/components/schemas/iam.v1.User'
+        iam.v1.UserReply:
             type: object
             properties:
                 user:
-                    $ref: '#/components/schemas/api.iam.v1.UserShort'
-        api.iam.v1.UserShort:
+                    $ref: '#/components/schemas/iam.v1.UserShort'
+        iam.v1.UserShort:
             type: object
             properties:
                 id:
@@ -445,7 +445,7 @@ components:
                 lastLoginAt:
                     type: string
                 relation:
-                    $ref: '#/components/schemas/api.iam.v1.Relation'
+                    $ref: '#/components/schemas/iam.v1.Relation'
 tags:
     - name: Auth
     - name: Privacy

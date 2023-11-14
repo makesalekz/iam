@@ -11,6 +11,8 @@ nats: nats://localhost:4222
 discovery:
   notifications: localhost:9003
   notifications_timeout: 30s
+  contacts: localhost:9006
+  contacts_timeout: 30s
   tenants: localhost:9007
   tenants_timeout: 30s
 

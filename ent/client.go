@@ -7,18 +7,18 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"reflect"
 
-	"iam/ent/migrate"
-
-	"iam/ent/onetimepassword"
-	"iam/ent/user"
-	"iam/ent/userprivacy"
-	"iam/ent/usersettings"
+	"gitlab.calendaria.team/services/iam/ent/migrate"
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect"
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
+	"gitlab.calendaria.team/services/iam/ent/onetimepassword"
+	"gitlab.calendaria.team/services/iam/ent/user"
+	"gitlab.calendaria.team/services/iam/ent/userprivacy"
+	"gitlab.calendaria.team/services/iam/ent/usersettings"
 )
 
 // Client is the client that holds all ent builders.
@@ -118,11 +118,14 @@ func Open(driverName, dataSourceName string, options ...Option) (*Client, error)
 	}
 }
 
+// ErrTxStarted is returned when trying to start a new transaction from a transactional client.
+var ErrTxStarted = errors.New("ent: cannot start a transaction within a transaction")
+
 // Tx returns a new transactional client. The provided context
 // is used until the transaction is committed or rolled back.
 func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 	if _, ok := c.driver.(*txDriver); ok {
-		return nil, errors.New("ent: cannot start a transaction within a transaction")
+		return nil, ErrTxStarted
 	}
 	tx, err := newTx(ctx, c.driver)
 	if err != nil {
@@ -249,6 +252,21 @@ func (c *OneTimePasswordClient) Create() *OneTimePasswordCreate {
 
 // CreateBulk returns a builder for creating a bulk of OneTimePassword entities.
 func (c *OneTimePasswordClient) CreateBulk(builders ...*OneTimePasswordCreate) *OneTimePasswordCreateBulk {
+	return &OneTimePasswordCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *OneTimePasswordClient) MapCreateBulk(slice any, setFunc func(*OneTimePasswordCreate, int)) *OneTimePasswordCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &OneTimePasswordCreateBulk{err: fmt.Errorf("calling to OneTimePasswordClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*OneTimePasswordCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
 	return &OneTimePasswordCreateBulk{config: c.config, builders: builders}
 }
 
@@ -386,6 +404,21 @@ func (c *UserClient) CreateBulk(builders ...*UserCreate) *UserCreateBulk {
 	return &UserCreateBulk{config: c.config, builders: builders}
 }
 
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *UserClient) MapCreateBulk(slice any, setFunc func(*UserCreate, int)) *UserCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &UserCreateBulk{err: fmt.Errorf("calling to UserClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*UserCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &UserCreateBulk{config: c.config, builders: builders}
+}
+
 // Update returns an update builder for User.
 func (c *UserClient) Update() *UserUpdate {
 	mutation := newUserMutation(c.config, OpUpdate)
@@ -503,6 +536,21 @@ func (c *UserPrivacyClient) Create() *UserPrivacyCreate {
 
 // CreateBulk returns a builder for creating a bulk of UserPrivacy entities.
 func (c *UserPrivacyClient) CreateBulk(builders ...*UserPrivacyCreate) *UserPrivacyCreateBulk {
+	return &UserPrivacyCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *UserPrivacyClient) MapCreateBulk(slice any, setFunc func(*UserPrivacyCreate, int)) *UserPrivacyCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &UserPrivacyCreateBulk{err: fmt.Errorf("calling to UserPrivacyClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*UserPrivacyCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
 	return &UserPrivacyCreateBulk{config: c.config, builders: builders}
 }
 
@@ -637,6 +685,21 @@ func (c *UserSettingsClient) Create() *UserSettingsCreate {
 
 // CreateBulk returns a builder for creating a bulk of UserSettings entities.
 func (c *UserSettingsClient) CreateBulk(builders ...*UserSettingsCreate) *UserSettingsCreateBulk {
+	return &UserSettingsCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *UserSettingsClient) MapCreateBulk(slice any, setFunc func(*UserSettingsCreate, int)) *UserSettingsCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &UserSettingsCreateBulk{err: fmt.Errorf("calling to UserSettingsClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*UserSettingsCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
 	return &UserSettingsCreateBulk{config: c.config, builders: builders}
 }
 

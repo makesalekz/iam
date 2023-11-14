@@ -4,14 +4,14 @@ package ent
 
 import (
 	"fmt"
-	"iam/ent/property"
-	"iam/ent/user"
-	"iam/ent/userprivacy"
 	"strings"
 	"time"
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
+	"gitlab.calendaria.team/services/iam/ent/property"
+	"gitlab.calendaria.team/services/iam/ent/user"
+	"gitlab.calendaria.team/services/iam/ent/userprivacy"
 )
 
 // UserPrivacy is the model entity for the UserPrivacy schema.

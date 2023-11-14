@@ -6,14 +6,14 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"iam/ent/onetimepassword"
-	"iam/ent/property"
-	"iam/ent/user"
 	"time"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"gitlab.calendaria.team/services/iam/ent/onetimepassword"
+	"gitlab.calendaria.team/services/iam/ent/property"
+	"gitlab.calendaria.team/services/iam/ent/user"
 )
 
 // OneTimePasswordCreate is the builder for creating a OneTimePassword entity.
@@ -507,12 +507,16 @@ func (u *OneTimePasswordUpsertOne) IDX(ctx context.Context) int64 {
 // OneTimePasswordCreateBulk is the builder for creating many OneTimePassword entities in bulk.
 type OneTimePasswordCreateBulk struct {
 	config
+	err      error
 	builders []*OneTimePasswordCreate
 	conflict []sql.ConflictOption
 }
 
 // Save creates the OneTimePassword entities in the database.
 func (otpcb *OneTimePasswordCreateBulk) Save(ctx context.Context) ([]*OneTimePassword, error) {
+	if otpcb.err != nil {
+		return nil, otpcb.err
+	}
 	specs := make([]*sqlgraph.CreateSpec, len(otpcb.builders))
 	nodes := make([]*OneTimePassword, len(otpcb.builders))
 	mutators := make([]Mutator, len(otpcb.builders))
@@ -757,6 +761,9 @@ func (u *OneTimePasswordUpsertBulk) UpdateCreatedAt() *OneTimePasswordUpsertBulk
 
 // Exec executes the query.
 func (u *OneTimePasswordUpsertBulk) Exec(ctx context.Context) error {
+	if u.create.err != nil {
+		return u.create.err
+	}
 	for i, b := range u.create.builders {
 		if len(b.conflict) != 0 {
 			return fmt.Errorf("ent: OnConflict was set for builder %d. Set it on the OneTimePasswordCreateBulk instead", i)

@@ -3,11 +3,6 @@ package server
 import (
 	"context"
 
-	v1 "iam/api/iam/v1"
-	"iam/internal/conf"
-	"iam/internal/data"
-	"iam/internal/service"
-
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/go-kratos/kratos/v2/middleware/auth/jwt"
 	"github.com/go-kratos/kratos/v2/middleware/metadata"
@@ -15,13 +10,17 @@ import (
 	"github.com/go-kratos/kratos/v2/middleware/selector"
 	khttp "github.com/go-kratos/kratos/v2/transport/http"
 	jwtv4 "github.com/golang-jwt/jwt/v4"
+	v1 "gitlab.calendaria.team/services/iam/api/iam/v1"
+	"gitlab.calendaria.team/services/iam/internal/conf"
+	"gitlab.calendaria.team/services/iam/internal/data"
+	"gitlab.calendaria.team/services/iam/internal/service"
 )
 
 func NewWhiteListMatcher() selector.MatchFunc {
 	whiteList := make(map[string]struct{})
-	whiteList["/api.iam.v1.Auth/AuthByPhone"] = struct{}{}
-	whiteList["/api.iam.v1.Auth/AuthByCode"] = struct{}{}
-	whiteList["/api.iam.v1.Auth/TempAuthBySuperCode"] = struct{}{}
+	whiteList["/iam.v1.Auth/AuthByPhone"] = struct{}{}
+	whiteList["/iam.v1.Auth/AuthByCode"] = struct{}{}
+	whiteList["/iam.v1.Auth/TempAuthBySuperCode"] = struct{}{}
 	return func(ctx context.Context, operation string) bool {
 		if _, ok := whiteList[operation]; ok {
 			return false

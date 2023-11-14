@@ -4,10 +4,9 @@ import (
 	"context"
 	"time"
 
-	"iam/ent"
-	"iam/ent/user"
-
 	"github.com/go-kratos/kratos/v2/log"
+	"gitlab.calendaria.team/services/iam/ent"
+	"gitlab.calendaria.team/services/iam/ent/user"
 )
 
 type UpdateUserDto struct {

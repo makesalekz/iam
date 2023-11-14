@@ -6,22 +6,23 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"iam/ent/onetimepassword"
-	"iam/ent/predicate"
-	"iam/ent/property"
-	"iam/ent/user"
 	"time"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"gitlab.calendaria.team/services/iam/ent/onetimepassword"
+	"gitlab.calendaria.team/services/iam/ent/predicate"
+	"gitlab.calendaria.team/services/iam/ent/property"
+	"gitlab.calendaria.team/services/iam/ent/user"
 )
 
 // OneTimePasswordUpdate is the builder for updating OneTimePassword entities.
 type OneTimePasswordUpdate struct {
 	config
-	hooks    []Hook
-	mutation *OneTimePasswordMutation
+	hooks     []Hook
+	mutation  *OneTimePasswordMutation
+	modifiers []func(*sql.UpdateBuilder)
 }
 
 // Where appends a list predicates to the OneTimePasswordUpdate builder.
@@ -143,6 +144,12 @@ func (otpu *OneTimePasswordUpdate) check() error {
 	return nil
 }
 
+// Modify adds a statement modifier for attaching custom logic to the UPDATE statement.
+func (otpu *OneTimePasswordUpdate) Modify(modifiers ...func(u *sql.UpdateBuilder)) *OneTimePasswordUpdate {
+	otpu.modifiers = append(otpu.modifiers, modifiers...)
+	return otpu
+}
+
 func (otpu *OneTimePasswordUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if err := otpu.check(); err != nil {
 		return n, err
@@ -199,6 +206,7 @@ func (otpu *OneTimePasswordUpdate) sqlSave(ctx context.Context) (n int, err erro
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	_spec.AddModifiers(otpu.modifiers...)
 	if n, err = sqlgraph.UpdateNodes(ctx, otpu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{onetimepassword.Label}
@@ -214,9 +222,10 @@ func (otpu *OneTimePasswordUpdate) sqlSave(ctx context.Context) (n int, err erro
 // OneTimePasswordUpdateOne is the builder for updating a single OneTimePassword entity.
 type OneTimePasswordUpdateOne struct {
 	config
-	fields   []string
-	hooks    []Hook
-	mutation *OneTimePasswordMutation
+	fields    []string
+	hooks     []Hook
+	mutation  *OneTimePasswordMutation
+	modifiers []func(*sql.UpdateBuilder)
 }
 
 // SetUserID sets the "user_id" field.
@@ -345,6 +354,12 @@ func (otpuo *OneTimePasswordUpdateOne) check() error {
 	return nil
 }
 
+// Modify adds a statement modifier for attaching custom logic to the UPDATE statement.
+func (otpuo *OneTimePasswordUpdateOne) Modify(modifiers ...func(u *sql.UpdateBuilder)) *OneTimePasswordUpdateOne {
+	otpuo.modifiers = append(otpuo.modifiers, modifiers...)
+	return otpuo
+}
+
 func (otpuo *OneTimePasswordUpdateOne) sqlSave(ctx context.Context) (_node *OneTimePassword, err error) {
 	if err := otpuo.check(); err != nil {
 		return _node, err
@@ -418,6 +433,7 @@ func (otpuo *OneTimePasswordUpdateOne) sqlSave(ctx context.Context) (_node *OneT
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	_spec.AddModifiers(otpuo.modifiers...)
 	_node = &OneTimePassword{config: otpuo.config}
 	_spec.Assign = _node.assignValues
 	_spec.ScanValues = _node.scanValues

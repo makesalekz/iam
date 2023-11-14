@@ -5,14 +5,14 @@ package ent
 import (
 	"context"
 	"fmt"
-	"iam/ent/predicate"
-	"iam/ent/user"
-	"iam/ent/userprivacy"
 	"math"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"gitlab.calendaria.team/services/iam/ent/predicate"
+	"gitlab.calendaria.team/services/iam/ent/user"
+	"gitlab.calendaria.team/services/iam/ent/userprivacy"
 )
 
 // UserPrivacyQuery is the builder for querying UserPrivacy entities.
@@ -23,6 +23,7 @@ type UserPrivacyQuery struct {
 	inters     []Interceptor
 	predicates []predicate.UserPrivacy
 	withUser   *UserQuery
+	modifiers  []func(*sql.Selector)
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -382,6 +383,9 @@ func (upq *UserPrivacyQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]
 		node.Edges.loadedTypes = loadedTypes
 		return node.assignValues(columns, values)
 	}
+	if len(upq.modifiers) > 0 {
+		_spec.Modifiers = upq.modifiers
+	}
 	for i := range hooks {
 		hooks[i](ctx, _spec)
 	}
@@ -432,6 +436,9 @@ func (upq *UserPrivacyQuery) loadUser(ctx context.Context, query *UserQuery, nod
 
 func (upq *UserPrivacyQuery) sqlCount(ctx context.Context) (int, error) {
 	_spec := upq.querySpec()
+	if len(upq.modifiers) > 0 {
+		_spec.Modifiers = upq.modifiers
+	}
 	_spec.Node.Columns = upq.ctx.Fields
 	if len(upq.ctx.Fields) > 0 {
 		_spec.Unique = upq.ctx.Unique != nil && *upq.ctx.Unique
@@ -497,6 +504,9 @@ func (upq *UserPrivacyQuery) sqlQuery(ctx context.Context) *sql.Selector {
 	if upq.ctx.Unique != nil && *upq.ctx.Unique {
 		selector.Distinct()
 	}
+	for _, m := range upq.modifiers {
+		m(selector)
+	}
 	for _, p := range upq.predicates {
 		p(selector)
 	}
@@ -512,6 +522,12 @@ func (upq *UserPrivacyQuery) sqlQuery(ctx context.Context) *sql.Selector {
 		selector.Limit(*limit)
 	}
 	return selector
+}
+
+// Modify adds a query modifier for attaching custom logic to queries.
+func (upq *UserPrivacyQuery) Modify(modifiers ...func(s *sql.Selector)) *UserPrivacySelect {
+	upq.modifiers = append(upq.modifiers, modifiers...)
+	return upq.Select()
 }
 
 // UserPrivacyGroupBy is the group-by builder for UserPrivacy entities.
@@ -602,4 +618,10 @@ func (ups *UserPrivacySelect) sqlScan(ctx context.Context, root *UserPrivacyQuer
 	}
 	defer rows.Close()
 	return sql.ScanSlice(rows, v)
+}
+
+// Modify adds a query modifier for attaching custom logic to queries.
+func (ups *UserPrivacySelect) Modify(modifiers ...func(s *sql.Selector)) *UserPrivacySelect {
+	ups.modifiers = append(ups.modifiers, modifiers...)
+	return ups
 }

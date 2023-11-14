@@ -3,8 +3,8 @@ package service
 import (
 	"context"
 
-	v1 "iam/api/iam/v1"
-	"iam/internal/biz"
+	v1 "gitlab.calendaria.team/services/iam/api/iam/v1"
+	"gitlab.calendaria.team/services/iam/internal/biz"
 
 	"github.com/go-kratos/kratos/v2/log"
 )

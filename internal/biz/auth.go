@@ -7,16 +7,15 @@ import (
 	"strconv"
 	"time"
 
-	v1 "iam/api/iam/v1"
-	"iam/ent"
-	"iam/ent/property"
-	"iam/internal/data"
-	notifications_v1 "notifications/api/notifications/v1"
-	tenants_v1 "tenants/api/tenants/v1"
-
 	"github.com/go-kratos/kratos/v2/log"
 	jwtv4 "github.com/golang-jwt/jwt/v4"
 	"github.com/nyaruka/phonenumbers"
+	v1 "gitlab.calendaria.team/services/iam/api/iam/v1"
+	"gitlab.calendaria.team/services/iam/ent"
+	"gitlab.calendaria.team/services/iam/ent/property"
+	"gitlab.calendaria.team/services/iam/internal/data"
+	notifications_v1 "gitlab.calendaria.team/services/notifications/api/notifications/v1"
+	tenants_v1 "gitlab.calendaria.team/services/tenants/api/tenants/v1"
 )
 
 const DEFAULT_REGION = "KZ"

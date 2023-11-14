@@ -6,12 +6,12 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"iam/ent/user"
 	"time"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"gitlab.calendaria.team/services/iam/ent/user"
 )
 
 // UserCreate is the builder for creating a User entity.
@@ -992,12 +992,16 @@ func (u *UserUpsertOne) IDX(ctx context.Context) int64 {
 // UserCreateBulk is the builder for creating many User entities in bulk.
 type UserCreateBulk struct {
 	config
+	err      error
 	builders []*UserCreate
 	conflict []sql.ConflictOption
 }
 
 // Save creates the User entities in the database.
 func (ucb *UserCreateBulk) Save(ctx context.Context) ([]*User, error) {
+	if ucb.err != nil {
+		return nil, ucb.err
+	}
 	specs := make([]*sqlgraph.CreateSpec, len(ucb.builders))
 	nodes := make([]*User, len(ucb.builders))
 	mutators := make([]Mutator, len(ucb.builders))
@@ -1399,6 +1403,9 @@ func (u *UserUpsertBulk) ClearBioUpdatedAt() *UserUpsertBulk {
 
 // Exec executes the query.
 func (u *UserUpsertBulk) Exec(ctx context.Context) error {
+	if u.create.err != nil {
+		return u.create.err
+	}
 	for i, b := range u.create.builders {
 		if len(b.conflict) != 0 {
 			return fmt.Errorf("ent: OnConflict was set for builder %d. Set it on the UserCreateBulk instead", i)

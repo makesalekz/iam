@@ -2,16 +2,14 @@ package biz
 
 import (
 	"context"
-	_ "embed"
 	"slices"
-
-	contacts_v1 "contacts/api/contacts/v1"
-	v1 "iam/api/iam/v1"
-	"iam/ent"
-	"iam/internal/data"
 
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/go-kratos/kratos/v2/registry"
+	contacts_v1 "gitlab.calendaria.team/services/contacts/api/contacts/v1"
+	v1 "gitlab.calendaria.team/services/iam/api/iam/v1"
+	"gitlab.calendaria.team/services/iam/ent"
+	"gitlab.calendaria.team/services/iam/internal/data"
 )
 
 type UserItem struct {
