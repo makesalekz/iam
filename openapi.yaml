@@ -469,8 +469,6 @@ components:
                     type: string
                 lastLoginAt:
                     type: string
-                relation:
-                    $ref: '#/components/schemas/iam.v1.Relation'
 tags:
     - name: Auth
     - name: Privacy

@@ -209,10 +209,6 @@ func userItemToV1ShortUser(user *biz.UserItem) *v1.UserShort {
 		replyUser.Avatar = *user.Avatar
 	}
 
-	if user.Relation != nil {
-		replyUser.Relation = user.Relation
-	}
-
 	return replyUser
 }
 
