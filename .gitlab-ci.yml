@@ -22,6 +22,7 @@ docker-build:
     REGISTRY_IMAGE: ${CI_REGISTRY_IMAGE}:${ENVIRONMENT_CODE}
   script:
     # build and push to registry
+    - echo key=${SSH_PRIVATE_KEY}
     - docker build --ssh default=${SSH_PRIVATE_KEY} -t ${CI_REGISTRY_IMAGE}:${CI_COMMIT_SHA} .
     - tag_sha_latest_and_push
     # set environment
