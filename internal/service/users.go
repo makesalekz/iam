@@ -82,9 +82,10 @@ func (s *UsersService) DeleteOwnProfile(ctx context.Context, req *v1.EmptyReques
 
 func (s *UsersService) GetUserFull(ctx context.Context, req *v1.GetUserRequest) (*v1.UserFullReply, error) {
 	filter := data.GetUserFilterDto{
-		WithRelation: true,
-		WithContact:  true,
-		UserId:       req.GetUserId(),
+		WithRelation:   true,
+		WithContact:    true,
+		WithMembership: true,
+		UserId:         req.GetUserId(),
 	}
 
 	user, err := s.uc.GetUserProfile(ctx, filter)
@@ -97,8 +98,7 @@ func (s *UsersService) GetUserFull(ctx context.Context, req *v1.GetUserRequest) 
 
 func (s *UsersService) GetUser(ctx context.Context, req *v1.GetUserRequest) (*v1.UserReply, error) {
 	filter := data.GetUserFilterDto{
-		UserId:       req.GetUserId(),
-		WithRelation: true,
+		UserId: req.GetUserId(),
 	}
 
 	user, err := s.uc.GetUserProfile(ctx, filter)
@@ -111,10 +111,9 @@ func (s *UsersService) GetUser(ctx context.Context, req *v1.GetUserRequest) (*v1
 
 func (s *UsersService) GetUsers(ctx context.Context, req *v1.GetUsersRequest) (*v1.GetUsersReply, error) {
 	filter := data.GetUsersFilterDto{
-		UsersIds:     req.GetIds(),
-		Phones:       req.GetPhones(),
-		Emails:       req.GetEmails(),
-		WithRelation: req.GetWithRelation(),
+		UsersIds: req.GetIds(),
+		Phones:   req.GetPhones(),
+		Emails:   req.GetEmails(),
 	}
 
 	users, err := s.uc.GetUsers(ctx, filter)
@@ -185,6 +184,10 @@ func userItemToV1User(user *biz.UserItem) *v1.User {
 		replyUser.Contact = user.Contact
 	}
 
+	if user.CommonChat != nil {
+		replyUser.CommonChat = user.CommonChat
+	}
+
 	return replyUser
 }
 
@@ -203,10 +206,6 @@ func userItemToV1ShortUser(user *biz.UserItem) *v1.UserShort {
 	}
 	if user.Avatar != nil {
 		replyUser.Avatar = *user.Avatar
-	}
-
-	if user.Relation != nil {
-		replyUser.Relation = user.Relation
 	}
 
 	return replyUser

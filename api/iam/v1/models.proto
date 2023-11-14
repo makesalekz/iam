@@ -25,9 +25,12 @@ message User {
 	optional string avatar = 11;
 	optional string bioUpdatedAt = 12;
 
-	// field containing tied contact info
+	// field contains contact info
 	optional Contact contact = 13;
+	// field contains relation info
 	optional Relation relation = 14;
+	// field contains commonChat info
+	optional CommonChat commonChat = 15;
 }
 
 message UserShort {
@@ -37,8 +40,6 @@ message UserShort {
 	string name = 4;
 	string avatar = 6;
 	string lastLoginAt = 7;
-
-	optional Relation relation = 8;
 }
 
 message Contact {
@@ -49,6 +50,17 @@ message Relation {
 	bool isBlocked = 1;
 	bool isMuted = 2;
 }
+
+message CommonChat {
+	int64 chatId = 1;
+	string status = 2;
+	string role = 3;
+	bool isPinned = 4;
+	bool isMuted = 5;
+	optional string mutedTill = 6;
+	optional string archivedAt = 7;
+	bool autoSave = 8;
+  }
 
 enum ErrorReason {
     // Set default error code.
@@ -68,4 +80,6 @@ enum ErrorReason {
     USER_NOT_FOUND = 20 [(errors.code) = 404];
     INVALID_REQUEST = 21 [(errors.code) = 400];
 	CONTACT_NOT_FOUND = 22 [(errors.code) = 404];
+	RELATION_NOT_FOUND = 23 [(errors.code) = 404];
+	COMMON_CHAT_NOT_FOUND = 24 [(errors.code) = 404];
   }

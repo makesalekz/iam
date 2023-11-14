@@ -1,6 +1,6 @@
 module gitlab.calendaria.team/services/iam
 
-go 1.21.1
+go 1.21.3
 
 require (
 	entgo.io/ent v0.12.4
@@ -15,12 +15,13 @@ require (
 	github.com/lib/pq v1.10.9
 	github.com/nats-io/nats.go v1.31.0
 	github.com/nyaruka/phonenumbers v1.1.8
+	gitlab.calendaria.team/services/chats v0.1.0
 	gitlab.calendaria.team/services/contacts v0.1.0
 	gitlab.calendaria.team/services/notifications v0.1.0
 	gitlab.calendaria.team/services/tenants v0.1.0
 	go.uber.org/automaxprocs v1.5.3
-	google.golang.org/genproto/googleapis/api v0.0.0-20230803162519-f966b187b2e5
-	google.golang.org/grpc v1.57.0
+	google.golang.org/genproto/googleapis/api v0.0.0-20231030173426-d783a09b4405
+	google.golang.org/grpc v1.59.0
 	google.golang.org/protobuf v1.31.0
 )
 
@@ -69,6 +70,8 @@ require (
 	github.com/pmezard/go-difflib v1.0.1-0.20181226105442-5d4384ee4fb2 // indirect
 	github.com/ryanuber/go-glob v1.0.0 // indirect
 	github.com/zclconf/go-cty v1.8.0 // indirect
+	gitlab.calendaria.team/services/events v0.1.0 // indirect
+	gitlab.calendaria.team/services/media v0.1.0 // indirect
 	go.opentelemetry.io/otel v1.16.0 // indirect
 	go.opentelemetry.io/otel/metric v1.16.0 // indirect
 	go.opentelemetry.io/otel/trace v1.16.0 // indirect
@@ -81,7 +84,7 @@ require (
 	golang.org/x/text v0.14.0 // indirect
 	golang.org/x/time v0.3.0 // indirect
 	golang.org/x/tools v0.13.0 // indirect
-	google.golang.org/genproto v0.0.0-20230803162519-f966b187b2e5 // indirect
-	google.golang.org/genproto/googleapis/rpc v0.0.0-20230911183012-2d3300fd4832 // indirect
+	google.golang.org/genproto v0.0.0-20231016165738-49dd2c1f3d0b // indirect
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20231016165738-49dd2c1f3d0b // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )

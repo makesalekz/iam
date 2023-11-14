@@ -289,6 +289,25 @@ components:
             properties:
                 phone:
                     type: string
+        iam.v1.CommonChat:
+            type: object
+            properties:
+                chatId:
+                    type: string
+                status:
+                    type: string
+                role:
+                    type: string
+                isPinned:
+                    type: boolean
+                isMuted:
+                    type: boolean
+                mutedTill:
+                    type: string
+                archivedAt:
+                    type: string
+                autoSave:
+                    type: boolean
         iam.v1.Contact:
             type: object
             properties:
@@ -416,9 +435,15 @@ components:
                 contact:
                     allOf:
                         - $ref: '#/components/schemas/iam.v1.Contact'
-                    description: field containing tied contact info
+                    description: field contains contact info
                 relation:
-                    $ref: '#/components/schemas/iam.v1.Relation'
+                    allOf:
+                        - $ref: '#/components/schemas/iam.v1.Relation'
+                    description: field contains relation info
+                commonChat:
+                    allOf:
+                        - $ref: '#/components/schemas/iam.v1.CommonChat'
+                    description: field contains commonChat info
         iam.v1.UserFullReply:
             type: object
             properties:
@@ -444,8 +469,6 @@ components:
                     type: string
                 lastLoginAt:
                     type: string
-                relation:
-                    $ref: '#/components/schemas/iam.v1.Relation'
 tags:
     - name: Auth
     - name: Privacy
