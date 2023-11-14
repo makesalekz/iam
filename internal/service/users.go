@@ -98,8 +98,7 @@ func (s *UsersService) GetUserFull(ctx context.Context, req *v1.GetUserRequest) 
 
 func (s *UsersService) GetUser(ctx context.Context, req *v1.GetUserRequest) (*v1.UserReply, error) {
 	filter := data.GetUserFilterDto{
-		UserId:       req.GetUserId(),
-		WithRelation: true,
+		UserId: req.GetUserId(),
 	}
 
 	user, err := s.uc.GetUserProfile(ctx, filter)
