@@ -359,11 +359,7 @@ search goes by all fileds
       "email": "string",
       "name": "string",
       "avatar": "string",
-      "lastLoginAt": "string",
-      "relation": {
-        "isBlocked": true,
-        "isMuted": true
-      }
+      "lastLoginAt": "string"
     }
   ]
 }
@@ -414,7 +410,7 @@ GetOwnProfile
       "isBlocked": true,
       "isMuted": true
     },
-    "directChat": {
+    "commonChat": {
       "chatId": "string",
       "status": "string",
       "role": "string",
@@ -490,7 +486,7 @@ UpdateOwnProfile
       "isBlocked": true,
       "isMuted": true
     },
-    "directChat": {
+    "commonChat": {
       "chatId": "string",
       "status": "string",
       "role": "string",
@@ -579,11 +575,7 @@ in case of search by phone, search.email should not be present
     "email": "string",
     "name": "string",
     "avatar": "string",
-    "lastLoginAt": "string",
-    "relation": {
-      "isBlocked": true,
-      "isMuted": true
-    }
+    "lastLoginAt": "string"
   }
 }
 ```
@@ -650,7 +642,7 @@ in case of search by phone, search.email should not be present
       "isBlocked": true,
       "isMuted": true
     },
-    "directChat": {
+    "commonChat": {
       "chatId": "string",
       "status": "string",
       "role": "string",
@@ -701,11 +693,7 @@ GetUser
     "email": "string",
     "name": "string",
     "avatar": "string",
-    "lastLoginAt": "string",
-    "relation": {
-      "isBlocked": true,
-      "isMuted": true
-    }
+    "lastLoginAt": "string"
   }
 }
 ```
@@ -762,7 +750,7 @@ GetUserFull
       "isBlocked": true,
       "isMuted": true
     },
-    "directChat": {
+    "commonChat": {
       "chatId": "string",
       "status": "string",
       "role": "string",
@@ -850,32 +838,12 @@ This operation does not require authentication
 |---|---|---|---|---|
 |phone|string|false|none|none|
 
-<h2 id="tocS_iam.v1.Contact">iam.v1.Contact</h2>
+<h2 id="tocS_iam.v1.CommonChat">iam.v1.CommonChat</h2>
 <!-- backwards compatibility -->
-<a id="schemaiam.v1.contact"></a>
-<a id="schema_iam.v1.Contact"></a>
-<a id="tocSiam.v1.contact"></a>
-<a id="tocsiam.v1.contact"></a>
-
-```json
-{
-  "label": "string"
-}
-
-```
-
-### Properties
-
-|Name|Type|Required|Restrictions|Description|
-|---|---|---|---|---|
-|label|string|false|none|none|
-
-<h2 id="tocS_iam.v1.DirectChat">iam.v1.DirectChat</h2>
-<!-- backwards compatibility -->
-<a id="schemaiam.v1.directchat"></a>
-<a id="schema_iam.v1.DirectChat"></a>
-<a id="tocSiam.v1.directchat"></a>
-<a id="tocsiam.v1.directchat"></a>
+<a id="schemaiam.v1.commonchat"></a>
+<a id="schema_iam.v1.CommonChat"></a>
+<a id="tocSiam.v1.commonchat"></a>
+<a id="tocsiam.v1.commonchat"></a>
 
 ```json
 {
@@ -903,6 +871,26 @@ This operation does not require authentication
 |mutedTill|string|false|none|none|
 |archivedAt|string|false|none|none|
 |autoSave|boolean|false|none|none|
+
+<h2 id="tocS_iam.v1.Contact">iam.v1.Contact</h2>
+<!-- backwards compatibility -->
+<a id="schemaiam.v1.contact"></a>
+<a id="schema_iam.v1.Contact"></a>
+<a id="tocSiam.v1.contact"></a>
+<a id="tocsiam.v1.contact"></a>
+
+```json
+{
+  "label": "string"
+}
+
+```
+
+### Properties
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|label|string|false|none|none|
 
 <h2 id="tocS_iam.v1.EmptyReply">iam.v1.EmptyReply</h2>
 <!-- backwards compatibility -->
@@ -959,11 +947,7 @@ This operation does not require authentication
       "email": "string",
       "name": "string",
       "avatar": "string",
-      "lastLoginAt": "string",
-      "relation": {
-        "isBlocked": true,
-        "isMuted": true
-      }
+      "lastLoginAt": "string"
     }
   ]
 }
@@ -1224,7 +1208,7 @@ This operation does not require authentication
     "isBlocked": true,
     "isMuted": true
   },
-  "directChat": {
+  "commonChat": {
     "chatId": "string",
     "status": "string",
     "role": "string",
@@ -1256,7 +1240,7 @@ This operation does not require authentication
 |bioUpdatedAt|string|false|none|none|
 |contact|[iam.v1.Contact](#schemaiam.v1.contact)|false|none|field contains contact info|
 |relation|[iam.v1.Relation](#schemaiam.v1.relation)|false|none|field contains relation info|
-|directChat|[iam.v1.DirectChat](#schemaiam.v1.directchat)|false|none|field contains directChat info|
+|commonChat|[iam.v1.CommonChat](#schemaiam.v1.commonchat)|false|none|field contains commonChat info|
 
 <h2 id="tocS_iam.v1.UserFullReply">iam.v1.UserFullReply</h2>
 <!-- backwards compatibility -->
@@ -1287,7 +1271,7 @@ This operation does not require authentication
       "isBlocked": true,
       "isMuted": true
     },
-    "directChat": {
+    "commonChat": {
       "chatId": "string",
       "status": "string",
       "role": "string",
@@ -1323,11 +1307,7 @@ This operation does not require authentication
     "email": "string",
     "name": "string",
     "avatar": "string",
-    "lastLoginAt": "string",
-    "relation": {
-      "isBlocked": true,
-      "isMuted": true
-    }
+    "lastLoginAt": "string"
   }
 }
 
@@ -1353,11 +1333,7 @@ This operation does not require authentication
   "email": "string",
   "name": "string",
   "avatar": "string",
-  "lastLoginAt": "string",
-  "relation": {
-    "isBlocked": true,
-    "isMuted": true
-  }
+  "lastLoginAt": "string"
 }
 
 ```
@@ -1372,5 +1348,4 @@ This operation does not require authentication
 |name|string|false|none|none|
 |avatar|string|false|none|none|
 |lastLoginAt|string|false|none|none|
-|relation|[iam.v1.Relation](#schemaiam.v1.relation)|false|none|none|
 

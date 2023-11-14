@@ -29,8 +29,8 @@ message User {
 	optional Contact contact = 13;
 	// field contains relation info
 	optional Relation relation = 14;
-	// field contains directChat info
-	optional DirectChat directChat = 15;
+	// field contains commonChat info
+	optional CommonChat commonChat = 15;
 }
 
 message UserShort {
@@ -51,7 +51,7 @@ message Relation {
 	bool isMuted = 2;
 }
 
-message DirectChat {
+message CommonChat {
 	int64 chatId = 1;
 	string status = 2;
 	string role = 3;
@@ -81,5 +81,5 @@ enum ErrorReason {
     INVALID_REQUEST = 21 [(errors.code) = 400];
 	CONTACT_NOT_FOUND = 22 [(errors.code) = 404];
 	RELATION_NOT_FOUND = 23 [(errors.code) = 404];
-	DIRECT_CHAT_NOT_FOUND = 24 [(errors.code) = 404];
+	COMMON_CHAT_NOT_FOUND = 24 [(errors.code) = 404];
   }

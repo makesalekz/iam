@@ -19,7 +19,7 @@ type UserItem struct {
 
 	Relation   *v1.Relation
 	Contact    *v1.Contact
-	DirectChat *v1.DirectChat
+	CommonChat *v1.CommonChat
 }
 
 // UsersUsecase .
@@ -82,7 +82,7 @@ func (uc *UsersUsecase) getChatMembership(ctx context.Context, userId int64) (*c
 	chatMembership, err := membersClient.GetDirectChatMembership(ctx, &chats_v1.DirectChatMembershipRequest{UserId: userId})
 	if err != nil {
 		if chats_v1.IsNotFound(err) {
-			return nil, v1.ErrorDirectChatNotFound("there is not such chat")
+			return nil, v1.ErrorCommonChatNotFound("there is not such chat")
 		}
 		return nil, v1.ErrorGrpcConnection("dialer.Users: %s", err.Error())
 	}
@@ -187,11 +187,11 @@ func (uc *UsersUsecase) GetUserProfile(ctx context.Context, filter data.GetUserF
 	if filter.WithMembership {
 		membership, err := uc.getChatMembership(ctx, user.ID)
 		if err != nil {
-			if !v1.IsDirectChatNotFound(err) {
+			if !v1.IsCommonChatNotFound(err) {
 				return nil, err
 			}
 		} else {
-			replyUser.DirectChat = data.FromChatsToIam(membership)
+			replyUser.CommonChat = data.FromChatsToIam(membership)
 		}
 	}
 

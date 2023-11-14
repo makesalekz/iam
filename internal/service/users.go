@@ -184,8 +184,8 @@ func userItemToV1User(user *biz.UserItem) *v1.User {
 		replyUser.Contact = user.Contact
 	}
 
-	if user.DirectChat != nil {
-		replyUser.DirectChat = user.DirectChat
+	if user.CommonChat != nil {
+		replyUser.CommonChat = user.CommonChat
 	}
 
 	return replyUser

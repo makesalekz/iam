@@ -289,12 +289,7 @@ components:
             properties:
                 phone:
                     type: string
-        iam.v1.Contact:
-            type: object
-            properties:
-                label:
-                    type: string
-        iam.v1.DirectChat:
+        iam.v1.CommonChat:
             type: object
             properties:
                 chatId:
@@ -313,6 +308,11 @@ components:
                     type: string
                 autoSave:
                     type: boolean
+        iam.v1.Contact:
+            type: object
+            properties:
+                label:
+                    type: string
         iam.v1.EmptyReply:
             type: object
             properties: {}
@@ -440,10 +440,10 @@ components:
                     allOf:
                         - $ref: '#/components/schemas/iam.v1.Relation'
                     description: field contains relation info
-                directChat:
+                commonChat:
                     allOf:
-                        - $ref: '#/components/schemas/iam.v1.DirectChat'
-                    description: field contains directChat info
+                        - $ref: '#/components/schemas/iam.v1.CommonChat'
+                    description: field contains commonChat info
         iam.v1.UserFullReply:
             type: object
             properties:

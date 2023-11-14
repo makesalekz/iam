@@ -157,14 +157,14 @@ func ErrorRelationNotFound(format string, args ...interface{}) *errors.Error {
 	return errors.New(404, ErrorReason_RELATION_NOT_FOUND.String(), fmt.Sprintf(format, args...))
 }
 
-func IsDirectChatNotFound(err error) bool {
+func IsCommonChatNotFound(err error) bool {
 	if err == nil {
 		return false
 	}
 	e := errors.FromError(err)
-	return e.Reason == ErrorReason_DIRECT_CHAT_NOT_FOUND.String() && e.Code == 404
+	return e.Reason == ErrorReason_COMMON_CHAT_NOT_FOUND.String() && e.Code == 404
 }
 
-func ErrorDirectChatNotFound(format string, args ...interface{}) *errors.Error {
-	return errors.New(404, ErrorReason_DIRECT_CHAT_NOT_FOUND.String(), fmt.Sprintf(format, args...))
+func ErrorCommonChatNotFound(format string, args ...interface{}) *errors.Error {
+	return errors.New(404, ErrorReason_COMMON_CHAT_NOT_FOUND.String(), fmt.Sprintf(format, args...))
 }
