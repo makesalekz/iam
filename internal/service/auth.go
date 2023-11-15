@@ -5,6 +5,7 @@ import (
 
 	v1 "gitlab.calendaria.team/services/iam/api/iam/v1"
 	"gitlab.calendaria.team/services/iam/internal/biz"
+	utils_v1 "gitlab.calendaria.team/services/utils/api/utils/v1"
 
 	"github.com/go-kratos/kratos/v2/log"
 )
@@ -62,7 +63,7 @@ func (s *AuthService) AuthByCode(ctx context.Context, req *v1.AuthByCodeRequest)
 	}, nil
 }
 
-func (s *AuthService) RefreshPersonalToken(ctx context.Context, req *v1.EmptyRequest) (*v1.TokenReply, error) {
+func (s *AuthService) RefreshPersonalToken(ctx context.Context, req *utils_v1.EmptyRequest) (*v1.TokenReply, error) {
 	userId, err := s.au.CheckIdToken(ctx)
 	if err != nil {
 		return nil, err

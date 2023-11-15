@@ -135,7 +135,7 @@ paths:
                     content:
                         application/json:
                             schema:
-                                $ref: '#/components/schemas/iam.v1.EmptyReply'
+                                $ref: '#/components/schemas/utils.v1.EmptyReply'
     /v1/users/me/privacy:
         get:
             tags:
@@ -194,6 +194,25 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/iam.v1.SettingsReply'
+    /v1/users/register:
+        post:
+            tags:
+                - Users
+            description: "UpdateOwnProfile  \n This is self explanotory, update own profile"
+            operationId: Users_RegisterUser
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/iam.v1.UpdateOwnProfileRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/iam.v1.UserFullReply'
     /v1/users/user:
         post:
             tags:
@@ -313,9 +332,6 @@ components:
             properties:
                 label:
                     type: string
-        iam.v1.EmptyReply:
-            type: object
-            properties: {}
         iam.v1.GetUserByFilterRequest:
             type: object
             properties:
@@ -387,6 +403,13 @@ components:
                     type: object
                     additionalProperties:
                         type: string
+        iam.v1.TenantShort:
+            type: object
+            properties:
+                id:
+                    type: string
+                name:
+                    type: string
         iam.v1.TokenReply:
             type: object
             properties:
@@ -405,6 +428,8 @@ components:
                     type: string
                 timezone:
                     type: string
+                withTenant:
+                    type: boolean
         iam.v1.User:
             type: object
             properties:
@@ -449,6 +474,10 @@ components:
             properties:
                 user:
                     $ref: '#/components/schemas/iam.v1.User'
+                tenants:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/iam.v1.TenantShort'
         iam.v1.UserReply:
             type: object
             properties:
@@ -469,6 +498,9 @@ components:
                     type: string
                 lastLoginAt:
                     type: string
+        utils.v1.EmptyReply:
+            type: object
+            properties: {}
 tags:
     - name: Auth
     - name: Privacy

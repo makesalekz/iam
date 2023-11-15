@@ -7,6 +7,7 @@ import (
 	"gitlab.calendaria.team/services/iam/ent"
 	"gitlab.calendaria.team/services/iam/internal/biz"
 	"gitlab.calendaria.team/services/iam/internal/data"
+	utils_v1 "gitlab.calendaria.team/services/utils/api/utils/v1"
 
 	"github.com/go-kratos/kratos/v2/log"
 )
@@ -27,7 +28,7 @@ func NewSettingsService(logger log.Logger, jwt *data.JwtProcessor, uc *biz.Setti
 	}
 }
 
-func (s *SettingsService) GetSettings(ctx context.Context, req *v1.EmptyRequest) (*v1.SettingsReply, error) {
+func (s *SettingsService) GetSettings(ctx context.Context, req *utils_v1.EmptyRequest) (*v1.SettingsReply, error) {
 	userId, ok := s.jwt.GetUserIdFromContext(ctx)
 	if !ok {
 		return nil, v1.ErrorUnauthorized("Unauthorized")

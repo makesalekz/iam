@@ -3,6 +3,7 @@ syntax = "proto3";
 package iam.v1;
 
 import "google/api/annotations.proto";
+import "utils/v1/models.proto";
 import "api/iam/v1/models.proto";
 
 option go_package = "gitlab.calendaria.team/services/iam/api/iam/v1;iam_v1";
@@ -12,9 +13,17 @@ option java_package = "iam.v1";
 service Users {
 	// GetOwnProfile  
 	// This is self explanotory, returns own profile
-	rpc GetOwnProfile (EmptyRequest) returns (UserFullReply) {
+	rpc GetOwnProfile (utils.v1.EmptyRequest) returns (UserFullReply) {
 		option (google.api.http) = {
 			get: "/v1/users/me"
+		};
+	};
+	// UpdateOwnProfile  
+	// This is self explanotory, update own profile
+	rpc RegisterUser (UpdateOwnProfileRequest) returns (UserFullReply) {
+		option (google.api.http) = {
+			post: "/v1/users/register"
+			body: "*"
 		};
 	};
 	// UpdateOwnProfile  
@@ -27,7 +36,7 @@ service Users {
 	};
 	// DeleteOwnProfile  
 	// This is self explanotory, delete own profile
-	rpc DeleteOwnProfile (EmptyRequest) returns (EmptyReply) {
+	rpc DeleteOwnProfile (utils.v1.EmptyRequest) returns (utils.v1.EmptyReply) {
 		option (google.api.http) = {
 			delete: "/v1/users/me"
 		};
@@ -76,6 +85,7 @@ service Users {
 
 message UserFullReply {
 	User user = 1;
+	repeated TenantShort tenants = 2;
 }
 
 message UpdateOwnProfileRequest {
@@ -83,6 +93,7 @@ message UpdateOwnProfileRequest {
 	string bio = 2;
 	string avatar = 3;
 	string timezone = 4;
+	bool withTenant = 5;
 }
 
 message GetUserRequest {
