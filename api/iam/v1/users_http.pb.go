@@ -27,7 +27,6 @@ const OperationUsersGetUserByFilter = "/iam.v1.Users/GetUserByFilter"
 const OperationUsersGetUserByFilterFull = "/iam.v1.Users/GetUserByFilterFull"
 const OperationUsersGetUserFull = "/iam.v1.Users/GetUserFull"
 const OperationUsersGetUsers = "/iam.v1.Users/GetUsers"
-const OperationUsersRegisterUser = "/iam.v1.Users/RegisterUser"
 const OperationUsersUpdateOwnProfile = "/iam.v1.Users/UpdateOwnProfile"
 
 type UsersHTTPServer interface {
@@ -54,9 +53,6 @@ type UsersHTTPServer interface {
 	// t.m if you declare labels,emails,ids this method will return all
 	// users that has these fields
 	GetUsers(context.Context, *GetUsersRequest) (*GetUsersReply, error)
-	// RegisterUser UpdateOwnProfile
-	// This is self explanotory, update own profile
-	RegisterUser(context.Context, *UpdateOwnProfileRequest) (*UserFullReply, error)
 	// UpdateOwnProfile UpdateOwnProfile
 	// This is self explanotory, update own profile
 	UpdateOwnProfile(context.Context, *UpdateOwnProfileRequest) (*UserFullReply, error)
@@ -65,7 +61,6 @@ type UsersHTTPServer interface {
 func RegisterUsersHTTPServer(s *http.Server, srv UsersHTTPServer) {
 	r := s.Route("/")
 	r.GET("/v1/users/me", _Users_GetOwnProfile0_HTTP_Handler(srv))
-	r.POST("/v1/users/register", _Users_RegisterUser0_HTTP_Handler(srv))
 	r.POST("/v1/users/me", _Users_UpdateOwnProfile0_HTTP_Handler(srv))
 	r.DELETE("/v1/users/me", _Users_DeleteOwnProfile0_HTTP_Handler(srv))
 	r.GET("/v1/users/{userId}/full", _Users_GetUserFull0_HTTP_Handler(srv))
@@ -84,28 +79,6 @@ func _Users_GetOwnProfile0_HTTP_Handler(srv UsersHTTPServer) func(ctx http.Conte
 		http.SetOperation(ctx, OperationUsersGetOwnProfile)
 		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
 			return srv.GetOwnProfile(ctx, req.(*v1.EmptyRequest))
-		})
-		out, err := h(ctx, &in)
-		if err != nil {
-			return err
-		}
-		reply := out.(*UserFullReply)
-		return ctx.Result(200, reply)
-	}
-}
-
-func _Users_RegisterUser0_HTTP_Handler(srv UsersHTTPServer) func(ctx http.Context) error {
-	return func(ctx http.Context) error {
-		var in UpdateOwnProfileRequest
-		if err := ctx.Bind(&in); err != nil {
-			return err
-		}
-		if err := ctx.BindQuery(&in); err != nil {
-			return err
-		}
-		http.SetOperation(ctx, OperationUsersRegisterUser)
-		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
-			return srv.RegisterUser(ctx, req.(*UpdateOwnProfileRequest))
 		})
 		out, err := h(ctx, &in)
 		if err != nil {
@@ -275,7 +248,6 @@ type UsersHTTPClient interface {
 	GetUserByFilterFull(ctx context.Context, req *GetUserByFilterRequest, opts ...http.CallOption) (rsp *UserFullReply, err error)
 	GetUserFull(ctx context.Context, req *GetUserRequest, opts ...http.CallOption) (rsp *UserFullReply, err error)
 	GetUsers(ctx context.Context, req *GetUsersRequest, opts ...http.CallOption) (rsp *GetUsersReply, err error)
-	RegisterUser(ctx context.Context, req *UpdateOwnProfileRequest, opts ...http.CallOption) (rsp *UserFullReply, err error)
 	UpdateOwnProfile(ctx context.Context, req *UpdateOwnProfileRequest, opts ...http.CallOption) (rsp *UserFullReply, err error)
 }
 
@@ -370,19 +342,6 @@ func (c *UsersHTTPClientImpl) GetUsers(ctx context.Context, in *GetUsersRequest,
 	pattern := "/v1/users/list"
 	path := binding.EncodeURL(pattern, in, false)
 	opts = append(opts, http.Operation(OperationUsersGetUsers))
-	opts = append(opts, http.PathTemplate(pattern))
-	err := c.cc.Invoke(ctx, "POST", path, in, &out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return &out, err
-}
-
-func (c *UsersHTTPClientImpl) RegisterUser(ctx context.Context, in *UpdateOwnProfileRequest, opts ...http.CallOption) (*UserFullReply, error) {
-	var out UserFullReply
-	pattern := "/v1/users/register"
-	path := binding.EncodeURL(pattern, in, false)
-	opts = append(opts, http.Operation(OperationUsersRegisterUser))
 	opts = append(opts, http.PathTemplate(pattern))
 	err := c.cc.Invoke(ctx, "POST", path, in, &out, opts...)
 	if err != nil {

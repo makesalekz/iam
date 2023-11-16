@@ -20,14 +20,6 @@ service Users {
 	};
 	// UpdateOwnProfile  
 	// This is self explanotory, update own profile
-	rpc RegisterUser (UpdateOwnProfileRequest) returns (UserFullReply) {
-		option (google.api.http) = {
-			post: "/v1/users/register"
-			body: "*"
-		};
-	};
-	// UpdateOwnProfile  
-	// This is self explanotory, update own profile
 	rpc UpdateOwnProfile (UpdateOwnProfileRequest) returns (UserFullReply) {
 		option (google.api.http) = {
 			post: "/v1/users/me"
@@ -89,11 +81,13 @@ message UserFullReply {
 }
 
 message UpdateOwnProfileRequest {
-	string name = 1;
-	string bio = 2;
-	string avatar = 3;
-	string timezone = 4;
-	bool withTenant = 5;
+	string phone = 1;
+	string email = 2;
+	string name = 3;
+	string bio = 4;
+	string avatar = 5;
+	string timezone = 6;
+	bool withTenants = 7;
 }
 
 message GetUserRequest {

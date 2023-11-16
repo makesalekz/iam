@@ -24,6 +24,7 @@ var ProviderSet = wire.NewSet(
 	NewPrivacyRepo,
 	NewSettingsRepo,
 	NewDialer,
+	NewTenantsRemote,
 )
 
 // Data .

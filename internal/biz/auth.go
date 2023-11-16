@@ -28,9 +28,10 @@ type AuthUsecase struct {
 	log       *log.Helper
 	queue     *QueueManager
 	jwt       *data.JwtProcessor
-	dialer    *data.Dialer
 	usersRepo data.UsersRepo
 	otpRepo   data.OtpRepo
+	dialer    *data.Dialer
+	tenants   *data.TenantsRemote
 }
 
 // NewAuthUsecase new a Greeter usecase.
@@ -38,6 +39,7 @@ func NewAuthUsecase(
 	logger log.Logger,
 	jwt *data.JwtProcessor,
 	dialer *data.Dialer,
+	tenants *data.TenantsRemote,
 	usersRepo data.UsersRepo,
 	otpRepo data.OtpRepo,
 	queue *QueueManager,
@@ -46,6 +48,7 @@ func NewAuthUsecase(
 		log:       log.NewHelper(logger),
 		jwt:       jwt,
 		dialer:    dialer,
+		tenants:   tenants,
 		usersRepo: usersRepo,
 		otpRepo:   otpRepo,
 		queue:     queue,
@@ -62,8 +65,6 @@ func (uc *AuthUsecase) AuthUserByPhone(ctx context.Context, phone string) (int64
 	}
 
 	phone = phonenumbers.Format(phoneNumber, phonenumbers.E164)
-
-	uc.log.Infof("phone, %v", phone)
 
 	user, err := uc.usersRepo.GetUserByPhone(ctx, phone)
 	if err != nil {
@@ -218,7 +219,7 @@ func (uc *AuthUsecase) GenerateTenantToken(ctx context.Context, userId, tenantId
 	}
 	uc.log.Debugf("claims: %+v", claims)
 
-	tenantMemberClient, err := uc.dialer.TenantsMembers(ctx, claims)
+	tenantMemberClient, err := uc.tenants.Members(ctx, claims)
 	if err != nil {
 		return "", v1.ErrorGrpcConnection("dialer.TenantsMembers: %s", err.Error())
 	}

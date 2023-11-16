@@ -21,7 +21,6 @@ const _ = grpc.SupportPackageIsVersion7
 
 const (
 	Users_GetOwnProfile_FullMethodName       = "/iam.v1.Users/GetOwnProfile"
-	Users_RegisterUser_FullMethodName        = "/iam.v1.Users/RegisterUser"
 	Users_UpdateOwnProfile_FullMethodName    = "/iam.v1.Users/UpdateOwnProfile"
 	Users_DeleteOwnProfile_FullMethodName    = "/iam.v1.Users/DeleteOwnProfile"
 	Users_GetUserFull_FullMethodName         = "/iam.v1.Users/GetUserFull"
@@ -38,9 +37,6 @@ type UsersClient interface {
 	// GetOwnProfile
 	// This is self explanotory, returns own profile
 	GetOwnProfile(ctx context.Context, in *v1.EmptyRequest, opts ...grpc.CallOption) (*UserFullReply, error)
-	// UpdateOwnProfile
-	// This is self explanotory, update own profile
-	RegisterUser(ctx context.Context, in *UpdateOwnProfileRequest, opts ...grpc.CallOption) (*UserFullReply, error)
 	// UpdateOwnProfile
 	// This is self explanotory, update own profile
 	UpdateOwnProfile(ctx context.Context, in *UpdateOwnProfileRequest, opts ...grpc.CallOption) (*UserFullReply, error)
@@ -77,15 +73,6 @@ func NewUsersClient(cc grpc.ClientConnInterface) UsersClient {
 func (c *usersClient) GetOwnProfile(ctx context.Context, in *v1.EmptyRequest, opts ...grpc.CallOption) (*UserFullReply, error) {
 	out := new(UserFullReply)
 	err := c.cc.Invoke(ctx, Users_GetOwnProfile_FullMethodName, in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *usersClient) RegisterUser(ctx context.Context, in *UpdateOwnProfileRequest, opts ...grpc.CallOption) (*UserFullReply, error) {
-	out := new(UserFullReply)
-	err := c.cc.Invoke(ctx, Users_RegisterUser_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -164,9 +151,6 @@ type UsersServer interface {
 	GetOwnProfile(context.Context, *v1.EmptyRequest) (*UserFullReply, error)
 	// UpdateOwnProfile
 	// This is self explanotory, update own profile
-	RegisterUser(context.Context, *UpdateOwnProfileRequest) (*UserFullReply, error)
-	// UpdateOwnProfile
-	// This is self explanotory, update own profile
 	UpdateOwnProfile(context.Context, *UpdateOwnProfileRequest) (*UserFullReply, error)
 	// DeleteOwnProfile
 	// This is self explanotory, delete own profile
@@ -197,9 +181,6 @@ type UnimplementedUsersServer struct {
 
 func (UnimplementedUsersServer) GetOwnProfile(context.Context, *v1.EmptyRequest) (*UserFullReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetOwnProfile not implemented")
-}
-func (UnimplementedUsersServer) RegisterUser(context.Context, *UpdateOwnProfileRequest) (*UserFullReply, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method RegisterUser not implemented")
 }
 func (UnimplementedUsersServer) UpdateOwnProfile(context.Context, *UpdateOwnProfileRequest) (*UserFullReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateOwnProfile not implemented")
@@ -249,24 +230,6 @@ func _Users_GetOwnProfile_Handler(srv interface{}, ctx context.Context, dec func
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(UsersServer).GetOwnProfile(ctx, req.(*v1.EmptyRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _Users_RegisterUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(UpdateOwnProfileRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(UsersServer).RegisterUser(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: Users_RegisterUser_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(UsersServer).RegisterUser(ctx, req.(*UpdateOwnProfileRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -407,10 +370,6 @@ var Users_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetOwnProfile",
 			Handler:    _Users_GetOwnProfile_Handler,
-		},
-		{
-			MethodName: "RegisterUser",
-			Handler:    _Users_RegisterUser_Handler,
 		},
 		{
 			MethodName: "UpdateOwnProfile",

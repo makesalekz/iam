@@ -40,7 +40,21 @@ func (s *UsersService) GetOwnProfile(ctx context.Context, req *utils_v1.EmptyReq
 		return nil, err
 	}
 
-	return &v1.UserFullReply{User: userItemToV1User(user)}, nil
+	result := v1.UserFullReply{User: userItemToV1User(user)}
+
+	tenants, err := s.uc.GetUserTenants(ctx)
+	if err == nil {
+		resultTenants := make([]*v1.TenantShort, len(tenants))
+		for i, tenant := range tenants {
+			resultTenants[i] = &v1.TenantShort{
+				Id:   tenant.Id,
+				Name: tenant.Name,
+			}
+		}
+		result.Tenants = resultTenants
+	}
+
+	return &result, nil
 }
 
 func (s *UsersService) UpdateOwnProfile(ctx context.Context, req *v1.UpdateOwnProfileRequest) (*v1.UserFullReply, error) {
@@ -50,6 +64,8 @@ func (s *UsersService) UpdateOwnProfile(ctx context.Context, req *v1.UpdateOwnPr
 	}
 
 	user, err := s.uc.UpdateUserProfile(ctx, userId, data.UpdateUserDto{
+		Phone:    req.Phone,
+		Email:    req.Email,
 		Name:     req.Name,
 		Bio:      req.Bio,
 		Avatar:   req.Avatar,
@@ -59,7 +75,23 @@ func (s *UsersService) UpdateOwnProfile(ctx context.Context, req *v1.UpdateOwnPr
 		return nil, err
 	}
 
-	return &v1.UserFullReply{User: userItemToV1User(user)}, nil
+	result := v1.UserFullReply{User: userItemToV1User(user)}
+
+	if req.WithTenants {
+		tenants, err := s.uc.GetUserTenants(ctx)
+		if err == nil {
+			resultTenants := make([]*v1.TenantShort, len(tenants))
+			for i, tenant := range tenants {
+				resultTenants[i] = &v1.TenantShort{
+					Id:   tenant.Id,
+					Name: tenant.Name,
+				}
+			}
+			result.Tenants = resultTenants
+		}
+	}
+
+	return &result, nil
 }
 
 func (s *UsersService) DeleteOwnProfile(ctx context.Context, req *utils_v1.EmptyRequest) (*utils_v1.EmptyReply, error) {

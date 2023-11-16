@@ -194,25 +194,6 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/iam.v1.SettingsReply'
-    /v1/users/register:
-        post:
-            tags:
-                - Users
-            description: "UpdateOwnProfile  \n This is self explanotory, update own profile"
-            operationId: Users_RegisterUser
-            requestBody:
-                content:
-                    application/json:
-                        schema:
-                            $ref: '#/components/schemas/iam.v1.UpdateOwnProfileRequest'
-                required: true
-            responses:
-                "200":
-                    description: OK
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/iam.v1.UserFullReply'
     /v1/users/user:
         post:
             tags:
@@ -420,6 +401,10 @@ components:
         iam.v1.UpdateOwnProfileRequest:
             type: object
             properties:
+                phone:
+                    type: string
+                email:
+                    type: string
                 name:
                     type: string
                 bio:
@@ -428,7 +413,7 @@ components:
                     type: string
                 timezone:
                     type: string
-                withTenant:
+                withTenants:
                     type: boolean
         iam.v1.User:
             type: object

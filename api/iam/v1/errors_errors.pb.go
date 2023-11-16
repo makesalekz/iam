@@ -109,6 +109,30 @@ func ErrorInvalidCode(format string, args ...interface{}) *errors.Error {
 	return errors.New(401, ErrorReason_INVALID_CODE.String(), fmt.Sprintf(format, args...))
 }
 
+func IsInvalidEmail(err error) bool {
+	if err == nil {
+		return false
+	}
+	e := errors.FromError(err)
+	return e.Reason == ErrorReason_INVALID_EMAIL.String() && e.Code == 400
+}
+
+func ErrorInvalidEmail(format string, args ...interface{}) *errors.Error {
+	return errors.New(400, ErrorReason_INVALID_EMAIL.String(), fmt.Sprintf(format, args...))
+}
+
+func IsInvalidTimezone(err error) bool {
+	if err == nil {
+		return false
+	}
+	e := errors.FromError(err)
+	return e.Reason == ErrorReason_INVALID_TIMEZONE.String() && e.Code == 400
+}
+
+func ErrorInvalidTimezone(format string, args ...interface{}) *errors.Error {
+	return errors.New(400, ErrorReason_INVALID_TIMEZONE.String(), fmt.Sprintf(format, args...))
+}
+
 func IsUserNotFound(err error) bool {
 	if err == nil {
 		return false
