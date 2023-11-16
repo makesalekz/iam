@@ -8,6 +8,7 @@ import (
 	"gitlab.calendaria.team/services/iam/ent"
 	"gitlab.calendaria.team/services/iam/internal/biz"
 	"gitlab.calendaria.team/services/iam/internal/data"
+	utils_v1 "gitlab.calendaria.team/services/utils/api/utils/v1"
 
 	"github.com/go-kratos/kratos/v2/log"
 )
@@ -28,7 +29,7 @@ func NewUsersService(logger log.Logger, jwt *data.JwtProcessor, uc *biz.UsersUse
 	}
 }
 
-func (s *UsersService) GetOwnProfile(ctx context.Context, req *v1.EmptyRequest) (*v1.UserFullReply, error) {
+func (s *UsersService) GetOwnProfile(ctx context.Context, req *utils_v1.EmptyRequest) (*v1.UserFullReply, error) {
 	userId, ok := s.jwt.GetUserIdFromContext(ctx)
 	if !ok {
 		return nil, v1.ErrorUnauthorized("Unauthorized")
@@ -39,7 +40,21 @@ func (s *UsersService) GetOwnProfile(ctx context.Context, req *v1.EmptyRequest) 
 		return nil, err
 	}
 
-	return &v1.UserFullReply{User: userItemToV1User(user)}, nil
+	result := v1.UserFullReply{User: userItemToV1User(user)}
+
+	tenants, err := s.uc.GetUserTenants(ctx)
+	if err == nil {
+		resultTenants := make([]*v1.TenantShort, len(tenants))
+		for i, tenant := range tenants {
+			resultTenants[i] = &v1.TenantShort{
+				Id:   tenant.Id,
+				Name: tenant.Name,
+			}
+		}
+		result.Tenants = resultTenants
+	}
+
+	return &result, nil
 }
 
 func (s *UsersService) UpdateOwnProfile(ctx context.Context, req *v1.UpdateOwnProfileRequest) (*v1.UserFullReply, error) {
@@ -49,6 +64,8 @@ func (s *UsersService) UpdateOwnProfile(ctx context.Context, req *v1.UpdateOwnPr
 	}
 
 	user, err := s.uc.UpdateUserProfile(ctx, userId, data.UpdateUserDto{
+		Phone:    req.Phone,
+		Email:    req.Email,
 		Name:     req.Name,
 		Bio:      req.Bio,
 		Avatar:   req.Avatar,
@@ -58,10 +75,26 @@ func (s *UsersService) UpdateOwnProfile(ctx context.Context, req *v1.UpdateOwnPr
 		return nil, err
 	}
 
-	return &v1.UserFullReply{User: userItemToV1User(user)}, nil
+	result := v1.UserFullReply{User: userItemToV1User(user)}
+
+	if req.WithTenants {
+		tenants, err := s.uc.GetUserTenants(ctx)
+		if err == nil {
+			resultTenants := make([]*v1.TenantShort, len(tenants))
+			for i, tenant := range tenants {
+				resultTenants[i] = &v1.TenantShort{
+					Id:   tenant.Id,
+					Name: tenant.Name,
+				}
+			}
+			result.Tenants = resultTenants
+		}
+	}
+
+	return &result, nil
 }
 
-func (s *UsersService) DeleteOwnProfile(ctx context.Context, req *v1.EmptyRequest) (*v1.EmptyReply, error) {
+func (s *UsersService) DeleteOwnProfile(ctx context.Context, req *utils_v1.EmptyRequest) (*utils_v1.EmptyReply, error) {
 	userId, ok := s.jwt.GetUserIdFromContext(ctx)
 	if !ok {
 		return nil, v1.ErrorUnauthorized("Unauthorized")
@@ -77,7 +110,7 @@ func (s *UsersService) DeleteOwnProfile(ctx context.Context, req *v1.EmptyReques
 		return nil, v1.ErrorDatabaseQuery("Internal error")
 	}
 
-	return &v1.EmptyReply{}, nil
+	return &utils_v1.EmptyReply{}, nil
 }
 
 func (s *UsersService) GetUserFull(ctx context.Context, req *v1.GetUserRequest) (*v1.UserFullReply, error) {

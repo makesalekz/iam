@@ -36,6 +36,10 @@ func wireApp(bootstrap *conf.Bootstrap, logger log.Logger) (*kratos.App, func(),
 	if err != nil {
 		return nil, nil, err
 	}
+	tenantsRemote, err := data.NewTenantsRemote(config, jwtProcessor)
+	if err != nil {
+		return nil, nil, err
+	}
 	dataData, cleanup, err := data.NewData(bootstrap, logger)
 	if err != nil {
 		return nil, nil, err
@@ -48,14 +52,14 @@ func wireApp(bootstrap *conf.Bootstrap, logger log.Logger) (*kratos.App, func(),
 		return nil, nil, err
 	}
 	queueManager := biz.NewQueueManager(config, natsClient, logger)
-	authUsecase, err := biz.NewAuthUsecase(logger, jwtProcessor, dialer, usersRepo, otpRepo, queueManager)
+	authUsecase, err := biz.NewAuthUsecase(logger, jwtProcessor, dialer, tenantsRemote, usersRepo, otpRepo, queueManager)
 	if err != nil {
 		cleanup2()
 		cleanup()
 		return nil, nil, err
 	}
 	authService := service.NewAuthService(logger, authUsecase)
-	usersUsecase, err := biz.NewUsersUsecase(logger, config, jwtProcessor, usersRepo, otpRepo, dialer)
+	usersUsecase, err := biz.NewUsersUsecase(logger, config, jwtProcessor, usersRepo, otpRepo, dialer, tenantsRemote)
 	if err != nil {
 		cleanup2()
 		cleanup()

@@ -18,7 +18,8 @@ require (
 	gitlab.calendaria.team/services/chats v0.1.0
 	gitlab.calendaria.team/services/contacts v0.1.0
 	gitlab.calendaria.team/services/notifications v0.1.0
-	gitlab.calendaria.team/services/tenants v0.1.0
+	gitlab.calendaria.team/services/tenants v0.1.1
+	gitlab.calendaria.team/services/utils v0.0.1
 	go.uber.org/automaxprocs v1.5.3
 	google.golang.org/genproto/googleapis/api v0.0.0-20231030173426-d783a09b4405
 	google.golang.org/grpc v1.59.0

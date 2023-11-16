@@ -12,7 +12,6 @@ import (
 	v1 "gitlab.calendaria.team/services/iam/api/iam/v1"
 	"gitlab.calendaria.team/services/iam/internal/conf"
 	notifications_v1 "gitlab.calendaria.team/services/notifications/api/notifications/v1"
-	tenants_v1 "gitlab.calendaria.team/services/tenants/api/tenants/v1"
 )
 
 type Dialer struct {
@@ -21,7 +20,6 @@ type Dialer struct {
 	jwt       *JwtProcessor
 }
 
-// NewJwtProcessor .
 func NewDialer(c *Config, jwt *JwtProcessor) (*Dialer, error) {
 	return &Dialer{
 		conf:      c.Bootstrap,
@@ -94,26 +92,6 @@ func (d *Dialer) Notifications(ctx context.Context) (notifications_v1.SenderClie
 	}
 
 	return notifications_v1.NewSenderClient(conn), nil
-}
-
-func (d *Dialer) TenantsMembers(ctx context.Context, claims *TenantClaims) (tenants_v1.MembersClient, error) {
-	conn, err := grpc.DialInsecure(
-		ctx,
-		grpc.WithEndpoint(d.conf.Discovery.Tenants),
-		grpc.WithDiscovery(d.discovery),
-		grpc.WithTimeout(d.conf.Discovery.TenantsTimeout.AsDuration()),
-		grpc.WithMiddleware(
-			jwt.Client(func(token *jwtv4.Token) (interface{}, error) {
-				return d.jwt.GetSecret(), nil
-			}, jwt.WithSigningMethod(jwtv4.SigningMethodHS256), jwt.WithClaims(func() jwtv4.Claims {
-				return claims
-			})),
-		),
-	)
-	if err != nil {
-		return nil, err
-	}
-	return tenants_v1.NewMembersClient(conn), nil
 }
 
 func (d *Dialer) Chats(ctx context.Context) (chats_v1.ChatsClient, error) {

@@ -10,6 +10,8 @@ import (
 )
 
 type UpdateUserDto struct {
+	Phone    string
+	Email    string
 	Name     string
 	Bio      string
 	Avatar   string
@@ -37,7 +39,7 @@ type UsersRepo interface {
 	GetUserByEmail(ctx context.Context, email string) (*ent.User, error)
 	CreateUserWithPhone(ctx context.Context, phone string) (*ent.User, error)
 	CreateUserWithEmail(ctx context.Context, email string) (*ent.User, error)
-	UpdateUserData(ctx context.Context, id int64, dto UpdateUserDto) (*ent.User, error)
+	UpdateUserData(ctx context.Context, user *ent.User, dto UpdateUserDto) (*ent.User, error)
 	DeleteUser(ctx context.Context, id int64) error
 	GetUsers(ctx context.Context, filter GetUsersFilterDto) ([]*ent.User, error)
 	PhoneVerified(ctx context.Context, userId int64) error
@@ -63,21 +65,34 @@ func (r *usersRepo) CreateUserWithEmail(ctx context.Context, email string) (*ent
 	return r.db.User.Create().SetEmail(email).Save(ctx)
 }
 
-func (r *usersRepo) UpdateUserData(ctx context.Context, id int64, dto UpdateUserDto) (*ent.User, error) {
+func (r *usersRepo) UpdateUserData(ctx context.Context, user *ent.User, dto UpdateUserDto) (*ent.User, error) {
 	shouldUpdate := false
 	now := time.Now()
-	query := r.db.User.UpdateOneID(id).SetLastLoginAt(now).SetUpdatedAt(now)
+	query := r.db.User.UpdateOne(user).SetLastLoginAt(now).SetUpdatedAt(now)
 
-	if dto.Name != "" { // unnecessary to finish the registration
+	// TODO: allow to update verified phone and email, using additional tables
+	if dto.Phone != "" && !user.PhoneVerified { // update only if phone is not verified
+		if user.Phone == nil || *user.Phone != dto.Phone { // check if new phone is different from the old one
+			shouldUpdate = true
+			query.SetPhone(dto.Phone)
+		}
+	}
+	if dto.Email != "" && !user.EmailVerified { // update only if email is not verified
+		if user.Email == nil || *user.Email != dto.Email { // check if new phone is different from the old one
+			shouldUpdate = true
+			query.SetEmail(dto.Email)
+		}
+	}
+	if dto.Name != "" && dto.Name != user.Name { // unnecessary to finish the registration
 		shouldUpdate = true
 		query.SetName(dto.Name)
 	}
-	if dto.Bio != "" { // unnecessary to finish the registration
+	if dto.Bio != "" && dto.Bio != user.Bio { // unnecessary to finish the registration
 		shouldUpdate = true
 		query.SetBio(dto.Bio)
 		query.SetBioUpdatedAt(now)
 	}
-	if dto.Avatar != "" { // unnecessary to finish the registration
+	if dto.Avatar != "" && dto.Avatar != *user.Avatar { // unnecessary to finish the registration
 		shouldUpdate = true
 		query.SetAvatar(dto.Avatar)
 	}
@@ -87,12 +102,10 @@ func (r *usersRepo) UpdateUserData(ctx context.Context, id int64, dto UpdateUser
 	}
 
 	if !shouldUpdate {
-		return r.db.User.Get(ctx, id)
+		return user, nil
 	}
 
-	user, err := query.Save(ctx)
-
-	return user, err
+	return query.Save(ctx)
 }
 
 func (r *usersRepo) DeleteUser(ctx context.Context, id int64) error {

@@ -7,6 +7,7 @@ import (
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/go-kratos/kratos/v2/registry"
 	contacts_v1 "gitlab.calendaria.team/services/contacts/api/contacts/v1"
+	tenants_v1 "gitlab.calendaria.team/services/tenants/api/tenants/v1"
 
 	chats_v1 "gitlab.calendaria.team/services/chats/api/chats/v1"
 	v1 "gitlab.calendaria.team/services/iam/api/iam/v1"
@@ -26,9 +27,11 @@ type UserItem struct {
 type UsersUsecase struct {
 	log       *log.Helper
 	discovery registry.Discovery
+	jwt       *data.JwtProcessor
 	usersRepo data.UsersRepo
 	otpRepo   data.OtpRepo
 	dialer    *data.Dialer
+	tenants   *data.TenantsRemote
 }
 
 // NewUsersUsecase .
@@ -38,13 +41,16 @@ func NewUsersUsecase(logger log.Logger,
 	usersRepo data.UsersRepo,
 	otpRepo data.OtpRepo,
 	dialer *data.Dialer,
+	tenants *data.TenantsRemote,
 ) (*UsersUsecase, error) {
 	return &UsersUsecase{
 		log:       log.NewHelper(logger),
 		discovery: c.GetRegistry(),
+		jwt:       jwt,
 		usersRepo: usersRepo,
 		otpRepo:   otpRepo,
 		dialer:    dialer,
+		tenants:   tenants,
 	}, nil
 }
 
@@ -198,8 +204,32 @@ func (uc *UsersUsecase) GetUserProfile(ctx context.Context, filter data.GetUserF
 	return replyUser, nil
 }
 
-func (uc *UsersUsecase) UpdateUserProfile(ctx context.Context, userId int64, data data.UpdateUserDto) (*UserItem, error) {
-	user, err := uc.usersRepo.UpdateUserData(ctx, userId, data)
+func (uc *UsersUsecase) UpdateUserProfile(ctx context.Context, userId int64, dto data.UpdateUserDto) (*UserItem, error) {
+	var err error
+
+	if dto.Phone != "" {
+		dto.Phone, err = ParsePhone(dto.Phone)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	if dto.Email != "" {
+		email, err := ParseEmail(dto.Email)
+		if err != nil {
+			return nil, err
+		}
+		dto.Email = email.Address
+	}
+
+	if dto.Timezone != "" {
+		err = CheckTimezone(dto.Timezone)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	user, err := uc.usersRepo.GetUserById(ctx, userId)
 	if err != nil {
 		if ent.IsNotFound(err) {
 			return nil, v1.ErrorUserNotFound("User not found: %v", err)
@@ -207,8 +237,13 @@ func (uc *UsersUsecase) UpdateUserProfile(ctx context.Context, userId int64, dat
 		return nil, v1.ErrorDatabaseQuery("Internal error")
 	}
 
+	updatedUser, err := uc.usersRepo.UpdateUserData(ctx, user, dto)
+	if err != nil {
+		return nil, v1.ErrorDatabaseQuery("Internal error")
+	}
+
 	return &UserItem{
-		User: user,
+		User: updatedUser,
 	}, nil
 }
 
@@ -228,4 +263,24 @@ func (uc *UsersUsecase) GetUsers(ctx context.Context, filter data.GetUsersFilter
 	}
 
 	return replyUsers, nil
+}
+
+func (uc *UsersUsecase) GetUserTenants(ctx context.Context) ([]*tenants_v1.Tenant, error) {
+	userClaims := uc.jwt.GetClaimsFromContext(ctx)
+	if userClaims == nil {
+		return nil, v1.ErrorUnauthorized("Unauthorized")
+	}
+
+	claims := &data.TenantClaims{RegisteredClaims: *userClaims}
+	tenantClient, err := uc.tenants.Tenants(ctx, claims)
+	if err != nil {
+		return nil, v1.ErrorGrpcConnection("tenants.Tenants: %s", err.Error())
+	}
+
+	tenants, err := tenantClient.ListTenants(ctx, &tenants_v1.ListTenantsRequest{})
+	if err != nil {
+		return nil, v1.ErrorGrpcConnection("tenantClient.ListTenants: %s", err.Error())
+	}
+
+	return tenants.Tenants, nil
 }
