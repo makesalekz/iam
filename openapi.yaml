@@ -25,18 +25,6 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/iam.v1.TokenReply'
-    /v1/auth/personal:
-        get:
-            tags:
-                - Auth
-            operationId: Auth_RefreshPersonalToken
-            responses:
-                "200":
-                    description: OK
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/iam.v1.TokenReply'
     /v1/auth/phone:
         post:
             tags:
@@ -56,17 +44,17 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/iam.v1.AuthByPhoneReply'
-    /v1/auth/tenant/{tenantId}:
-        get:
+    /v1/auth/token:
+        post:
             tags:
                 - Auth
-            operationId: Auth_RefreshTenantToken
-            parameters:
-                - name: tenantId
-                  in: path
-                  required: true
-                  schema:
-                    type: string
+            operationId: Auth_RefreshToken
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/iam.v1.TenantRequest'
+                required: true
             responses:
                 "200":
                     description: OK
@@ -384,6 +372,11 @@ components:
                     type: object
                     additionalProperties:
                         type: string
+        iam.v1.TenantRequest:
+            type: object
+            properties:
+                tenantId:
+                    type: string
         iam.v1.TenantShort:
             type: object
             properties:

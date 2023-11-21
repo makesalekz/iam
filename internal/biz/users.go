@@ -6,13 +6,14 @@ import (
 
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/go-kratos/kratos/v2/registry"
-	contacts_v1 "gitlab.calendaria.team/services/contacts/api/contacts/v1"
-	tenants_v1 "gitlab.calendaria.team/services/tenants/api/tenants/v1"
-
 	chats_v1 "gitlab.calendaria.team/services/chats/api/chats/v1"
+	contacts_v1 "gitlab.calendaria.team/services/contacts/api/contacts/v1"
 	v1 "gitlab.calendaria.team/services/iam/api/iam/v1"
 	"gitlab.calendaria.team/services/iam/ent"
 	"gitlab.calendaria.team/services/iam/internal/data"
+	tenants_v1 "gitlab.calendaria.team/services/tenants/api/tenants/v1"
+	"gitlab.calendaria.team/services/utils/v1/config"
+	"gitlab.calendaria.team/services/utils/v1/jwt"
 )
 
 type UserItem struct {
@@ -27,7 +28,7 @@ type UserItem struct {
 type UsersUsecase struct {
 	log       *log.Helper
 	discovery registry.Discovery
-	jwt       *data.JwtProcessor
+	jwt       *jwt.JwtProcessor
 	usersRepo data.UsersRepo
 	otpRepo   data.OtpRepo
 	dialer    *data.Dialer
@@ -36,8 +37,8 @@ type UsersUsecase struct {
 
 // NewUsersUsecase .
 func NewUsersUsecase(logger log.Logger,
-	c *data.Config,
-	jwt *data.JwtProcessor,
+	c *config.Config,
+	jwt *jwt.JwtProcessor,
 	usersRepo data.UsersRepo,
 	otpRepo data.OtpRepo,
 	dialer *data.Dialer,
@@ -57,7 +58,7 @@ func NewUsersUsecase(logger log.Logger,
 func (uc *UsersUsecase) getUserContactLabel(ctx context.Context, userId int64) (*v1.Contact, error) {
 	contactClient, err := uc.dialer.Contacts(ctx)
 	if err != nil {
-		return nil, v1.ErrorGrpcConnection("dialer.Users: %s", err.Error())
+		return nil, v1.ErrorGrpcConnection("contacts: %s", err.Error())
 	}
 
 	labels, err := contactClient.GetLabelsByUserId(ctx, &contacts_v1.GetLabelsByUserIdRequest{UserId: userId})
@@ -65,7 +66,7 @@ func (uc *UsersUsecase) getUserContactLabel(ctx context.Context, userId int64) (
 		if contacts_v1.IsNotFound(err) {
 			return nil, v1.ErrorContactNotFound("there is not such contact")
 		}
-		return nil, v1.ErrorGrpcConnection("Contact user internal error")
+		return nil, v1.ErrorGrpcConnection("contacts: %s", err.Error())
 	}
 
 	contact := &v1.Contact{}
@@ -82,7 +83,7 @@ func (uc *UsersUsecase) getUserContactLabel(ctx context.Context, userId int64) (
 func (uc *UsersUsecase) getChatMembership(ctx context.Context, userId int64) (*chats_v1.Membership, error) {
 	membersClient, err := uc.dialer.Members(ctx)
 	if err != nil {
-		return nil, v1.ErrorGrpcConnection("dialer.Users: %s", err.Error())
+		return nil, v1.ErrorGrpcConnection("chats: %s", err.Error())
 	}
 
 	chatMembership, err := membersClient.GetDirectChatMembership(ctx, &chats_v1.DirectChatMembershipRequest{UserId: userId})
@@ -90,7 +91,7 @@ func (uc *UsersUsecase) getChatMembership(ctx context.Context, userId int64) (*c
 		if chats_v1.IsNotFound(err) {
 			return nil, v1.ErrorCommonChatNotFound("there is not such chat")
 		}
-		return nil, v1.ErrorGrpcConnection("dialer.Users: %s", err.Error())
+		return nil, v1.ErrorGrpcConnection("chats: %s", err.Error())
 	}
 
 	return chatMembership.GetMembership(), nil
@@ -134,7 +135,7 @@ func (uc *UsersUsecase) includeRelations(ctx context.Context, users ...*UserItem
 func (uc *UsersUsecase) getUsersRelations(ctx context.Context, userIds []int64) ([]*contacts_v1.Relation, error) {
 	relationsClient, err := uc.dialer.Relations(ctx)
 	if err != nil {
-		return nil, v1.ErrorGrpcConnection("dialer.Users: %s", err.Error())
+		return nil, v1.ErrorGrpcConnection("contacts: %s", err.Error())
 	}
 
 	relations, err := relationsClient.GetRelations(ctx, &contacts_v1.GetRelationsRequest{UserIds: userIds})
@@ -142,7 +143,7 @@ func (uc *UsersUsecase) getUsersRelations(ctx context.Context, userIds []int64) 
 		if contacts_v1.IsNotFound(err) {
 			return nil, v1.ErrorRelationNotFound("there is not such relation")
 		}
-		return nil, v1.ErrorGrpcConnection("dialer.Users: %s", err.Error())
+		return nil, v1.ErrorGrpcConnection("contacts: %s", err.Error())
 	}
 
 	return relations.GetRelations(), nil
@@ -159,14 +160,14 @@ func (uc *UsersUsecase) GetUserProfile(ctx context.Context, filter data.GetUserF
 	} else if filter.UserId != 0 && filter.Email == "" && filter.Phone == "" {
 		user, err = uc.usersRepo.GetUserById(ctx, filter.UserId)
 	} else {
-		return nil, v1.ErrorInvalidRequest("Invalid request, please read documentations")
+		return nil, v1.ErrorInvalidRequest("invalid request")
 	}
 
 	if err != nil {
 		if ent.IsNotFound(err) {
-			return nil, v1.ErrorUserNotFound("User not found: %v", err)
+			return nil, v1.ErrorUserNotFound("user not found")
 		}
-		return nil, v1.ErrorDatabaseQuery("Internal error")
+		return nil, v1.ErrorDatabaseQuery("database error: %s", err.Error())
 	}
 	replyUser := &UserItem{
 		User: user,
@@ -232,14 +233,14 @@ func (uc *UsersUsecase) UpdateUserProfile(ctx context.Context, userId int64, dto
 	user, err := uc.usersRepo.GetUserById(ctx, userId)
 	if err != nil {
 		if ent.IsNotFound(err) {
-			return nil, v1.ErrorUserNotFound("User not found: %v", err)
+			return nil, v1.ErrorUserNotFound("user not found")
 		}
-		return nil, v1.ErrorDatabaseQuery("Internal error")
+		return nil, v1.ErrorDatabaseQuery("database error: %s", err.Error())
 	}
 
 	updatedUser, err := uc.usersRepo.UpdateUserData(ctx, user, dto)
 	if err != nil {
-		return nil, v1.ErrorDatabaseQuery("Internal error")
+		return nil, v1.ErrorDatabaseQuery("database error: %s", err.Error())
 	}
 
 	return &UserItem{
@@ -248,13 +249,21 @@ func (uc *UsersUsecase) UpdateUserProfile(ctx context.Context, userId int64, dto
 }
 
 func (uc *UsersUsecase) DeleteUser(ctx context.Context, userId int64) error {
-	return uc.usersRepo.DeleteUser(ctx, userId)
+	err := uc.usersRepo.DeleteUser(ctx, userId)
+	if err != nil {
+		_, notFound := err.(*ent.NotFoundError)
+		if notFound {
+			return v1.ErrorUserNotFound("user not found")
+		}
+		return v1.ErrorDatabaseQuery("database error: %s", err.Error())
+	}
+	return nil
 }
 
 func (uc *UsersUsecase) GetUsers(ctx context.Context, filter data.GetUsersFilterDto) ([]*UserItem, error) {
 	users, err := uc.usersRepo.GetUsers(ctx, filter)
 	if err != nil {
-		return nil, v1.ErrorDatabaseQuery("Internal error")
+		return nil, v1.ErrorDatabaseQuery("database error: %s", err.Error())
 	}
 
 	replyUsers := make([]*UserItem, len(users))
@@ -266,20 +275,19 @@ func (uc *UsersUsecase) GetUsers(ctx context.Context, filter data.GetUsersFilter
 }
 
 func (uc *UsersUsecase) GetUserTenants(ctx context.Context) ([]*tenants_v1.Tenant, error) {
-	userClaims := uc.jwt.GetClaimsFromContext(ctx)
-	if userClaims == nil {
-		return nil, v1.ErrorUnauthorized("Unauthorized")
+	claims, ok := uc.jwt.GetClaimsFromContext(ctx)
+	if !ok || !claims.IsUserTenantRequest() {
+		return nil, v1.ErrorUnauthorized("invalid token")
 	}
 
-	claims := &data.TenantClaims{RegisteredClaims: *userClaims}
 	tenantClient, err := uc.tenants.Tenants(ctx, claims)
 	if err != nil {
-		return nil, v1.ErrorGrpcConnection("tenants.Tenants: %s", err.Error())
+		return nil, v1.ErrorGrpcConnection("tenants: %s", err.Error())
 	}
 
 	tenants, err := tenantClient.ListTenants(ctx, &tenants_v1.ListTenantsRequest{})
 	if err != nil {
-		return nil, v1.ErrorGrpcConnection("tenantClient.ListTenants: %s", err.Error())
+		return nil, v1.ErrorGrpcConnection("tenants: %s", err.Error())
 	}
 
 	return tenants.Tenants, nil

@@ -5,13 +5,9 @@ go 1.21.3
 require (
 	entgo.io/ent v0.12.4
 	github.com/go-kratos/consul v0.1.5
-	github.com/go-kratos/kratos/contrib/config/consul/v2 v2.0.0-20230830131453-6c026bce56a9
 	github.com/go-kratos/kratos/v2 v2.7.1
 	github.com/golang-jwt/jwt/v4 v4.5.0
 	github.com/google/wire v0.5.0
-	github.com/hashicorp/consul/api v1.24.0
-	github.com/hashicorp/vault/api v1.10.0
-	github.com/hashicorp/vault/api/auth/approle v0.5.0
 	github.com/lib/pq v1.10.9
 	github.com/nats-io/nats.go v1.31.0
 	github.com/nyaruka/phonenumbers v1.1.8
@@ -19,7 +15,7 @@ require (
 	gitlab.calendaria.team/services/contacts v0.1.0
 	gitlab.calendaria.team/services/notifications v0.1.0
 	gitlab.calendaria.team/services/tenants v0.1.1
-	gitlab.calendaria.team/services/utils v0.0.1
+	gitlab.calendaria.team/services/utils v0.0.2
 	go.uber.org/automaxprocs v1.5.3
 	google.golang.org/genproto/googleapis/api v0.0.0-20231030173426-d783a09b4405
 	google.golang.org/grpc v1.59.0
@@ -36,6 +32,7 @@ require (
 	github.com/fsnotify/fsnotify v1.6.0 // indirect
 	github.com/go-jose/go-jose/v3 v3.0.0 // indirect
 	github.com/go-kratos/aegis v0.2.0 // indirect
+	github.com/go-kratos/kratos/contrib/config/consul/v2 v2.0.0-20231121021043-9adece088b51 // indirect
 	github.com/go-logr/logr v1.2.4 // indirect
 	github.com/go-logr/stdr v1.2.2 // indirect
 	github.com/go-openapi/inflect v0.19.0 // indirect
@@ -45,6 +42,7 @@ require (
 	github.com/google/subcommands v1.0.1 // indirect
 	github.com/google/uuid v1.3.1 // indirect
 	github.com/gorilla/mux v1.8.0 // indirect
+	github.com/hashicorp/consul/api v1.26.1 // indirect
 	github.com/hashicorp/errwrap v1.1.0 // indirect
 	github.com/hashicorp/go-cleanhttp v0.5.2 // indirect
 	github.com/hashicorp/go-hclog v1.5.0 // indirect
@@ -59,6 +57,8 @@ require (
 	github.com/hashicorp/hcl v1.0.0 // indirect
 	github.com/hashicorp/hcl/v2 v2.13.0 // indirect
 	github.com/hashicorp/serf v0.10.1 // indirect
+	github.com/hashicorp/vault/api v1.10.0 // indirect
+	github.com/hashicorp/vault/api/auth/approle v0.5.0 // indirect
 	github.com/imdario/mergo v0.3.16 // indirect
 	github.com/klauspost/compress v1.17.0 // indirect
 	github.com/mattn/go-colorable v0.1.13 // indirect

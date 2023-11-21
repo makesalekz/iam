@@ -8,6 +8,8 @@ import (
 	"github.com/google/wire"
 	"gitlab.calendaria.team/services/iam/ent"
 	"gitlab.calendaria.team/services/iam/internal/conf"
+	"gitlab.calendaria.team/services/utils/v1/config"
+	"gitlab.calendaria.team/services/utils/v1/jwt"
 
 	_ "github.com/lib/pq"
 	_ "gitlab.calendaria.team/services/iam/ent/runtime"
@@ -16,8 +18,8 @@ import (
 // ProviderSet is data providers.
 var ProviderSet = wire.NewSet(
 	NewData,
-	NewConfig,
-	NewJwtProcessor,
+	config.NewConfig,
+	jwt.NewJwtProcessor,
 	NewNatsClient,
 	NewUsersRepo,
 	NewOtpRepo,

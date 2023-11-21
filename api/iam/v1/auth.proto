@@ -3,7 +3,6 @@ syntax = "proto3";
 package iam.v1;
 
 import "google/api/annotations.proto";
-import "utils/v1/models.proto";
 
 option go_package = "gitlab.calendaria.team/services/iam/api/iam/v1;iam_v1";
 option java_multiple_files = true;
@@ -29,14 +28,10 @@ service Auth {
 			body: "*"
 		};
 	};
-	rpc RefreshPersonalToken (utils.v1.EmptyRequest) returns (TokenReply) {
+	rpc RefreshToken (TenantRequest) returns (TokenReply) {
 		option (google.api.http) = {
-			get: "/v1/auth/personal"
-		};
-	};
-	rpc RefreshTenantToken (TenantRequest) returns (TokenReply) {
-		option (google.api.http) = {
-			get: "/v1/auth/tenant/{tenant_id}"
+			post: "/v1/auth/token"
+			body: "*"
 		};
 	};
 }
