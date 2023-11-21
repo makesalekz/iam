@@ -51,6 +51,8 @@ func (s *UsersService) GetOwnProfile(ctx context.Context, req *utils_v1.EmptyReq
 			}
 		}
 		result.Tenants = resultTenants
+	} else {
+		s.log.Warnf("tenants: ", err)
 	}
 
 	return &result, nil
@@ -87,6 +89,8 @@ func (s *UsersService) UpdateOwnProfile(ctx context.Context, req *v1.UpdateOwnPr
 				}
 			}
 			result.Tenants = resultTenants
+		} else {
+			s.log.Warnf("tenants: ", err)
 		}
 	}
 
