@@ -10,7 +10,6 @@ import (
 	context "context"
 	http "github.com/go-kratos/kratos/v2/transport/http"
 	binding "github.com/go-kratos/kratos/v2/transport/http/binding"
-	v1 "gitlab.calendaria.team/services/utils/api/utils/v1"
 )
 
 // This is a compile-time assertion to ensure that this generated file
@@ -22,8 +21,7 @@ const _ = http.SupportPackageIsVersion1
 
 const OperationAuthAuthByCode = "/iam.v1.Auth/AuthByCode"
 const OperationAuthAuthByPhone = "/iam.v1.Auth/AuthByPhone"
-const OperationAuthRefreshPersonalToken = "/iam.v1.Auth/RefreshPersonalToken"
-const OperationAuthRefreshTenantToken = "/iam.v1.Auth/RefreshTenantToken"
+const OperationAuthRefreshToken = "/iam.v1.Auth/RefreshToken"
 
 type AuthHTTPServer interface {
 	// AuthByCode Auth by Code
@@ -35,16 +33,14 @@ type AuthHTTPServer interface {
 	// request: phone number
 	// returns: id of newly created otp user
 	AuthByPhone(context.Context, *AuthByPhoneRequest) (*AuthByPhoneReply, error)
-	RefreshPersonalToken(context.Context, *v1.EmptyRequest) (*TokenReply, error)
-	RefreshTenantToken(context.Context, *TenantRequest) (*TokenReply, error)
+	RefreshToken(context.Context, *TenantRequest) (*TokenReply, error)
 }
 
 func RegisterAuthHTTPServer(s *http.Server, srv AuthHTTPServer) {
 	r := s.Route("/")
 	r.POST("/v1/auth/phone", _Auth_AuthByPhone0_HTTP_Handler(srv))
 	r.POST("/v1/auth/code", _Auth_AuthByCode0_HTTP_Handler(srv))
-	r.GET("/v1/auth/personal", _Auth_RefreshPersonalToken0_HTTP_Handler(srv))
-	r.GET("/v1/auth/tenant/{tenant_id}", _Auth_RefreshTenantToken0_HTTP_Handler(srv))
+	r.POST("/v1/auth/token", _Auth_RefreshToken0_HTTP_Handler(srv))
 }
 
 func _Auth_AuthByPhone0_HTTP_Handler(srv AuthHTTPServer) func(ctx http.Context) error {
@@ -91,37 +87,18 @@ func _Auth_AuthByCode0_HTTP_Handler(srv AuthHTTPServer) func(ctx http.Context) e
 	}
 }
 
-func _Auth_RefreshPersonalToken0_HTTP_Handler(srv AuthHTTPServer) func(ctx http.Context) error {
-	return func(ctx http.Context) error {
-		var in v1.EmptyRequest
-		if err := ctx.BindQuery(&in); err != nil {
-			return err
-		}
-		http.SetOperation(ctx, OperationAuthRefreshPersonalToken)
-		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
-			return srv.RefreshPersonalToken(ctx, req.(*v1.EmptyRequest))
-		})
-		out, err := h(ctx, &in)
-		if err != nil {
-			return err
-		}
-		reply := out.(*TokenReply)
-		return ctx.Result(200, reply)
-	}
-}
-
-func _Auth_RefreshTenantToken0_HTTP_Handler(srv AuthHTTPServer) func(ctx http.Context) error {
+func _Auth_RefreshToken0_HTTP_Handler(srv AuthHTTPServer) func(ctx http.Context) error {
 	return func(ctx http.Context) error {
 		var in TenantRequest
+		if err := ctx.Bind(&in); err != nil {
+			return err
+		}
 		if err := ctx.BindQuery(&in); err != nil {
 			return err
 		}
-		if err := ctx.BindVars(&in); err != nil {
-			return err
-		}
-		http.SetOperation(ctx, OperationAuthRefreshTenantToken)
+		http.SetOperation(ctx, OperationAuthRefreshToken)
 		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
-			return srv.RefreshTenantToken(ctx, req.(*TenantRequest))
+			return srv.RefreshToken(ctx, req.(*TenantRequest))
 		})
 		out, err := h(ctx, &in)
 		if err != nil {
@@ -135,8 +112,7 @@ func _Auth_RefreshTenantToken0_HTTP_Handler(srv AuthHTTPServer) func(ctx http.Co
 type AuthHTTPClient interface {
 	AuthByCode(ctx context.Context, req *AuthByCodeRequest, opts ...http.CallOption) (rsp *TokenReply, err error)
 	AuthByPhone(ctx context.Context, req *AuthByPhoneRequest, opts ...http.CallOption) (rsp *AuthByPhoneReply, err error)
-	RefreshPersonalToken(ctx context.Context, req *v1.EmptyRequest, opts ...http.CallOption) (rsp *TokenReply, err error)
-	RefreshTenantToken(ctx context.Context, req *TenantRequest, opts ...http.CallOption) (rsp *TokenReply, err error)
+	RefreshToken(ctx context.Context, req *TenantRequest, opts ...http.CallOption) (rsp *TokenReply, err error)
 }
 
 type AuthHTTPClientImpl struct {
@@ -173,26 +149,13 @@ func (c *AuthHTTPClientImpl) AuthByPhone(ctx context.Context, in *AuthByPhoneReq
 	return &out, err
 }
 
-func (c *AuthHTTPClientImpl) RefreshPersonalToken(ctx context.Context, in *v1.EmptyRequest, opts ...http.CallOption) (*TokenReply, error) {
+func (c *AuthHTTPClientImpl) RefreshToken(ctx context.Context, in *TenantRequest, opts ...http.CallOption) (*TokenReply, error) {
 	var out TokenReply
-	pattern := "/v1/auth/personal"
-	path := binding.EncodeURL(pattern, in, true)
-	opts = append(opts, http.Operation(OperationAuthRefreshPersonalToken))
+	pattern := "/v1/auth/token"
+	path := binding.EncodeURL(pattern, in, false)
+	opts = append(opts, http.Operation(OperationAuthRefreshToken))
 	opts = append(opts, http.PathTemplate(pattern))
-	err := c.cc.Invoke(ctx, "GET", path, nil, &out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return &out, err
-}
-
-func (c *AuthHTTPClientImpl) RefreshTenantToken(ctx context.Context, in *TenantRequest, opts ...http.CallOption) (*TokenReply, error) {
-	var out TokenReply
-	pattern := "/v1/auth/tenant/{tenant_id}"
-	path := binding.EncodeURL(pattern, in, true)
-	opts = append(opts, http.Operation(OperationAuthRefreshTenantToken))
-	opts = append(opts, http.PathTemplate(pattern))
-	err := c.cc.Invoke(ctx, "GET", path, nil, &out, opts...)
+	err := c.cc.Invoke(ctx, "POST", path, in, &out, opts...)
 	if err != nil {
 		return nil, err
 	}

@@ -8,7 +8,6 @@ package iam_v1
 
 import (
 	context "context"
-	v1 "gitlab.calendaria.team/services/utils/api/utils/v1"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
@@ -20,10 +19,9 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	Auth_AuthByPhone_FullMethodName          = "/iam.v1.Auth/AuthByPhone"
-	Auth_AuthByCode_FullMethodName           = "/iam.v1.Auth/AuthByCode"
-	Auth_RefreshPersonalToken_FullMethodName = "/iam.v1.Auth/RefreshPersonalToken"
-	Auth_RefreshTenantToken_FullMethodName   = "/iam.v1.Auth/RefreshTenantToken"
+	Auth_AuthByPhone_FullMethodName  = "/iam.v1.Auth/AuthByPhone"
+	Auth_AuthByCode_FullMethodName   = "/iam.v1.Auth/AuthByCode"
+	Auth_RefreshToken_FullMethodName = "/iam.v1.Auth/RefreshToken"
 )
 
 // AuthClient is the client API for Auth service.
@@ -39,8 +37,7 @@ type AuthClient interface {
 	// request: id from AuthByPhone, code from message
 	// returns: bearer token
 	AuthByCode(ctx context.Context, in *AuthByCodeRequest, opts ...grpc.CallOption) (*TokenReply, error)
-	RefreshPersonalToken(ctx context.Context, in *v1.EmptyRequest, opts ...grpc.CallOption) (*TokenReply, error)
-	RefreshTenantToken(ctx context.Context, in *TenantRequest, opts ...grpc.CallOption) (*TokenReply, error)
+	RefreshToken(ctx context.Context, in *TenantRequest, opts ...grpc.CallOption) (*TokenReply, error)
 }
 
 type authClient struct {
@@ -69,18 +66,9 @@ func (c *authClient) AuthByCode(ctx context.Context, in *AuthByCodeRequest, opts
 	return out, nil
 }
 
-func (c *authClient) RefreshPersonalToken(ctx context.Context, in *v1.EmptyRequest, opts ...grpc.CallOption) (*TokenReply, error) {
+func (c *authClient) RefreshToken(ctx context.Context, in *TenantRequest, opts ...grpc.CallOption) (*TokenReply, error) {
 	out := new(TokenReply)
-	err := c.cc.Invoke(ctx, Auth_RefreshPersonalToken_FullMethodName, in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *authClient) RefreshTenantToken(ctx context.Context, in *TenantRequest, opts ...grpc.CallOption) (*TokenReply, error) {
-	out := new(TokenReply)
-	err := c.cc.Invoke(ctx, Auth_RefreshTenantToken_FullMethodName, in, out, opts...)
+	err := c.cc.Invoke(ctx, Auth_RefreshToken_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -100,8 +88,7 @@ type AuthServer interface {
 	// request: id from AuthByPhone, code from message
 	// returns: bearer token
 	AuthByCode(context.Context, *AuthByCodeRequest) (*TokenReply, error)
-	RefreshPersonalToken(context.Context, *v1.EmptyRequest) (*TokenReply, error)
-	RefreshTenantToken(context.Context, *TenantRequest) (*TokenReply, error)
+	RefreshToken(context.Context, *TenantRequest) (*TokenReply, error)
 	mustEmbedUnimplementedAuthServer()
 }
 
@@ -115,11 +102,8 @@ func (UnimplementedAuthServer) AuthByPhone(context.Context, *AuthByPhoneRequest)
 func (UnimplementedAuthServer) AuthByCode(context.Context, *AuthByCodeRequest) (*TokenReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AuthByCode not implemented")
 }
-func (UnimplementedAuthServer) RefreshPersonalToken(context.Context, *v1.EmptyRequest) (*TokenReply, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method RefreshPersonalToken not implemented")
-}
-func (UnimplementedAuthServer) RefreshTenantToken(context.Context, *TenantRequest) (*TokenReply, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method RefreshTenantToken not implemented")
+func (UnimplementedAuthServer) RefreshToken(context.Context, *TenantRequest) (*TokenReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method RefreshToken not implemented")
 }
 func (UnimplementedAuthServer) mustEmbedUnimplementedAuthServer() {}
 
@@ -170,38 +154,20 @@ func _Auth_AuthByCode_Handler(srv interface{}, ctx context.Context, dec func(int
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Auth_RefreshPersonalToken_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(v1.EmptyRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(AuthServer).RefreshPersonalToken(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: Auth_RefreshPersonalToken_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AuthServer).RefreshPersonalToken(ctx, req.(*v1.EmptyRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _Auth_RefreshTenantToken_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _Auth_RefreshToken_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(TenantRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(AuthServer).RefreshTenantToken(ctx, in)
+		return srv.(AuthServer).RefreshToken(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: Auth_RefreshTenantToken_FullMethodName,
+		FullMethod: Auth_RefreshToken_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AuthServer).RefreshTenantToken(ctx, req.(*TenantRequest))
+		return srv.(AuthServer).RefreshToken(ctx, req.(*TenantRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -222,12 +188,8 @@ var Auth_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _Auth_AuthByCode_Handler,
 		},
 		{
-			MethodName: "RefreshPersonalToken",
-			Handler:    _Auth_RefreshPersonalToken_Handler,
-		},
-		{
-			MethodName: "RefreshTenantToken",
-			Handler:    _Auth_RefreshTenantToken_Handler,
+			MethodName: "RefreshToken",
+			Handler:    _Auth_RefreshToken_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

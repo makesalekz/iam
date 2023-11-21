@@ -217,7 +217,6 @@ func (uc *AuthUsecase) GenerateTenantToken(ctx context.Context, userId, tenantId
 		},
 		TenantId: tenantId,
 	}
-	uc.log.Debugf("claims: %+v", claims)
 
 	tenantMemberClient, err := uc.tenants.Members(ctx, claims)
 	if err != nil {
