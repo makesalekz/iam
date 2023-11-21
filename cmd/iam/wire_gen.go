@@ -14,6 +14,8 @@ import (
 	"gitlab.calendaria.team/services/iam/internal/data"
 	"gitlab.calendaria.team/services/iam/internal/server"
 	"gitlab.calendaria.team/services/iam/internal/service"
+	"gitlab.calendaria.team/services/utils/v1/config"
+	"gitlab.calendaria.team/services/utils/v1/jwt"
 )
 
 import (
@@ -24,19 +26,19 @@ import (
 
 // wireApp init kratos application.
 func wireApp(bootstrap *conf.Bootstrap, logger log.Logger) (*kratos.App, func(), error) {
-	config, err := data.NewConfig(bootstrap)
+	configConfig, err := config.NewConfig()
 	if err != nil {
 		return nil, nil, err
 	}
-	jwtProcessor, err := data.NewJwtProcessor(config)
+	jwtProcessor, err := jwt.NewJwtProcessor(configConfig)
 	if err != nil {
 		return nil, nil, err
 	}
-	dialer, err := data.NewDialer(config, jwtProcessor)
+	dialer, err := data.NewDialer(configConfig, bootstrap, jwtProcessor)
 	if err != nil {
 		return nil, nil, err
 	}
-	tenantsRemote, err := data.NewTenantsRemote(config, jwtProcessor)
+	tenantsRemote, err := data.NewTenantsRemote(configConfig, bootstrap, jwtProcessor)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -46,12 +48,12 @@ func wireApp(bootstrap *conf.Bootstrap, logger log.Logger) (*kratos.App, func(),
 	}
 	usersRepo := data.NewUsersRepo(dataData, logger)
 	otpRepo := data.NewOtpRepo(dataData)
-	natsClient, cleanup2, err := data.NewNatsClient(config)
+	natsClient, cleanup2, err := data.NewNatsClient(configConfig, bootstrap)
 	if err != nil {
 		cleanup()
 		return nil, nil, err
 	}
-	queueManager := biz.NewQueueManager(config, natsClient, logger)
+	queueManager := biz.NewQueueManager(configConfig, natsClient, logger)
 	authUsecase, err := biz.NewAuthUsecase(logger, jwtProcessor, dialer, tenantsRemote, usersRepo, otpRepo, queueManager)
 	if err != nil {
 		cleanup2()
@@ -59,7 +61,7 @@ func wireApp(bootstrap *conf.Bootstrap, logger log.Logger) (*kratos.App, func(),
 		return nil, nil, err
 	}
 	authService := service.NewAuthService(logger, authUsecase)
-	usersUsecase, err := biz.NewUsersUsecase(logger, config, jwtProcessor, usersRepo, otpRepo, dialer, tenantsRemote)
+	usersUsecase, err := biz.NewUsersUsecase(logger, configConfig, jwtProcessor, usersRepo, otpRepo, dialer, tenantsRemote)
 	if err != nil {
 		cleanup2()
 		cleanup()
@@ -84,7 +86,7 @@ func wireApp(bootstrap *conf.Bootstrap, logger log.Logger) (*kratos.App, func(),
 	settingsService := service.NewSettingsService(logger, jwtProcessor, settingsUsecase)
 	grpcServer := server.NewGRPCServer(bootstrap, logger, jwtProcessor, authService, usersService, privacyService, settingsService)
 	httpServer := server.NewHTTPServer(bootstrap, logger, jwtProcessor, authService, usersService, privacyService, settingsService)
-	app := newApp(logger, config, grpcServer, httpServer)
+	app := newApp(logger, configConfig, grpcServer, httpServer)
 	return app, func() {
 		cleanup2()
 		cleanup()

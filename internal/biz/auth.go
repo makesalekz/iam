@@ -16,6 +16,7 @@ import (
 	"gitlab.calendaria.team/services/iam/internal/data"
 	notifications_v1 "gitlab.calendaria.team/services/notifications/api/notifications/v1"
 	tenants_v1 "gitlab.calendaria.team/services/tenants/api/tenants/v1"
+	"gitlab.calendaria.team/services/utils/v1/jwt"
 )
 
 const DEFAULT_REGION = "KZ"
@@ -27,7 +28,7 @@ const REFRESH_TOKEN_DURATION = 30 * 24 * time.Hour
 type AuthUsecase struct {
 	log       *log.Helper
 	queue     *QueueManager
-	jwt       *data.JwtProcessor
+	jwt       *jwt.JwtProcessor
 	usersRepo data.UsersRepo
 	otpRepo   data.OtpRepo
 	dialer    *data.Dialer
@@ -37,7 +38,7 @@ type AuthUsecase struct {
 // NewAuthUsecase new a Greeter usecase.
 func NewAuthUsecase(
 	logger log.Logger,
-	jwt *data.JwtProcessor,
+	jwt *jwt.JwtProcessor,
 	dialer *data.Dialer,
 	tenants *data.TenantsRemote,
 	usersRepo data.UsersRepo,
@@ -72,20 +73,20 @@ func (uc *AuthUsecase) AuthUserByPhone(ctx context.Context, phone string) (int64
 			user, err = uc.usersRepo.CreateUserWithPhone(ctx, phone)
 		}
 		if err != nil {
-			return 0, v1.ErrorDatabaseQuery("db error (UsersRepo): %s", err.Error())
+			return 0, v1.ErrorDatabaseQuery("database error: %s", err.Error())
 		}
 	}
 
 	otp, err := uc.otpRepo.CreateOneTimePassword(ctx, int64(user.ID), property.Phone, AUTH_OTP_DURATION)
 	if err != nil {
-		return 0, v1.ErrorDatabaseQuery("db error (OtpRepo): %s", err.Error())
+		return 0, v1.ErrorDatabaseQuery("database error: %s", err.Error())
 	}
 
 	debug := os.Getenv("DEBUG")
 	if debug == "" { // don't send sms in debug mode
 		senderClient, err := uc.dialer.Notifications(ctx)
 		if err != nil {
-			return 0, v1.ErrorGrpcConnection("dialer.Notifications: %s", err.Error())
+			return 0, v1.ErrorGrpcConnection("notifications: %s", err.Error())
 		}
 
 		_, err = senderClient.PersonalSmsSender(ctx, &notifications_v1.PersonalSmsSenderRequest{
@@ -93,7 +94,7 @@ func (uc *AuthUsecase) AuthUserByPhone(ctx context.Context, phone string) (int64
 			Message: fmt.Sprintf("Enter this code to sign in: %s", otp.Code),
 		})
 		if err != nil {
-			return 0, v1.ErrorServiceFailed("senderClient.PersonalSmsSender: %s", err.Error())
+			return 0, v1.ErrorServiceFailed("notifications: %s", err.Error())
 		}
 	}
 
@@ -103,7 +104,7 @@ func (uc *AuthUsecase) AuthUserByPhone(ctx context.Context, phone string) (int64
 func (uc *AuthUsecase) AuthUserByCode(ctx context.Context, userId int64, code string) error {
 	user, err := uc.usersRepo.GetUserById(ctx, userId)
 	if err != nil {
-		return v1.ErrorDatabaseQuery("DB Error (UsersRepo): %s", err.Error())
+		return v1.ErrorDatabaseQuery("database error: %s", err.Error())
 	}
 
 	otp, err := uc.otpRepo.CheckOneTimePassword(ctx, user.ID, code)
@@ -111,7 +112,7 @@ func (uc *AuthUsecase) AuthUserByCode(ctx context.Context, userId int64, code st
 		if ent.IsNotFound(err) {
 			return v1.ErrorInvalidCode("invalid code")
 		}
-		return v1.ErrorDatabaseQuery("DB Error (OtpRepo): %s", err.Error())
+		return v1.ErrorDatabaseQuery("database error: %s", err.Error())
 	}
 
 	err = uc.handleUserVerification(ctx, user, otp)
@@ -146,8 +147,8 @@ func (uc *AuthUsecase) handleUserVerification(ctx context.Context, user *ent.Use
 }
 
 func (uc *AuthUsecase) CheckIdToken(ctx context.Context) (int64, error) {
-	userId, ok := uc.jwt.GetUserIdFromContext(ctx)
-	if !ok {
+	userId := uc.jwt.GetUserIdFromContext(ctx)
+	if userId == 0 {
 		return 0, v1.ErrorInvalidToken("access denied")
 	}
 
@@ -207,7 +208,7 @@ func (uc *AuthUsecase) GenerateTenantToken(ctx context.Context, userId, tenantId
 		duration = REFRESH_TOKEN_DURATION
 	}
 
-	claims := &data.TenantClaims{
+	claims := &jwt.TenantClaims{
 		RegisteredClaims: jwtv4.RegisteredClaims{
 			Issuer:    "iam",
 			Audience:  jwtv4.ClaimStrings{"tenant"},
@@ -220,14 +221,14 @@ func (uc *AuthUsecase) GenerateTenantToken(ctx context.Context, userId, tenantId
 
 	tenantMemberClient, err := uc.tenants.Members(ctx, claims)
 	if err != nil {
-		return "", v1.ErrorGrpcConnection("dialer.TenantsMembers: %s", err.Error())
+		return "", v1.ErrorGrpcConnection("tenants: %s", err.Error())
 	}
 
 	reply, err := tenantMemberClient.GetMember(ctx, &tenants_v1.GetMemberRequest{
 		UserId: userId,
 	})
 	if err != nil {
-		return "", v1.ErrorServiceFailed("tenantMemberClient.GetMember: %s", err.Error())
+		return "", v1.ErrorServiceFailed("tenants: %s", err.Error())
 	}
 
 	claims.MemberId = reply.Member

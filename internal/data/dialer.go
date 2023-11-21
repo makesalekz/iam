@@ -4,7 +4,8 @@ import (
 	"context"
 
 	consul "github.com/go-kratos/consul/registry"
-	"github.com/go-kratos/kratos/v2/middleware/auth/jwt"
+	"github.com/go-kratos/kratos/v2/middleware"
+	kjwt "github.com/go-kratos/kratos/v2/middleware/auth/jwt"
 	"github.com/go-kratos/kratos/v2/transport/grpc"
 	jwtv4 "github.com/golang-jwt/jwt/v4"
 	chats_v1 "gitlab.calendaria.team/services/chats/api/chats/v1"
@@ -12,20 +13,31 @@ import (
 	v1 "gitlab.calendaria.team/services/iam/api/iam/v1"
 	"gitlab.calendaria.team/services/iam/internal/conf"
 	notifications_v1 "gitlab.calendaria.team/services/notifications/api/notifications/v1"
+	"gitlab.calendaria.team/services/utils/v1/config"
+	"gitlab.calendaria.team/services/utils/v1/jwt"
 )
 
 type Dialer struct {
 	conf      *conf.Bootstrap
 	discovery *consul.Registry
-	jwt       *JwtProcessor
+	jwt       *jwt.JwtProcessor
 }
 
-func NewDialer(c *Config, jwt *JwtProcessor) (*Dialer, error) {
+func NewDialer(c *config.Config, conf *conf.Bootstrap, jwt *jwt.JwtProcessor) (*Dialer, error) {
 	return &Dialer{
-		conf:      c.Bootstrap,
+		conf:      conf,
 		discovery: c.GetRegistry(),
 		jwt:       jwt,
 	}, nil
+}
+
+func (d *Dialer) getJwtMiddleware(ctx context.Context) middleware.Middleware {
+	return kjwt.Client(func(token *jwtv4.Token) (interface{}, error) {
+		return d.jwt.GetSecret(), nil
+	}, kjwt.WithSigningMethod(jwtv4.SigningMethodHS256), kjwt.WithClaims(func() jwtv4.Claims {
+		claims, _ := d.jwt.GetClaimsFromContext(ctx)
+		return claims
+	}))
 }
 
 func (d *Dialer) Contacts(ctx context.Context) (contacts_v1.ContactsClient, error) {
@@ -34,13 +46,7 @@ func (d *Dialer) Contacts(ctx context.Context) (contacts_v1.ContactsClient, erro
 		grpc.WithEndpoint(d.conf.Discovery.Contacts),
 		grpc.WithDiscovery(d.discovery),
 		grpc.WithTimeout(d.conf.Discovery.ContactsTimeout.AsDuration()),
-		grpc.WithMiddleware(
-			jwt.Client(func(token *jwtv4.Token) (interface{}, error) {
-				return d.jwt.GetSecret(), nil
-			}, jwt.WithSigningMethod(jwtv4.SigningMethodHS256), jwt.WithClaims(func() jwtv4.Claims {
-				return d.jwt.GetClaimsFromContext(ctx)
-			})),
-		),
+		grpc.WithMiddleware(d.getJwtMiddleware(ctx)),
 	)
 
 	if err != nil {
@@ -56,13 +62,7 @@ func (d *Dialer) Relations(ctx context.Context) (contacts_v1.RelationsClient, er
 		grpc.WithEndpoint(d.conf.Discovery.Contacts),
 		grpc.WithDiscovery(d.discovery),
 		grpc.WithTimeout(d.conf.Discovery.ContactsTimeout.AsDuration()),
-		grpc.WithMiddleware(
-			jwt.Client(func(token *jwtv4.Token) (interface{}, error) {
-				return d.jwt.GetSecret(), nil
-			}, jwt.WithSigningMethod(jwtv4.SigningMethodHS256), jwt.WithClaims(func() jwtv4.Claims {
-				return d.jwt.GetClaimsFromContext(ctx)
-			})),
-		),
+		grpc.WithMiddleware(d.getJwtMiddleware(ctx)),
 	)
 
 	if err != nil {
@@ -78,13 +78,7 @@ func (d *Dialer) Notifications(ctx context.Context) (notifications_v1.SenderClie
 		grpc.WithEndpoint(d.conf.Discovery.Notifications),
 		grpc.WithDiscovery(d.discovery),
 		grpc.WithTimeout(d.conf.Discovery.NotificationsTimeout.AsDuration()),
-		grpc.WithMiddleware(
-			jwt.Client(func(token *jwtv4.Token) (interface{}, error) {
-				return d.jwt.GetSecret(), nil
-			}, jwt.WithSigningMethod(jwtv4.SigningMethodHS256), jwt.WithClaims(func() jwtv4.Claims {
-				return d.jwt.GetClaimsFromContext(ctx)
-			})),
-		),
+		grpc.WithMiddleware(d.getJwtMiddleware(ctx)),
 	)
 
 	if err != nil {
@@ -100,13 +94,7 @@ func (d *Dialer) Chats(ctx context.Context) (chats_v1.ChatsClient, error) {
 		grpc.WithEndpoint(d.conf.Discovery.Chats),
 		grpc.WithDiscovery(d.discovery),
 		grpc.WithTimeout(d.conf.Discovery.ChatsTimeout.AsDuration()),
-		grpc.WithMiddleware(
-			jwt.Client(func(token *jwtv4.Token) (interface{}, error) {
-				return d.jwt.GetSecret(), nil
-			}, jwt.WithSigningMethod(jwtv4.SigningMethodHS256), jwt.WithClaims(func() jwtv4.Claims {
-				return d.jwt.GetClaimsFromContext(ctx)
-			})),
-		),
+		grpc.WithMiddleware(d.getJwtMiddleware(ctx)),
 	)
 	if err != nil {
 		return nil, err
@@ -120,13 +108,7 @@ func (d *Dialer) Members(ctx context.Context) (chats_v1.MembersClient, error) {
 		grpc.WithEndpoint(d.conf.Discovery.Chats),
 		grpc.WithDiscovery(d.discovery),
 		grpc.WithTimeout(d.conf.Discovery.ChatsTimeout.AsDuration()),
-		grpc.WithMiddleware(
-			jwt.Client(func(token *jwtv4.Token) (interface{}, error) {
-				return d.jwt.GetSecret(), nil
-			}, jwt.WithSigningMethod(jwtv4.SigningMethodHS256), jwt.WithClaims(func() jwtv4.Claims {
-				return d.jwt.GetClaimsFromContext(ctx)
-			})),
-		),
+		grpc.WithMiddleware(d.getJwtMiddleware(ctx)),
 	)
 	if err != nil {
 		return nil, err

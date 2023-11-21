@@ -4,24 +4,23 @@ import (
 	"context"
 	"time"
 
+	"github.com/go-kratos/kratos/v2/log"
 	v1 "gitlab.calendaria.team/services/iam/api/iam/v1"
-	"gitlab.calendaria.team/services/iam/ent"
 	"gitlab.calendaria.team/services/iam/internal/biz"
 	"gitlab.calendaria.team/services/iam/internal/data"
 	utils_v1 "gitlab.calendaria.team/services/utils/api/utils/v1"
-
-	"github.com/go-kratos/kratos/v2/log"
+	"gitlab.calendaria.team/services/utils/v1/jwt"
 )
 
 type UsersService struct {
 	v1.UnimplementedUsersServer
 
 	log *log.Helper
-	jwt *data.JwtProcessor
+	jwt *jwt.JwtProcessor
 	uc  *biz.UsersUsecase
 }
 
-func NewUsersService(logger log.Logger, jwt *data.JwtProcessor, uc *biz.UsersUsecase) *UsersService {
+func NewUsersService(logger log.Logger, jwt *jwt.JwtProcessor, uc *biz.UsersUsecase) *UsersService {
 	return &UsersService{
 		log: log.NewHelper(logger),
 		jwt: jwt,
@@ -30,9 +29,9 @@ func NewUsersService(logger log.Logger, jwt *data.JwtProcessor, uc *biz.UsersUse
 }
 
 func (s *UsersService) GetOwnProfile(ctx context.Context, req *utils_v1.EmptyRequest) (*v1.UserFullReply, error) {
-	userId, ok := s.jwt.GetUserIdFromContext(ctx)
-	if !ok {
-		return nil, v1.ErrorUnauthorized("Unauthorized")
+	userId := s.jwt.GetUserIdFromContext(ctx)
+	if userId == 0 {
+		return nil, v1.ErrorUnauthorized("invalid token")
 	}
 
 	user, err := s.uc.GetUserProfile(ctx, data.GetUserFilterDto{UserId: userId})
@@ -58,9 +57,9 @@ func (s *UsersService) GetOwnProfile(ctx context.Context, req *utils_v1.EmptyReq
 }
 
 func (s *UsersService) UpdateOwnProfile(ctx context.Context, req *v1.UpdateOwnProfileRequest) (*v1.UserFullReply, error) {
-	userId, ok := s.jwt.GetUserIdFromContext(ctx)
-	if !ok {
-		return nil, v1.ErrorUnauthorized("Unauthorized")
+	userId := s.jwt.GetUserIdFromContext(ctx)
+	if userId == 0 {
+		return nil, v1.ErrorUnauthorized("invalid token")
 	}
 
 	user, err := s.uc.UpdateUserProfile(ctx, userId, data.UpdateUserDto{
@@ -95,19 +94,15 @@ func (s *UsersService) UpdateOwnProfile(ctx context.Context, req *v1.UpdateOwnPr
 }
 
 func (s *UsersService) DeleteOwnProfile(ctx context.Context, req *utils_v1.EmptyRequest) (*utils_v1.EmptyReply, error) {
-	userId, ok := s.jwt.GetUserIdFromContext(ctx)
-	if !ok {
-		return nil, v1.ErrorUnauthorized("Unauthorized")
+	userId := s.jwt.GetUserIdFromContext(ctx)
+	if userId == 0 {
+		return nil, v1.ErrorUnauthorized("invalid token")
 	}
 
 	// TODO мягко удалить или "пофиксить" все связанные сущности
 	err := s.uc.DeleteUser(ctx, userId)
 	if err != nil {
-		_, notFound := err.(*ent.NotFoundError)
-		if notFound {
-			return nil, v1.ErrorUserNotFound("User not found: %v", err)
-		}
-		return nil, v1.ErrorDatabaseQuery("Internal error")
+		return nil, err
 	}
 
 	return &utils_v1.EmptyReply{}, nil

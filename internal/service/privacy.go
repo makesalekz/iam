@@ -3,24 +3,23 @@ package service
 import (
 	"context"
 
+	"github.com/go-kratos/kratos/v2/log"
 	v1 "gitlab.calendaria.team/services/iam/api/iam/v1"
 	"gitlab.calendaria.team/services/iam/ent"
 	"gitlab.calendaria.team/services/iam/internal/biz"
-	"gitlab.calendaria.team/services/iam/internal/data"
 	utils_v1 "gitlab.calendaria.team/services/utils/api/utils/v1"
-
-	"github.com/go-kratos/kratos/v2/log"
+	"gitlab.calendaria.team/services/utils/v1/jwt"
 )
 
 type PrivacyService struct {
 	v1.UnimplementedPrivacyServer
 
 	log *log.Helper
-	jwt *data.JwtProcessor
+	jwt *jwt.JwtProcessor
 	uc  *biz.PrivacyUsecase
 }
 
-func NewPrivacyService(logger log.Logger, jwt *data.JwtProcessor, uc *biz.PrivacyUsecase) *PrivacyService {
+func NewPrivacyService(logger log.Logger, jwt *jwt.JwtProcessor, uc *biz.PrivacyUsecase) *PrivacyService {
 	return &PrivacyService{
 		log: log.NewHelper(logger),
 		jwt: jwt,
@@ -29,14 +28,14 @@ func NewPrivacyService(logger log.Logger, jwt *data.JwtProcessor, uc *biz.Privac
 }
 
 func (s *PrivacyService) GetPrivacy(ctx context.Context, req *utils_v1.EmptyRequest) (*v1.PrivacyReply, error) {
-	userId, ok := s.jwt.GetUserIdFromContext(ctx)
-	if !ok {
-		return nil, v1.ErrorUnauthorized("Unauthorized")
+	userId := s.jwt.GetUserIdFromContext(ctx)
+	if userId == 0 {
+		return nil, v1.ErrorUnauthorized("invalid token")
 	}
 
 	settings, err := s.uc.GetPrivacy(ctx, userId)
 	if err != nil {
-		return nil, v1.ErrorDatabaseQuery("Internal error")
+		return nil, v1.ErrorDatabaseQuery("database error: %s", err.Error())
 	}
 
 	return &v1.PrivacyReply{
@@ -45,18 +44,17 @@ func (s *PrivacyService) GetPrivacy(ctx context.Context, req *utils_v1.EmptyRequ
 }
 
 func (s *PrivacyService) UpdatePrivacy(ctx context.Context, req *v1.PrivacyRequest) (*v1.PrivacyReply, error) {
-	userId, ok := s.jwt.GetUserIdFromContext(ctx)
-	if !ok {
-		return nil, v1.ErrorUnauthorized("Unauthorized")
+	userId := s.jwt.GetUserIdFromContext(ctx)
+	if userId == 0 {
+		return nil, v1.ErrorUnauthorized("invalid token")
 	}
 
 	settings, err := s.uc.UpdatePrivacy(ctx, userId, req.Settings)
 	if err != nil {
 		if ent.IsValidationError(err) {
-			return nil, v1.ErrorInvalidRequest(err.Error())
+			return nil, v1.ErrorInvalidRequest("invalid request: %s", err.Error())
 		}
-		s.log.Errorf("UpdatePrivacy error: %v", err)
-		return nil, v1.ErrorDatabaseQuery("Internal error")
+		return nil, v1.ErrorDatabaseQuery("database error: %s", err.Error())
 	}
 
 	return &v1.PrivacyReply{
