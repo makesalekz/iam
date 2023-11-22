@@ -280,6 +280,8 @@ func (uc *UsersUsecase) GetUserTenants(ctx context.Context) ([]*tenants_v1.Tenan
 		return nil, v1.ErrorUnauthorized("invalid token")
 	}
 
+	uc.log.Debug("GetUserTenants: ", "claims", claims)
+
 	tenantClient, err := uc.tenants.Tenants(ctx, claims)
 	if err != nil {
 		return nil, v1.ErrorGrpcConnection("tenants: %s", err.Error())
