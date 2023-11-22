@@ -12,15 +12,12 @@ import (
 	"gitlab.calendaria.team/services/utils/v1/config"
 	"gitlab.calendaria.team/services/utils/v1/jwt"
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/connectivity"
 )
 
 type TenantsRemote struct {
 	conf      *conf.Bootstrap
 	discovery *consul.Registry
 	jwt       *jwt.JwtProcessor
-
-	conn *grpc.ClientConn
 }
 
 // NewTenantsRemote .
@@ -32,12 +29,8 @@ func NewTenantsRemote(c *config.Config, conf *conf.Bootstrap, jwt *jwt.JwtProces
 	}, nil
 }
 
-func (r *TenantsRemote) connect(ctx context.Context, claims *jwt.TenantClaims) error {
-	if r.conn != nil && r.conn.GetState() == connectivity.Ready {
-		return nil
-	}
-
-	conn, err := krpc.DialInsecure(
+func (r *TenantsRemote) connect(ctx context.Context, claims *jwt.TenantClaims) (*grpc.ClientConn, error) {
+	return krpc.DialInsecure(
 		ctx,
 		krpc.WithDiscovery(r.discovery),
 		krpc.WithEndpoint(r.conf.Discovery.Tenants),
@@ -50,27 +43,22 @@ func (r *TenantsRemote) connect(ctx context.Context, claims *jwt.TenantClaims) e
 			})),
 		),
 	)
-	if err == nil {
-		r.conn = conn
-	}
-
-	return nil
 }
 
 func (r *TenantsRemote) Tenants(ctx context.Context, claims *jwt.TenantClaims) (tenants_v1.TenantsClient, error) {
-	err := r.connect(ctx, claims)
+	conn, err := r.connect(ctx, claims)
 	if err != nil {
 		return nil, err
 	}
 
-	return tenants_v1.NewTenantsClient(r.conn), nil
+	return tenants_v1.NewTenantsClient(conn), nil
 }
 
 func (r *TenantsRemote) Members(ctx context.Context, claims *jwt.TenantClaims) (tenants_v1.MembersClient, error) {
-	err := r.connect(ctx, claims)
+	conn, err := r.connect(ctx, claims)
 	if err != nil {
 		return nil, err
 	}
 
-	return tenants_v1.NewMembersClient(r.conn), nil
+	return tenants_v1.NewMembersClient(conn), nil
 }
