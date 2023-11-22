@@ -276,7 +276,7 @@ func (uc *UsersUsecase) GetUsers(ctx context.Context, filter data.GetUsersFilter
 
 func (uc *UsersUsecase) GetUserTenants(ctx context.Context) ([]*tenants_v1.Tenant, error) {
 	claims, ok := uc.jwt.GetClaimsFromContext(ctx)
-	if !ok || !claims.IsUserTenantRequest() {
+	if !ok || !claims.IsUserRequest() {
 		return nil, v1.ErrorUnauthorized("invalid token")
 	}
 
