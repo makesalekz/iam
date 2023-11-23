@@ -92,9 +92,11 @@ func (r *usersRepo) UpdateUserData(ctx context.Context, user *ent.User, dto Upda
 		query.SetBio(dto.Bio)
 		query.SetBioUpdatedAt(now)
 	}
-	if dto.Avatar != "" && dto.Avatar != *user.Avatar { // unnecessary to finish the registration
-		shouldUpdate = true
-		query.SetAvatar(dto.Avatar)
+	if dto.Avatar != "" { // unnecessary to finish the registration
+		if user.Avatar == nil || *user.Avatar != dto.Avatar { // check if new phone is different from the old one
+			shouldUpdate = true
+			query.SetAvatar(dto.Avatar)
+		}
 	}
 	if dto.Timezone != "" { // !required to finish the registration
 		shouldUpdate = true
