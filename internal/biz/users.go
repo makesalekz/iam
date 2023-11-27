@@ -12,6 +12,7 @@ import (
 	"gitlab.calendaria.team/services/iam/ent"
 	"gitlab.calendaria.team/services/iam/internal/data"
 	tenants_v1 "gitlab.calendaria.team/services/tenants/api/tenants/v1"
+	utils_v1 "gitlab.calendaria.team/services/utils/api/utils/v1"
 	"gitlab.calendaria.team/services/utils/v1/config"
 	"gitlab.calendaria.team/services/utils/v1/jwt"
 )
@@ -260,8 +261,12 @@ func (uc *UsersUsecase) DeleteUser(ctx context.Context, userId int64) error {
 	return nil
 }
 
-func (uc *UsersUsecase) GetUsers(ctx context.Context, filter data.GetUsersFilterDto) ([]*UserItem, error) {
-	users, err := uc.usersRepo.GetUsers(ctx, filter)
+func (uc *UsersUsecase) GetUsers(ctx context.Context, filter data.GetUsersFilterDto, sort *utils_v1.SortRequest, paginate *utils_v1.PaginateRequest) ([]*UserItem, error) {
+	if paginate == nil {
+		paginate = &utils_v1.PaginateRequest{}
+	}
+
+	users, err := uc.usersRepo.GetUsers(ctx, filter, sort, paginate)
 	if err != nil {
 		return nil, v1.ErrorDatabaseQuery("database error: %s", err.Error())
 	}

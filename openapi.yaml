@@ -328,8 +328,12 @@ components:
                     type: array
                     items:
                         type: string
-                withRelation:
-                    type: boolean
+                search:
+                    type: string
+                sort:
+                    $ref: '#/components/schemas/utils.v1.SortRequest'
+                paginate:
+                    $ref: '#/components/schemas/utils.v1.PaginateRequest'
         iam.v1.PrivacyReply:
             type: object
             properties:
@@ -479,6 +483,38 @@ components:
         utils.v1.EmptyReply:
             type: object
             properties: {}
+        utils.v1.PaginateRequest:
+            type: object
+            properties:
+                limit:
+                    type: integer
+                    format: int32
+                fromId:
+                    type: string
+                toId:
+                    type: string
+                aroundId:
+                    type: string
+                fromDate:
+                    type: string
+                toDate:
+                    type: string
+                aroundDate:
+                    type: string
+                fromLabel:
+                    type: string
+                descending:
+                    type: boolean
+                page:
+                    type: integer
+                    format: int32
+        utils.v1.SortRequest:
+            type: object
+            properties:
+                field:
+                    type: string
+                descending:
+                    type: boolean
 tags:
     - name: Auth
     - name: Privacy
