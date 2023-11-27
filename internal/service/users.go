@@ -146,9 +146,10 @@ func (s *UsersService) GetUsers(ctx context.Context, req *v1.GetUsersRequest) (*
 		UsersIds: req.GetIds(),
 		Phones:   req.GetPhones(),
 		Emails:   req.GetEmails(),
+		Search:   req.GetSearch(),
 	}
 
-	users, err := s.uc.GetUsers(ctx, filter)
+	users, err := s.uc.GetUsers(ctx, filter, req.Sort, req.Paginate)
 	if err != nil {
 		return nil, err
 	}

@@ -113,7 +113,9 @@ message GetUsersRequest {
 	repeated int64 ids = 1;
 	repeated string phones = 2;
 	repeated string emails = 3;
-	optional bool withRelation = 4;
+	string search = 4;
+	utils.v1.SortRequest sort = 5;
+	utils.v1.PaginateRequest paginate = 6;
 }
 
 message GetUsersReply {

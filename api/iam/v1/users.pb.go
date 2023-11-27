@@ -399,10 +399,12 @@ type GetUsersRequest struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	Ids          []int64  `protobuf:"varint,1,rep,packed,name=ids,proto3" json:"ids,omitempty"`
-	Phones       []string `protobuf:"bytes,2,rep,name=phones,proto3" json:"phones,omitempty"`
-	Emails       []string `protobuf:"bytes,3,rep,name=emails,proto3" json:"emails,omitempty"`
-	WithRelation *bool    `protobuf:"varint,4,opt,name=withRelation,proto3,oneof" json:"withRelation,omitempty"`
+	Ids      []int64             `protobuf:"varint,1,rep,packed,name=ids,proto3" json:"ids,omitempty"`
+	Phones   []string            `protobuf:"bytes,2,rep,name=phones,proto3" json:"phones,omitempty"`
+	Emails   []string            `protobuf:"bytes,3,rep,name=emails,proto3" json:"emails,omitempty"`
+	Search   string              `protobuf:"bytes,4,opt,name=search,proto3" json:"search,omitempty"`
+	Sort     *v1.SortRequest     `protobuf:"bytes,5,opt,name=sort,proto3" json:"sort,omitempty"`
+	Paginate *v1.PaginateRequest `protobuf:"bytes,6,opt,name=paginate,proto3" json:"paginate,omitempty"`
 }
 
 func (x *GetUsersRequest) Reset() {
@@ -458,11 +460,25 @@ func (x *GetUsersRequest) GetEmails() []string {
 	return nil
 }
 
-func (x *GetUsersRequest) GetWithRelation() bool {
-	if x != nil && x.WithRelation != nil {
-		return *x.WithRelation
+func (x *GetUsersRequest) GetSearch() string {
+	if x != nil {
+		return x.Search
 	}
-	return false
+	return ""
+}
+
+func (x *GetUsersRequest) GetSort() *v1.SortRequest {
+	if x != nil {
+		return x.Sort
+	}
+	return nil
+}
+
+func (x *GetUsersRequest) GetPaginate() *v1.PaginateRequest {
+	if x != nil {
+		return x.Paginate
+	}
+	return nil
 }
 
 type GetUsersReply struct {
@@ -555,16 +571,20 @@ var file_api_iam_v1_users_proto_rawDesc = []byte{
 	0x22, 0x32, 0x0a, 0x09, 0x55, 0x73, 0x65, 0x72, 0x52, 0x65, 0x70, 0x6c, 0x79, 0x12, 0x25, 0x0a,
 	0x04, 0x75, 0x73, 0x65, 0x72, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x11, 0x2e, 0x69, 0x61,
 	0x6d, 0x2e, 0x76, 0x31, 0x2e, 0x55, 0x73, 0x65, 0x72, 0x53, 0x68, 0x6f, 0x72, 0x74, 0x52, 0x04,
-	0x75, 0x73, 0x65, 0x72, 0x22, 0x8d, 0x01, 0x0a, 0x0f, 0x47, 0x65, 0x74, 0x55, 0x73, 0x65, 0x72,
+	0x75, 0x73, 0x65, 0x72, 0x22, 0xcd, 0x01, 0x0a, 0x0f, 0x47, 0x65, 0x74, 0x55, 0x73, 0x65, 0x72,
 	0x73, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x10, 0x0a, 0x03, 0x69, 0x64, 0x73, 0x18,
 	0x01, 0x20, 0x03, 0x28, 0x03, 0x52, 0x03, 0x69, 0x64, 0x73, 0x12, 0x16, 0x0a, 0x06, 0x70, 0x68,
 	0x6f, 0x6e, 0x65, 0x73, 0x18, 0x02, 0x20, 0x03, 0x28, 0x09, 0x52, 0x06, 0x70, 0x68, 0x6f, 0x6e,
 	0x65, 0x73, 0x12, 0x16, 0x0a, 0x06, 0x65, 0x6d, 0x61, 0x69, 0x6c, 0x73, 0x18, 0x03, 0x20, 0x03,
-	0x28, 0x09, 0x52, 0x06, 0x65, 0x6d, 0x61, 0x69, 0x6c, 0x73, 0x12, 0x27, 0x0a, 0x0c, 0x77, 0x69,
-	0x74, 0x68, 0x52, 0x65, 0x6c, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x18, 0x04, 0x20, 0x01, 0x28, 0x08,
-	0x48, 0x00, 0x52, 0x0c, 0x77, 0x69, 0x74, 0x68, 0x52, 0x65, 0x6c, 0x61, 0x74, 0x69, 0x6f, 0x6e,
-	0x88, 0x01, 0x01, 0x42, 0x0f, 0x0a, 0x0d, 0x5f, 0x77, 0x69, 0x74, 0x68, 0x52, 0x65, 0x6c, 0x61,
-	0x74, 0x69, 0x6f, 0x6e, 0x22, 0x38, 0x0a, 0x0d, 0x47, 0x65, 0x74, 0x55, 0x73, 0x65, 0x72, 0x73,
+	0x28, 0x09, 0x52, 0x06, 0x65, 0x6d, 0x61, 0x69, 0x6c, 0x73, 0x12, 0x16, 0x0a, 0x06, 0x73, 0x65,
+	0x61, 0x72, 0x63, 0x68, 0x18, 0x04, 0x20, 0x01, 0x28, 0x09, 0x52, 0x06, 0x73, 0x65, 0x61, 0x72,
+	0x63, 0x68, 0x12, 0x29, 0x0a, 0x04, 0x73, 0x6f, 0x72, 0x74, 0x18, 0x05, 0x20, 0x01, 0x28, 0x0b,
+	0x32, 0x15, 0x2e, 0x75, 0x74, 0x69, 0x6c, 0x73, 0x2e, 0x76, 0x31, 0x2e, 0x53, 0x6f, 0x72, 0x74,
+	0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x52, 0x04, 0x73, 0x6f, 0x72, 0x74, 0x12, 0x35, 0x0a,
+	0x08, 0x70, 0x61, 0x67, 0x69, 0x6e, 0x61, 0x74, 0x65, 0x18, 0x06, 0x20, 0x01, 0x28, 0x0b, 0x32,
+	0x19, 0x2e, 0x75, 0x74, 0x69, 0x6c, 0x73, 0x2e, 0x76, 0x31, 0x2e, 0x50, 0x61, 0x67, 0x69, 0x6e,
+	0x61, 0x74, 0x65, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x52, 0x08, 0x70, 0x61, 0x67, 0x69,
+	0x6e, 0x61, 0x74, 0x65, 0x22, 0x38, 0x0a, 0x0d, 0x47, 0x65, 0x74, 0x55, 0x73, 0x65, 0x72, 0x73,
 	0x52, 0x65, 0x70, 0x6c, 0x79, 0x12, 0x27, 0x0a, 0x05, 0x75, 0x73, 0x65, 0x72, 0x73, 0x18, 0x01,
 	0x20, 0x03, 0x28, 0x0b, 0x32, 0x11, 0x2e, 0x69, 0x61, 0x6d, 0x2e, 0x76, 0x31, 0x2e, 0x55, 0x73,
 	0x65, 0x72, 0x53, 0x68, 0x6f, 0x72, 0x74, 0x52, 0x05, 0x75, 0x73, 0x65, 0x72, 0x73, 0x32, 0xf1,
@@ -647,36 +667,40 @@ var file_api_iam_v1_users_proto_goTypes = []interface{}{
 	(*User)(nil),                    // 8: iam.v1.User
 	(*TenantShort)(nil),             // 9: iam.v1.TenantShort
 	(*UserShort)(nil),               // 10: iam.v1.UserShort
-	(*v1.EmptyRequest)(nil),         // 11: utils.v1.EmptyRequest
-	(*v1.EmptyReply)(nil),           // 12: utils.v1.EmptyReply
+	(*v1.SortRequest)(nil),          // 11: utils.v1.SortRequest
+	(*v1.PaginateRequest)(nil),      // 12: utils.v1.PaginateRequest
+	(*v1.EmptyRequest)(nil),         // 13: utils.v1.EmptyRequest
+	(*v1.EmptyReply)(nil),           // 14: utils.v1.EmptyReply
 }
 var file_api_iam_v1_users_proto_depIdxs = []int32{
 	8,  // 0: iam.v1.UserFullReply.user:type_name -> iam.v1.User
 	9,  // 1: iam.v1.UserFullReply.tenants:type_name -> iam.v1.TenantShort
 	4,  // 2: iam.v1.GetUserByFilterRequest.search:type_name -> iam.v1.SearchFilter
 	10, // 3: iam.v1.UserReply.user:type_name -> iam.v1.UserShort
-	10, // 4: iam.v1.GetUsersReply.users:type_name -> iam.v1.UserShort
-	11, // 5: iam.v1.Users.GetOwnProfile:input_type -> utils.v1.EmptyRequest
-	1,  // 6: iam.v1.Users.UpdateOwnProfile:input_type -> iam.v1.UpdateOwnProfileRequest
-	11, // 7: iam.v1.Users.DeleteOwnProfile:input_type -> utils.v1.EmptyRequest
-	2,  // 8: iam.v1.Users.GetUserFull:input_type -> iam.v1.GetUserRequest
-	3,  // 9: iam.v1.Users.GetUserByFilterFull:input_type -> iam.v1.GetUserByFilterRequest
-	2,  // 10: iam.v1.Users.GetUser:input_type -> iam.v1.GetUserRequest
-	3,  // 11: iam.v1.Users.GetUserByFilter:input_type -> iam.v1.GetUserByFilterRequest
-	6,  // 12: iam.v1.Users.GetUsers:input_type -> iam.v1.GetUsersRequest
-	0,  // 13: iam.v1.Users.GetOwnProfile:output_type -> iam.v1.UserFullReply
-	0,  // 14: iam.v1.Users.UpdateOwnProfile:output_type -> iam.v1.UserFullReply
-	12, // 15: iam.v1.Users.DeleteOwnProfile:output_type -> utils.v1.EmptyReply
-	0,  // 16: iam.v1.Users.GetUserFull:output_type -> iam.v1.UserFullReply
-	0,  // 17: iam.v1.Users.GetUserByFilterFull:output_type -> iam.v1.UserFullReply
-	5,  // 18: iam.v1.Users.GetUser:output_type -> iam.v1.UserReply
-	5,  // 19: iam.v1.Users.GetUserByFilter:output_type -> iam.v1.UserReply
-	7,  // 20: iam.v1.Users.GetUsers:output_type -> iam.v1.GetUsersReply
-	13, // [13:21] is the sub-list for method output_type
-	5,  // [5:13] is the sub-list for method input_type
-	5,  // [5:5] is the sub-list for extension type_name
-	5,  // [5:5] is the sub-list for extension extendee
-	0,  // [0:5] is the sub-list for field type_name
+	11, // 4: iam.v1.GetUsersRequest.sort:type_name -> utils.v1.SortRequest
+	12, // 5: iam.v1.GetUsersRequest.paginate:type_name -> utils.v1.PaginateRequest
+	10, // 6: iam.v1.GetUsersReply.users:type_name -> iam.v1.UserShort
+	13, // 7: iam.v1.Users.GetOwnProfile:input_type -> utils.v1.EmptyRequest
+	1,  // 8: iam.v1.Users.UpdateOwnProfile:input_type -> iam.v1.UpdateOwnProfileRequest
+	13, // 9: iam.v1.Users.DeleteOwnProfile:input_type -> utils.v1.EmptyRequest
+	2,  // 10: iam.v1.Users.GetUserFull:input_type -> iam.v1.GetUserRequest
+	3,  // 11: iam.v1.Users.GetUserByFilterFull:input_type -> iam.v1.GetUserByFilterRequest
+	2,  // 12: iam.v1.Users.GetUser:input_type -> iam.v1.GetUserRequest
+	3,  // 13: iam.v1.Users.GetUserByFilter:input_type -> iam.v1.GetUserByFilterRequest
+	6,  // 14: iam.v1.Users.GetUsers:input_type -> iam.v1.GetUsersRequest
+	0,  // 15: iam.v1.Users.GetOwnProfile:output_type -> iam.v1.UserFullReply
+	0,  // 16: iam.v1.Users.UpdateOwnProfile:output_type -> iam.v1.UserFullReply
+	14, // 17: iam.v1.Users.DeleteOwnProfile:output_type -> utils.v1.EmptyReply
+	0,  // 18: iam.v1.Users.GetUserFull:output_type -> iam.v1.UserFullReply
+	0,  // 19: iam.v1.Users.GetUserByFilterFull:output_type -> iam.v1.UserFullReply
+	5,  // 20: iam.v1.Users.GetUser:output_type -> iam.v1.UserReply
+	5,  // 21: iam.v1.Users.GetUserByFilter:output_type -> iam.v1.UserReply
+	7,  // 22: iam.v1.Users.GetUsers:output_type -> iam.v1.GetUsersReply
+	15, // [15:23] is the sub-list for method output_type
+	7,  // [7:15] is the sub-list for method input_type
+	7,  // [7:7] is the sub-list for extension type_name
+	7,  // [7:7] is the sub-list for extension extendee
+	0,  // [0:7] is the sub-list for field type_name
 }
 
 func init() { file_api_iam_v1_users_proto_init() }
@@ -787,7 +811,6 @@ func file_api_iam_v1_users_proto_init() {
 		(*SearchFilter_Phone)(nil),
 		(*SearchFilter_Email)(nil),
 	}
-	file_api_iam_v1_users_proto_msgTypes[6].OneofWrappers = []interface{}{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
