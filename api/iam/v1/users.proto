@@ -84,7 +84,7 @@ message UpdateOwnProfileRequest {
 	string phone = 1;
 	string email = 2;
 	string name = 3;
-	string bio = 4;
+	optional string bio = 4;
 	string avatar = 5;
 	string timezone = 6;
 	bool withTenants = 7;
