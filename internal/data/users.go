@@ -14,7 +14,7 @@ type UpdateUserDto struct {
 	Phone    string
 	Email    string
 	Name     string
-	Bio      string
+	Bio      *string
 	Avatar   string
 	Timezone string
 }
@@ -89,10 +89,9 @@ func (r *usersRepo) UpdateUserData(ctx context.Context, user *ent.User, dto Upda
 		shouldUpdate = true
 		query.SetName(dto.Name)
 	}
-	if dto.Bio != "" && dto.Bio != user.Bio { // unnecessary to finish the registration
+	if dto.Bio != nil && *dto.Bio != user.Bio { // unnecessary to finish the registration
 		shouldUpdate = true
-		query.SetBio(dto.Bio)
-		query.SetBioUpdatedAt(now)
+		query.SetBio(*dto.Bio).SetBioUpdatedAt(now)
 	}
 	if dto.Avatar != "" { // unnecessary to finish the registration
 		if user.Avatar == nil || *user.Avatar != dto.Avatar { // check if new phone is different from the old one
