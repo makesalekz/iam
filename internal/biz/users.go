@@ -109,7 +109,6 @@ func (uc *UsersUsecase) includeRelations(ctx context.Context, users ...*UserItem
 		if v1.IsRelationNotFound(err) {
 			return nil
 		}
-
 		return err
 	}
 
@@ -274,6 +273,13 @@ func (uc *UsersUsecase) GetUsers(ctx context.Context, filter data.GetUsersFilter
 	replyUsers := make([]*UserItem, len(users))
 	for i, user := range users {
 		replyUsers[i] = &UserItem{User: user}
+	}
+
+	if filter.WithRelation != nil && *filter.WithRelation {
+		err = uc.includeRelations(ctx, replyUsers...)
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	return replyUsers, nil

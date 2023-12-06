@@ -11,13 +11,13 @@ require (
 	github.com/lib/pq v1.10.9
 	github.com/nats-io/nats.go v1.31.0
 	github.com/nyaruka/phonenumbers v1.1.8
-	gitlab.calendaria.team/services/chats v0.1.0
+	gitlab.calendaria.team/services/chats v0.2.2
 	gitlab.calendaria.team/services/contacts v0.1.0
 	gitlab.calendaria.team/services/notifications v0.1.0
 	gitlab.calendaria.team/services/tenants v0.1.1
 	gitlab.calendaria.team/services/utils v0.0.3
 	go.uber.org/automaxprocs v1.5.3
-	google.golang.org/genproto/googleapis/api v0.0.0-20231030173426-d783a09b4405
+	google.golang.org/genproto/googleapis/api v0.0.0-20231106174013-bbf56f31fb17
 	google.golang.org/grpc v1.59.0
 	google.golang.org/protobuf v1.31.0
 )
@@ -85,7 +85,7 @@ require (
 	golang.org/x/text v0.14.0 // indirect
 	golang.org/x/time v0.3.0 // indirect
 	golang.org/x/tools v0.13.0 // indirect
-	google.golang.org/genproto v0.0.0-20231016165738-49dd2c1f3d0b // indirect
-	google.golang.org/genproto/googleapis/rpc v0.0.0-20231016165738-49dd2c1f3d0b // indirect
+	google.golang.org/genproto v0.0.0-20231030173426-d783a09b4405 // indirect
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20231030173426-d783a09b4405 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )

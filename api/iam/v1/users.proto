@@ -64,7 +64,7 @@ service Users {
 			body: "*"
 		};
 	};
-	// search goes by all fileds  
+	// search goes by all fields
 	// t.m if you declare labels,emails,ids this method will return all
 	// users that has these fields
 	rpc GetUsers (GetUsersRequest) returns (GetUsersReply) {
@@ -114,8 +114,9 @@ message GetUsersRequest {
 	repeated string phones = 2;
 	repeated string emails = 3;
 	string search = 4;
-	utils.v1.SortRequest sort = 5;
-	utils.v1.PaginateRequest paginate = 6;
+	optional bool withRelation = 5;
+	utils.v1.SortRequest sort = 6;
+	utils.v1.PaginateRequest paginate = 7;
 }
 
 message GetUsersReply {

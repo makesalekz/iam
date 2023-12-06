@@ -66,7 +66,10 @@ paths:
         post:
             tags:
                 - Users
-            description: "search goes by all fileds  \n t.m if you declare labels,emails,ids this method will return all\n users that has these fields"
+            description: |-
+                search goes by all fields
+                 t.m if you declare labels,emails,ids this method will return all
+                 users that has these fields
             operationId: Users_GetUsers
             requestBody:
                 content:
@@ -330,6 +333,8 @@ components:
                         type: string
                 search:
                     type: string
+                withRelation:
+                    type: boolean
                 sort:
                     $ref: '#/components/schemas/utils.v1.SortRequest'
                 paginate:
@@ -480,6 +485,8 @@ components:
                     type: string
                 lastLoginAt:
                     type: string
+                relation:
+                    $ref: '#/components/schemas/iam.v1.Relation'
         utils.v1.EmptyReply:
             type: object
             properties: {}
