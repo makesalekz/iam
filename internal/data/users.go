@@ -32,7 +32,7 @@ type GetUsersFilterDto struct {
 	Phones       []string
 	Emails       []string
 	Search       string
-	WithRelation *bool
+	WithRelation bool
 }
 
 // UsersRepo

@@ -88,7 +88,9 @@ paths:
         get:
             tags:
                 - Users
-            description: "GetOwnProfile  \n This is self explanotory, returns own profile"
+            description: |-
+                GetOwnProfile
+                 This is self explanotory, returns own profile
             operationId: Users_GetOwnProfile
             responses:
                 "200":
@@ -100,7 +102,9 @@ paths:
         post:
             tags:
                 - Users
-            description: "UpdateOwnProfile  \n This is self explanotory, update own profile"
+            description: |-
+                UpdateOwnProfile
+                 This is self explanotory, update own profile
             operationId: Users_UpdateOwnProfile
             requestBody:
                 content:
@@ -118,7 +122,9 @@ paths:
         delete:
             tags:
                 - Users
-            description: "DeleteOwnProfile  \n This is self explanotory, delete own profile"
+            description: |-
+                DeleteOwnProfile
+                 This is self explanotory, delete own profile
             operationId: Users_DeleteOwnProfile
             responses:
                 "200":
@@ -189,7 +195,9 @@ paths:
         post:
             tags:
                 - Users
-            description: "in case of search by phone, search.email should not be present  \n in case of search by email, search.phone should not be present"
+            description: |-
+                in case of search by phone, search.email should not be present
+                 in case of search by email, search.phone should not be present
             operationId: Users_GetUserByFilter
             requestBody:
                 content:
@@ -208,7 +216,9 @@ paths:
         post:
             tags:
                 - Users
-            description: "in case of search by phone, search.email should not be present  \n in case of search by email, search.phone should not be present"
+            description: |-
+                in case of search by phone, search.email should not be present
+                 in case of search by email, search.phone should not be present
             operationId: Users_GetUserByFilterFull
             requestBody:
                 content:
@@ -227,7 +237,9 @@ paths:
         get:
             tags:
                 - Users
-            description: "GetUser  \n get single user"
+            description: |-
+                GetUser
+                 get single user
             operationId: Users_GetUser
             parameters:
                 - name: userId
@@ -246,7 +258,10 @@ paths:
         get:
             tags:
                 - Users
-            description: "GetUserFull  \n Returns full information about user  \n Request: userId of seeking user"
+            description: |-
+                GetUserFull
+                 Returns full information about user
+                 Request: userId of seeking user
             operationId: Users_GetUserFull
             parameters:
                 - name: userId
