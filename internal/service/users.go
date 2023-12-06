@@ -143,10 +143,11 @@ func (s *UsersService) GetUser(ctx context.Context, req *v1.GetUserRequest) (*v1
 
 func (s *UsersService) GetUsers(ctx context.Context, req *v1.GetUsersRequest) (*v1.GetUsersReply, error) {
 	filter := data.GetUsersFilterDto{
-		UsersIds: req.GetIds(),
-		Phones:   req.GetPhones(),
-		Emails:   req.GetEmails(),
-		Search:   req.GetSearch(),
+		UsersIds:     req.GetIds(),
+		Phones:       req.GetPhones(),
+		Emails:       req.GetEmails(),
+		Search:       req.GetSearch(),
+		WithRelation: req.WithRelation,
 	}
 
 	users, err := s.uc.GetUsers(ctx, filter, req.Sort, req.Paginate)
@@ -229,6 +230,7 @@ func userItemToV1ShortUser(user *biz.UserItem) *v1.UserShort {
 		Id:          user.ID,
 		Name:        user.Name,
 		LastLoginAt: user.LastLoginAt.Format(time.RFC3339),
+		Relation:    user.Relation,
 	}
 
 	if user.Phone != nil {
