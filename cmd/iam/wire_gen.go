@@ -48,7 +48,7 @@ func wireApp(bootstrap *conf.Bootstrap, logger log.Logger) (*kratos.App, func(),
 	}
 	usersRepo := data.NewUsersRepo(dataData, logger)
 	otpRepo := data.NewOtpRepo(dataData)
-	natsClient, cleanup2, err := data.NewNatsClient(configConfig, bootstrap)
+	natsClient, cleanup2, err := data.NewNatsClient(bootstrap)
 	if err != nil {
 		cleanup()
 		return nil, nil, err
@@ -84,8 +84,8 @@ func wireApp(bootstrap *conf.Bootstrap, logger log.Logger) (*kratos.App, func(),
 		return nil, nil, err
 	}
 	settingsService := service.NewSettingsService(logger, jwtProcessor, settingsUsecase)
-	grpcServer := server.NewGRPCServer(bootstrap, logger, jwtProcessor, authService, usersService, privacyService, settingsService)
-	httpServer := server.NewHTTPServer(bootstrap, logger, jwtProcessor, authService, usersService, privacyService, settingsService)
+	grpcServer := server.NewGRPCServer(bootstrap, jwtProcessor, authService, usersService, privacyService, settingsService)
+	httpServer := server.NewHTTPServer(bootstrap, jwtProcessor, authService, usersService, privacyService, settingsService)
 	app := newApp(logger, configConfig, grpcServer, httpServer)
 	return app, func() {
 		cleanup2()

@@ -1,7 +1,6 @@
 package server
 
 import (
-	"github.com/go-kratos/kratos/v2/log"
 	kjwt "github.com/go-kratos/kratos/v2/middleware/auth/jwt"
 	"github.com/go-kratos/kratos/v2/middleware/metadata"
 	"github.com/go-kratos/kratos/v2/middleware/recovery"
@@ -16,7 +15,6 @@ import (
 // NewGRPCServer new a gRPC server.
 func NewGRPCServer(
 	c *conf.Bootstrap,
-	logger log.Logger,
 	jwtp *jwt.JwtProcessor,
 	auth *service.AuthService,
 	users *service.UsersService,
