@@ -174,7 +174,7 @@ func (uc *UsersUsecase) GetUserProfile(ctx context.Context, filter data.GetUserF
 	}
 
 	if filter.WithContact {
-		contactLabel, err := uc.getUserContactLabel(ctx, filter.UserId)
+		contactLabel, err := uc.getUserContactLabel(ctx, user.ID)
 		if err != nil {
 			if !v1.IsContactNotFound(err) {
 				return nil, err
