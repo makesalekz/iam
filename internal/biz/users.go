@@ -159,7 +159,7 @@ func (uc *UsersUsecase) GetUserProfile(ctx context.Context, filter data.GetUserF
 			return nil, err
 		}
 
-		replyUser.Contact = &v1.Contact{Label: contactLabel.Label}
+		replyUser.Contact = contactLabel
 	}
 
 	if filter.WithRelation {
