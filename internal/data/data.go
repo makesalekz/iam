@@ -9,6 +9,7 @@ import (
 	"gitlab.calendaria.team/services/iam/ent"
 	"gitlab.calendaria.team/services/iam/internal/conf"
 	"gitlab.calendaria.team/services/utils/v1/config"
+	"gitlab.calendaria.team/services/utils/v1/dialer"
 	"gitlab.calendaria.team/services/utils/v1/jwt"
 
 	_ "github.com/lib/pq"
@@ -25,7 +26,10 @@ var ProviderSet = wire.NewSet(
 	NewOtpRepo,
 	NewPrivacyRepo,
 	NewSettingsRepo,
-	NewDialer,
+	dialer.NewDialer,
+	NewChatsRemote,
+	NewContactsRemote,
+	NewNotificationsRemote,
 	NewTenantsRemote,
 )
 
