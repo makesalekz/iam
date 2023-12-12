@@ -15,6 +15,7 @@ import (
 	"gitlab.calendaria.team/services/iam/internal/server"
 	"gitlab.calendaria.team/services/iam/internal/service"
 	"gitlab.calendaria.team/services/utils/v1/config"
+	"gitlab.calendaria.team/services/utils/v1/dialer"
 	"gitlab.calendaria.team/services/utils/v1/jwt"
 )
 
@@ -34,14 +35,6 @@ func wireApp(bootstrap *conf.Bootstrap, logger log.Logger) (*kratos.App, func(),
 	if err != nil {
 		return nil, nil, err
 	}
-	dialer, err := data.NewDialer(configConfig, bootstrap, jwtProcessor)
-	if err != nil {
-		return nil, nil, err
-	}
-	tenantsRemote, err := data.NewTenantsRemote(configConfig, bootstrap, jwtProcessor)
-	if err != nil {
-		return nil, nil, err
-	}
 	dataData, cleanup, err := data.NewData(bootstrap, logger)
 	if err != nil {
 		return nil, nil, err
@@ -54,14 +47,44 @@ func wireApp(bootstrap *conf.Bootstrap, logger log.Logger) (*kratos.App, func(),
 		return nil, nil, err
 	}
 	queueManager := biz.NewQueueManager(configConfig, natsClient, logger)
-	authUsecase, err := biz.NewAuthUsecase(logger, jwtProcessor, dialer, tenantsRemote, usersRepo, otpRepo, queueManager)
+	dialerDialer, err := dialer.NewDialer(configConfig, jwtProcessor)
+	if err != nil {
+		cleanup2()
+		cleanup()
+		return nil, nil, err
+	}
+	tenantsRemote, err := data.NewTenantsRemote(dialerDialer, bootstrap, jwtProcessor)
+	if err != nil {
+		cleanup2()
+		cleanup()
+		return nil, nil, err
+	}
+	notificationsRemote, err := data.NewNotificationsRemote(dialerDialer, bootstrap)
+	if err != nil {
+		cleanup2()
+		cleanup()
+		return nil, nil, err
+	}
+	authUsecase, err := biz.NewAuthUsecase(logger, jwtProcessor, usersRepo, otpRepo, queueManager, tenantsRemote, notificationsRemote)
 	if err != nil {
 		cleanup2()
 		cleanup()
 		return nil, nil, err
 	}
 	authService := service.NewAuthService(logger, authUsecase)
-	usersUsecase, err := biz.NewUsersUsecase(logger, configConfig, jwtProcessor, usersRepo, otpRepo, dialer, tenantsRemote)
+	chatsRemote, err := data.NewChatsRemote(dialerDialer, bootstrap)
+	if err != nil {
+		cleanup2()
+		cleanup()
+		return nil, nil, err
+	}
+	contactsRemote, err := data.NewContactsRemote(dialerDialer, bootstrap)
+	if err != nil {
+		cleanup2()
+		cleanup()
+		return nil, nil, err
+	}
+	usersUsecase, err := biz.NewUsersUsecase(logger, configConfig, jwtProcessor, usersRepo, otpRepo, chatsRemote, contactsRemote, tenantsRemote)
 	if err != nil {
 		cleanup2()
 		cleanup()

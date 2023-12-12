@@ -14,8 +14,6 @@ import (
 	"gitlab.calendaria.team/services/iam/ent"
 	"gitlab.calendaria.team/services/iam/ent/property"
 	"gitlab.calendaria.team/services/iam/internal/data"
-	notifications_v1 "gitlab.calendaria.team/services/notifications/api/notifications/v1"
-	tenants_v1 "gitlab.calendaria.team/services/tenants/api/tenants/v1"
 	"gitlab.calendaria.team/services/utils/v1/jwt"
 )
 
@@ -26,33 +24,33 @@ const REFRESH_TOKEN_DURATION = 30 * 24 * time.Hour
 
 // GreeterUsecase is a Greeter usecase.
 type AuthUsecase struct {
-	log       *log.Helper
-	queue     *QueueManager
-	jwt       *jwt.JwtProcessor
-	usersRepo data.UsersRepo
-	otpRepo   data.OtpRepo
-	dialer    *data.Dialer
-	tenants   *data.TenantsRemote
+	log           *log.Helper
+	queue         *QueueManager
+	jwt           *jwt.JwtProcessor
+	usersRepo     data.UsersRepo
+	otpRepo       data.OtpRepo
+	tenants       *data.TenantsRemote
+	notifications *data.NotificationsRemote
 }
 
 // NewAuthUsecase new a Greeter usecase.
 func NewAuthUsecase(
 	logger log.Logger,
 	jwt *jwt.JwtProcessor,
-	dialer *data.Dialer,
-	tenants *data.TenantsRemote,
 	usersRepo data.UsersRepo,
 	otpRepo data.OtpRepo,
 	queue *QueueManager,
+	tenants *data.TenantsRemote,
+	notifications *data.NotificationsRemote,
 ) (*AuthUsecase, error) {
 	return &AuthUsecase{
-		log:       log.NewHelper(logger),
-		jwt:       jwt,
-		dialer:    dialer,
-		tenants:   tenants,
-		usersRepo: usersRepo,
-		otpRepo:   otpRepo,
-		queue:     queue,
+		log:           log.NewHelper(logger),
+		jwt:           jwt,
+		usersRepo:     usersRepo,
+		otpRepo:       otpRepo,
+		queue:         queue,
+		tenants:       tenants,
+		notifications: notifications,
 	}, nil
 }
 
@@ -84,17 +82,9 @@ func (uc *AuthUsecase) AuthUserByPhone(ctx context.Context, phone string) (int64
 
 	debug := os.Getenv("DEBUG")
 	if debug == "" { // don't send sms in debug mode
-		senderClient, err := uc.dialer.Notifications(ctx)
+		err = uc.notifications.PersonalSmsSender(ctx, phone, fmt.Sprintf("Enter this code to sign in: %s", otp.Code))
 		if err != nil {
-			return 0, v1.ErrorGrpcConnection("notifications: %s", err.Error())
-		}
-
-		_, err = senderClient.PersonalSmsSender(ctx, &notifications_v1.PersonalSmsSenderRequest{
-			Phone:   phone,
-			Message: fmt.Sprintf("Enter this code to sign in: %s", otp.Code),
-		})
-		if err != nil {
-			return 0, v1.ErrorServiceFailed("notifications: %s", err.Error())
+			return 0, err
 		}
 	}
 
@@ -219,16 +209,9 @@ func (uc *AuthUsecase) GenerateTenantToken(ctx context.Context, userId, tenantId
 		TenantId: tenantId,
 	}
 
-	tenantMemberClient, err := uc.tenants.Members(ctx, claims)
+	reply, err := uc.tenants.GetMemberIdentities(ctx, claims, userId)
 	if err != nil {
-		return "", v1.ErrorGrpcConnection("tenants: %s", err.Error())
-	}
-
-	reply, err := tenantMemberClient.GetMember(ctx, &tenants_v1.GetMemberRequest{
-		UserId: userId,
-	})
-	if err != nil {
-		return "", v1.ErrorServiceFailed("tenants: %s", err.Error())
+		return "", err
 	}
 
 	claims.MemberId = reply.Member

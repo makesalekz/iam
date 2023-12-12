@@ -8,6 +8,7 @@ import (
 	"github.com/go-kratos/kratos/v2/registry"
 	chats_v1 "gitlab.calendaria.team/services/chats/api/chats/v1"
 	contacts_v1 "gitlab.calendaria.team/services/contacts/api/contacts/v1"
+	iam_v1 "gitlab.calendaria.team/services/iam/api/iam/v1"
 	v1 "gitlab.calendaria.team/services/iam/api/iam/v1"
 	"gitlab.calendaria.team/services/iam/ent"
 	"gitlab.calendaria.team/services/iam/internal/data"
@@ -32,7 +33,8 @@ type UsersUsecase struct {
 	jwt       *jwt.JwtProcessor
 	usersRepo data.UsersRepo
 	otpRepo   data.OtpRepo
-	dialer    *data.Dialer
+	chats     *data.ChatsRemote
+	contacts  *data.ContactsRemote
 	tenants   *data.TenantsRemote
 }
 
@@ -42,7 +44,8 @@ func NewUsersUsecase(logger log.Logger,
 	jwt *jwt.JwtProcessor,
 	usersRepo data.UsersRepo,
 	otpRepo data.OtpRepo,
-	dialer *data.Dialer,
+	chats *data.ChatsRemote,
+	contacts *data.ContactsRemote,
 	tenants *data.TenantsRemote,
 ) (*UsersUsecase, error) {
 	return &UsersUsecase{
@@ -51,48 +54,37 @@ func NewUsersUsecase(logger log.Logger,
 		jwt:       jwt,
 		usersRepo: usersRepo,
 		otpRepo:   otpRepo,
-		dialer:    dialer,
+		chats:     chats,
+		contacts:  contacts,
 		tenants:   tenants,
 	}, nil
 }
 
 func (uc *UsersUsecase) getUserContactLabel(ctx context.Context, userId int64) (*v1.Contact, error) {
-	contactClient, err := uc.dialer.Contacts(ctx)
-	if err != nil {
-		return nil, v1.ErrorGrpcConnection("contacts: %s", err.Error())
-	}
-
-	labels, err := contactClient.GetLabelsByUserId(ctx, &contacts_v1.GetLabelsByUserIdRequest{UserId: userId})
+	labels, err := uc.contacts.GetLabelsByUserId(ctx, &contacts_v1.GetLabelsByUserIdRequest{UserId: userId})
 	if err != nil {
 		if contacts_v1.IsNotFound(err) {
-			return nil, v1.ErrorContactNotFound("there is not such contact")
+			return nil, nil
 		}
-		return nil, v1.ErrorGrpcConnection("contacts: %s", err.Error())
+		return nil, err
 	}
 
-	contact := &v1.Contact{}
 	if len(labels.GetLabels()) == 0 {
-		return nil, v1.ErrorContactNotFound("there is not such contact")
+		return nil, nil
 	}
 
-	label := slices.MaxFunc(labels.GetLabels(), func(a, b string) int { return len(a) - len(b) })
-	contact.Label = label
+	contact := &v1.Contact{Label: slices.MaxFunc(labels.GetLabels(), func(a, b string) int { return len(a) - len(b) })}
 
 	return contact, nil
 }
 
 func (uc *UsersUsecase) getChatMembership(ctx context.Context, userId int64) (*chats_v1.Membership, error) {
-	membersClient, err := uc.dialer.Members(ctx)
-	if err != nil {
-		return nil, v1.ErrorGrpcConnection("chats: %s", err.Error())
-	}
-
-	chatMembership, err := membersClient.GetDirectChatMembership(ctx, &chats_v1.DirectChatMembershipRequest{UserId: userId})
+	chatMembership, err := uc.chats.GetDirectChatMembership(ctx, &chats_v1.DirectChatMembershipRequest{UserId: userId})
 	if err != nil {
 		if chats_v1.IsNotFound(err) {
-			return nil, v1.ErrorCommonChatNotFound("there is not such chat")
+			return nil, nil
 		}
-		return nil, v1.ErrorGrpcConnection("chats: %s", err.Error())
+		return nil, err
 	}
 
 	return chatMembership.GetMembership(), nil
@@ -101,15 +93,20 @@ func (uc *UsersUsecase) getChatMembership(ctx context.Context, userId int64) (*c
 func (uc *UsersUsecase) includeRelations(ctx context.Context, users ...*UserItem) error {
 	userIds := make([]int64, len(users))
 	for i, user := range users {
-		userIds[i] = user.User.ID
+		userIds[i] = user.ID
 	}
 
-	relations, err := uc.getUsersRelations(ctx, userIds)
+	relationsReply, err := uc.contacts.GetRelations(ctx, &contacts_v1.GetRelationsRequest{UserIds: userIds})
 	if err != nil {
-		if v1.IsRelationNotFound(err) {
+		if contacts_v1.IsNotFound(err) {
 			return nil
 		}
 		return err
+	}
+
+	relations := relationsReply.GetRelations()
+	if relations == nil {
+		return nil
 	}
 
 	relationMap := make(map[int64]*contacts_v1.Relation)
@@ -118,35 +115,18 @@ func (uc *UsersUsecase) includeRelations(ctx context.Context, users ...*UserItem
 	}
 
 	for _, user := range users {
-		relation, ok := relationMap[user.User.ID]
+		relation, ok := relationMap[user.ID]
 		if !ok {
 			continue
 		}
 
-		user.Relation = &v1.Relation{
+		user.Relation = &iam_v1.Relation{
 			IsBlocked: relation.GetIsBlocked(),
 			IsMuted:   relation.GetIsMuted(),
 		}
 	}
 
 	return nil
-}
-
-func (uc *UsersUsecase) getUsersRelations(ctx context.Context, userIds []int64) ([]*contacts_v1.Relation, error) {
-	relationsClient, err := uc.dialer.Relations(ctx)
-	if err != nil {
-		return nil, v1.ErrorGrpcConnection("contacts: %s", err.Error())
-	}
-
-	relations, err := relationsClient.GetRelations(ctx, &contacts_v1.GetRelationsRequest{UserIds: userIds})
-	if err != nil {
-		if contacts_v1.IsNotFound(err) {
-			return nil, v1.ErrorRelationNotFound("there is not such relation")
-		}
-		return nil, v1.ErrorGrpcConnection("contacts: %s", err.Error())
-	}
-
-	return relations.GetRelations(), nil
 }
 
 func (uc *UsersUsecase) GetUserProfile(ctx context.Context, filter data.GetUserFilterDto) (*UserItem, error) {
@@ -176,12 +156,10 @@ func (uc *UsersUsecase) GetUserProfile(ctx context.Context, filter data.GetUserF
 	if filter.WithContact {
 		contactLabel, err := uc.getUserContactLabel(ctx, user.ID)
 		if err != nil {
-			if !v1.IsContactNotFound(err) {
-				return nil, err
-			}
-		} else {
-			replyUser.Contact = &v1.Contact{Label: contactLabel.Label}
+			return nil, err
 		}
+
+		replyUser.Contact = &v1.Contact{Label: contactLabel.Label}
 	}
 
 	if filter.WithRelation {
@@ -194,12 +172,10 @@ func (uc *UsersUsecase) GetUserProfile(ctx context.Context, filter data.GetUserF
 	if filter.WithMembership {
 		membership, err := uc.getChatMembership(ctx, user.ID)
 		if err != nil {
-			if !v1.IsCommonChatNotFound(err) {
-				return nil, err
-			}
-		} else {
-			replyUser.CommonChat = data.FromChatsToIam(membership)
+			return nil, err
 		}
+
+		replyUser.CommonChat = fromChatsToIam(membership)
 	}
 
 	return replyUser, nil
@@ -291,17 +267,22 @@ func (uc *UsersUsecase) GetUserTenants(ctx context.Context) ([]*tenants_v1.Tenan
 		return nil, v1.ErrorUnauthorized("invalid token")
 	}
 
-	uc.log.Debug("GetUserTenants: ", "claims", claims)
+	return uc.tenants.GetUserTenants(ctx, claims)
+}
 
-	tenantClient, err := uc.tenants.Tenants(ctx, claims)
-	if err != nil {
-		return nil, v1.ErrorGrpcConnection("tenants: %s", err.Error())
+func fromChatsToIam(membership *chats_v1.Membership) *v1.CommonChat {
+	if membership == nil {
+		return nil
 	}
 
-	tenants, err := tenantClient.ListTenants(ctx, &tenants_v1.ListTenantsRequest{})
-	if err != nil {
-		return nil, v1.ErrorGrpcConnection("tenants: %s", err.Error())
+	return &v1.CommonChat{
+		ChatId:     membership.ChatId,
+		Status:     membership.Status,
+		Role:       membership.Role,
+		IsPinned:   membership.IsPinned,
+		IsMuted:    membership.IsMuted,
+		MutedTill:  membership.MutedTill,
+		ArchivedAt: membership.ArchivedAt,
+		AutoSave:   membership.AutoSave,
 	}
-
-	return tenants.Tenants, nil
 }
