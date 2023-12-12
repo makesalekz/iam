@@ -4,7 +4,6 @@ go 1.21.3
 
 require (
 	entgo.io/ent v0.12.4
-	github.com/go-kratos/consul v0.1.5
 	github.com/go-kratos/kratos/v2 v2.7.1
 	github.com/golang-jwt/jwt/v4 v4.5.0
 	github.com/google/wire v0.5.0
@@ -14,7 +13,7 @@ require (
 	gitlab.calendaria.team/services/chats v0.2.2
 	gitlab.calendaria.team/services/contacts v0.1.0
 	gitlab.calendaria.team/services/notifications v0.1.0
-	gitlab.calendaria.team/services/tenants v0.1.1
+	gitlab.calendaria.team/services/tenants v0.1.2
 	gitlab.calendaria.team/services/utils v0.0.5
 	go.uber.org/automaxprocs v1.5.3
 	google.golang.org/genproto/googleapis/api v0.0.0-20231106174013-bbf56f31fb17
@@ -32,6 +31,7 @@ require (
 	github.com/fsnotify/fsnotify v1.6.0 // indirect
 	github.com/go-jose/go-jose/v3 v3.0.0 // indirect
 	github.com/go-kratos/aegis v0.2.0 // indirect
+	github.com/go-kratos/consul v0.1.5 // indirect
 	github.com/go-kratos/kratos/contrib/config/consul/v2 v2.0.0-20231121021043-9adece088b51 // indirect
 	github.com/go-logr/logr v1.2.4 // indirect
 	github.com/go-logr/stdr v1.2.2 // indirect

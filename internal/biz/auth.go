@@ -14,7 +14,6 @@ import (
 	"gitlab.calendaria.team/services/iam/ent"
 	"gitlab.calendaria.team/services/iam/ent/property"
 	"gitlab.calendaria.team/services/iam/internal/data"
-	tenants_v1 "gitlab.calendaria.team/services/tenants/api/tenants/v1"
 	"gitlab.calendaria.team/services/utils/v1/jwt"
 )
 
@@ -210,16 +209,9 @@ func (uc *AuthUsecase) GenerateTenantToken(ctx context.Context, userId, tenantId
 		TenantId: tenantId,
 	}
 
-	tenantMemberClient, err := uc.tenants.Members(ctx, claims)
+	reply, err := uc.tenants.GetMemberIdentities(ctx, claims, userId)
 	if err != nil {
-		return "", v1.ErrorGrpcConnection("tenants: %s", err.Error())
-	}
-
-	reply, err := tenantMemberClient.GetMember(ctx, &tenants_v1.GetMemberRequest{
-		UserId: userId,
-	})
-	if err != nil {
-		return "", v1.ErrorServiceFailed("tenants: %s", err.Error())
+		return "", err
 	}
 
 	claims.MemberId = reply.Member

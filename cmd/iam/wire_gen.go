@@ -47,13 +47,13 @@ func wireApp(bootstrap *conf.Bootstrap, logger log.Logger) (*kratos.App, func(),
 		return nil, nil, err
 	}
 	queueManager := biz.NewQueueManager(configConfig, natsClient, logger)
-	tenantsRemote, err := data.NewTenantsRemote(configConfig, bootstrap, jwtProcessor)
+	dialerDialer, err := dialer.NewDialer(configConfig, jwtProcessor)
 	if err != nil {
 		cleanup2()
 		cleanup()
 		return nil, nil, err
 	}
-	dialerDialer, err := dialer.NewDialer(configConfig, jwtProcessor)
+	tenantsRemote, err := data.NewTenantsRemote(dialerDialer, bootstrap, jwtProcessor)
 	if err != nil {
 		cleanup2()
 		cleanup()

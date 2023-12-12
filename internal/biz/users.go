@@ -267,19 +267,7 @@ func (uc *UsersUsecase) GetUserTenants(ctx context.Context) ([]*tenants_v1.Tenan
 		return nil, v1.ErrorUnauthorized("invalid token")
 	}
 
-	uc.log.Debug("GetUserTenants: ", "claims", claims)
-
-	tenantClient, err := uc.tenants.Tenants(ctx, claims)
-	if err != nil {
-		return nil, v1.ErrorGrpcConnection("tenants: %s", err.Error())
-	}
-
-	tenants, err := tenantClient.ListTenants(ctx, &tenants_v1.ListTenantsRequest{})
-	if err != nil {
-		return nil, v1.ErrorGrpcConnection("tenants: %s", err.Error())
-	}
-
-	return tenants.Tenants, nil
+	return uc.tenants.GetUserTenants(ctx, claims)
 }
 
 func fromChatsToIam(membership *chats_v1.Membership) *v1.CommonChat {
