@@ -19,13 +19,6 @@ message User {
   optional string email = 10;
   optional string avatar = 11;
   optional string bioUpdatedAt = 12;
-
-  // field contains contact info
-  optional Contact contact = 13;
-  // field contains relation info
-  optional Relation relation = 14;
-  // field contains commonChat info
-  optional CommonChat commonChat = 15;
 }
 
 message UserShort {

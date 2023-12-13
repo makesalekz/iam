@@ -46,7 +46,7 @@ func (r *NotificationsRemote) PersonalSmsSender(ctx context.Context, phone, mess
 		Message: message,
 	})
 	if err != nil {
-		return iam_v1.ErrorServiceFailed("notifications: %s", err.Error())
+		return err
 	}
 
 	return nil

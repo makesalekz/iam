@@ -114,10 +114,7 @@ func (s *UsersService) DeleteOwnProfile(ctx context.Context, req *utils_v1.Empty
 
 func (s *UsersService) GetUserFull(ctx context.Context, req *v1.GetUserRequest) (*v1.UserFullReply, error) {
 	filter := data.GetUserFilterDto{
-		WithRelation:   true,
-		WithContact:    true,
-		WithMembership: true,
-		UserId:         req.GetUserId(),
+		UserId: req.GetUserId(),
 	}
 
 	user, err := s.uc.GetUserProfile(ctx, filter)
@@ -208,18 +205,6 @@ func userItemToV1User(user *biz.UserItem) *v1.User {
 	if user.BioUpdatedAt != nil {
 		bioUpdatedAt := user.BioUpdatedAt.Format(time.RFC3339)
 		replyUser.BioUpdatedAt = &bioUpdatedAt
-	}
-
-	if user.Relation != nil {
-		replyUser.Relation = user.Relation
-	}
-
-	if user.Contact != nil {
-		replyUser.Contact = user.Contact
-	}
-
-	if user.CommonChat != nil {
-		replyUser.CommonChat = user.CommonChat
 	}
 
 	return replyUser

@@ -10,17 +10,8 @@ option java_multiple_files = true;
 option java_package = "iam.v1";
 
 service Settings {
-	rpc GetSettings (utils.v1.EmptyRequest) returns (SettingsReply) {
-		option (google.api.http) = {
-			get: "/v1/users/me/settings"
-		};
-	};
-	rpc UpdateSettings (SettingsRequest) returns (SettingsReply) {
-		option (google.api.http) = {
-			put: "/v1/users/me/settings"
-			body: "*"
-		};
-	};
+	rpc GetSettings (utils.v1.EmptyRequest) returns (SettingsReply);
+	rpc UpdateSettings (SettingsRequest) returns (SettingsReply);
 }
 
 message SettingsRequest {

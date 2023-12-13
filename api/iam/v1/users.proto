@@ -13,66 +13,30 @@ option java_package = "iam.v1";
 service Users {
   // GetOwnProfile
   // This is self explanotory, returns own profile
-  rpc GetOwnProfile (utils.v1.EmptyRequest) returns (UserFullReply) {
-    option (google.api.http) = {
-      get: "/v1/users/me"
-    };
-  };
+  rpc GetOwnProfile (utils.v1.EmptyRequest) returns (UserFullReply);
   // UpdateOwnProfile
   // This is self explanotory, update own profile
-  rpc UpdateOwnProfile (UpdateOwnProfileRequest) returns (UserFullReply) {
-    option (google.api.http) = {
-      post: "/v1/users/me"
-      body: "*"
-    };
-  };
+  rpc UpdateOwnProfile (UpdateOwnProfileRequest) returns (UserFullReply);
   // DeleteOwnProfile
   // This is self explanotory, delete own profile
-  rpc DeleteOwnProfile (utils.v1.EmptyRequest) returns (utils.v1.EmptyReply) {
-    option (google.api.http) = {
-      delete: "/v1/users/me"
-    };
-  };
+  rpc DeleteOwnProfile (utils.v1.EmptyRequest) returns (utils.v1.EmptyReply);
   // GetUserFull
   // Returns full information about user
   // Request: userId of seeking user
-  rpc GetUserFull (GetUserRequest) returns (UserFullReply) {
-    option (google.api.http) = {
-      get: "/v1/users/{userId}/full"
-    };
-  };
+  rpc GetUserFull (GetUserRequest) returns (UserFullReply);
   // in case of search by phone, search.email should not be present
   // in case of search by email, search.phone should not be present
-  rpc GetUserByFilterFull (GetUserByFilterRequest) returns (UserFullReply) {
-    option (google.api.http) = {
-      post: "/v1/users/user/full"
-      body: "*"
-    };
-  };
+  rpc GetUserByFilterFull (GetUserByFilterRequest) returns (UserFullReply);
   // GetUser
   // get single user
-  rpc GetUser (GetUserRequest) returns (UserReply) {
-    option (google.api.http) = {
-      get: "/v1/users/{userId}"
-    };
-  };
+  rpc GetUser (GetUserRequest) returns (UserReply);
   // in case of search by phone, search.email should not be present
   // in case of search by email, search.phone should not be present
-  rpc GetUserByFilter (GetUserByFilterRequest) returns (UserReply) {
-    option (google.api.http) = {
-      post: "/v1/users/user"
-      body: "*"
-    };
-  };
+  rpc GetUserByFilter (GetUserByFilterRequest) returns (UserReply);
   // search goes by all fields
   // t.m if you declare labels,emails,ids this method will return all
   // users that has these fields
-  rpc GetUsers (GetUsersRequest) returns (GetUsersReply) {
-    option (google.api.http) = {
-      post: "/v1/users/list"
-      body: "*"
-    };
-  };
+  rpc GetUsers (GetUsersRequest) returns (GetUsersReply);
 }
 
 message UserFullReply {

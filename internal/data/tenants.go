@@ -46,7 +46,7 @@ func (r *TenantsRemote) GetUserTenants(ctx context.Context, claims *jwt.TenantCl
 
 	reply, err := client.ListTenants(ctx, &tenants_v1.ListTenantsRequest{})
 	if err != nil {
-		return nil, tenants_v1.ErrorServiceFailed("tenants: %s", err.Error())
+		return nil, err
 	}
 
 	return reply.GetTenants(), nil
@@ -62,7 +62,7 @@ func (r *TenantsRemote) GetMemberIdentities(ctx context.Context, claims *jwt.Ten
 		UserId: userId,
 	})
 	if err != nil {
-		return nil, tenants_v1.ErrorServiceFailed("tenants: %s", err.Error())
+		return nil, err
 	}
 
 	return reply, nil

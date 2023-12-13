@@ -43,7 +43,7 @@ func (r *ChatsRemote) GetDirectChatMembership(ctx context.Context, req *chats_v1
 
 	replyMembers, err := membersClient.GetDirectChatMembership(ctx, req)
 	if err != nil {
-		return nil, iam_v1.ErrorServiceFailed("chats: %s", err.Error())
+		return nil, err
 	}
 
 	return replyMembers, nil

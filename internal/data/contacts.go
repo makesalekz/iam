@@ -43,7 +43,7 @@ func (r *ContactsRemote) GetLabelsByUserId(ctx context.Context, req *contacts_v1
 
 	labels, err := contactClient.GetLabelsByUserId(ctx, req)
 	if err != nil {
-		return nil, iam_v1.ErrorServiceFailed("contacts: %s", err.Error())
+		return nil, err
 	}
 
 	return labels, nil
@@ -57,7 +57,7 @@ func (r *ContactsRemote) GetRelations(ctx context.Context, req *contacts_v1.GetR
 
 	relations, err := relationsClient.GetRelations(ctx, req)
 	if err != nil {
-		return nil, iam_v1.ErrorServiceFailed("contacts: %s", err.Error())
+		return nil, err
 	}
 
 	return relations, nil
