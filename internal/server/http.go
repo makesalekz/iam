@@ -14,7 +14,6 @@ import (
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"gitlab.calendaria.team/services/iam/internal/conf"
-	"gitlab.calendaria.team/services/iam/internal/service"
 	"gitlab.calendaria.team/services/utils/v1/jwt"
 )
 
@@ -50,10 +49,6 @@ func NewWhiteListMatcher() selector.MatchFunc {
 func NewHTTPServer(
 	c *conf.Bootstrap,
 	jwtp *jwt.JwtProcessor,
-	auth *service.AuthService,
-	users *service.UsersService,
-	privacy *service.PrivacyService,
-	settings *service.SettingsService,
 ) *khttp.Server {
 	var opts = []khttp.ServerOption{
 		khttp.Middleware(
