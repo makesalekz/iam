@@ -13,7 +13,6 @@ import (
 	jwtv4 "github.com/golang-jwt/jwt/v4"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
-	v1 "gitlab.calendaria.team/services/iam/api/iam/v1"
 	"gitlab.calendaria.team/services/iam/internal/conf"
 	"gitlab.calendaria.team/services/iam/internal/service"
 	"gitlab.calendaria.team/services/utils/v1/jwt"
@@ -84,10 +83,6 @@ func NewHTTPServer(
 	}
 	srv := khttp.NewServer(opts...)
 
-	v1.RegisterAuthHTTPServer(srv, auth)
-	v1.RegisterUsersHTTPServer(srv, users)
-	v1.RegisterPrivacyHTTPServer(srv, privacy)
-	v1.RegisterSettingsHTTPServer(srv, settings)
 	registerTechRoutes(srv)
 
 	return srv

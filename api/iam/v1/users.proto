@@ -2,7 +2,6 @@ syntax = "proto3";
 
 package iam.v1;
 
-import "google/api/annotations.proto";
 import "utils/v1/models.proto";
 import "api/iam/v1/models.proto";
 
