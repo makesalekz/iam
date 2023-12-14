@@ -4,7 +4,6 @@ import (
 	"context"
 
 	"github.com/go-kratos/kratos/v2/log"
-	chats_v1 "gitlab.calendaria.team/services/chats/api/chats/v1"
 	contacts_v1 "gitlab.calendaria.team/services/contacts/api/contacts/v1"
 	iam_v1 "gitlab.calendaria.team/services/iam/api/iam/v1"
 	v1 "gitlab.calendaria.team/services/iam/api/iam/v1"
@@ -98,17 +97,15 @@ func (uc *UsersUsecase) includePrivacies(ctx context.Context, users ...*UserItem
 
 	usersPrivacies, err := uc.privaciesRepo.GetPrivacies(ctx, userIds)
 	if err != nil {
-		if ent.IsNotFound(err) {
-			return nil
-		}
-		return iam_v1.ErrorServiceFailed("contacts: %s", err.Error())
+		return iam_v1.ErrorServiceFailed("privacy: %s", err.Error())
 	}
 
 	privaciesMap := make(map[int64]map[string]string)
 	for _, userPrivacies := range usersPrivacies {
-		privaciesMap[userPrivacies.UserID] = map[string]string{
-			string(userPrivacies.Setting): string(userPrivacies.Option),
+		if privaciesMap[userPrivacies.UserID] == nil {
+			privaciesMap[userPrivacies.UserID] = make(map[string]string)
 		}
+		privaciesMap[userPrivacies.UserID][string(userPrivacies.Setting)] = string(userPrivacies.Option)
 	}
 
 	for _, user := range users {
@@ -249,21 +246,4 @@ func (uc *UsersUsecase) GetUserTenants(ctx context.Context) ([]*tenants_v1.Tenan
 	}
 
 	return tenants, nil
-}
-
-func fromChatsToIam(membership *chats_v1.Membership) *v1.CommonChat {
-	if membership == nil {
-		return nil
-	}
-
-	return &v1.CommonChat{
-		ChatId:     membership.ChatId,
-		Status:     membership.Status,
-		Role:       membership.Role,
-		IsPinned:   membership.IsPinned,
-		IsMuted:    membership.IsMuted,
-		MutedTill:  membership.MutedTill,
-		ArchivedAt: membership.ArchivedAt,
-		AutoSave:   membership.AutoSave,
-	}
 }

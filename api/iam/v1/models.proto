@@ -33,24 +33,9 @@ message UserShort {
   map<string, string>  privacies = 9;
 }
 
-message Contact {
-  string label = 1;
-}
-
 message Relation {
   bool isBlocked = 1;
   bool isMuted = 2;
-}
-
-message CommonChat {
-  int64 chatId = 1;
-  string status = 2;
-  string role = 3;
-  bool isPinned = 4;
-  bool isMuted = 5;
-  optional string mutedTill = 6;
-  optional string archivedAt = 7;
-  bool autoSave = 8;
 }
 
 message TenantShort {
