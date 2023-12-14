@@ -18,16 +18,18 @@ import (
 type UserItem struct {
 	*ent.User
 
-	Relation *v1.Relation
+	Relation  *v1.Relation
+	Privacies map[string]string
 }
 
 // UsersUsecase .
 type UsersUsecase struct {
-	jwt       *jwt.JwtProcessor
-	usersRepo data.UsersRepo
-	otpRepo   data.OtpRepo
-	contacts  *data.ContactsRemote
-	tenants   *data.TenantsRemote
+	jwt           *jwt.JwtProcessor
+	usersRepo     data.UsersRepo
+	otpRepo       data.OtpRepo
+	privaciesRepo data.PrivacyRepo
+	contacts      *data.ContactsRemote
+	tenants       *data.TenantsRemote
 }
 
 // NewUsersUsecase .
@@ -35,15 +37,17 @@ func NewUsersUsecase(logger log.Logger,
 	jwt *jwt.JwtProcessor,
 	usersRepo data.UsersRepo,
 	otpRepo data.OtpRepo,
+	privaciesRepo data.PrivacyRepo,
 	contacts *data.ContactsRemote,
 	tenants *data.TenantsRemote,
 ) (*UsersUsecase, error) {
 	return &UsersUsecase{
-		jwt:       jwt,
-		usersRepo: usersRepo,
-		otpRepo:   otpRepo,
-		contacts:  contacts,
-		tenants:   tenants,
+		jwt:           jwt,
+		usersRepo:     usersRepo,
+		otpRepo:       otpRepo,
+		privaciesRepo: privaciesRepo,
+		contacts:      contacts,
+		tenants:       tenants,
 	}, nil
 }
 
@@ -81,6 +85,39 @@ func (uc *UsersUsecase) includeRelations(ctx context.Context, users ...*UserItem
 			IsBlocked: relation.GetIsBlocked(),
 			IsMuted:   relation.GetIsMuted(),
 		}
+	}
+
+	return nil
+}
+
+func (uc *UsersUsecase) includePrivacies(ctx context.Context, users ...*UserItem) error {
+	userIds := make([]int64, len(users))
+	for i, user := range users {
+		userIds[i] = user.ID
+	}
+
+	usersPrivacies, err := uc.privaciesRepo.GetPrivacies(ctx, userIds)
+	if err != nil {
+		if ent.IsNotFound(err) {
+			return nil
+		}
+		return iam_v1.ErrorServiceFailed("contacts: %s", err.Error())
+	}
+
+	privaciesMap := make(map[int64]map[string]string)
+	for _, userPrivacies := range usersPrivacies {
+		privaciesMap[userPrivacies.UserID] = map[string]string{
+			string(userPrivacies.Setting): string(userPrivacies.Option),
+		}
+	}
+
+	for _, user := range users {
+		privacy, ok := privaciesMap[user.ID]
+		if !ok {
+			continue
+		}
+
+		user.Privacies = privacy
 	}
 
 	return nil
@@ -185,6 +222,13 @@ func (uc *UsersUsecase) GetUsers(ctx context.Context, filter data.GetUsersFilter
 
 	if filter.WithRelation {
 		err = uc.includeRelations(ctx, replyUsers...)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	if filter.WithPrivacies {
+		err = uc.includePrivacies(ctx, replyUsers...)
 		if err != nil {
 			return nil, err
 		}

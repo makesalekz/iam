@@ -25,11 +25,12 @@ type GetUserFilterDto struct {
 }
 
 type GetUsersFilterDto struct {
-	UsersIds     []int64
-	Phones       []string
-	Emails       []string
-	Search       string
-	WithRelation bool
+	UsersIds      []int64
+	Phones        []string
+	Emails        []string
+	Search        string
+	WithRelation  bool
+	WithPrivacies bool
 }
 
 // UsersRepo
