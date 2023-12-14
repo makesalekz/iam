@@ -19,20 +19,18 @@ type UpdateUserDto struct {
 	Timezone string
 }
 type GetUserFilterDto struct {
-	WithRelation   bool
-	WithContact    bool
-	WithMembership bool
-	UserId         int64
-	Phone          string
-	Email          string
+	UserId int64
+	Phone  string
+	Email  string
 }
 
 type GetUsersFilterDto struct {
-	UsersIds     []int64
-	Phones       []string
-	Emails       []string
-	Search       string
-	WithRelation bool
+	UsersIds      []int64
+	Phones        []string
+	Emails        []string
+	Search        string
+	WithRelation  bool
+	WithPrivacies bool
 }
 
 // UsersRepo

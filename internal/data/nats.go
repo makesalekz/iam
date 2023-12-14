@@ -5,12 +5,8 @@ import (
 	"gitlab.calendaria.team/services/iam/internal/conf"
 )
 
-type NatsClient struct {
-	*nats.EncodedConn
-}
-
 // NewNatsClient .
-func NewNatsClient(conf *conf.Bootstrap) (*NatsClient, func(), error) {
+func NewNatsClient(conf *conf.Bootstrap) (*nats.EncodedConn, func(), error) {
 	nc, err := nats.Connect(conf.Nats)
 	if err != nil {
 		return nil, nil, err
@@ -27,7 +23,5 @@ func NewNatsClient(conf *conf.Bootstrap) (*NatsClient, func(), error) {
 		nc.Close()
 	}
 
-	return &NatsClient{
-		EncodedConn: ec,
-	}, cleanup, nil
+	return ec, cleanup, nil
 }

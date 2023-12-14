@@ -15,6 +15,7 @@ type PrivacySettingsData map[string]string
 // PrivacyRepo
 type PrivacyRepo interface {
 	GetPrivacy(ctx context.Context, userId int64) (PrivacySettingsData, error)
+	GetPrivacies(ctx context.Context, userId []int64) ([]*ent.UserPrivacy, error)
 	UpdatePrivacy(ctx context.Context, userId int64, dto PrivacySettingsData) (PrivacySettingsData, error)
 }
 
@@ -41,6 +42,19 @@ func (r *privacyRepo) GetPrivacy(ctx context.Context, userId int64) (PrivacySett
 	}
 
 	return result, nil
+}
+
+func (r *privacyRepo) GetPrivacies(ctx context.Context, userIds []int64) ([]*ent.UserPrivacy, error) {
+	usersPrivacies, err := r.db.UserPrivacy.Query().
+		Where(
+			userprivacy.UserIDIn(userIds...),
+		).
+		All(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	return usersPrivacies, nil
 }
 
 func (r *privacyRepo) UpdatePrivacy(ctx context.Context, userId int64, dto PrivacySettingsData) (PrivacySettingsData, error) {

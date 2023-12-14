@@ -17,6 +17,7 @@ import (
 	"gitlab.calendaria.team/services/utils/v1/config"
 	"gitlab.calendaria.team/services/utils/v1/dialer"
 	"gitlab.calendaria.team/services/utils/v1/jwt"
+	"gitlab.calendaria.team/services/utils/v1/nats"
 )
 
 import (
@@ -41,12 +42,12 @@ func wireApp(bootstrap *conf.Bootstrap, logger log.Logger) (*kratos.App, func(),
 	}
 	usersRepo := data.NewUsersRepo(dataData, logger)
 	otpRepo := data.NewOtpRepo(dataData)
-	natsClient, cleanup2, err := data.NewNatsClient(bootstrap)
+	encodedConn, cleanup2, err := data.NewNatsClient(bootstrap)
 	if err != nil {
 		cleanup()
 		return nil, nil, err
 	}
-	queueManager := biz.NewQueueManager(configConfig, natsClient, logger)
+	queueManager := nats.NewQueueManager(configConfig, encodedConn, logger)
 	dialerDialer, err := dialer.NewDialer(configConfig, jwtProcessor)
 	if err != nil {
 		cleanup2()
@@ -72,26 +73,20 @@ func wireApp(bootstrap *conf.Bootstrap, logger log.Logger) (*kratos.App, func(),
 		return nil, nil, err
 	}
 	authService := service.NewAuthService(logger, authUsecase)
-	chatsRemote, err := data.NewChatsRemote(dialerDialer, bootstrap)
-	if err != nil {
-		cleanup2()
-		cleanup()
-		return nil, nil, err
-	}
+	privacyRepo := data.NewPrivacyRepo(dataData)
 	contactsRemote, err := data.NewContactsRemote(dialerDialer, bootstrap)
 	if err != nil {
 		cleanup2()
 		cleanup()
 		return nil, nil, err
 	}
-	usersUsecase, err := biz.NewUsersUsecase(logger, configConfig, jwtProcessor, usersRepo, otpRepo, chatsRemote, contactsRemote, tenantsRemote)
+	usersUsecase, err := biz.NewUsersUsecase(logger, jwtProcessor, usersRepo, otpRepo, privacyRepo, contactsRemote, tenantsRemote)
 	if err != nil {
 		cleanup2()
 		cleanup()
 		return nil, nil, err
 	}
 	usersService := service.NewUsersService(logger, jwtProcessor, usersUsecase)
-	privacyRepo := data.NewPrivacyRepo(dataData)
 	privacyUsecase, err := biz.NewPrivacyUsecase(privacyRepo)
 	if err != nil {
 		cleanup2()
@@ -108,7 +103,7 @@ func wireApp(bootstrap *conf.Bootstrap, logger log.Logger) (*kratos.App, func(),
 	}
 	settingsService := service.NewSettingsService(logger, jwtProcessor, settingsUsecase)
 	grpcServer := server.NewGRPCServer(bootstrap, jwtProcessor, authService, usersService, privacyService, settingsService)
-	httpServer := server.NewHTTPServer(bootstrap, jwtProcessor, authService, usersService, privacyService, settingsService)
+	httpServer := server.NewHTTPServer(bootstrap, jwtProcessor)
 	app := newApp(logger, configConfig, grpcServer, httpServer)
 	return app, func() {
 		cleanup2()

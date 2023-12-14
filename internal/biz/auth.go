@@ -11,10 +11,13 @@ import (
 	jwtv4 "github.com/golang-jwt/jwt/v4"
 	"github.com/nyaruka/phonenumbers"
 	v1 "gitlab.calendaria.team/services/iam/api/iam/v1"
+
 	"gitlab.calendaria.team/services/iam/ent"
 	"gitlab.calendaria.team/services/iam/ent/property"
 	"gitlab.calendaria.team/services/iam/internal/data"
+	tenants_v1 "gitlab.calendaria.team/services/tenants/api/tenants/v1"
 	"gitlab.calendaria.team/services/utils/v1/jwt"
+	"gitlab.calendaria.team/services/utils/v1/nats"
 )
 
 const DEFAULT_REGION = "KZ"
@@ -25,7 +28,7 @@ const REFRESH_TOKEN_DURATION = 30 * 24 * time.Hour
 // GreeterUsecase is a Greeter usecase.
 type AuthUsecase struct {
 	log           *log.Helper
-	queue         *QueueManager
+	queue         *nats.QueueManager
 	jwt           *jwt.JwtProcessor
 	usersRepo     data.UsersRepo
 	otpRepo       data.OtpRepo
@@ -39,7 +42,7 @@ func NewAuthUsecase(
 	jwt *jwt.JwtProcessor,
 	usersRepo data.UsersRepo,
 	otpRepo data.OtpRepo,
-	queue *QueueManager,
+	queue *nats.QueueManager,
 	tenants *data.TenantsRemote,
 	notifications *data.NotificationsRemote,
 ) (*AuthUsecase, error) {
@@ -84,7 +87,7 @@ func (uc *AuthUsecase) AuthUserByPhone(ctx context.Context, phone string) (int64
 	if debug == "" { // don't send sms in debug mode
 		err = uc.notifications.PersonalSmsSender(ctx, phone, fmt.Sprintf("Enter this code to sign in: %s", otp.Code))
 		if err != nil {
-			return 0, err
+			return 0, v1.ErrorServiceFailed("notification: %s", err.Error())
 		}
 	}
 
@@ -211,7 +214,7 @@ func (uc *AuthUsecase) GenerateTenantToken(ctx context.Context, userId, tenantId
 
 	reply, err := uc.tenants.GetMemberIdentities(ctx, claims, userId)
 	if err != nil {
-		return "", err
+		return "", tenants_v1.ErrorServiceFailed("tenants: %s", err.Error())
 	}
 
 	claims.MemberId = reply.Member

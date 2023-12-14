@@ -114,10 +114,7 @@ func (s *UsersService) DeleteOwnProfile(ctx context.Context, req *utils_v1.Empty
 
 func (s *UsersService) GetUserFull(ctx context.Context, req *v1.GetUserRequest) (*v1.UserFullReply, error) {
 	filter := data.GetUserFilterDto{
-		WithRelation:   true,
-		WithContact:    true,
-		WithMembership: true,
-		UserId:         req.GetUserId(),
+		UserId: req.GetUserId(),
 	}
 
 	user, err := s.uc.GetUserProfile(ctx, filter)
@@ -143,11 +140,12 @@ func (s *UsersService) GetUser(ctx context.Context, req *v1.GetUserRequest) (*v1
 
 func (s *UsersService) GetUsers(ctx context.Context, req *v1.GetUsersRequest) (*v1.GetUsersReply, error) {
 	filter := data.GetUsersFilterDto{
-		UsersIds:     req.GetIds(),
-		Phones:       req.GetPhones(),
-		Emails:       req.GetEmails(),
-		Search:       req.GetSearch(),
-		WithRelation: req.WithRelation,
+		UsersIds:      req.GetIds(),
+		Phones:        req.GetPhones(),
+		Emails:        req.GetEmails(),
+		Search:        req.GetSearch(),
+		WithRelation:  req.WithRelation,
+		WithPrivacies: req.WithPrivacies,
 	}
 
 	users, err := s.uc.GetUsers(ctx, filter, req.Sort, req.Paginate)
@@ -210,18 +208,6 @@ func userItemToV1User(user *biz.UserItem) *v1.User {
 		replyUser.BioUpdatedAt = &bioUpdatedAt
 	}
 
-	if user.Relation != nil {
-		replyUser.Relation = user.Relation
-	}
-
-	if user.Contact != nil {
-		replyUser.Contact = user.Contact
-	}
-
-	if user.CommonChat != nil {
-		replyUser.CommonChat = user.CommonChat
-	}
-
 	return replyUser
 }
 
@@ -231,6 +217,7 @@ func userItemToV1ShortUser(user *biz.UserItem) *v1.UserShort {
 		Name:        user.Name,
 		LastLoginAt: user.LastLoginAt.Format(time.RFC3339),
 		Relation:    user.Relation,
+		Privacies:   user.Privacies,
 	}
 
 	if user.Phone != nil {

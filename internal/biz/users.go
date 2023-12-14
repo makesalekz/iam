@@ -2,11 +2,8 @@ package biz
 
 import (
 	"context"
-	"slices"
 
 	"github.com/go-kratos/kratos/v2/log"
-	"github.com/go-kratos/kratos/v2/registry"
-	chats_v1 "gitlab.calendaria.team/services/chats/api/chats/v1"
 	contacts_v1 "gitlab.calendaria.team/services/contacts/api/contacts/v1"
 	iam_v1 "gitlab.calendaria.team/services/iam/api/iam/v1"
 	v1 "gitlab.calendaria.team/services/iam/api/iam/v1"
@@ -14,80 +11,43 @@ import (
 	"gitlab.calendaria.team/services/iam/internal/data"
 	tenants_v1 "gitlab.calendaria.team/services/tenants/api/tenants/v1"
 	utils_v1 "gitlab.calendaria.team/services/utils/api/utils/v1"
-	"gitlab.calendaria.team/services/utils/v1/config"
 	"gitlab.calendaria.team/services/utils/v1/jwt"
 )
 
 type UserItem struct {
 	*ent.User
 
-	Relation   *v1.Relation
-	Contact    *v1.Contact
-	CommonChat *v1.CommonChat
+	Relation  *v1.Relation
+	Privacies map[string]string
 }
 
 // UsersUsecase .
 type UsersUsecase struct {
-	log       *log.Helper
-	discovery registry.Discovery
-	jwt       *jwt.JwtProcessor
-	usersRepo data.UsersRepo
-	otpRepo   data.OtpRepo
-	chats     *data.ChatsRemote
-	contacts  *data.ContactsRemote
-	tenants   *data.TenantsRemote
+	jwt           *jwt.JwtProcessor
+	usersRepo     data.UsersRepo
+	otpRepo       data.OtpRepo
+	privaciesRepo data.PrivacyRepo
+	contacts      *data.ContactsRemote
+	tenants       *data.TenantsRemote
 }
 
 // NewUsersUsecase .
 func NewUsersUsecase(logger log.Logger,
-	c *config.Config,
 	jwt *jwt.JwtProcessor,
 	usersRepo data.UsersRepo,
 	otpRepo data.OtpRepo,
-	chats *data.ChatsRemote,
+	privaciesRepo data.PrivacyRepo,
 	contacts *data.ContactsRemote,
 	tenants *data.TenantsRemote,
 ) (*UsersUsecase, error) {
 	return &UsersUsecase{
-		log:       log.NewHelper(logger),
-		discovery: c.GetRegistry(),
-		jwt:       jwt,
-		usersRepo: usersRepo,
-		otpRepo:   otpRepo,
-		chats:     chats,
-		contacts:  contacts,
-		tenants:   tenants,
+		jwt:           jwt,
+		usersRepo:     usersRepo,
+		otpRepo:       otpRepo,
+		privaciesRepo: privaciesRepo,
+		contacts:      contacts,
+		tenants:       tenants,
 	}, nil
-}
-
-func (uc *UsersUsecase) getUserContactLabel(ctx context.Context, userId int64) (*v1.Contact, error) {
-	labels, err := uc.contacts.GetLabelsByUserId(ctx, &contacts_v1.GetLabelsByUserIdRequest{UserId: userId})
-	if err != nil {
-		if contacts_v1.IsNotFound(err) {
-			return nil, nil
-		}
-		return nil, err
-	}
-
-	if len(labels.GetLabels()) == 0 {
-		return nil, nil
-	}
-
-	contact := &v1.Contact{Label: slices.MaxFunc(labels.GetLabels(), func(a, b string) int { return len(a) - len(b) })}
-
-	return contact, nil
-}
-
-func (uc *UsersUsecase) getChatMembership(ctx context.Context, userId int64) (*chats_v1.Membership, error) {
-	chatMembership, err := uc.chats.GetDirectChatMembership(ctx, &chats_v1.DirectChatMembershipRequest{UserId: userId})
-	if err != nil {
-		if chats_v1.IsNotFound(err) {
-			return nil, nil
-		}
-		return nil, err
-	}
-
-	return chatMembership.GetMembership(), nil
 }
 
 func (uc *UsersUsecase) includeRelations(ctx context.Context, users ...*UserItem) error {
@@ -101,7 +61,7 @@ func (uc *UsersUsecase) includeRelations(ctx context.Context, users ...*UserItem
 		if contacts_v1.IsNotFound(err) {
 			return nil
 		}
-		return err
+		return iam_v1.ErrorServiceFailed("contacts: %s", err.Error())
 	}
 
 	relations := relationsReply.GetRelations()
@@ -129,6 +89,37 @@ func (uc *UsersUsecase) includeRelations(ctx context.Context, users ...*UserItem
 	return nil
 }
 
+func (uc *UsersUsecase) includePrivacies(ctx context.Context, users ...*UserItem) error {
+	userIds := make([]int64, len(users))
+	for i, user := range users {
+		userIds[i] = user.ID
+	}
+
+	usersPrivacies, err := uc.privaciesRepo.GetPrivacies(ctx, userIds)
+	if err != nil {
+		return iam_v1.ErrorServiceFailed("privacy: %s", err.Error())
+	}
+
+	privaciesMap := make(map[int64]map[string]string)
+	for _, userPrivacies := range usersPrivacies {
+		if privaciesMap[userPrivacies.UserID] == nil {
+			privaciesMap[userPrivacies.UserID] = make(map[string]string)
+		}
+		privaciesMap[userPrivacies.UserID][string(userPrivacies.Setting)] = string(userPrivacies.Option)
+	}
+
+	for _, user := range users {
+		privacy, ok := privaciesMap[user.ID]
+		if !ok {
+			continue
+		}
+
+		user.Privacies = privacy
+	}
+
+	return nil
+}
+
 func (uc *UsersUsecase) GetUserProfile(ctx context.Context, filter data.GetUserFilterDto) (*UserItem, error) {
 	var user *ent.User
 	var err error
@@ -151,31 +142,6 @@ func (uc *UsersUsecase) GetUserProfile(ctx context.Context, filter data.GetUserF
 	}
 	replyUser := &UserItem{
 		User: user,
-	}
-
-	if filter.WithContact {
-		contactLabel, err := uc.getUserContactLabel(ctx, user.ID)
-		if err != nil {
-			return nil, err
-		}
-
-		replyUser.Contact = contactLabel
-	}
-
-	if filter.WithRelation {
-		err = uc.includeRelations(ctx, replyUser)
-		if err != nil {
-			return replyUser, err
-		}
-	}
-
-	if filter.WithMembership {
-		membership, err := uc.getChatMembership(ctx, user.ID)
-		if err != nil {
-			return nil, err
-		}
-
-		replyUser.CommonChat = fromChatsToIam(membership)
 	}
 
 	return replyUser, nil
@@ -258,6 +224,13 @@ func (uc *UsersUsecase) GetUsers(ctx context.Context, filter data.GetUsersFilter
 		}
 	}
 
+	if filter.WithPrivacies {
+		err = uc.includePrivacies(ctx, replyUsers...)
+		if err != nil {
+			return nil, err
+		}
+	}
+
 	return replyUsers, nil
 }
 
@@ -267,22 +240,10 @@ func (uc *UsersUsecase) GetUserTenants(ctx context.Context) ([]*tenants_v1.Tenan
 		return nil, v1.ErrorUnauthorized("invalid token")
 	}
 
-	return uc.tenants.GetUserTenants(ctx, claims)
-}
-
-func fromChatsToIam(membership *chats_v1.Membership) *v1.CommonChat {
-	if membership == nil {
-		return nil
+	tenants, err := uc.tenants.GetUserTenants(ctx, claims)
+	if err != nil {
+		return nil, tenants_v1.ErrorServiceFailed("tenants: %s", err.Error())
 	}
 
-	return &v1.CommonChat{
-		ChatId:     membership.ChatId,
-		Status:     membership.Status,
-		Role:       membership.Role,
-		IsPinned:   membership.IsPinned,
-		IsMuted:    membership.IsMuted,
-		MutedTill:  membership.MutedTill,
-		ArchivedAt: membership.ArchivedAt,
-		AutoSave:   membership.AutoSave,
-	}
+	return tenants, nil
 }

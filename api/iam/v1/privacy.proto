@@ -2,7 +2,6 @@ syntax = "proto3";
 
 package iam.v1;
 
-import "google/api/annotations.proto";
 import "utils/v1/models.proto";
 
 option go_package = "gitlab.calendaria.team/services/iam/api/iam/v1;iam_v1";
@@ -10,17 +9,8 @@ option java_multiple_files = true;
 option java_package = "iam.v1";
 
 service Privacy {
-	rpc GetPrivacy (utils.v1.EmptyRequest) returns (PrivacyReply) {
-		option (google.api.http) = {
-			get: "/v1/users/me/privacy"
-		};
-	};
-	rpc UpdatePrivacy (PrivacyRequest) returns (PrivacyReply) {
-		option (google.api.http) = {
-			put: "/v1/users/me/privacy"
-			body: "*"
-		};
-	};
+	rpc GetPrivacy (utils.v1.EmptyRequest) returns (PrivacyReply);
+	rpc UpdatePrivacy (PrivacyRequest) returns (PrivacyReply);
 }
 
 message PrivacyRequest {
