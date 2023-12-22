@@ -21,32 +21,11 @@ func NewContactsRemote(dialer *dialer.Dialer, conf *conf.Bootstrap) (*ContactsRe
 	}, nil
 }
 
-func (r *ContactsRemote) GetContactsClient(ctx context.Context) (contacts_v1.ContactsClient, error) {
-	return dialer.NewDialerBuilder(r.dialer, contacts_v1.NewContactsClient).
-		SetEndpoint(r.conf.Discovery.Contacts).
-		SetTimeout(r.conf.Discovery.ContactsTimeout.AsDuration()).
-		Conn(ctx, nil)
-}
-
 func (r *ContactsRemote) GetRelationClient(ctx context.Context) (contacts_v1.RelationsClient, error) {
 	return dialer.NewDialerBuilder(r.dialer, contacts_v1.NewRelationsClient).
 		SetEndpoint(r.conf.Discovery.Contacts).
 		SetTimeout(r.conf.Discovery.ContactsTimeout.AsDuration()).
 		Conn(ctx, nil)
-}
-
-func (r *ContactsRemote) GetLabelsByUserId(ctx context.Context, req *contacts_v1.GetLabelsByUserIdRequest) (*contacts_v1.GetLabelsByUserIdResponse, error) {
-	contactClient, err := r.GetContactsClient(ctx)
-	if err != nil {
-		return nil, iam_v1.ErrorGrpcConnection("contacts: %s", err.Error())
-	}
-
-	labels, err := contactClient.GetLabelsByUserId(ctx, req)
-	if err != nil {
-		return nil, err
-	}
-
-	return labels, nil
 }
 
 func (r *ContactsRemote) GetRelations(ctx context.Context, req *contacts_v1.GetRelationsRequest) (*contacts_v1.UserRelationsReply, error) {

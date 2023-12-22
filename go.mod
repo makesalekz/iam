@@ -12,7 +12,6 @@ require (
 	github.com/nats-io/nats.go v1.31.0
 	github.com/nyaruka/phonenumbers v1.1.8
 	github.com/prometheus/client_golang v1.17.0
-	gitlab.calendaria.team/services/chats v0.2.2
 	gitlab.calendaria.team/services/contacts v0.1.0
 	gitlab.calendaria.team/services/notifications v0.1.0
 	gitlab.calendaria.team/services/tenants v0.1.2
@@ -78,8 +77,6 @@ require (
 	github.com/prometheus/procfs v0.11.1 // indirect
 	github.com/ryanuber/go-glob v1.0.0 // indirect
 	github.com/zclconf/go-cty v1.8.0 // indirect
-	gitlab.calendaria.team/services/events v0.1.0 // indirect
-	gitlab.calendaria.team/services/media v0.1.0 // indirect
 	go.opentelemetry.io/otel v1.16.0 // indirect
 	go.opentelemetry.io/otel/metric v1.16.0 // indirect
 	go.opentelemetry.io/otel/trace v1.16.0 // indirect

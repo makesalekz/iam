@@ -21,13 +21,6 @@ func NewNotificationsRemote(d *dialer.Dialer, conf *conf.Bootstrap) (*Notificati
 	}, nil
 }
 
-func (r *NotificationsRemote) GetNotificationsClient(ctx context.Context) (notifications_v1.NotificationsClient, error) {
-	return dialer.NewDialerBuilder(r.dialer, notifications_v1.NewNotificationsClient).
-		SetEndpoint(r.conf.Discovery.Notifications).
-		SetTimeout(r.conf.Discovery.NotificationsTimeout.AsDuration()).
-		Conn(ctx, nil)
-}
-
 func (r *NotificationsRemote) GetSenderClient(ctx context.Context) (notifications_v1.SenderClient, error) {
 	return dialer.NewDialerBuilder(r.dialer, notifications_v1.NewSenderClient).
 		SetEndpoint(r.conf.Discovery.Notifications).
