@@ -3,7 +3,12 @@ FROM golang:latest AS builder
 COPY . /src
 WORKDIR /src
 
-RUN git config --global --add url."git@gitlab.calendaria.team:".insteadOf "https://gitlab.calendaria.team/"
+ARG GOLANG_BUILD_TOKEN
+ARG GOLANG_BUILD_TOKEN_PASSWORD
+
+
+RUN apk add --no-cache git
+RUN cd $HOME && echo "machine gitlab.calendaria.team login $GOLANG_BUILD_TOKEN password $GOLANG_BUILD_TOKEN_PASSWORD" >> .netrc
 
 RUN GOPRIVATE=gitlab.calendaria.team make build
 
