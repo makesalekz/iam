@@ -27,7 +27,6 @@ var ProviderSet = wire.NewSet(
 	NewPrivacyRepo,
 	NewSettingsRepo,
 	dialer.NewDialer,
-	NewChatsRemote,
 	NewContactsRemote,
 	NewNotificationsRemote,
 	NewTenantsRemote,
@@ -35,8 +34,7 @@ var ProviderSet = wire.NewSet(
 
 // Data .
 type Data struct {
-	log *log.Helper
-	db  *ent.Client
+	db *ent.Client
 }
 
 // NewData .
@@ -66,7 +64,6 @@ func NewData(c *conf.Bootstrap, logger log.Logger) (*Data, func(), error) {
 	}
 
 	return &Data{
-		log: log.NewHelper(logger),
-		db:  client,
+		db: client,
 	}, cleanup, nil
 }
