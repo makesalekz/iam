@@ -3,8 +3,6 @@ FROM golang:latest AS builder
 COPY . /src
 WORKDIR /src
 
-RUN git config --global url."https://gitlab-ci-token:glpat-ZfWMnTP-NvZYJPCxfvzB@gitlab.calendaria.team/".insteadOf https://gitlab.calendaria.team/
-
 RUN --mount=type=ssh GOPRIVATE=gitlab.calendaria.team make build
 
 FROM debian:stable-slim
