@@ -3,7 +3,7 @@ FROM golang:latest AS builder
 COPY . /src
 WORKDIR /src
 
-RUN git config --global url."https://git@gitlab.calendaria.team/".insteadOf https://gitlab.calendaria.team/
+RUN git config --global --add url."git@gitlab.calendaria.team:".insteadOf "https://gitlab.calendaria.team/"
 
 RUN GOPRIVATE=gitlab.calendaria.team make build
 
