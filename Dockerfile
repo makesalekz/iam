@@ -3,12 +3,7 @@ FROM golang:latest AS builder
 COPY . /src
 WORKDIR /src
 
-ARG GOLANG_BUILD_TOKEN
-ARG GOLANG_BUILD_TOKEN_PASSWORD
-
-RUN cd $HOME && echo "machine gitlab.calendaria.team login $GOLANG_BUILD_TOKEN password $GOLANG_BUILD_TOKEN_PASSWORD" >> .netrc
-
-RUN GOPRIVATE=gitlab.calendaria.team make build
+RUN --mount=type=ssh make build
 
 FROM debian:stable-slim
 
