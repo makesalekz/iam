@@ -3,9 +3,7 @@ FROM golang:latest AS builder
 COPY . /src
 WORKDIR /src
 
-RUN mkdir -p -m 0700 ~/.ssh && \
-    ssh-keyscan gitlab.calendaria.team >> ~/.ssh/known_hosts && \
-    git config --global url."ssh://git@gitlab.calendaria.team/".insteadOf https://gitlab.calendaria.team/
+RUN git config --global url."https://gitlab-ci-token:glpat-ZfWMnTP-NvZYJPCxfvzB@gitlab.calendaria.team/".insteadOf https://gitlab.calendaria.team/
 
 RUN --mount=type=ssh GOPRIVATE=gitlab.calendaria.team make build
 
