@@ -6,8 +6,6 @@ WORKDIR /src
 ARG GOLANG_BUILD_TOKEN
 ARG GOLANG_BUILD_TOKEN_PASSWORD
 
-
-RUN apk add --no-cache git
 RUN cd $HOME && echo "machine gitlab.calendaria.team login $GOLANG_BUILD_TOKEN password $GOLANG_BUILD_TOKEN_PASSWORD" >> .netrc
 
 RUN GOPRIVATE=gitlab.calendaria.team make build
