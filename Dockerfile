@@ -6,7 +6,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         && rm -rf /var/lib/apt/lists/ \
         && apt-get autoremove -y && apt-get autoclean -y
 
-COPY /src/bin /app
+COPY dist /app
 
 WORKDIR /app
 
