@@ -2,7 +2,9 @@ include:
   - project: "qcloudy/ci-cd/calendaria-pipelines"
     file: "golang-pipeline.yaml"
 
-
+project-build:
+  extends: .project-build
+  
 build:
   extends: .build
 
