@@ -66,16 +66,6 @@ server:
     
   env: { }
   envSecrets: { }
-  vaultSecret:
-    enabled: false
-    project: stage-calendaria
-
-  hpa:
-    enabled: false
-    minReplicas: 3
-    maxReplicas: 6
-    CPUUtilization: 80
-    MemoryUtilization: 80
 
   ingress:
     enabled: true
