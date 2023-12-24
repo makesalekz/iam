@@ -1,0 +1,32 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Chart.Name }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ .Chart.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Chart.Name }}
+    spec:
+      terminationGracePeriodSeconds: {{ .Values.terminationGracePeriodSeconds }}
+      imagePullSecrets:
+        - name: {{ .Values.imagePullSecrets }}
+      containers:
+        - name: {{ .Chart.Name }}
+          image: {{ .Values.image.repository }}
+          imagePullPolicy: {{ .Values.pullPolicy }}
+          envFrom:
+            - configMapRef:
+                name: {{ .Chart.Name }}
+          resources:
+            requests:
+              memory: {{ .Values.requestsMemory }}
+              cpu: {{ .Values.requestsCPU }}
+            limits:
+              memory: {{ .Values.limitsMemory }}
+              cpu: {{ .Values.limitsCPU }}
