@@ -5,8 +5,8 @@ include:
 build:
   extends: .build
 
-# helm-lint:
-#   extends: .helm-lint
+helm-lint:
+  extends: .helm-lint
 
 deploy:
   extends: .deploy

@@ -1,0 +1,97 @@
+image:
+  # image config
+  repository: 
+  tag: 
+  pullPolicy: IfNotPresent
+  imagePullSecrets:
+
+fullnameOverride: iam
+nameOverride: iam
+namespaceOverride: stage-backend
+configmap:
+  private:
+    enabled: false
+  data:
+    DEBUG: "off"
+    IS_LOCAL: "off"
+
+server:
+  replicaCount: 1
+  command: ["bash", "-c", "./iam -conf /data/conf/config.yaml"]
+  podSecurityContext: {}
+  securityContext: {}
+  serviceAccount:
+  
+  livenessProbe:
+    failureThreshold: 2
+    initialDelaySeconds: 120
+    periodSeconds: 60
+    successThreshold: 1
+    tcpSocket:
+      port: 8000
+    timeoutSeconds: 10
+
+  readinessProbe:
+    failureThreshold: 2
+    httpGet:
+      path: /health-check/
+      port: http
+      scheme: HTTP
+    initialDelaySeconds: 120
+    periodSeconds: 10
+    successThreshold: 1
+    timeoutSeconds: 10
+
+  startupProbe:
+    failureThreshold: 2
+    periodSeconds: 10
+    successThreshold: 1
+    initialDelaySeconds: 120
+    tcpSocket:
+      port: 8000
+    timeoutSeconds: 10
+
+  resources:
+    limits:
+      cpu: 1
+      memory: 1Gi
+    requests:
+      cpu: 0.5
+      memory: 0.5Gi
+
+  service:
+    type: ClusterIP
+    port: 80
+    targetPort: 8000
+    
+  env: { }
+  envSecrets: { }
+  vaultSecret:
+    enabled: false
+    project: stage-calendaria
+
+  hpa:
+    enabled: false
+    minReplicas: 3
+    maxReplicas: 6
+    CPUUtilization: 80
+    MemoryUtilization: 80
+
+  ingress:
+    enabled: true
+    ingressClassName: nginx
+    annotations:
+      nginx.ingress.kubernetes.io/proxy-body-size: 512m
+      nginx.ingress.kubernetes.io/rewrite-target: /$1
+    path: /iam/?(.*)
+    hosts:
+      - stage.calendaria.net
+    tls:
+    - secretName: calendaria-tls
+      hosts:
+        - stage.calendaria.net
+
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+
