@@ -66,6 +66,10 @@ server:
     
   env: { }
   envSecrets: { }
+  vaultSecret:
+    enabled: false
+    project: stage-calendaria
+
 
   ingress:
     enabled: true
