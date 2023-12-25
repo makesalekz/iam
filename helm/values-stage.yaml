@@ -15,7 +15,7 @@ configmap:
     name: goconfig
   data:
     DEBUG: "off"
-    IS_LOCAL: "off"
+    SERVICE_NAME: "iam"
 
 server:
   replicaCount: 1
