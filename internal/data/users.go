@@ -4,7 +4,6 @@ import (
 	"context"
 	"time"
 
-	"github.com/go-kratos/kratos/v2/log"
 	"gitlab.calendaria.team/services/iam/ent"
 	"gitlab.calendaria.team/services/iam/ent/user"
 	utils_v1 "gitlab.calendaria.team/services/utils/api/utils/v1"
@@ -52,7 +51,7 @@ type usersRepo struct {
 }
 
 // NewUsersRepo .
-func NewUsersRepo(d *Data, logger log.Logger) UsersRepo {
+func NewUsersRepo(d *Data) UsersRepo {
 	return &usersRepo{
 		db: d.db,
 	}

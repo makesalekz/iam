@@ -40,7 +40,7 @@ func wireApp(bootstrap *conf.Bootstrap, logger log.Logger) (*kratos.App, func(),
 	if err != nil {
 		return nil, nil, err
 	}
-	usersRepo := data.NewUsersRepo(dataData, logger)
+	usersRepo := data.NewUsersRepo(dataData)
 	otpRepo := data.NewOtpRepo(dataData)
 	encodedConn, cleanup2, err := data.NewNatsClient(bootstrap)
 	if err != nil {
