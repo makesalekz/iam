@@ -10,6 +10,7 @@ option java_package = "iam.v1";
 
 service Privacy {
 	rpc GetPrivacy (utils.v1.EmptyRequest) returns (PrivacyReply);
+	rpc GetUsersPrivacies(UsersPrivaciesRequest) returns(UsersPrivaciesReply);
 	rpc UpdatePrivacy (PrivacyRequest) returns (PrivacyReply);
 }
 
@@ -19,4 +20,17 @@ message PrivacyRequest {
 
 message PrivacyReply {
 	map<string, string> settings = 1;
+}
+
+message UsersPrivaciesRequest {
+	repeated int64 ids = 1;
+}
+
+message UsersPrivaciesReply {
+	repeated UserPrivacies users= 1;
+}
+
+message UserPrivacies {
+	int64 id = 1;
+	map<string, string> privacies = 2;
 }
