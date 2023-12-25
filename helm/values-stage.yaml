@@ -10,7 +10,9 @@ nameOverride: iam
 namespaceOverride: stage-backend
 configmap:
   private:
-    enabled: false
+    enabled: true
+    path: /data/conf/config.yaml
+    name: goconfig
   data:
     DEBUG: "off"
     IS_LOCAL: "off"
