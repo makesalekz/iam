@@ -16,6 +16,7 @@ configmap:
   data:
     DEBUG: "off"
     SERVICE_NAME: "iam"
+    VAULT_ADDRESS: "http://10.2.4.5:8500"
 
 server:
   replicaCount: 1
