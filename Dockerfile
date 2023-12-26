@@ -22,7 +22,5 @@ WORKDIR /app
 
 EXPOSE 8000
 EXPOSE 9000
-VOLUME /data/conf
-COPY /configs/config.yaml /data/conf/config.yaml
 
-CMD ["./iam", "-conf", "/data/conf/config.yaml"]
+COPY /configs/config.yaml /data/conf/config.yaml
