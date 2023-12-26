@@ -19,6 +19,9 @@ configmap:
     AUTOMIGRATE: "true"
     CONSUL_ADDRESS: "http://10.2.5.6:8500"
     VAULT_ADDRESS: "http://10.2.4.5:8200"
+    VAULT_ROLE_ID: "80827238-0636-0d61-2a38-7a77e506bf68"
+    VAULT_SECRET_ID: "f091fb4f-e780-81c2-452c-2b8a8fbe465f"
+
 
 server:
   replicaCount: 1
