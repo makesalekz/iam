@@ -7,11 +7,6 @@ import (
 	"gitlab.calendaria.team/services/iam/internal/data"
 )
 
-type UserPrivaciesItem struct {
-	UserId    int64
-	Privacies map[string]string
-}
-
 // PrivacyUsecase .
 type PrivacyUsecase struct {
 	privacyRepo data.PrivacyRepo
@@ -32,10 +27,10 @@ func (uc *PrivacyUsecase) UpdatePrivacy(ctx context.Context, userId int64, data 
 	return uc.privacyRepo.UpdatePrivacy(ctx, userId, data)
 }
 
-func (uc *PrivacyUsecase) GetPrivacies(ctx context.Context, userIds []int64) ([]*UserPrivaciesItem, error) {
+func (uc *PrivacyUsecase) GetPrivacies(ctx context.Context, userIds []int64) ([]*iam_v1.UserPrivacies, error) {
 	usersPrivacies, err := uc.privacyRepo.GetPrivacies(ctx, userIds)
 	if err != nil {
-		return nil, iam_v1.ErrorServiceFailed("privacy: %s", err.Error())
+		return nil, iam_v1.ErrorDatabaseQuery("privacy: %s", err.Error())
 	}
 
 	privaciesMap := make(map[int64]map[string]string)
@@ -46,10 +41,10 @@ func (uc *PrivacyUsecase) GetPrivacies(ctx context.Context, userIds []int64) ([]
 		privaciesMap[userPrivacies.UserID][string(userPrivacies.Setting)] = string(userPrivacies.Option)
 	}
 
-	userPrivaciesItems := make([]*UserPrivaciesItem, len(privaciesMap))
+	userPrivaciesItems := make([]*iam_v1.UserPrivacies, len(privaciesMap))
 	i := 0
 	for userId, privacies := range privaciesMap {
-		userPrivaciesItems[i] = &UserPrivaciesItem{UserId: userId, Privacies: privacies}
+		userPrivaciesItems[i] = &iam_v1.UserPrivacies{Id: userId, Privacies: privacies}
 		i++
 	}
 

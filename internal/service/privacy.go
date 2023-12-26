@@ -65,22 +65,10 @@ func (s *PrivacyService) UpdatePrivacy(ctx context.Context, req *v1.PrivacyReque
 func (s *PrivacyService) GetUsersPrivacies(ctx context.Context, req *v1.UsersPrivaciesRequest) (*v1.UsersPrivaciesReply, error) {
 	settings, err := s.uc.GetPrivacies(ctx, req.Ids)
 	if err != nil {
-		return nil, v1.ErrorDatabaseQuery("database error: %s", err.Error())
+		return nil, err
 	}
 
 	return &v1.UsersPrivaciesReply{
-		Users: replyUsersPrivacies(settings),
+		Users: settings,
 	}, nil
-}
-
-func replyUsersPrivacies(settings []*biz.UserPrivaciesItem) []*v1.UserPrivacies {
-	replyPriacies := make([]*v1.UserPrivacies, len(settings))
-	for i, setting := range settings {
-		replyPriacies[i] = &v1.UserPrivacies{
-			Id:        setting.UserId,
-			Privacies: setting.Privacies,
-		}
-	}
-
-	return replyPriacies
 }
