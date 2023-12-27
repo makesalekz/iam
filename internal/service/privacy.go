@@ -61,3 +61,14 @@ func (s *PrivacyService) UpdatePrivacy(ctx context.Context, req *v1.PrivacyReque
 		Settings: settings,
 	}, nil
 }
+
+func (s *PrivacyService) GetUsersPrivacies(ctx context.Context, req *v1.UsersPrivaciesRequest) (*v1.UsersPrivaciesReply, error) {
+	settings, err := s.uc.GetPrivacies(ctx, req.Ids)
+	if err != nil {
+		return nil, err
+	}
+
+	return &v1.UsersPrivaciesReply{
+		Users: settings,
+	}, nil
+}

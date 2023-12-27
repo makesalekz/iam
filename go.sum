@@ -368,14 +368,8 @@ github.com/yuin/goldmark v1.3.5/go.mod h1:mwnBkeHKe2W/ZEtQ+71ViKU8L12m81fl3OWwC1
 github.com/yuin/goldmark v1.4.13/go.mod h1:6yULJ656Px+3vBD8DxQVa3kxgyrAnzto9xy5taEt/CY=
 github.com/zclconf/go-cty v1.8.0 h1:s4AvqaeQzJIu3ndv4gVIhplVD0krU+bgrcLSVUnaWuA=
 github.com/zclconf/go-cty v1.8.0/go.mod h1:vVKLxnk3puL4qRAv72AO+W99LUD4da90g3uUAzyuvAk=
-gitlab.calendaria.team/services/chats v0.2.2 h1:9vB9424ipnePrPr0XvcGhdZhjyd9qvIkIbtWfZqKMwM=
-gitlab.calendaria.team/services/chats v0.2.2/go.mod h1:tGAV7zrIOjW6/MRfTGL2e8FMHSttlGKWD9w2oE/knao=
 gitlab.calendaria.team/services/contacts v0.1.0 h1:+nSfK45qNMYXnQqTqJxUA0ydRPExdOwrGUP+7sv69zI=
 gitlab.calendaria.team/services/contacts v0.1.0/go.mod h1:G5TrExMLRA+El0bo4nkNbPFL2z+iUU59WEUKjliWBrk=
-gitlab.calendaria.team/services/events v0.1.0 h1:Dl50D9jA7uqadoIB6JKdEhiJ5R1lu4G+wzSbYbtTdDM=
-gitlab.calendaria.team/services/events v0.1.0/go.mod h1:npYBDcifqrloGDUmmdwvfKdbN3O93UShZ8fBN5V7+XY=
-gitlab.calendaria.team/services/media v0.1.0 h1:32WyQ6fwwqFZDccjIsnG1GCbtqnA41AH6Wh4w4Hs3o0=
-gitlab.calendaria.team/services/media v0.1.0/go.mod h1:Z2ffrbYv+1IuV0tBQVK+MsGulzWFoH9jy+iHo2Z2g7A=
 gitlab.calendaria.team/services/notifications v0.1.0 h1:S34wBJXyht5teq858GrfZC58EfoC62cqFTBFAPkk9ro=
 gitlab.calendaria.team/services/notifications v0.1.0/go.mod h1:043qh/1XzrEmJEUSyLc+5rlvjaasPmHnhR1Rv4YM8y4=
 gitlab.calendaria.team/services/tenants v0.1.2 h1:L7qagxA/J/QPow08NB/nYKl/+5wKlcvsBc8r2UK/mxc=
