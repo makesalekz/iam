@@ -24,3 +24,5 @@ EXPOSE 8000
 EXPOSE 9000
 
 COPY /configs/config.yaml /data/conf/config.yaml
+
+CMD ["./iam", "-conf", "/data/conf/config.yaml"]
