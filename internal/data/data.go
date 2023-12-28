@@ -2,6 +2,7 @@ package data
 
 import (
 	"context"
+	"fmt"
 	"os"
 
 	"github.com/go-kratos/kratos/v2/log"
@@ -38,10 +39,19 @@ type Data struct {
 }
 
 // NewData .
-func NewData(c *conf.Bootstrap, logger log.Logger) (*Data, func(), error) {
+func NewData(c *config.Config, conf *conf.Bootstrap, logger log.Logger) (*Data, func(), error) {
 	l := log.NewHelper(logger)
 
-	client, err := ent.Open("postgres", c.Db.Address)
+	dbDsn := conf.Db.Address
+	if dbDsn == "" {
+		secret, err := c.ReadSecretsFor(context.Background(), "db-dsn")
+		if err != nil {
+			return nil, nil, fmt.Errorf("db dsn not found, error: %w", err)
+		}
+		dbDsn = secret["data"].(string)
+	}
+
+	client, err := ent.Open("postgres", dbDsn)
 	if err != nil {
 		l.Fatalf("failed opening connection to postgres: %v", err)
 		return nil, nil, err
