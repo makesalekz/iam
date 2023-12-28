@@ -37,15 +37,39 @@ func (otpu *OneTimePasswordUpdate) SetUserID(i int64) *OneTimePasswordUpdate {
 	return otpu
 }
 
+// SetNillableUserID sets the "user_id" field if the given value is not nil.
+func (otpu *OneTimePasswordUpdate) SetNillableUserID(i *int64) *OneTimePasswordUpdate {
+	if i != nil {
+		otpu.SetUserID(*i)
+	}
+	return otpu
+}
+
 // SetCode sets the "code" field.
 func (otpu *OneTimePasswordUpdate) SetCode(s string) *OneTimePasswordUpdate {
 	otpu.mutation.SetCode(s)
 	return otpu
 }
 
+// SetNillableCode sets the "code" field if the given value is not nil.
+func (otpu *OneTimePasswordUpdate) SetNillableCode(s *string) *OneTimePasswordUpdate {
+	if s != nil {
+		otpu.SetCode(*s)
+	}
+	return otpu
+}
+
 // SetType sets the "type" field.
 func (otpu *OneTimePasswordUpdate) SetType(ptpt property.OneTimePasswordType) *OneTimePasswordUpdate {
 	otpu.mutation.SetType(ptpt)
+	return otpu
+}
+
+// SetNillableType sets the "type" field if the given value is not nil.
+func (otpu *OneTimePasswordUpdate) SetNillableType(ptpt *property.OneTimePasswordType) *OneTimePasswordUpdate {
+	if ptpt != nil {
+		otpu.SetType(*ptpt)
+	}
 	return otpu
 }
 
@@ -66,6 +90,14 @@ func (otpu *OneTimePasswordUpdate) SetNillableIsUsed(b *bool) *OneTimePasswordUp
 // SetExpiresAt sets the "expires_at" field.
 func (otpu *OneTimePasswordUpdate) SetExpiresAt(t time.Time) *OneTimePasswordUpdate {
 	otpu.mutation.SetExpiresAt(t)
+	return otpu
+}
+
+// SetNillableExpiresAt sets the "expires_at" field if the given value is not nil.
+func (otpu *OneTimePasswordUpdate) SetNillableExpiresAt(t *time.Time) *OneTimePasswordUpdate {
+	if t != nil {
+		otpu.SetExpiresAt(*t)
+	}
 	return otpu
 }
 
@@ -234,15 +266,39 @@ func (otpuo *OneTimePasswordUpdateOne) SetUserID(i int64) *OneTimePasswordUpdate
 	return otpuo
 }
 
+// SetNillableUserID sets the "user_id" field if the given value is not nil.
+func (otpuo *OneTimePasswordUpdateOne) SetNillableUserID(i *int64) *OneTimePasswordUpdateOne {
+	if i != nil {
+		otpuo.SetUserID(*i)
+	}
+	return otpuo
+}
+
 // SetCode sets the "code" field.
 func (otpuo *OneTimePasswordUpdateOne) SetCode(s string) *OneTimePasswordUpdateOne {
 	otpuo.mutation.SetCode(s)
 	return otpuo
 }
 
+// SetNillableCode sets the "code" field if the given value is not nil.
+func (otpuo *OneTimePasswordUpdateOne) SetNillableCode(s *string) *OneTimePasswordUpdateOne {
+	if s != nil {
+		otpuo.SetCode(*s)
+	}
+	return otpuo
+}
+
 // SetType sets the "type" field.
 func (otpuo *OneTimePasswordUpdateOne) SetType(ptpt property.OneTimePasswordType) *OneTimePasswordUpdateOne {
 	otpuo.mutation.SetType(ptpt)
+	return otpuo
+}
+
+// SetNillableType sets the "type" field if the given value is not nil.
+func (otpuo *OneTimePasswordUpdateOne) SetNillableType(ptpt *property.OneTimePasswordType) *OneTimePasswordUpdateOne {
+	if ptpt != nil {
+		otpuo.SetType(*ptpt)
+	}
 	return otpuo
 }
 
@@ -263,6 +319,14 @@ func (otpuo *OneTimePasswordUpdateOne) SetNillableIsUsed(b *bool) *OneTimePasswo
 // SetExpiresAt sets the "expires_at" field.
 func (otpuo *OneTimePasswordUpdateOne) SetExpiresAt(t time.Time) *OneTimePasswordUpdateOne {
 	otpuo.mutation.SetExpiresAt(t)
+	return otpuo
+}
+
+// SetNillableExpiresAt sets the "expires_at" field if the given value is not nil.
+func (otpuo *OneTimePasswordUpdateOne) SetNillableExpiresAt(t *time.Time) *OneTimePasswordUpdateOne {
+	if t != nil {
+		otpuo.SetExpiresAt(*t)
+	}
 	return otpuo
 }
 
