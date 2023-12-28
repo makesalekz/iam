@@ -2,13 +2,11 @@ package data
 
 import (
 	"context"
-	"fmt"
 	"os"
 
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/google/wire"
 	"gitlab.calendaria.team/services/iam/ent"
-	"gitlab.calendaria.team/services/iam/internal/conf"
 	"gitlab.calendaria.team/services/utils/v1/config"
 	"gitlab.calendaria.team/services/utils/v1/dialer"
 	"gitlab.calendaria.team/services/utils/v1/jwt"
@@ -39,17 +37,15 @@ type Data struct {
 }
 
 // NewData .
-func NewData(c *config.Config, conf *conf.Bootstrap, logger log.Logger) (*Data, func(), error) {
+func NewData(c *config.Config, logger log.Logger) (*Data, func(), error) {
 	l := log.NewHelper(logger)
 
-	dbDsn := conf.Db.Address
-	if dbDsn == "" {
-		secret, err := c.ReadSecretsFor(context.Background(), "db-dsn")
-		if err != nil {
-			return nil, nil, fmt.Errorf("db dsn not found, error: %w", err)
-		}
-		dbDsn = secret["data"].(string)
+	secret, err := c.ReadSecretsFor(context.Background(), "db-dsn")
+	if err != nil {
+		l.Fatalf("db dsn not found: %v", err)
+		return nil, nil, err
 	}
+	dbDsn := secret["data"].(string)
 
 	client, err := ent.Open("postgres", dbDsn)
 	if err != nil {
