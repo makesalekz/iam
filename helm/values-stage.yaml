@@ -25,7 +25,7 @@ configmap:
 
 server:
   replicaCount: 1
-  command: ["./iam", "-conf", "/data/conf/config.yaml"]
+  command: ["./iam", "-conf", "/app/config.yaml"]
   podSecurityContext: {}
   securityContext: {}
   serviceAccount:

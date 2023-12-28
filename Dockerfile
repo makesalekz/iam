@@ -23,6 +23,6 @@ WORKDIR /app
 EXPOSE 8000
 EXPOSE 9000
 
-COPY /configs/config.yaml /data/conf/config.yaml
+COPY  --from=builder /src/configs/config.yaml /app/config.yaml
 
-CMD ["./iam", "-conf", "/data/conf/config.yaml"]
+CMD ["./iam", "-conf", "/app/config.yaml"]
