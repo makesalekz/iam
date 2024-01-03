@@ -47,6 +47,8 @@ func NewData(c *config.Config, logger log.Logger) (*Data, func(), error) {
 	}
 	dbDsn := secret["data"].(string)
 
+	l.Infof("Connecting to postgres: ", dbDsn)
+
 	client, err := ent.Open("postgres", dbDsn)
 	if err != nil {
 		l.Fatalf("failed opening connection to postgres: %v", err)
