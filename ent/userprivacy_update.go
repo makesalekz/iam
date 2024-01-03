@@ -37,15 +37,39 @@ func (upu *UserPrivacyUpdate) SetUserID(i int64) *UserPrivacyUpdate {
 	return upu
 }
 
+// SetNillableUserID sets the "user_id" field if the given value is not nil.
+func (upu *UserPrivacyUpdate) SetNillableUserID(i *int64) *UserPrivacyUpdate {
+	if i != nil {
+		upu.SetUserID(*i)
+	}
+	return upu
+}
+
 // SetSetting sets the "setting" field.
 func (upu *UserPrivacyUpdate) SetSetting(ps property.PrivacySettings) *UserPrivacyUpdate {
 	upu.mutation.SetSetting(ps)
 	return upu
 }
 
+// SetNillableSetting sets the "setting" field if the given value is not nil.
+func (upu *UserPrivacyUpdate) SetNillableSetting(ps *property.PrivacySettings) *UserPrivacyUpdate {
+	if ps != nil {
+		upu.SetSetting(*ps)
+	}
+	return upu
+}
+
 // SetOption sets the "option" field.
 func (upu *UserPrivacyUpdate) SetOption(po property.PrivacyOptions) *UserPrivacyUpdate {
 	upu.mutation.SetOption(po)
+	return upu
+}
+
+// SetNillableOption sets the "option" field if the given value is not nil.
+func (upu *UserPrivacyUpdate) SetNillableOption(po *property.PrivacyOptions) *UserPrivacyUpdate {
+	if po != nil {
+		upu.SetOption(*po)
+	}
 	return upu
 }
 
@@ -208,15 +232,39 @@ func (upuo *UserPrivacyUpdateOne) SetUserID(i int64) *UserPrivacyUpdateOne {
 	return upuo
 }
 
+// SetNillableUserID sets the "user_id" field if the given value is not nil.
+func (upuo *UserPrivacyUpdateOne) SetNillableUserID(i *int64) *UserPrivacyUpdateOne {
+	if i != nil {
+		upuo.SetUserID(*i)
+	}
+	return upuo
+}
+
 // SetSetting sets the "setting" field.
 func (upuo *UserPrivacyUpdateOne) SetSetting(ps property.PrivacySettings) *UserPrivacyUpdateOne {
 	upuo.mutation.SetSetting(ps)
 	return upuo
 }
 
+// SetNillableSetting sets the "setting" field if the given value is not nil.
+func (upuo *UserPrivacyUpdateOne) SetNillableSetting(ps *property.PrivacySettings) *UserPrivacyUpdateOne {
+	if ps != nil {
+		upuo.SetSetting(*ps)
+	}
+	return upuo
+}
+
 // SetOption sets the "option" field.
 func (upuo *UserPrivacyUpdateOne) SetOption(po property.PrivacyOptions) *UserPrivacyUpdateOne {
 	upuo.mutation.SetOption(po)
+	return upuo
+}
+
+// SetNillableOption sets the "option" field if the given value is not nil.
+func (upuo *UserPrivacyUpdateOne) SetNillableOption(po *property.PrivacyOptions) *UserPrivacyUpdateOne {
+	if po != nil {
+		upuo.SetOption(*po)
+	}
 	return upuo
 }
 

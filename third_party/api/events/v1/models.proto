@@ -68,6 +68,11 @@ message Event {
   optional LocationDto location = 18;
 }
 
+message AttachmentShort {
+  int64 id = 1;
+  int64 mediaId = 2;
+}
+
 message Attachment {
   int64 id = 1;
   string type = 2;
@@ -95,17 +100,12 @@ message Member {
 
   iam.v1.UserShort user = 8;
 }
-message MemberShort {
-  int64 id = 1;
-  string role = 2;
-
-  iam.v1.UserShort user = 3;
-}
 message Membership {
-  string status = 1;
-  string role = 2;
-  optional int32 remind = 3;
-  optional string remindAt = 4;
+  int64 id = 1;
+  string status = 2;
+  string role = 3;
+  optional int32 remind = 4;
+  optional string remindAt = 5;
 }
 message MemberHistory {
   int64 id = 1;

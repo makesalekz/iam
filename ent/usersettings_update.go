@@ -37,15 +37,39 @@ func (usu *UserSettingsUpdate) SetUserID(i int64) *UserSettingsUpdate {
 	return usu
 }
 
+// SetNillableUserID sets the "user_id" field if the given value is not nil.
+func (usu *UserSettingsUpdate) SetNillableUserID(i *int64) *UserSettingsUpdate {
+	if i != nil {
+		usu.SetUserID(*i)
+	}
+	return usu
+}
+
 // SetSetting sets the "setting" field.
 func (usu *UserSettingsUpdate) SetSetting(pr property.Settings) *UserSettingsUpdate {
 	usu.mutation.SetSetting(pr)
 	return usu
 }
 
+// SetNillableSetting sets the "setting" field if the given value is not nil.
+func (usu *UserSettingsUpdate) SetNillableSetting(pr *property.Settings) *UserSettingsUpdate {
+	if pr != nil {
+		usu.SetSetting(*pr)
+	}
+	return usu
+}
+
 // SetValue sets the "value" field.
 func (usu *UserSettingsUpdate) SetValue(s string) *UserSettingsUpdate {
 	usu.mutation.SetValue(s)
+	return usu
+}
+
+// SetNillableValue sets the "value" field if the given value is not nil.
+func (usu *UserSettingsUpdate) SetNillableValue(s *string) *UserSettingsUpdate {
+	if s != nil {
+		usu.SetValue(*s)
+	}
 	return usu
 }
 
@@ -203,15 +227,39 @@ func (usuo *UserSettingsUpdateOne) SetUserID(i int64) *UserSettingsUpdateOne {
 	return usuo
 }
 
+// SetNillableUserID sets the "user_id" field if the given value is not nil.
+func (usuo *UserSettingsUpdateOne) SetNillableUserID(i *int64) *UserSettingsUpdateOne {
+	if i != nil {
+		usuo.SetUserID(*i)
+	}
+	return usuo
+}
+
 // SetSetting sets the "setting" field.
 func (usuo *UserSettingsUpdateOne) SetSetting(pr property.Settings) *UserSettingsUpdateOne {
 	usuo.mutation.SetSetting(pr)
 	return usuo
 }
 
+// SetNillableSetting sets the "setting" field if the given value is not nil.
+func (usuo *UserSettingsUpdateOne) SetNillableSetting(pr *property.Settings) *UserSettingsUpdateOne {
+	if pr != nil {
+		usuo.SetSetting(*pr)
+	}
+	return usuo
+}
+
 // SetValue sets the "value" field.
 func (usuo *UserSettingsUpdateOne) SetValue(s string) *UserSettingsUpdateOne {
 	usuo.mutation.SetValue(s)
+	return usuo
+}
+
+// SetNillableValue sets the "value" field if the given value is not nil.
+func (usuo *UserSettingsUpdateOne) SetNillableValue(s *string) *UserSettingsUpdateOne {
+	if s != nil {
+		usuo.SetValue(*s)
+	}
 	return usuo
 }
 

@@ -30,7 +30,7 @@ message UserShort {
   string lastLoginAt = 7;
 
   optional Relation relation = 8;
-  map<string, string>  privacies = 9;
+  map<string, string> privacies = 9;
 }
 
 message Relation {
