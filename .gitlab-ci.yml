@@ -9,6 +9,7 @@ helm-lint:
   extends: .helm-lint
 
 migration:
+  image: gitlab/gitlab-runner:latest
   tags:
     - $CI_ENVIRONMENT_NAME-calendaria
   stage: migration
