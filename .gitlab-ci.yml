@@ -1,7 +1,3 @@
-stages:
-  - migration
-
-
 include:
   - project: "qcloudy/ci-cd/calendaria-pipelines"
     file: "golang-pipeline.yaml"
