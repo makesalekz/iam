@@ -22,7 +22,7 @@ configmap:
 
 sidecar:
   enabled: true
-  command: ["bash", "-c", "migrate apply --url "postgres://iam:shaev3neiZ@ah9k@10.2.8.175:5432/api?search_path=public"]
+  command: ["bash", "-c", "migrate apply --url 'postgres://iam:shaev3neiZ@ah9k@10.2.8.175:5432/api?search_path=public'"]
   image: arigaio/atlas
   volumeName: migration
   mountPathDestination: /migrations
