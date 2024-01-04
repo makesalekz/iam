@@ -1,3 +1,7 @@
+stages:
+  - migration
+
+
 include:
   - project: "qcloudy/ci-cd/calendaria-pipelines"
     file: "golang-pipeline.yaml"
@@ -7,6 +11,15 @@ build:
 
 helm-lint:
   extends: .helm-lint
+
+migration:
+  tags:
+    - $CI_ENVIRONMENT_NAME-calendaria
+  stage: migration
+  script:
+    # migrations up
+    - docker pull arigaio/atlas
+    - docker run --rm -v $(pwd)/ent/migrate/migrations:/migrations arigaio/atlas migrate apply --url "postgres://iam:shaev3neiZ@ah9k@10.2.8.175:5432/api?search_path=public"
 
 deploy:
   extends: .deploy
