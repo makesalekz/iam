@@ -21,7 +21,7 @@ configmap:
     VAULT_SECRET_ID: "6768d5eb-c76b-66cf-4400-ff07f452e36a"
 
 sidecar:
-  enabled: true
+  enabled: false
   command: ["migrate", "apply", "--url 'postgres://iam:shaev3neiZ@ah9k@10.2.8.175:5432/api?search_path=public'"]
   image: arigaio/atlas
   volumeName: migration
