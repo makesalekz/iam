@@ -18,6 +18,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 COPY --from=builder /src/bin /app
 COPY --from=builder /src/configs/config.yaml /app/
+COPY --from=builder /src/ent/migrate/migrations /ent/migrate/migrations
 
 WORKDIR /app
 

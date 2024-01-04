@@ -22,6 +22,13 @@ configmap:
     VAULT_ROLE_ID: "f4d37f03-ea1e-5e65-864e-8d88e2799834"
     VAULT_SECRET_ID: "6768d5eb-c76b-66cf-4400-ff07f452e36a"
 
+sidecar:
+  enabled: true
+  command: ["bash", "-c", "migrate apply --url "postgres://iam:shaev3neiZ@ah9k@10.2.8.175:5432/api?search_path=public"]
+  image: arigaio/atlas
+  volumeName: migration
+  mountPathDestination: /migrations
+  mountPathSource: /ent/migrate/migrations
 
 server:
   replicaCount: 1
