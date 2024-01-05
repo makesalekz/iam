@@ -25,7 +25,6 @@ server:
   #command: ["./iam", "-conf", "./config.yaml"]
   podSecurityContext: {}
   securityContext: {}
-  serviceAccount:
 
   resources:
     limits:
