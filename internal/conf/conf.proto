@@ -7,7 +7,7 @@ import "google/protobuf/duration.proto";
 
 message Bootstrap {
   Server server = 1;
-  Db db = 2;
+  string db = 2;
   string nats = 3;
   Discovery discovery = 4;
 }
@@ -25,10 +25,6 @@ message Server {
   }
   HTTP http = 1;
   GRPC grpc = 2;
-}
-
-message Db {
-  string address = 1;
 }
 
 message Discovery {

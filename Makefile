@@ -102,9 +102,11 @@ build:
 .PHONY: generate
 # generate
 generate:
-	go mod tidy
-	go get github.com/google/wire/cmd/wire@latest
-	GOFLAGS='-mod=readonly' go generate ./...
+	go mod tidy;
+	go get github.com/google/wire/cmd/wire@latest;
+	GOFLAGS='-mod=readonly' go generate ./...;
+	go mod tidy;
+	go mod vendor;
 
 .PHONY: all
 # generate all
