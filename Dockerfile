@@ -1,3 +1,4 @@
+FROM arigaio/atlas:latest-alpine as atlas
 FROM golang:latest AS builder
 
 COPY . /src
@@ -18,6 +19,11 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 COPY --from=builder /src/bin /app
 COPY --from=builder /src/configs/config.yaml /app/
+
+# migration
+COPY --from=atlas /atlas /atlas
+RUN chmod +x /atlas
+COPY --from=builder /src/ent/migrate/migrations/ /migrations/
 
 WORKDIR /app
 
