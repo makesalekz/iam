@@ -5,8 +5,8 @@ include:
 build:
   extends: .build
 
-migration-build:
-  extends: .migration-build
+# migration-build:
+#   extends: .migration-build
 
 helm-lint:
   extends: .helm-lint
