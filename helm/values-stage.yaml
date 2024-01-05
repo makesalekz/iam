@@ -1,7 +1,7 @@
 image:
   # image config
-  repository: 
-  tag: 
+  repository:
+  tag:
   pullPolicy: IfNotPresent
   imagePullSecrets:
 
@@ -22,7 +22,7 @@ configmap:
 
 server:
   replicaCount: 1
-  #command: ["./iam", "-conf", "./config.yaml"]
+  command: ["./iam", "-conf", "./config.yaml"]
   podSecurityContext: {}
   securityContext: {}
 
@@ -44,7 +44,6 @@ server:
   vaultSecret:
     enabled: false
     project: stage-calendaria
-
 
   ingress:
     enabled: false
