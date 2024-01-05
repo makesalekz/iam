@@ -6,7 +6,7 @@ server:
     addr: 0.0.0.0:9000
     timeout: 30s
 db:
-  address: host=10.2.8.175 port=5432 user=iam dbname=iam password=shaev3neiZ@ah9k sslmode=disable
+  address: host=10.2.8.175 port=5432 user=iam dbname=iam password=shaev3neiZ@ah9k
 nats: nats://10.2.4.6:4222
 discovery:
   notifications: discovery:///notifications
