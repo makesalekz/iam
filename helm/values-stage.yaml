@@ -38,12 +38,6 @@ server:
     type: ClusterIP
     port: 80
     targetPort: 8000
-    
-  env: { }
-  envSecrets: { }
-  vaultSecret:
-    enabled: false
-    project: stage-calendaria
 
   ingress:
     enabled: false
