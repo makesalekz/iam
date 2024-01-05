@@ -38,10 +38,23 @@ type Data struct {
 }
 
 // NewData .
-func NewData(c *conf.Bootstrap, logger log.Logger) (*Data, func(), error) {
+func NewData(bc *conf.Bootstrap, c *config.Config, logger log.Logger) (*Data, func(), error) {
 	l := log.NewHelper(logger)
 
-	client, err := ent.Open("postgres", c.Db.Address)
+	dbDsn := bc.Db // read from local config
+	if dbDsn == "" {
+		// read from vault
+		secret, err := c.ReadSecretsFor(context.Background(), "db-dsn")
+		if err != nil {
+			l.Fatalf("db dsn not found: %v", err)
+			return nil, nil, err
+		}
+		dbDsn = secret["data"].(string)
+	}
+
+	l.Debugf("Connecting to postgres: ", dbDsn)
+
+	client, err := ent.Open("postgres", dbDsn)
 	if err != nil {
 		l.Fatalf("failed opening connection to postgres: %v", err)
 		return nil, nil, err
