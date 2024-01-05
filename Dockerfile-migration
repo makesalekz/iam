@@ -1,0 +1,7 @@
+FROM arigaio/atlas:latest-alpine as atlas
+FROM alpine:3.17.3
+WORKDIR /
+COPY --from=atlas /atlas .
+RUN chmod +x /atlas
+COPY /ent/migrate/migrations /migrations
+CMD ["/atlas", "migrate", "apply", "--url 'postgres://iam:shaev3neiZ@ah9k@10.2.8.175:5432/api?search_path=public'"]
