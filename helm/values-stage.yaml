@@ -95,5 +95,5 @@ server:
   affinity: {}
 
 migrationJob:
-  enabled: false
+  enabled: true
   command: ["/atlas", "migrate", "apply", "--url 'postgres://iam:shaev3neiZ@ah9k@10.2.8.175:5432/iam?search_path=public'"]
