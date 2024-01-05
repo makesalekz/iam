@@ -94,6 +94,6 @@ server:
   tolerations: []
   affinity: {}
 
-  migrationJob:
-    enabled: false
-    command: ["/atlas", "migrate", "apply", "--url 'postgres://iam:shaev3neiZ@ah9k@10.2.8.175:5432/iam?search_path=public'"]
+migrationJob:
+  enabled: false
+  command: ["/atlas", "migrate", "apply", "--url 'postgres://iam:shaev3neiZ@ah9k@10.2.8.175:5432/iam?search_path=public'"]
