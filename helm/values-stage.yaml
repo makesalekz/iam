@@ -26,35 +26,6 @@ server:
   podSecurityContext: {}
   securityContext: {}
   serviceAccount:
-  
-  # livenessProbe:
-  #   failureThreshold: 2
-  #   initialDelaySeconds: 120
-  #   periodSeconds: 60
-  #   successThreshold: 1
-  #   tcpSocket:
-  #     port: 8000
-  #   timeoutSeconds: 10
-
-  # readinessProbe:
-  #   failureThreshold: 2
-  #   httpGet:
-  #     path: /health-check/
-  #     port: http
-  #     scheme: HTTP
-  #   initialDelaySeconds: 120
-  #   periodSeconds: 10
-  #   successThreshold: 1
-  #   timeoutSeconds: 10
-
-  # startupProbe:
-  #   failureThreshold: 2
-  #   periodSeconds: 10
-  #   successThreshold: 1
-  #   initialDelaySeconds: 120
-  #   tcpSocket:
-  #     port: 8000
-  #   timeoutSeconds: 10
 
   resources:
     limits:
@@ -93,7 +64,3 @@ server:
   nodeSelector: {}
   tolerations: []
   affinity: {}
-
-migrateJob:
-  enabled: false
-  command: ["/atlas", "migrate", "apply", "--url", "postgres://iam:shaev3neiZ@ah9k@10.2.8.175:5432/iam?search_path=public"]
