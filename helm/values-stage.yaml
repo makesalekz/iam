@@ -3,7 +3,6 @@ image:
   repository:
   tag:
   pullPolicy: IfNotPresent
-  imagePullSecrets:
 
 fullnameOverride: iam
 nameOverride: iam
