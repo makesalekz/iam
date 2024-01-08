@@ -35,8 +35,10 @@ server:
 
   service:
     type: ClusterIP
-    port: 80
+    port: 8000
     targetPort: 8000
+    port2: 9000
+    targetPort2: 9000
 
   ingress:
     enabled: false
