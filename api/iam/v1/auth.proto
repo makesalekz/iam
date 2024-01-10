@@ -7,36 +7,35 @@ option java_multiple_files = true;
 option java_package = "iam.v1";
 
 service Auth {
-	// Auth by Phone  
-	// request: phone number  
-	// returns: id of newly created otp user
-	rpc AuthByPhone (AuthByPhoneRequest) returns (AuthByPhoneReply);
-	// Auth by Code  
-	// after you authorized bu phone, you suppose to enter code that you've got here  
-	// request: id from AuthByPhone, code from message  
-	// returns: bearer token
-	rpc AuthByCode (AuthByCodeRequest) returns (TokenReply);
-	rpc RefreshToken (TenantRequest) returns (TokenReply);
+  // Auth by Phone
+  // request: phone number
+  // returns: id of newly created otp user
+  rpc AuthByPhone(AuthByPhoneRequest) returns (AuthByPhoneReply);
+  // Auth by Code
+  // after you authorized bu phone, you suppose to enter code that you've got
+  // here request: id from AuthByPhone, code from message returns: bearer token
+  rpc AuthByCode(AuthByCodeRequest) returns (TokenReply);
+  rpc RefreshToken(TenantRequest) returns (TokenReply);
 }
 
 message AuthByPhoneRequest {
-	string phone = 1;
+  string phone = 1;
 }
 
 message AuthByPhoneReply {
-	int64 user_id = 1;
+  int64 user_id = 1;
 }
 
 message AuthByCodeRequest {
-	int64 user_id = 1;
-	string code = 2;
+  int64 user_id = 1;
+  string code = 2;
 }
 
 message TenantRequest {
-	int64 tenant_id = 1;
+  int64 tenant_id = 1;
 }
 
 message TokenReply {
-	string access_token = 1;
-	string refresh_token = 2;
+  string access_token = 1;
+  string refresh_token = 2;
 }
