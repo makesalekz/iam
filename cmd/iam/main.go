@@ -22,7 +22,7 @@ var (
 	// Name is the name of the compiled software.
 	Name string = "iam"
 	// Version is the version of the compiled software.
-	Version string = "1.1.1"
+	Version string = "1.2.0"
 	// flagconf is the config flag.
 	flagconf string
 
