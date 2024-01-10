@@ -190,17 +190,19 @@ func userItemToV1User(user *biz.UserItem) *v1.User {
 	}
 
 	replyUser := &v1.User{
-		Id:          user.ID,
-		Phone:       user.Phone,
-		Email:       user.Email,
-		Name:        user.Name,
-		Bio:         user.Bio,
-		Avatar:      user.Avatar,
-		Timezone:    user.Timezone,
-		CreatedAt:   user.CreatedAt.Format(time.RFC3339),
-		UpdatedAt:   user.UpdatedAt.Format(time.RFC3339),
-		LastLoginAt: user.LastLoginAt.Format(time.RFC3339),
-		IsActive:    user.IsActive,
+		Id:              user.ID,
+		Phone:           user.Phone,
+		Email:           user.Email,
+		Name:            user.Name,
+		Bio:             user.Bio,
+		Avatar:          user.Avatar,
+		Timezone:        user.Timezone,
+		CreatedAt:       user.CreatedAt.Format(time.RFC3339),
+		UpdatedAt:       user.UpdatedAt.Format(time.RFC3339),
+		LastLoginAt:     user.LastLoginAt.Format(time.RFC3339),
+		IsActive:        user.IsActive,
+		IsPhoneVerified: user.PhoneVerified,
+		IsEmailVerified: user.EmailVerified,
 	}
 
 	if user.BioUpdatedAt != nil {
@@ -213,11 +215,13 @@ func userItemToV1User(user *biz.UserItem) *v1.User {
 
 func userItemToV1ShortUser(user *biz.UserItem) *v1.UserShort {
 	replyUser := &v1.UserShort{
-		Id:          user.ID,
-		Name:        user.Name,
-		LastLoginAt: user.LastLoginAt.Format(time.RFC3339),
-		Relation:    user.Relation,
-		Privacies:   user.Privacies,
+		Id:              user.ID,
+		Name:            user.Name,
+		LastLoginAt:     user.LastLoginAt.Format(time.RFC3339),
+		Relation:        user.Relation,
+		Privacies:       user.Privacies,
+		IsPhoneVerified: user.PhoneVerified,
+		IsEmailVerified: user.EmailVerified,
 	}
 
 	if user.Phone != nil {
