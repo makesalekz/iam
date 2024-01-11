@@ -39,7 +39,7 @@ func (s *UsersService) GetOwnProfile(ctx context.Context, req *utils_v1.EmptyReq
 		return nil, err
 	}
 
-	result := v1.UserFullReply{User: userItemToV1User(user)}
+	result := v1.UserFullReply{User: userItemToV1User(user, false)}
 
 	tenants, err := s.uc.GetUserTenants(ctx)
 	if err == nil {
@@ -76,7 +76,7 @@ func (s *UsersService) UpdateOwnProfile(ctx context.Context, req *v1.UpdateOwnPr
 		return nil, err
 	}
 
-	result := v1.UserFullReply{User: userItemToV1User(user)}
+	result := v1.UserFullReply{User: userItemToV1User(user, false)}
 
 	if req.WithTenants {
 		tenants, err := s.uc.GetUserTenants(ctx)
@@ -122,7 +122,7 @@ func (s *UsersService) GetUserFull(ctx context.Context, req *v1.GetUserRequest) 
 		return nil, err
 	}
 
-	return &v1.UserFullReply{User: userItemToV1User(user)}, nil
+	return &v1.UserFullReply{User: userItemToV1User(user, false)}, nil
 }
 
 func (s *UsersService) GetUser(ctx context.Context, req *v1.GetUserRequest) (*v1.UserReply, error) {
@@ -135,7 +135,7 @@ func (s *UsersService) GetUser(ctx context.Context, req *v1.GetUserRequest) (*v1
 		return nil, err
 	}
 
-	return &v1.UserReply{User: userItemToV1ShortUser(user)}, nil
+	return &v1.UserReply{User: userItemToV1ShortUser(user, false)}, nil
 }
 
 func (s *UsersService) GetUsers(ctx context.Context, req *v1.GetUsersRequest) (*v1.GetUsersReply, error) {
@@ -153,7 +153,7 @@ func (s *UsersService) GetUsers(ctx context.Context, req *v1.GetUsersRequest) (*
 		return nil, err
 	}
 
-	return &v1.GetUsersReply{Users: userItemsToV1ShortUser(users)}, nil
+	return &v1.GetUsersReply{Users: userItemsToV1ShortUser(users, req.WithVerified)}, nil
 }
 
 func (s *UsersService) GetUserByFilter(ctx context.Context, req *v1.GetUserByFilterRequest) (*v1.UserReply, error) {
@@ -167,7 +167,7 @@ func (s *UsersService) GetUserByFilter(ctx context.Context, req *v1.GetUserByFil
 		return nil, err
 	}
 
-	return &v1.UserReply{User: userItemToV1ShortUser(user)}, nil
+	return &v1.UserReply{User: userItemToV1ShortUser(user, false)}, nil
 }
 
 func (s *UsersService) GetUserByFilterFull(ctx context.Context, req *v1.GetUserByFilterRequest) (*v1.UserFullReply, error) {
@@ -181,28 +181,31 @@ func (s *UsersService) GetUserByFilterFull(ctx context.Context, req *v1.GetUserB
 		return nil, err
 	}
 
-	return &v1.UserFullReply{User: userItemToV1User(user)}, nil
+	return &v1.UserFullReply{User: userItemToV1User(user, false)}, nil
 }
 
-func userItemToV1User(user *biz.UserItem) *v1.User {
+func userItemToV1User(user *biz.UserItem, withVerified bool) *v1.User {
 	if user == nil {
 		return &v1.User{}
 	}
 
 	replyUser := &v1.User{
-		Id:              user.ID,
-		Phone:           user.Phone,
-		Email:           user.Email,
-		Name:            user.Name,
-		Bio:             user.Bio,
-		Avatar:          user.Avatar,
-		Timezone:        user.Timezone,
-		CreatedAt:       user.CreatedAt.Format(time.RFC3339),
-		UpdatedAt:       user.UpdatedAt.Format(time.RFC3339),
-		LastLoginAt:     user.LastLoginAt.Format(time.RFC3339),
-		IsActive:        user.IsActive,
-		IsPhoneVerified: user.PhoneVerified,
-		IsEmailVerified: user.EmailVerified,
+		Id:          user.ID,
+		Phone:       user.Phone,
+		Email:       user.Email,
+		Name:        user.Name,
+		Bio:         user.Bio,
+		Avatar:      user.Avatar,
+		Timezone:    user.Timezone,
+		CreatedAt:   user.CreatedAt.Format(time.RFC3339),
+		UpdatedAt:   user.UpdatedAt.Format(time.RFC3339),
+		LastLoginAt: user.LastLoginAt.Format(time.RFC3339),
+		IsActive:    user.IsActive,
+	}
+
+	if withVerified {
+		replyUser.IsPhoneVerified = &user.PhoneVerified
+		replyUser.IsEmailVerified = &user.EmailVerified
 	}
 
 	if user.BioUpdatedAt != nil {
@@ -213,15 +216,18 @@ func userItemToV1User(user *biz.UserItem) *v1.User {
 	return replyUser
 }
 
-func userItemToV1ShortUser(user *biz.UserItem) *v1.UserShort {
+func userItemToV1ShortUser(user *biz.UserItem, withVerified bool) *v1.UserShort {
 	replyUser := &v1.UserShort{
-		Id:              user.ID,
-		Name:            user.Name,
-		LastLoginAt:     user.LastLoginAt.Format(time.RFC3339),
-		Relation:        user.Relation,
-		Privacies:       user.Privacies,
-		IsPhoneVerified: user.PhoneVerified,
-		IsEmailVerified: user.EmailVerified,
+		Id:          user.ID,
+		Name:        user.Name,
+		LastLoginAt: user.LastLoginAt.Format(time.RFC3339),
+		Relation:    user.Relation,
+		Privacies:   user.Privacies,
+	}
+
+	if withVerified {
+		replyUser.IsPhoneVerified = &user.PhoneVerified
+		replyUser.IsEmailVerified = &user.EmailVerified
 	}
 
 	if user.Phone != nil {
@@ -237,10 +243,10 @@ func userItemToV1ShortUser(user *biz.UserItem) *v1.UserShort {
 	return replyUser
 }
 
-func userItemsToV1ShortUser(users []*biz.UserItem) []*v1.UserShort {
+func userItemsToV1ShortUser(users []*biz.UserItem, withVerified bool) []*v1.UserShort {
 	replyUsers := make([]*v1.UserShort, len(users))
 	for i, user := range users {
-		replyUsers[i] = userItemToV1ShortUser(user)
+		replyUsers[i] = userItemToV1ShortUser(user, withVerified)
 	}
 
 	return replyUsers

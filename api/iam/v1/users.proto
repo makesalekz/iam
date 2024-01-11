@@ -79,6 +79,7 @@ message GetUsersRequest {
   string search = 4;
   bool withRelation = 5;
   bool withPrivacies = 6;
+  bool withVerified = 9;
   utils.v1.SortRequest sort = 7;
   utils.v1.PaginateRequest paginate = 8;
 }
