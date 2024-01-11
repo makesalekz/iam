@@ -146,6 +146,7 @@ func (s *UsersService) GetUsers(ctx context.Context, req *v1.GetUsersRequest) (*
 		Search:        req.GetSearch(),
 		WithRelation:  req.WithRelation,
 		WithPrivacies: req.WithPrivacies,
+		WithVerified:  req.WithVerified,
 	}
 
 	users, err := s.uc.GetUsers(ctx, filter, req.Sort, req.Paginate)
@@ -203,6 +204,11 @@ func userItemToV1User(user *biz.UserItem) *v1.User {
 		IsActive:    user.IsActive,
 	}
 
+	if user.WithVerified {
+		replyUser.IsPhoneVerified = &user.PhoneVerified
+		replyUser.IsEmailVerified = &user.EmailVerified
+	}
+
 	if user.BioUpdatedAt != nil {
 		bioUpdatedAt := user.BioUpdatedAt.Format(time.RFC3339)
 		replyUser.BioUpdatedAt = &bioUpdatedAt
@@ -218,6 +224,11 @@ func userItemToV1ShortUser(user *biz.UserItem) *v1.UserShort {
 		LastLoginAt: user.LastLoginAt.Format(time.RFC3339),
 		Relation:    user.Relation,
 		Privacies:   user.Privacies,
+	}
+
+	if user.WithVerified {
+		replyUser.IsPhoneVerified = &user.PhoneVerified
+		replyUser.IsEmailVerified = &user.EmailVerified
 	}
 
 	if user.Phone != nil {
