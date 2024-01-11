@@ -17,8 +17,9 @@ import (
 type UserItem struct {
 	*ent.User
 
-	Relation  *v1.Relation
-	Privacies map[string]string
+	Relation     *v1.Relation
+	Privacies    map[string]string
+	WithVerified bool
 }
 
 // UsersUsecase .
@@ -228,6 +229,12 @@ func (uc *UsersUsecase) GetUsers(ctx context.Context, filter data.GetUsersFilter
 		err = uc.includePrivacies(ctx, replyUsers...)
 		if err != nil {
 			return nil, err
+		}
+	}
+
+	if filter.WithVerified {
+		for i := 0; i < len(users); i++ {
+			replyUsers[i].WithVerified = filter.WithVerified
 		}
 	}
 

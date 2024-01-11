@@ -30,6 +30,7 @@ type GetUsersFilterDto struct {
 	Search        string
 	WithRelation  bool
 	WithPrivacies bool
+	WithVerified  bool
 }
 
 // UsersRepo
