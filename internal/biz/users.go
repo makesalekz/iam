@@ -220,7 +220,8 @@ func (uc *UsersUsecase) GetUsers(ctx context.Context, actorId int64, filter data
 		replyUsers[i] = &UserItem{User: user}
 	}
 
-	if filter.WithRelation {
+	//TODO. Deprecated. marked for deletion
+	if filter.WithRelation && actorId != 0 {
 		err = uc.includeRelations(ctx, actorId, replyUsers...)
 		if err != nil {
 			return nil, err

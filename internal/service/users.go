@@ -145,7 +145,7 @@ func (s *UsersService) GetUsers(ctx context.Context, req *v1.GetUsersRequest) (*
 	// TODO. Remove this thing later
 	actorId, err := s.sh.GetActorId(ctx, req.ActorId)
 	if err != nil {
-		return nil, err
+		s.log.Debugf("TODO delete withRelation, %s", err.Error())
 	}
 
 	filter := data.GetUsersFilterDto{
