@@ -13,12 +13,18 @@ type AuthService struct {
 	v1.UnimplementedAuthServer
 
 	log *log.Helper
+	sh  *ServiceHelper
 	au  *biz.AuthUsecase
 }
 
-func NewAuthService(logger log.Logger, au *biz.AuthUsecase) *AuthService {
+func NewAuthService(
+	logger log.Logger,
+	sh *ServiceHelper,
+	au *biz.AuthUsecase,
+) *AuthService {
 	return &AuthService{
 		log: log.NewHelper(logger),
+		sh:  sh,
 		au:  au,
 	}
 }
@@ -63,22 +69,22 @@ func (s *AuthService) AuthByCode(ctx context.Context, req *v1.AuthByCodeRequest)
 }
 
 func (s *AuthService) RefreshToken(ctx context.Context, req *v1.TenantRequest) (*v1.TokenReply, error) {
-	userId, err := s.au.CheckIdToken(ctx)
+	actorId, err := s.sh.GetActorId(ctx, req.ActorId)
 	if err != nil {
 		return nil, err
 	}
 
 	var accessToken string
 	if req.TenantId != 0 {
-		accessToken, err = s.au.GenerateTenantToken(ctx, userId, req.TenantId)
+		accessToken, err = s.au.GenerateTenantToken(ctx, actorId, req.TenantId)
 	} else {
-		accessToken, err = s.au.GenerateAccessToken(ctx, userId)
+		accessToken, err = s.au.GenerateAccessToken(ctx, actorId)
 	}
 	if err != nil {
 		return nil, err
 	}
 
-	refreshToken, err := s.au.GenerateIdToken(ctx, userId)
+	refreshToken, err := s.au.GenerateIdToken(ctx, actorId)
 	if err != nil {
 		return nil, err
 	}

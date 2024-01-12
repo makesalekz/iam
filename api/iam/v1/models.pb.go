@@ -176,16 +176,17 @@ type UserShort struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	Id              int64             `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
-	Phone           string            `protobuf:"bytes,2,opt,name=phone,proto3" json:"phone,omitempty"`
-	Email           string            `protobuf:"bytes,3,opt,name=email,proto3" json:"email,omitempty"`
-	Name            string            `protobuf:"bytes,4,opt,name=name,proto3" json:"name,omitempty"`
-	Avatar          string            `protobuf:"bytes,6,opt,name=avatar,proto3" json:"avatar,omitempty"`
-	LastLoginAt     string            `protobuf:"bytes,7,opt,name=lastLoginAt,proto3" json:"lastLoginAt,omitempty"`
-	IsPhoneVerified *bool             `protobuf:"varint,10,opt,name=isPhoneVerified,proto3,oneof" json:"isPhoneVerified,omitempty"`
-	IsEmailVerified *bool             `protobuf:"varint,11,opt,name=isEmailVerified,proto3,oneof" json:"isEmailVerified,omitempty"`
-	Relation        *Relation         `protobuf:"bytes,8,opt,name=relation,proto3,oneof" json:"relation,omitempty"`
-	Privacies       map[string]string `protobuf:"bytes,9,rep,name=privacies,proto3" json:"privacies,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
+	Id              int64  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	Phone           string `protobuf:"bytes,2,opt,name=phone,proto3" json:"phone,omitempty"`
+	Email           string `protobuf:"bytes,3,opt,name=email,proto3" json:"email,omitempty"`
+	Name            string `protobuf:"bytes,4,opt,name=name,proto3" json:"name,omitempty"`
+	Avatar          string `protobuf:"bytes,6,opt,name=avatar,proto3" json:"avatar,omitempty"`
+	LastLoginAt     string `protobuf:"bytes,7,opt,name=lastLoginAt,proto3" json:"lastLoginAt,omitempty"`
+	IsPhoneVerified *bool  `protobuf:"varint,10,opt,name=isPhoneVerified,proto3,oneof" json:"isPhoneVerified,omitempty"`
+	IsEmailVerified *bool  `protobuf:"varint,11,opt,name=isEmailVerified,proto3,oneof" json:"isEmailVerified,omitempty"`
+	// Deprecated. Marked for deletion
+	Relation  *Relation         `protobuf:"bytes,8,opt,name=relation,proto3,oneof" json:"relation,omitempty"`
+	Privacies map[string]string `protobuf:"bytes,9,rep,name=privacies,proto3" json:"privacies,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
 }
 
 func (x *UserShort) Reset() {
