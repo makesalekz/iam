@@ -33,6 +33,7 @@ message UserShort {
   optional bool isPhoneVerified = 10;
   optional bool isEmailVerified = 11;
 
+  // Deprecated. Marked for deletion
   optional Relation relation = 8;
   map<string, string> privacies = 9;
 }

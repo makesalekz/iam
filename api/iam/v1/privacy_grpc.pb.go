@@ -29,7 +29,7 @@ const (
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type PrivacyClient interface {
-	GetPrivacy(ctx context.Context, in *v1.EmptyRequest, opts ...grpc.CallOption) (*PrivacyReply, error)
+	GetPrivacy(ctx context.Context, in *v1.ActorRequest, opts ...grpc.CallOption) (*PrivacyReply, error)
 	GetUsersPrivacies(ctx context.Context, in *UsersPrivaciesRequest, opts ...grpc.CallOption) (*UsersPrivaciesReply, error)
 	UpdatePrivacy(ctx context.Context, in *PrivacyRequest, opts ...grpc.CallOption) (*PrivacyReply, error)
 }
@@ -42,7 +42,7 @@ func NewPrivacyClient(cc grpc.ClientConnInterface) PrivacyClient {
 	return &privacyClient{cc}
 }
 
-func (c *privacyClient) GetPrivacy(ctx context.Context, in *v1.EmptyRequest, opts ...grpc.CallOption) (*PrivacyReply, error) {
+func (c *privacyClient) GetPrivacy(ctx context.Context, in *v1.ActorRequest, opts ...grpc.CallOption) (*PrivacyReply, error) {
 	out := new(PrivacyReply)
 	err := c.cc.Invoke(ctx, Privacy_GetPrivacy_FullMethodName, in, out, opts...)
 	if err != nil {
@@ -73,7 +73,7 @@ func (c *privacyClient) UpdatePrivacy(ctx context.Context, in *PrivacyRequest, o
 // All implementations must embed UnimplementedPrivacyServer
 // for forward compatibility
 type PrivacyServer interface {
-	GetPrivacy(context.Context, *v1.EmptyRequest) (*PrivacyReply, error)
+	GetPrivacy(context.Context, *v1.ActorRequest) (*PrivacyReply, error)
 	GetUsersPrivacies(context.Context, *UsersPrivaciesRequest) (*UsersPrivaciesReply, error)
 	UpdatePrivacy(context.Context, *PrivacyRequest) (*PrivacyReply, error)
 	mustEmbedUnimplementedPrivacyServer()
@@ -83,7 +83,7 @@ type PrivacyServer interface {
 type UnimplementedPrivacyServer struct {
 }
 
-func (UnimplementedPrivacyServer) GetPrivacy(context.Context, *v1.EmptyRequest) (*PrivacyReply, error) {
+func (UnimplementedPrivacyServer) GetPrivacy(context.Context, *v1.ActorRequest) (*PrivacyReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetPrivacy not implemented")
 }
 func (UnimplementedPrivacyServer) GetUsersPrivacies(context.Context, *UsersPrivaciesRequest) (*UsersPrivaciesReply, error) {
@@ -106,7 +106,7 @@ func RegisterPrivacyServer(s grpc.ServiceRegistrar, srv PrivacyServer) {
 }
 
 func _Privacy_GetPrivacy_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(v1.EmptyRequest)
+	in := new(v1.ActorRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -118,7 +118,7 @@ func _Privacy_GetPrivacy_Handler(srv interface{}, ctx context.Context, dec func(
 		FullMethod: Privacy_GetPrivacy_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(PrivacyServer).GetPrivacy(ctx, req.(*v1.EmptyRequest))
+		return srv.(PrivacyServer).GetPrivacy(ctx, req.(*v1.ActorRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }

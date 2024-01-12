@@ -51,13 +51,15 @@ func NewUsersUsecase(logger log.Logger,
 	}, nil
 }
 
-func (uc *UsersUsecase) includeRelations(ctx context.Context, users ...*UserItem) error {
+func (uc *UsersUsecase) includeRelations(ctx context.Context, actorId int64, users ...*UserItem) error {
 	userIds := make([]int64, len(users))
 	for i, user := range users {
 		userIds[i] = user.ID
 	}
 
-	relationsReply, err := uc.contacts.GetRelations(ctx, &contacts_v1.GetRelationsRequest{UserIds: userIds})
+	relationsReply, err := uc.contacts.GetRelations(ctx, &contacts_v1.GetRelationsRequest{
+		ActorId: actorId,
+		UserIds: userIds})
 	if err != nil {
 		if contacts_v1.IsNotFound(err) {
 			return nil
@@ -203,7 +205,7 @@ func (uc *UsersUsecase) DeleteUser(ctx context.Context, userId int64) error {
 	return nil
 }
 
-func (uc *UsersUsecase) GetUsers(ctx context.Context, filter data.GetUsersFilterDto, sort *utils_v1.SortRequest, paginate *utils_v1.PaginateRequest) ([]*UserItem, error) {
+func (uc *UsersUsecase) GetUsers(ctx context.Context, actorId int64, filter data.GetUsersFilterDto, sort *utils_v1.SortRequest, paginate *utils_v1.PaginateRequest) ([]*UserItem, error) {
 	if paginate == nil {
 		paginate = &utils_v1.PaginateRequest{}
 	}
@@ -218,8 +220,9 @@ func (uc *UsersUsecase) GetUsers(ctx context.Context, filter data.GetUsersFilter
 		replyUsers[i] = &UserItem{User: user}
 	}
 
-	if filter.WithRelation {
-		err = uc.includeRelations(ctx, replyUsers...)
+	//TODO. Deprecated. marked for deletion
+	if filter.WithRelation && actorId != 0 {
+		err = uc.includeRelations(ctx, actorId, replyUsers...)
 		if err != nil {
 			return nil, err
 		}
@@ -241,13 +244,8 @@ func (uc *UsersUsecase) GetUsers(ctx context.Context, filter data.GetUsersFilter
 	return replyUsers, nil
 }
 
-func (uc *UsersUsecase) GetUserTenants(ctx context.Context) ([]*tenants_v1.Tenant, error) {
-	claims, ok := uc.jwt.GetClaimsFromContext(ctx)
-	if !ok || !claims.IsUserRequest() {
-		return nil, v1.ErrorUnauthorized("invalid token")
-	}
-
-	tenants, err := uc.tenants.GetUserTenants(ctx, claims)
+func (uc *UsersUsecase) GetUserTenants(ctx context.Context, actorId int64) ([]*tenants_v1.Tenant, error) {
+	tenants, err := uc.tenants.GetUserTenants(ctx, actorId)
 	if err != nil {
 		return nil, tenants_v1.ErrorServiceFailed("tenants: %s", err.Error())
 	}

@@ -32,6 +32,7 @@ message AuthByCodeRequest {
 }
 
 message TenantRequest {
+  int64 actor_id = 2;
   int64 tenant_id = 1;
 }
 
