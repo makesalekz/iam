@@ -406,13 +406,13 @@ type GetUsersRequest struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Deprecated. Marked for deletion
+	// TODO. Deprecated. Marked for deletion
 	ActorId int64    `protobuf:"varint,10,opt,name=actorId,proto3" json:"actorId,omitempty"`
 	Ids     []int64  `protobuf:"varint,1,rep,packed,name=ids,proto3" json:"ids,omitempty"`
 	Phones  []string `protobuf:"bytes,2,rep,name=phones,proto3" json:"phones,omitempty"`
 	Emails  []string `protobuf:"bytes,3,rep,name=emails,proto3" json:"emails,omitempty"`
 	Search  string   `protobuf:"bytes,4,opt,name=search,proto3" json:"search,omitempty"`
-	// Deprecated. Marked for deletion
+	// TODO. Deprecated. Marked for deletion
 	WithRelation  bool                `protobuf:"varint,5,opt,name=withRelation,proto3" json:"withRelation,omitempty"`
 	WithPrivacies bool                `protobuf:"varint,6,opt,name=withPrivacies,proto3" json:"withPrivacies,omitempty"`
 	WithVerified  bool                `protobuf:"varint,9,opt,name=withVerified,proto3" json:"withVerified,omitempty"`
