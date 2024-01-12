@@ -42,7 +42,6 @@ func NewWhiteListMatcher() selector.MatchFunc {
 	whiteList := make(map[string]struct{})
 	whiteList["/iam.v1.Auth/AuthByPhone"] = struct{}{}
 	whiteList["/iam.v1.Auth/AuthByCode"] = struct{}{}
-	whiteList["/iam.v1.Auth/TempAuthBySuperCode"] = struct{}{}
 	return func(ctx context.Context, operation string) bool {
 		if _, ok := whiteList[operation]; ok {
 			return false
