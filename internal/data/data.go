@@ -54,13 +54,18 @@ func NewData(bc *conf.Bootstrap, c *config.Config, logger log.Logger) (*Data, fu
 
 	l.Debugf("Connecting to postgres: ", dbDsn)
 
-	client, err := ent.Open("postgres", dbDsn)
+	automigrate := os.Getenv("AUTOMIGRATE")
+	options := []ent.Option{}
+	if automigrate != "" {
+		options = append(options, ent.Debug(), ent.Log(l.Debug))
+	}
+
+	client, err := ent.Open("postgres", dbDsn, options...)
 	if err != nil {
 		l.Fatalf("failed opening connection to postgres: %v", err)
 		return nil, nil, err
 	}
 
-	automigrate := os.Getenv("AUTOMIGRATE")
 	if automigrate != "" {
 		if err := client.Schema.Create(context.Background()); err != nil {
 			l.Errorf("failed creating schema resources: %v", err)
