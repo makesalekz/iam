@@ -106,7 +106,7 @@ func (uc *UsersUsecase) includePrivacies(ctx context.Context, users ...*UserItem
 	privaciesMap := make(map[int64]map[string]string)
 	for _, userPrivacies := range usersPrivacies {
 		if privaciesMap[userPrivacies.UserID] == nil {
-			privaciesMap[userPrivacies.UserID] = make(map[string]string)
+			privaciesMap[userPrivacies.UserID] = data.DefaultPrivacies()
 		}
 		privaciesMap[userPrivacies.UserID][string(userPrivacies.Setting)] = string(userPrivacies.Option)
 	}
@@ -114,6 +114,8 @@ func (uc *UsersUsecase) includePrivacies(ctx context.Context, users ...*UserItem
 	for _, user := range users {
 		privacy, ok := privaciesMap[user.ID]
 		if !ok {
+			user.Privacies = data.DefaultPrivacies()
+
 			continue
 		}
 

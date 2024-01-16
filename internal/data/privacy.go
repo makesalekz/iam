@@ -30,13 +30,23 @@ func NewPrivacyRepo(d *Data) PrivacyRepo {
 	}
 }
 
+func DefaultPrivacies() map[string]string {
+	return map[string]string{
+		string(property.MyLastActions):   string(property.All),
+		string(property.MyProfileImage):  string(property.All),
+		string(property.MyEvents):        string(property.All),
+		string(property.GroupChatInvite): string(property.All),
+		string(property.EventInvite):     string(property.All),
+	}
+}
+
 func (r *privacyRepo) GetPrivacy(ctx context.Context, userId int64) (PrivacySettingsData, error) {
 	settings, err := r.db.UserPrivacy.Query().Where(userprivacy.UserID(userId)).All(ctx)
 	if err != nil {
 		return nil, err
 	}
 
-	result := make(PrivacySettingsData)
+	result := DefaultPrivacies()
 	for _, setting := range settings {
 		result[string(setting.Setting)] = string(setting.Option)
 	}

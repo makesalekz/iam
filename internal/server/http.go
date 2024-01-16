@@ -1,12 +1,9 @@
 package server
 
 import (
-	"context"
-
 	prom "github.com/go-kratos/kratos/contrib/metrics/prometheus/v2"
 	"github.com/go-kratos/kratos/v2/middleware/metadata"
 	"github.com/go-kratos/kratos/v2/middleware/recovery"
-	"github.com/go-kratos/kratos/v2/middleware/selector"
 	khttp "github.com/go-kratos/kratos/v2/transport/http"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
@@ -38,18 +35,6 @@ var _activeRequests = prometheus.NewGaugeVec(prometheus.GaugeOpts{
 	Help:      "The total number of active requests",
 }, []string{"kind", "operation"})
 
-func NewWhiteListMatcher() selector.MatchFunc {
-	whiteList := make(map[string]struct{})
-	whiteList["/iam.v1.Auth/AuthByPhone"] = struct{}{}
-	whiteList["/iam.v1.Auth/AuthByCode"] = struct{}{}
-	return func(ctx context.Context, operation string) bool {
-		if _, ok := whiteList[operation]; ok {
-			return false
-		}
-		return true
-	}
-}
-
 // NewHTTPServer new an HTTP server.
 func NewHTTPServer(
 	c *conf.Bootstrap,
@@ -59,11 +44,7 @@ func NewHTTPServer(
 		khttp.Middleware(
 			recovery.Recovery(),
 			metadata.Server(),
-			selector.Server(
-				auth.Server(jwtp),
-			).
-				Match(NewWhiteListMatcher()).
-				Build(),
+			auth.Server(jwtp),
 			metrics.Server(
 				metrics.WithSeconds(prom.NewHistogram(_metricSeconds)),
 				metrics.WithRequests(prom.NewCounter(_metricRequests)),

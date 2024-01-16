@@ -36,9 +36,18 @@ func (uc *PrivacyUsecase) GetPrivacies(ctx context.Context, userIds []int64) ([]
 	privaciesMap := make(map[int64]map[string]string)
 	for _, userPrivacies := range usersPrivacies {
 		if privaciesMap[userPrivacies.UserID] == nil {
-			privaciesMap[userPrivacies.UserID] = make(map[string]string)
+			privaciesMap[userPrivacies.UserID] = data.DefaultPrivacies()
 		}
 		privaciesMap[userPrivacies.UserID][string(userPrivacies.Setting)] = string(userPrivacies.Option)
+	}
+
+	for _, id := range userIds {
+		_, ok := privaciesMap[id]
+		if !ok {
+			privaciesMap[id] = data.DefaultPrivacies()
+
+			continue
+		}
 	}
 
 	userPrivaciesItems := make([]*iam_v1.UserPrivacies, len(privaciesMap))
