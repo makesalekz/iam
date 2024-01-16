@@ -76,7 +76,7 @@ func (s *AuthService) RefreshToken(ctx context.Context, req *v1.TenantRequest) (
 
 	var accessToken string
 	if req.TenantId != 0 {
-		accessToken, err = s.au.GenerateTenantToken(ctx, actorId, req.TenantId)
+		accessToken, err = s.au.GenerateTenantToken(ctx, req.TenantId, actorId)
 	} else {
 		accessToken, err = s.au.GenerateAccessToken(ctx, actorId)
 	}
