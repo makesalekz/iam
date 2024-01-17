@@ -35,7 +35,9 @@ service Users {
   // search goes by all fields
   // t.m if you declare labels,emails,ids this method will return all
   // users that has these fields
-  rpc GetUsers(GetUsersRequest) returns (GetUsersReply);
+  rpc GetUsers(GetUsersRequest) returns (UsersReply);
+
+  rpc ListUsers(ListUsersRequest) returns (UsersReply);
 }
 
 message UserFullReply {
@@ -74,20 +76,24 @@ message UserReply {
 }
 
 message GetUsersRequest {
-  // TODO. Deprecated. Marked for deletion
-  int64 actorId = 10;
+  repeated int64 ids = 1;
+  repeated string phones = 2;
+  repeated string emails = 3;
+  bool withPrivacies = 6;
+  bool withVerified = 9;
+}
+
+message ListUsersRequest {
   repeated int64 ids = 1;
   repeated string phones = 2;
   repeated string emails = 3;
   string search = 4;
-  // TODO. Deprecated. Marked for deletion
-  bool withRelation = 5;
   bool withPrivacies = 6;
   bool withVerified = 9;
   utils.v1.SortRequest sort = 7;
   utils.v1.PaginateRequest paginate = 8;
 }
 
-message GetUsersReply {
+message UsersReply {
   repeated UserShort users = 1;
 }

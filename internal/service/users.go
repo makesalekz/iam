@@ -141,29 +141,39 @@ func (s *UsersService) GetUser(ctx context.Context, req *v1.GetUserRequest) (*v1
 	return &v1.UserReply{User: userItemToV1ShortUser(user)}, nil
 }
 
-func (s *UsersService) GetUsers(ctx context.Context, req *v1.GetUsersRequest) (*v1.GetUsersReply, error) {
-	// TODO. Remove this thing later
-	actorId, err := s.sh.GetActorId(ctx, req.ActorId)
-	if err != nil {
-		s.log.Debugf("TODO delete withRelation, %s", err.Error())
-	}
-
+func (s *UsersService) ListUsers(ctx context.Context, req *v1.ListUsersRequest) (*v1.UsersReply, error) {
 	filter := data.GetUsersFilterDto{
 		UsersIds:      req.GetIds(),
 		Phones:        req.GetPhones(),
 		Emails:        req.GetEmails(),
 		Search:        req.GetSearch(),
-		WithRelation:  req.WithRelation,
 		WithPrivacies: req.WithPrivacies,
 		WithVerified:  req.WithVerified,
 	}
 
-	users, err := s.uc.GetUsers(ctx, actorId, filter, req.Sort, req.Paginate)
+	users, err := s.uc.ListUsers(ctx, filter, req.Sort, req.Paginate)
 	if err != nil {
 		return nil, err
 	}
 
-	return &v1.GetUsersReply{Users: userItemsToV1ShortUser(users)}, nil
+	return &v1.UsersReply{Users: userItemsToV1ShortUser(users)}, nil
+}
+
+func (s *UsersService) GetUsers(ctx context.Context, req *v1.GetUsersRequest) (*v1.UsersReply, error) {
+	filter := data.GetUsersFilterDto{
+		UsersIds:      req.GetIds(),
+		Phones:        req.GetPhones(),
+		Emails:        req.GetEmails(),
+		WithPrivacies: req.WithPrivacies,
+		WithVerified:  req.WithVerified,
+	}
+
+	users, err := s.uc.GetUsers(ctx, filter)
+	if err != nil {
+		return nil, err
+	}
+
+	return &v1.UsersReply{Users: userItemsToV1ShortUser(users)}, nil
 }
 
 func (s *UsersService) GetUserByFilter(ctx context.Context, req *v1.GetUserByFilterRequest) (*v1.UserReply, error) {
@@ -231,7 +241,6 @@ func userItemToV1ShortUser(user *biz.UserItem) *v1.UserShort {
 		Id:          user.ID,
 		Name:        user.Name,
 		LastLoginAt: user.LastLoginAt.Format(time.RFC3339),
-		Relation:    user.Relation,
 		Privacies:   user.Privacies,
 	}
 

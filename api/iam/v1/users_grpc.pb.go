@@ -28,6 +28,7 @@ const (
 	Users_GetUser_FullMethodName             = "/iam.v1.Users/GetUser"
 	Users_GetUserByFilter_FullMethodName     = "/iam.v1.Users/GetUserByFilter"
 	Users_GetUsers_FullMethodName            = "/iam.v1.Users/GetUsers"
+	Users_ListUsers_FullMethodName           = "/iam.v1.Users/ListUsers"
 )
 
 // UsersClient is the client API for Users service.
@@ -59,7 +60,8 @@ type UsersClient interface {
 	// search goes by all fields
 	// t.m if you declare labels,emails,ids this method will return all
 	// users that has these fields
-	GetUsers(ctx context.Context, in *GetUsersRequest, opts ...grpc.CallOption) (*GetUsersReply, error)
+	GetUsers(ctx context.Context, in *GetUsersRequest, opts ...grpc.CallOption) (*UsersReply, error)
+	ListUsers(ctx context.Context, in *ListUsersRequest, opts ...grpc.CallOption) (*UsersReply, error)
 }
 
 type usersClient struct {
@@ -133,9 +135,18 @@ func (c *usersClient) GetUserByFilter(ctx context.Context, in *GetUserByFilterRe
 	return out, nil
 }
 
-func (c *usersClient) GetUsers(ctx context.Context, in *GetUsersRequest, opts ...grpc.CallOption) (*GetUsersReply, error) {
-	out := new(GetUsersReply)
+func (c *usersClient) GetUsers(ctx context.Context, in *GetUsersRequest, opts ...grpc.CallOption) (*UsersReply, error) {
+	out := new(UsersReply)
 	err := c.cc.Invoke(ctx, Users_GetUsers_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *usersClient) ListUsers(ctx context.Context, in *ListUsersRequest, opts ...grpc.CallOption) (*UsersReply, error) {
+	out := new(UsersReply)
+	err := c.cc.Invoke(ctx, Users_ListUsers_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -171,7 +182,8 @@ type UsersServer interface {
 	// search goes by all fields
 	// t.m if you declare labels,emails,ids this method will return all
 	// users that has these fields
-	GetUsers(context.Context, *GetUsersRequest) (*GetUsersReply, error)
+	GetUsers(context.Context, *GetUsersRequest) (*UsersReply, error)
+	ListUsers(context.Context, *ListUsersRequest) (*UsersReply, error)
 	mustEmbedUnimplementedUsersServer()
 }
 
@@ -200,8 +212,11 @@ func (UnimplementedUsersServer) GetUser(context.Context, *GetUserRequest) (*User
 func (UnimplementedUsersServer) GetUserByFilter(context.Context, *GetUserByFilterRequest) (*UserReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetUserByFilter not implemented")
 }
-func (UnimplementedUsersServer) GetUsers(context.Context, *GetUsersRequest) (*GetUsersReply, error) {
+func (UnimplementedUsersServer) GetUsers(context.Context, *GetUsersRequest) (*UsersReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetUsers not implemented")
+}
+func (UnimplementedUsersServer) ListUsers(context.Context, *ListUsersRequest) (*UsersReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListUsers not implemented")
 }
 func (UnimplementedUsersServer) mustEmbedUnimplementedUsersServer() {}
 
@@ -360,6 +375,24 @@ func _Users_GetUsers_Handler(srv interface{}, ctx context.Context, dec func(inte
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Users_ListUsers_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListUsersRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UsersServer).ListUsers(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Users_ListUsers_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UsersServer).ListUsers(ctx, req.(*ListUsersRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Users_ServiceDesc is the grpc.ServiceDesc for Users service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -398,6 +431,10 @@ var Users_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetUsers",
 			Handler:    _Users_GetUsers_Handler,
+		},
+		{
+			MethodName: "ListUsers",
+			Handler:    _Users_ListUsers_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
