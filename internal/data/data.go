@@ -2,10 +2,12 @@ package data
 
 import (
 	"context"
+	"fmt"
 	"os"
 
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/google/wire"
+	"github.com/nats-io/nats.go"
 	"gitlab.calendaria.team/services/iam/ent"
 	"gitlab.calendaria.team/services/iam/internal/conf"
 	"gitlab.calendaria.team/services/utils/v1/config"
@@ -52,6 +54,21 @@ func NewData(bc *conf.Bootstrap, c *config.Config, logger log.Logger) (*Data, fu
 		dbDsn = secret["data"].(string)
 	}
 
+	// TODO remove <----------------
+	nc, err := nats.Connect(bc.Nats)
+	if err != nil {
+		return nil, nil, fmt.Errorf("failed to connect to nats: %w", err)
+	}
+
+	err = nc.Publish("chats/send_message", []byte("fail test"))
+	if err != nil {
+		return nil, nil, fmt.Errorf("failed to publish to nats: %w", err)
+	}
+
+	testConsul := c.Value("TEST_CONSUL")
+	l.Debugf("CONSUL TEST: %s", testConsul)
+	// TODO remove ---------------->
+
 	l.Debugf("Connecting to postgres: ", dbDsn)
 
 	client, err := ent.Open("postgres", dbDsn)
@@ -74,6 +91,7 @@ func NewData(bc *conf.Bootstrap, c *config.Config, logger log.Logger) (*Data, fu
 		if err := client.Close(); err != nil {
 			l.Error(err)
 		}
+		nc.Close()
 	}
 
 	return &Data{
