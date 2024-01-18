@@ -142,16 +142,22 @@ func (s *UsersService) GetUser(ctx context.Context, req *v1.GetUserRequest) (*v1
 }
 
 func (s *UsersService) ListUsers(ctx context.Context, req *v1.ListUsersRequest) (*v1.UsersReply, error) {
+	actorId, err := s.sh.GetActorId(ctx, req.ActorId)
+	if err != nil {
+		return nil, err
+	}
+
 	filter := data.GetUsersFilterDto{
 		UsersIds:      req.GetIds(),
 		Phones:        req.GetPhones(),
 		Emails:        req.GetEmails(),
 		Search:        req.GetSearch(),
+		WithRelation:  req.GetWithRelation(),
 		WithPrivacies: req.WithPrivacies,
 		WithVerified:  req.WithVerified,
 	}
 
-	users, err := s.uc.ListUsers(ctx, filter, req.Sort, req.Paginate)
+	users, err := s.uc.ListUsers(ctx, actorId, filter, req.Sort, req.Paginate)
 	if err != nil {
 		return nil, err
 	}
@@ -242,6 +248,7 @@ func userItemToV1ShortUser(user *biz.UserItem) *v1.UserShort {
 		Name:        user.Name,
 		LastLoginAt: user.LastLoginAt.Format(time.RFC3339),
 		Privacies:   user.Privacies,
+		Relation:    user.Relation,
 	}
 
 	if user.WithVerified {

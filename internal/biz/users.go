@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/go-kratos/kratos/v2/log"
+	contacts_v1 "gitlab.calendaria.team/services/contacts/api/contacts/v1"
 	iam_v1 "gitlab.calendaria.team/services/iam/api/iam/v1"
 	v1 "gitlab.calendaria.team/services/iam/api/iam/v1"
 	"gitlab.calendaria.team/services/iam/ent"
@@ -16,6 +17,7 @@ import (
 type UserItem struct {
 	*ent.User
 
+	Relation     *v1.Relation
 	Privacies    map[string]string
 	WithVerified bool
 }
@@ -47,6 +49,47 @@ func NewUsersUsecase(logger log.Logger,
 		contacts:      contacts,
 		tenants:       tenants,
 	}, nil
+}
+
+func (uc *UsersUsecase) includeRelations(ctx context.Context, actorId int64, users ...*UserItem) error {
+	userIds := make([]int64, len(users))
+	for i, user := range users {
+		userIds[i] = user.ID
+	}
+
+	relationsReply, err := uc.contacts.GetRelations(ctx, &contacts_v1.GetRelationsRequest{
+		ActorId: actorId,
+		UserIds: userIds})
+	if err != nil {
+		if contacts_v1.IsNotFound(err) {
+			return nil
+		}
+		return iam_v1.ErrorServiceFailed("contacts: %s", err.Error())
+	}
+
+	relations := relationsReply.GetRelations()
+	if relations == nil {
+		return nil
+	}
+
+	relationMap := make(map[int64]*contacts_v1.Relation)
+	for _, relation := range relations {
+		relationMap[relation.GetUserId()] = relation
+	}
+
+	for _, user := range users {
+		relation, ok := relationMap[user.ID]
+		if !ok {
+			continue
+		}
+
+		user.Relation = &iam_v1.Relation{
+			IsBlocked: relation.GetIsBlocked(),
+			IsMuted:   relation.GetIsMuted(),
+		}
+	}
+
+	return nil
 }
 
 func (uc *UsersUsecase) includePrivacies(ctx context.Context, users ...*UserItem) error {
@@ -164,7 +207,7 @@ func (uc *UsersUsecase) DeleteUser(ctx context.Context, userId int64) error {
 	return nil
 }
 
-func (uc *UsersUsecase) ListUsers(ctx context.Context, filter data.GetUsersFilterDto, sort *utils_v1.SortRequest, paginate *utils_v1.PaginateRequest) ([]*UserItem, error) {
+func (uc *UsersUsecase) ListUsers(ctx context.Context, actorId int64, filter data.GetUsersFilterDto, sort *utils_v1.SortRequest, paginate *utils_v1.PaginateRequest) ([]*UserItem, error) {
 	if paginate == nil {
 		paginate = &utils_v1.PaginateRequest{}
 	}

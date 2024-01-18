@@ -28,6 +28,7 @@ type GetUsersFilterDto struct {
 	Phones        []string
 	Emails        []string
 	Search        string
+	WithRelation  bool
 	WithPrivacies bool
 	WithVerified  bool
 }
