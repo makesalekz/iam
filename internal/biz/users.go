@@ -222,6 +222,11 @@ func (uc *UsersUsecase) ListUsers(ctx context.Context, actorId int64, filter dat
 		replyUsers[i] = &UserItem{User: user}
 	}
 
+	//TODO. Deprecated. marked for deletion
+	if filter.WithRelation && actorId != 0 {
+		err = uc.includeRelations(ctx, actorId, replyUsers...)
+	}
+
 	if filter.WithPrivacies {
 		err = uc.includePrivacies(ctx, replyUsers...)
 		if err != nil {
