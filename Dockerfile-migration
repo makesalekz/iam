@@ -4,4 +4,3 @@ WORKDIR /
 COPY --from=atlas /atlas .
 RUN chmod +x /atlas
 COPY /ent/migrate/migrations /migrations
-#CMD ["/atlas", "migrate", "apply", "--url 'postgres://iam:shaev3neiZ@ah9k@10.2.8.175:5432/iam?search_path=public'"]

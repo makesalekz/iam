@@ -2,17 +2,16 @@ package data
 
 import (
 	"context"
-	"fmt"
 	"os"
 
-	"github.com/go-kratos/kratos/v2/log"
-	"github.com/google/wire"
-	"github.com/nats-io/nats.go"
 	"gitlab.calendaria.team/services/iam/ent"
 	"gitlab.calendaria.team/services/iam/internal/conf"
 	"gitlab.calendaria.team/services/utils/v1/config"
 	"gitlab.calendaria.team/services/utils/v1/dialer"
 	"gitlab.calendaria.team/services/utils/v1/jwt"
+
+	"github.com/go-kratos/kratos/v2/log"
+	"github.com/google/wire"
 
 	_ "github.com/lib/pq"
 	_ "gitlab.calendaria.team/services/iam/ent/runtime"
@@ -54,31 +53,20 @@ func NewData(bc *conf.Bootstrap, c *config.Config, logger log.Logger) (*Data, fu
 		dbDsn = secret["data"].(string)
 	}
 
-	// TODO remove <----------------
-	nc, err := nats.Connect(bc.Nats)
-	if err != nil {
-		return nil, nil, fmt.Errorf("failed to connect to nats: %w", err)
+	autoMigrate := os.Getenv("AUTOMIGRATE")
+	entLogging := os.Getenv("ENT_LOGGING")
+	var options []ent.Option
+	if entLogging == "true" {
+		options = append(options, ent.Debug(), ent.Log(l.Debug))
 	}
 
-	err = nc.Publish("chats/send_message", []byte("fail test"))
-	if err != nil {
-		return nil, nil, fmt.Errorf("failed to publish to nats: %w", err)
-	}
-
-	testConsul := c.Value("TEST_CONSUL")
-	l.Debugf("CONSUL TEST: %s", testConsul)
-	// TODO remove ---------------->
-
-	l.Debugf("Connecting to postgres: ", dbDsn)
-
-	client, err := ent.Open("postgres", dbDsn)
+	client, err := ent.Open("postgres", dbDsn, options...)
 	if err != nil {
 		l.Fatalf("failed opening connection to postgres: %v", err)
 		return nil, nil, err
 	}
 
-	automigrate := os.Getenv("AUTOMIGRATE")
-	if automigrate != "" {
+	if autoMigrate != "" {
 		if err := client.Schema.Create(context.Background()); err != nil {
 			l.Errorf("failed creating schema resources: %v", err)
 			return nil, nil, err
@@ -91,7 +79,6 @@ func NewData(bc *conf.Bootstrap, c *config.Config, logger log.Logger) (*Data, fu
 		if err := client.Close(); err != nil {
 			l.Error(err)
 		}
-		nc.Close()
 	}
 
 	return &Data{
