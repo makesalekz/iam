@@ -84,13 +84,11 @@ message GetUsersRequest {
 }
 
 message ListUsersRequest {
-  // TODO. Deprecated. Marked for deletion
   int64 actorId = 10;
   repeated int64 ids = 1;
   repeated string phones = 2;
   repeated string emails = 3;
   string search = 4;
-  // TODO. Deprecated. Marked for deletion
   bool withRelation = 5;
   bool withPrivacies = 6;
   bool withVerified = 9;
