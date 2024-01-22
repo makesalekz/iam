@@ -4,13 +4,14 @@ import (
 	"context"
 	"os"
 
-	"github.com/go-kratos/kratos/v2/log"
-	"github.com/google/wire"
 	"gitlab.calendaria.team/services/iam/ent"
 	"gitlab.calendaria.team/services/iam/internal/conf"
 	"gitlab.calendaria.team/services/utils/v1/config"
 	"gitlab.calendaria.team/services/utils/v1/dialer"
 	"gitlab.calendaria.team/services/utils/v1/jwt"
+
+	"github.com/go-kratos/kratos/v2/log"
+	"github.com/google/wire"
 
 	_ "github.com/lib/pq"
 	_ "gitlab.calendaria.team/services/iam/ent/runtime"
@@ -52,11 +53,10 @@ func NewData(bc *conf.Bootstrap, c *config.Config, logger log.Logger) (*Data, fu
 		dbDsn = secret["data"].(string)
 	}
 
-	l.Debugf("Connecting to postgres: ", dbDsn)
-
-	automigrate := os.Getenv("AUTOMIGRATE")
-	options := []ent.Option{}
-	if automigrate != "" {
+	autoMigrate := os.Getenv("AUTOMIGRATE")
+	entLogging := os.Getenv("ENT_LOGGING")
+	var options []ent.Option
+	if entLogging == "true" {
 		options = append(options, ent.Debug(), ent.Log(l.Debug))
 	}
 
@@ -66,7 +66,7 @@ func NewData(bc *conf.Bootstrap, c *config.Config, logger log.Logger) (*Data, fu
 		return nil, nil, err
 	}
 
-	if automigrate != "" {
+	if autoMigrate != "" {
 		if err := client.Schema.Create(context.Background()); err != nil {
 			l.Errorf("failed creating schema resources: %v", err)
 			return nil, nil, err
