@@ -139,17 +139,6 @@ func (uc *AuthUsecase) handleUserVerification(ctx context.Context, user *ent.Use
 	return v1.ErrorInternal("unrecognized otpType")
 }
 
-func (uc *AuthUsecase) CheckIdToken(ctx context.Context) (int64, error) {
-	userId := uc.jwt.GetUserIdFromContext(ctx)
-	if userId == 0 {
-		return 0, v1.ErrorInvalidToken("access denied")
-	}
-
-	// TODO: use JTI and save refresh token in DB
-
-	return userId, nil
-}
-
 func (uc *AuthUsecase) GenerateIdToken(ctx context.Context, userId int64) (string, error) {
 	claims := &jwtv4.RegisteredClaims{
 		Issuer:    "iam",
@@ -194,7 +183,7 @@ func (uc *AuthUsecase) GenerateAccessToken(ctx context.Context, userId int64) (s
 	return result, nil
 }
 
-func (uc *AuthUsecase) GenerateTenantToken(ctx context.Context, userId, tenantId int64) (string, error) {
+func (uc *AuthUsecase) GenerateTenantToken(ctx context.Context, tenantId, userId int64) (string, error) {
 	duration := ACCESS_TOKEN_DURATION
 	debug := os.Getenv("DEBUG")
 	if debug != "" { // set access token duration to 1 month in debug mode
@@ -212,7 +201,7 @@ func (uc *AuthUsecase) GenerateTenantToken(ctx context.Context, userId, tenantId
 		TenantId: tenantId,
 	}
 
-	reply, err := uc.tenants.GetMemberIdentities(ctx, claims, userId)
+	reply, err := uc.tenants.GetMemberIdentities(ctx, tenantId, userId)
 	if err != nil {
 		return "", tenants_v1.ErrorServiceFailed("tenants: %s", err.Error())
 	}

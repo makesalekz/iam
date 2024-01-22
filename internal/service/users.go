@@ -9,39 +9,42 @@ import (
 	"gitlab.calendaria.team/services/iam/internal/biz"
 	"gitlab.calendaria.team/services/iam/internal/data"
 	utils_v1 "gitlab.calendaria.team/services/utils/api/utils/v1"
-	"gitlab.calendaria.team/services/utils/v1/jwt"
 )
 
 type UsersService struct {
 	v1.UnimplementedUsersServer
 
 	log *log.Helper
-	jwt *jwt.JwtProcessor
+	sh  *ServiceHelper
 	uc  *biz.UsersUsecase
 }
 
-func NewUsersService(logger log.Logger, jwt *jwt.JwtProcessor, uc *biz.UsersUsecase) *UsersService {
+func NewUsersService(
+	logger log.Logger,
+	sh *ServiceHelper,
+	uc *biz.UsersUsecase,
+) *UsersService {
 	return &UsersService{
 		log: log.NewHelper(logger),
-		jwt: jwt,
+		sh:  sh,
 		uc:  uc,
 	}
 }
 
-func (s *UsersService) GetOwnProfile(ctx context.Context, req *utils_v1.EmptyRequest) (*v1.UserFullReply, error) {
-	userId := s.jwt.GetUserIdFromContext(ctx)
-	if userId == 0 {
-		return nil, v1.ErrorUnauthorized("invalid token")
+func (s *UsersService) GetOwnProfile(ctx context.Context, req *utils_v1.ActorRequest) (*v1.UserFullReply, error) {
+	actorId, err := s.sh.GetActorId(ctx, req.ActorId)
+	if err != nil {
+		return nil, err
 	}
 
-	user, err := s.uc.GetUserProfile(ctx, data.GetUserFilterDto{UserId: userId})
+	user, err := s.uc.GetUserProfile(ctx, data.GetUserFilterDto{UserId: actorId})
 	if err != nil {
 		return nil, err
 	}
 
 	result := v1.UserFullReply{User: userItemToV1User(user)}
 
-	tenants, err := s.uc.GetUserTenants(ctx)
+	tenants, err := s.uc.GetUserTenants(ctx, actorId)
 	if err == nil {
 		resultTenants := make([]*v1.TenantShort, len(tenants))
 		for i, tenant := range tenants {
@@ -59,12 +62,12 @@ func (s *UsersService) GetOwnProfile(ctx context.Context, req *utils_v1.EmptyReq
 }
 
 func (s *UsersService) UpdateOwnProfile(ctx context.Context, req *v1.UpdateOwnProfileRequest) (*v1.UserFullReply, error) {
-	userId := s.jwt.GetUserIdFromContext(ctx)
-	if userId == 0 {
-		return nil, v1.ErrorUnauthorized("invalid token")
+	actorId, err := s.sh.GetActorId(ctx, req.ActorId)
+	if err != nil {
+		return nil, err
 	}
 
-	user, err := s.uc.UpdateUserProfile(ctx, userId, data.UpdateUserDto{
+	user, err := s.uc.UpdateUserProfile(ctx, actorId, data.UpdateUserDto{
 		Phone:    req.Phone,
 		Email:    req.Email,
 		Name:     req.Name,
@@ -79,7 +82,7 @@ func (s *UsersService) UpdateOwnProfile(ctx context.Context, req *v1.UpdateOwnPr
 	result := v1.UserFullReply{User: userItemToV1User(user)}
 
 	if req.WithTenants {
-		tenants, err := s.uc.GetUserTenants(ctx)
+		tenants, err := s.uc.GetUserTenants(ctx, actorId)
 		if err == nil {
 			resultTenants := make([]*v1.TenantShort, len(tenants))
 			for i, tenant := range tenants {
@@ -97,14 +100,14 @@ func (s *UsersService) UpdateOwnProfile(ctx context.Context, req *v1.UpdateOwnPr
 	return &result, nil
 }
 
-func (s *UsersService) DeleteOwnProfile(ctx context.Context, req *utils_v1.EmptyRequest) (*utils_v1.EmptyReply, error) {
-	userId := s.jwt.GetUserIdFromContext(ctx)
-	if userId == 0 {
-		return nil, v1.ErrorUnauthorized("invalid token")
+func (s *UsersService) DeleteOwnProfile(ctx context.Context, req *utils_v1.ActorRequest) (*utils_v1.EmptyReply, error) {
+	actorId, err := s.sh.GetActorId(ctx, req.ActorId)
+	if err != nil {
+		return nil, err
 	}
 
 	// TODO мягко удалить или "пофиксить" все связанные сущности
-	err := s.uc.DeleteUser(ctx, userId)
+	err = s.uc.DeleteUser(ctx, actorId)
 	if err != nil {
 		return nil, err
 	}
@@ -139,6 +142,12 @@ func (s *UsersService) GetUser(ctx context.Context, req *v1.GetUserRequest) (*v1
 }
 
 func (s *UsersService) GetUsers(ctx context.Context, req *v1.GetUsersRequest) (*v1.GetUsersReply, error) {
+	// TODO. Remove this thing later
+	actorId, err := s.sh.GetActorId(ctx, req.ActorId)
+	if err != nil {
+		s.log.Debugf("TODO delete withRelation, %s", err.Error())
+	}
+
 	filter := data.GetUsersFilterDto{
 		UsersIds:      req.GetIds(),
 		Phones:        req.GetPhones(),
@@ -146,9 +155,10 @@ func (s *UsersService) GetUsers(ctx context.Context, req *v1.GetUsersRequest) (*
 		Search:        req.GetSearch(),
 		WithRelation:  req.WithRelation,
 		WithPrivacies: req.WithPrivacies,
+		WithVerified:  req.WithVerified,
 	}
 
-	users, err := s.uc.GetUsers(ctx, filter, req.Sort, req.Paginate)
+	users, err := s.uc.GetUsers(ctx, actorId, filter, req.Sort, req.Paginate)
 	if err != nil {
 		return nil, err
 	}
@@ -203,6 +213,11 @@ func userItemToV1User(user *biz.UserItem) *v1.User {
 		IsActive:    user.IsActive,
 	}
 
+	if user.WithVerified {
+		replyUser.IsPhoneVerified = &user.PhoneVerified
+		replyUser.IsEmailVerified = &user.EmailVerified
+	}
+
 	if user.BioUpdatedAt != nil {
 		bioUpdatedAt := user.BioUpdatedAt.Format(time.RFC3339)
 		replyUser.BioUpdatedAt = &bioUpdatedAt
@@ -218,6 +233,11 @@ func userItemToV1ShortUser(user *biz.UserItem) *v1.UserShort {
 		LastLoginAt: user.LastLoginAt.Format(time.RFC3339),
 		Relation:    user.Relation,
 		Privacies:   user.Privacies,
+	}
+
+	if user.WithVerified {
+		replyUser.IsPhoneVerified = &user.PhoneVerified
+		replyUser.IsEmailVerified = &user.EmailVerified
 	}
 
 	if user.Phone != nil {

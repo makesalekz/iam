@@ -28,7 +28,7 @@ const (
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type SettingsClient interface {
-	GetSettings(ctx context.Context, in *v1.EmptyRequest, opts ...grpc.CallOption) (*SettingsReply, error)
+	GetSettings(ctx context.Context, in *v1.ActorRequest, opts ...grpc.CallOption) (*SettingsReply, error)
 	UpdateSettings(ctx context.Context, in *SettingsRequest, opts ...grpc.CallOption) (*SettingsReply, error)
 }
 
@@ -40,7 +40,7 @@ func NewSettingsClient(cc grpc.ClientConnInterface) SettingsClient {
 	return &settingsClient{cc}
 }
 
-func (c *settingsClient) GetSettings(ctx context.Context, in *v1.EmptyRequest, opts ...grpc.CallOption) (*SettingsReply, error) {
+func (c *settingsClient) GetSettings(ctx context.Context, in *v1.ActorRequest, opts ...grpc.CallOption) (*SettingsReply, error) {
 	out := new(SettingsReply)
 	err := c.cc.Invoke(ctx, Settings_GetSettings_FullMethodName, in, out, opts...)
 	if err != nil {
@@ -62,7 +62,7 @@ func (c *settingsClient) UpdateSettings(ctx context.Context, in *SettingsRequest
 // All implementations must embed UnimplementedSettingsServer
 // for forward compatibility
 type SettingsServer interface {
-	GetSettings(context.Context, *v1.EmptyRequest) (*SettingsReply, error)
+	GetSettings(context.Context, *v1.ActorRequest) (*SettingsReply, error)
 	UpdateSettings(context.Context, *SettingsRequest) (*SettingsReply, error)
 	mustEmbedUnimplementedSettingsServer()
 }
@@ -71,7 +71,7 @@ type SettingsServer interface {
 type UnimplementedSettingsServer struct {
 }
 
-func (UnimplementedSettingsServer) GetSettings(context.Context, *v1.EmptyRequest) (*SettingsReply, error) {
+func (UnimplementedSettingsServer) GetSettings(context.Context, *v1.ActorRequest) (*SettingsReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetSettings not implemented")
 }
 func (UnimplementedSettingsServer) UpdateSettings(context.Context, *SettingsRequest) (*SettingsReply, error) {
@@ -91,7 +91,7 @@ func RegisterSettingsServer(s grpc.ServiceRegistrar, srv SettingsServer) {
 }
 
 func _Settings_GetSettings_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(v1.EmptyRequest)
+	in := new(v1.ActorRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -103,7 +103,7 @@ func _Settings_GetSettings_Handler(srv interface{}, ctx context.Context, dec fun
 		FullMethod: Settings_GetSettings_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(SettingsServer).GetSettings(ctx, req.(*v1.EmptyRequest))
+		return srv.(SettingsServer).GetSettings(ctx, req.(*v1.ActorRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }

@@ -36,6 +36,7 @@ func wireApp(bootstrap *conf.Bootstrap, logger log.Logger) (*kratos.App, func(),
 	if err != nil {
 		return nil, nil, err
 	}
+	serviceHelper := service.NewServiceHelper(jwtProcessor)
 	dataData, cleanup, err := data.NewData(bootstrap, configConfig, logger)
 	if err != nil {
 		return nil, nil, err
@@ -72,7 +73,7 @@ func wireApp(bootstrap *conf.Bootstrap, logger log.Logger) (*kratos.App, func(),
 		cleanup()
 		return nil, nil, err
 	}
-	authService := service.NewAuthService(logger, authUsecase)
+	authService := service.NewAuthService(logger, serviceHelper, authUsecase)
 	privacyRepo := data.NewPrivacyRepo(dataData)
 	contactsRemote, err := data.NewContactsRemote(dialerDialer, bootstrap)
 	if err != nil {
@@ -86,14 +87,14 @@ func wireApp(bootstrap *conf.Bootstrap, logger log.Logger) (*kratos.App, func(),
 		cleanup()
 		return nil, nil, err
 	}
-	usersService := service.NewUsersService(logger, jwtProcessor, usersUsecase)
+	usersService := service.NewUsersService(logger, serviceHelper, usersUsecase)
 	privacyUsecase, err := biz.NewPrivacyUsecase(privacyRepo)
 	if err != nil {
 		cleanup2()
 		cleanup()
 		return nil, nil, err
 	}
-	privacyService := service.NewPrivacyService(logger, jwtProcessor, privacyUsecase)
+	privacyService := service.NewPrivacyService(logger, serviceHelper, privacyUsecase)
 	settingsRepo := data.NewSettingsRepo(dataData)
 	settingsUsecase, err := biz.NewSettingsUsecase(settingsRepo)
 	if err != nil {
@@ -101,9 +102,9 @@ func wireApp(bootstrap *conf.Bootstrap, logger log.Logger) (*kratos.App, func(),
 		cleanup()
 		return nil, nil, err
 	}
-	settingsService := service.NewSettingsService(logger, jwtProcessor, settingsUsecase)
+	settingsService := service.NewSettingsService(serviceHelper, settingsUsecase)
 	grpcServer := server.NewGRPCServer(bootstrap, jwtProcessor, authService, usersService, privacyService, settingsService)
-	httpServer := server.NewHTTPServer(bootstrap, jwtProcessor)
+	httpServer := server.NewHTTPServer(bootstrap)
 	app := newApp(logger, configConfig, grpcServer, httpServer)
 	return app, func() {
 		cleanup2()

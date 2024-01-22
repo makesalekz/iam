@@ -1,19 +1,11 @@
 package server
 
 import (
-	"context"
-
-	prom "github.com/go-kratos/kratos/contrib/metrics/prometheus/v2"
-	"github.com/go-kratos/kratos/v2/middleware/metadata"
 	"github.com/go-kratos/kratos/v2/middleware/recovery"
-	"github.com/go-kratos/kratos/v2/middleware/selector"
 	khttp "github.com/go-kratos/kratos/v2/transport/http"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"gitlab.calendaria.team/services/iam/internal/conf"
-	"gitlab.calendaria.team/services/utils/v1/jwt"
-	auth "gitlab.calendaria.team/services/utils/v1/middlewares/auth"
-	metrics "gitlab.calendaria.team/services/utils/v1/middlewares/metrics"
 )
 
 var _metricSeconds = prometheus.NewHistogramVec(prometheus.HistogramOpts{
@@ -38,38 +30,15 @@ var _activeRequests = prometheus.NewGaugeVec(prometheus.GaugeOpts{
 	Help:      "The total number of active requests",
 }, []string{"kind", "operation"})
 
-func NewWhiteListMatcher() selector.MatchFunc {
-	whiteList := make(map[string]struct{})
-	whiteList["/iam.v1.Auth/AuthByPhone"] = struct{}{}
-	whiteList["/iam.v1.Auth/AuthByCode"] = struct{}{}
-	whiteList["/iam.v1.Auth/TempAuthBySuperCode"] = struct{}{}
-	return func(ctx context.Context, operation string) bool {
-		if _, ok := whiteList[operation]; ok {
-			return false
-		}
-		return true
-	}
-}
-
 // NewHTTPServer new an HTTP server.
 func NewHTTPServer(
 	c *conf.Bootstrap,
-	jwtp *jwt.JwtProcessor,
 ) *khttp.Server {
+	prometheus.MustRegister(_metricSeconds, _metricRequests, _activeRequests)
+
 	var opts = []khttp.ServerOption{
 		khttp.Middleware(
 			recovery.Recovery(),
-			metadata.Server(),
-			selector.Server(
-				auth.Server(jwtp),
-			).
-				Match(NewWhiteListMatcher()).
-				Build(),
-			metrics.Server(
-				metrics.WithSeconds(prom.NewHistogram(_metricSeconds)),
-				metrics.WithRequests(prom.NewCounter(_metricRequests)),
-				metrics.WithGauge(prom.NewGauge(_activeRequests)),
-			),
 		),
 	}
 	if c.Server.Http.Network != "" {
@@ -83,13 +52,7 @@ func NewHTTPServer(
 	}
 	srv := khttp.NewServer(opts...)
 
-	registerTechRoutes(srv)
+	srv.Handle("/metrics", promhttp.Handler())
 
 	return srv
-}
-
-func registerTechRoutes(s *khttp.Server) {
-	prometheus.MustRegister(_metricSeconds, _metricRequests)
-
-	s.Handle("/metrics", promhttp.Handler())
 }

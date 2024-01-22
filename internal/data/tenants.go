@@ -24,27 +24,29 @@ func NewTenantsRemote(d *dialer.Dialer, conf *conf.Bootstrap, jwt *jwt.JwtProces
 	}, nil
 }
 
-func (r *TenantsRemote) GetTenantsClient(ctx context.Context, claims *jwt.TenantClaims) (tenants_v1.TenantsClient, error) {
+func (r *TenantsRemote) GetTenantsClient(ctx context.Context) (tenants_v1.TenantsClient, error) {
 	return dialer.NewDialerBuilder(r.dialer, tenants_v1.NewTenantsClient).
 		SetEndpoint(r.conf.Discovery.Tenants).
 		SetTimeout(r.conf.Discovery.TenantsTimeout.AsDuration()).
-		Conn(ctx, claims)
+		Conn(ctx, nil)
 }
 
-func (r *TenantsRemote) GetMembersClient(ctx context.Context, claims *jwt.TenantClaims) (tenants_v1.MembersClient, error) {
+func (r *TenantsRemote) GetMembersClient(ctx context.Context) (tenants_v1.MembersClient, error) {
 	return dialer.NewDialerBuilder(r.dialer, tenants_v1.NewMembersClient).
 		SetEndpoint(r.conf.Discovery.Tenants).
 		SetTimeout(r.conf.Discovery.TenantsTimeout.AsDuration()).
-		Conn(ctx, claims)
+		Conn(ctx, nil)
 }
 
-func (r *TenantsRemote) GetUserTenants(ctx context.Context, claims *jwt.TenantClaims) ([]*tenants_v1.Tenant, error) {
-	client, err := r.GetTenantsClient(ctx, claims)
+func (r *TenantsRemote) GetUserTenants(ctx context.Context, actorId int64) ([]*tenants_v1.Tenant, error) {
+	client, err := r.GetTenantsClient(ctx)
 	if err != nil {
 		return nil, tenants_v1.ErrorGrpcConnection("tenants: %s", err.Error())
 	}
 
-	reply, err := client.ListTenants(ctx, &tenants_v1.ListTenantsRequest{})
+	reply, err := client.ListTenants(ctx, &tenants_v1.ListTenantsRequest{
+		ActorId: actorId,
+	})
 	if err != nil {
 		return nil, err
 	}
@@ -52,14 +54,15 @@ func (r *TenantsRemote) GetUserTenants(ctx context.Context, claims *jwt.TenantCl
 	return reply.GetTenants(), nil
 }
 
-func (r *TenantsRemote) GetMemberIdentities(ctx context.Context, claims *jwt.TenantClaims, userId int64) (*tenants_v1.GetMemberIdentitiesReply, error) {
-	client, err := r.GetMembersClient(ctx, claims)
+func (r *TenantsRemote) GetMemberIdentities(ctx context.Context, tenantId, userId int64) (*tenants_v1.GetMemberIdentitiesReply, error) {
+	client, err := r.GetMembersClient(ctx)
 	if err != nil {
 		return nil, tenants_v1.ErrorGrpcConnection("tenants: %s", err.Error())
 	}
 
 	reply, err := client.GetMemberIdentities(ctx, &tenants_v1.GetMemberIdentitiesRequest{
-		UserId: userId,
+		TenantId: tenantId,
+		UserId:   userId,
 	})
 	if err != nil {
 		return nil, err
