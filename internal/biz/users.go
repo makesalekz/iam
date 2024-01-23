@@ -222,19 +222,6 @@ func (uc *UsersUsecase) ListUsers(ctx context.Context, filter data.GetUsersFilte
 		replyUsers[i] = &UserItem{User: user}
 	}
 
-	if filter.WithPrivacies {
-		err = uc.includePrivacies(ctx, replyUsers...)
-		if err != nil {
-			return nil, err
-		}
-	}
-
-	if filter.WithVerified {
-		for i := 0; i < len(users); i++ {
-			replyUsers[i].WithVerified = filter.WithVerified
-		}
-	}
-
 	return replyUsers, nil
 }
 

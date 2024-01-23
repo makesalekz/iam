@@ -143,10 +143,8 @@ func (s *UsersService) GetUser(ctx context.Context, req *v1.GetUserRequest) (*v1
 
 func (s *UsersService) ListUsers(ctx context.Context, req *v1.ListUsersRequest) (*v1.UsersReply, error) {
 	filter := data.GetUsersFilterDto{
-		UsersIds:      req.GetIds(),
-		Search:        req.GetSearch(),
-		WithPrivacies: req.WithPrivacies,
-		WithVerified:  req.WithVerified,
+		UsersIds: req.GetIds(),
+		Search:   req.GetSearch(),
 	}
 
 	users, err := s.uc.ListUsers(ctx, filter, req.Sort, req.Paginate)
