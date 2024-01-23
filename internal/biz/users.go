@@ -207,12 +207,26 @@ func (uc *UsersUsecase) DeleteUser(ctx context.Context, userId int64) error {
 	return nil
 }
 
-func (uc *UsersUsecase) GetUsers(ctx context.Context, actorId int64, filter data.GetUsersFilterDto, sort *utils_v1.SortRequest, paginate *utils_v1.PaginateRequest) ([]*UserItem, error) {
+func (uc *UsersUsecase) ListUsers(ctx context.Context, filter data.GetUsersFilterDto, sort *utils_v1.SortRequest, paginate *utils_v1.PaginateRequest) ([]*UserItem, error) {
 	if paginate == nil {
 		paginate = &utils_v1.PaginateRequest{}
 	}
 
-	users, err := uc.usersRepo.GetUsers(ctx, filter, sort, paginate)
+	users, err := uc.usersRepo.ListUsers(ctx, filter, sort, paginate)
+	if err != nil {
+		return nil, v1.ErrorDatabaseQuery("database error: %s", err.Error())
+	}
+
+	replyUsers := make([]*UserItem, len(users))
+	for i, user := range users {
+		replyUsers[i] = &UserItem{User: user}
+	}
+
+	return replyUsers, nil
+}
+
+func (uc *UsersUsecase) GetUsers(ctx context.Context, actorId int64, filter data.GetUsersFilterDto) ([]*UserItem, error) {
+	users, err := uc.usersRepo.GetUsers(ctx, filter)
 	if err != nil {
 		return nil, v1.ErrorDatabaseQuery("database error: %s", err.Error())
 	}
@@ -225,9 +239,6 @@ func (uc *UsersUsecase) GetUsers(ctx context.Context, actorId int64, filter data
 	//TODO. Deprecated. marked for deletion
 	if filter.WithRelation && actorId != 0 {
 		err = uc.includeRelations(ctx, actorId, replyUsers...)
-		if err != nil {
-			return nil, err
-		}
 	}
 
 	if filter.WithPrivacies {
