@@ -156,10 +156,7 @@ func (s *UsersService) ListUsers(ctx context.Context, req *v1.ListUsersRequest) 
 }
 
 func (s *UsersService) GetUsers(ctx context.Context, req *v1.GetUsersRequest) (*v1.UsersReply, error) {
-	actorId, err := s.sh.GetActorId(ctx, req.ActorId)
-	if err != nil {
-		return nil, err
-	}
+	actorId, _ := s.sh.GetActorId(ctx, req.ActorId)
 
 	filter := data.GetUsersFilterDto{
 		UsersIds:      req.GetIds(),
