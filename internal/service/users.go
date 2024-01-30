@@ -71,6 +71,7 @@ func (s *UsersService) UpdateOwnProfile(ctx context.Context, req *v1.UpdateOwnPr
 		Phone:    req.Phone,
 		Email:    req.Email,
 		Name:     req.Name,
+		Username: req.Username,
 		Bio:      req.Bio,
 		Avatar:   req.Avatar,
 		Timezone: req.Timezone,
@@ -212,6 +213,7 @@ func userItemToV1User(user *biz.UserItem) *v1.User {
 		Id:          user.ID,
 		Phone:       user.Phone,
 		Email:       user.Email,
+		Username:    user.Username,
 		Name:        user.Name,
 		Bio:         user.Bio,
 		Avatar:      user.Avatar,
@@ -254,6 +256,9 @@ func userItemToV1ShortUser(user *biz.UserItem) *v1.UserShort {
 	}
 	if user.Email != nil {
 		replyUser.Email = *user.Email
+	}
+	if user.Username != nil {
+		replyUser.Username = *user.Username
 	}
 	if user.Avatar != nil {
 		replyUser.Avatar = *user.Avatar

@@ -20,6 +20,8 @@ const (
 	FieldPhone = "phone"
 	// FieldEmail holds the string denoting the email field in the database.
 	FieldEmail = "email"
+	// FieldUsername holds the string denoting the username field in the database.
+	FieldUsername = "username"
 	// FieldName holds the string denoting the name field in the database.
 	FieldName = "name"
 	// FieldBio holds the string denoting the bio field in the database.
@@ -52,6 +54,7 @@ var Columns = []string{
 	FieldDeletedAt,
 	FieldPhone,
 	FieldEmail,
+	FieldUsername,
 	FieldName,
 	FieldBio,
 	FieldAvatar,
@@ -124,6 +127,11 @@ func ByPhone(opts ...sql.OrderTermOption) OrderOption {
 // ByEmail orders the results by the email field.
 func ByEmail(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldEmail, opts...).ToFunc()
+}
+
+// ByUsername orders the results by the username field.
+func ByUsername(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldUsername, opts...).ToFunc()
 }
 
 // ByName orders the results by the name field.

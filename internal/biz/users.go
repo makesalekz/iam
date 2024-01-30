@@ -2,6 +2,8 @@ package biz
 
 import (
 	"context"
+	"errors"
+	"github.com/lib/pq"
 
 	"github.com/go-kratos/kratos/v2/log"
 	contacts_v1 "gitlab.calendaria.team/services/contacts/api/contacts/v1"
@@ -187,6 +189,11 @@ func (uc *UsersUsecase) UpdateUserProfile(ctx context.Context, userId int64, dto
 
 	updatedUser, err := uc.usersRepo.UpdateUserData(ctx, user, dto)
 	if err != nil {
+		var pqError *pq.Error
+		ok := errors.As(err, &pqError)
+		if ok && pqError.Code == "23505" {
+			return nil, v1.ErrorInvalidRequest("user with such phone, username or email already exists")
+		}
 		return nil, v1.ErrorDatabaseQuery("database error: %s", err.Error())
 	}
 
