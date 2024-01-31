@@ -2,6 +2,7 @@ package data
 
 import (
 	"context"
+	"fmt"
 	"time"
 
 	"gitlab.calendaria.team/services/iam/ent"
@@ -13,6 +14,7 @@ type UpdateUserDto struct {
 	Phone    string
 	Email    string
 	Name     string
+	Username string
 	Bio      *string
 	Avatar   string
 	Timezone string
@@ -88,6 +90,10 @@ func (r *usersRepo) UpdateUserData(ctx context.Context, user *ent.User, dto Upda
 	if dto.Name != "" && dto.Name != user.Name { // unnecessary to finish the registration
 		shouldUpdate = true
 		query.SetName(dto.Name)
+	}
+	if dto.Username != "" && (user.Username == nil || dto.Username != *user.Username) { // unnecessary to finish the registration
+		shouldUpdate = true
+		query.SetUsername(dto.Username)
 	}
 	if dto.Bio != nil && *dto.Bio != user.Bio { // unnecessary to finish the registration
 		shouldUpdate = true
@@ -226,6 +232,7 @@ func (r *usersRepo) PhoneVerified(ctx context.Context, userId int64) error {
 			user.PhoneVerified(false),
 		).
 		SetPhoneVerified(true).
+		SetUsername(fmt.Sprintf("user%v", userId)).
 		Exec(ctx)
 }
 
@@ -235,5 +242,6 @@ func (r *usersRepo) EmailVerified(ctx context.Context, userId int64) error {
 			user.EmailVerified(false),
 		).
 		SetEmailVerified(true).
+		SetUsername(fmt.Sprintf("user%v", userId)).
 		Exec(ctx)
 }

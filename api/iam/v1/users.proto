@@ -49,6 +49,7 @@ message UpdateOwnProfileRequest {
   int64 actorId = 8;
   string phone = 1;
   string email = 2;
+  string username = 9;
   string name = 3;
   optional string bio = 4;
   string avatar = 5;

@@ -2,7 +2,6 @@ package biz
 
 import (
 	"context"
-
 	"github.com/go-kratos/kratos/v2/log"
 	contacts_v1 "gitlab.calendaria.team/services/contacts/api/contacts/v1"
 	iam_v1 "gitlab.calendaria.team/services/iam/api/iam/v1"
@@ -11,6 +10,7 @@ import (
 	"gitlab.calendaria.team/services/iam/internal/data"
 	tenants_v1 "gitlab.calendaria.team/services/tenants/api/tenants/v1"
 	utils_v1 "gitlab.calendaria.team/services/utils/api/utils/v1"
+	u_error "gitlab.calendaria.team/services/utils/v1/error"
 	"gitlab.calendaria.team/services/utils/v1/jwt"
 )
 
@@ -187,6 +187,9 @@ func (uc *UsersUsecase) UpdateUserProfile(ctx context.Context, userId int64, dto
 
 	updatedUser, err := uc.usersRepo.UpdateUserData(ctx, user, dto)
 	if err != nil {
+		if u_error.IsUniqueViolation(err) {
+			return nil, v1.ErrorInvalidRequest("user with such phone, username or email already exists")
+		}
 		return nil, v1.ErrorDatabaseQuery("database error: %s", err.Error())
 	}
 

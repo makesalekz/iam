@@ -64,6 +64,20 @@ func (uc *UserCreate) SetNillableEmail(s *string) *UserCreate {
 	return uc
 }
 
+// SetUsername sets the "username" field.
+func (uc *UserCreate) SetUsername(s string) *UserCreate {
+	uc.mutation.SetUsername(s)
+	return uc
+}
+
+// SetNillableUsername sets the "username" field if the given value is not nil.
+func (uc *UserCreate) SetNillableUsername(s *string) *UserCreate {
+	if s != nil {
+		uc.SetUsername(*s)
+	}
+	return uc
+}
+
 // SetName sets the "name" field.
 func (uc *UserCreate) SetName(s string) *UserCreate {
 	uc.mutation.SetName(s)
@@ -383,6 +397,10 @@ func (uc *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 		_spec.SetField(user.FieldEmail, field.TypeString, value)
 		_node.Email = &value
 	}
+	if value, ok := uc.mutation.Username(); ok {
+		_spec.SetField(user.FieldUsername, field.TypeString, value)
+		_node.Username = &value
+	}
 	if value, ok := uc.mutation.Name(); ok {
 		_spec.SetField(user.FieldName, field.TypeString, value)
 		_node.Name = value
@@ -530,6 +548,24 @@ func (u *UserUpsert) UpdateEmail() *UserUpsert {
 // ClearEmail clears the value of the "email" field.
 func (u *UserUpsert) ClearEmail() *UserUpsert {
 	u.SetNull(user.FieldEmail)
+	return u
+}
+
+// SetUsername sets the "username" field.
+func (u *UserUpsert) SetUsername(v string) *UserUpsert {
+	u.Set(user.FieldUsername, v)
+	return u
+}
+
+// UpdateUsername sets the "username" field to the value that was provided on create.
+func (u *UserUpsert) UpdateUsername() *UserUpsert {
+	u.SetExcluded(user.FieldUsername)
+	return u
+}
+
+// ClearUsername clears the value of the "username" field.
+func (u *UserUpsert) ClearUsername() *UserUpsert {
+	u.SetNull(user.FieldUsername)
 	return u
 }
 
@@ -785,6 +821,27 @@ func (u *UserUpsertOne) UpdateEmail() *UserUpsertOne {
 func (u *UserUpsertOne) ClearEmail() *UserUpsertOne {
 	return u.Update(func(s *UserUpsert) {
 		s.ClearEmail()
+	})
+}
+
+// SetUsername sets the "username" field.
+func (u *UserUpsertOne) SetUsername(v string) *UserUpsertOne {
+	return u.Update(func(s *UserUpsert) {
+		s.SetUsername(v)
+	})
+}
+
+// UpdateUsername sets the "username" field to the value that was provided on create.
+func (u *UserUpsertOne) UpdateUsername() *UserUpsertOne {
+	return u.Update(func(s *UserUpsert) {
+		s.UpdateUsername()
+	})
+}
+
+// ClearUsername clears the value of the "username" field.
+func (u *UserUpsertOne) ClearUsername() *UserUpsertOne {
+	return u.Update(func(s *UserUpsert) {
+		s.ClearUsername()
 	})
 }
 
@@ -1230,6 +1287,27 @@ func (u *UserUpsertBulk) UpdateEmail() *UserUpsertBulk {
 func (u *UserUpsertBulk) ClearEmail() *UserUpsertBulk {
 	return u.Update(func(s *UserUpsert) {
 		s.ClearEmail()
+	})
+}
+
+// SetUsername sets the "username" field.
+func (u *UserUpsertBulk) SetUsername(v string) *UserUpsertBulk {
+	return u.Update(func(s *UserUpsert) {
+		s.SetUsername(v)
+	})
+}
+
+// UpdateUsername sets the "username" field to the value that was provided on create.
+func (u *UserUpsertBulk) UpdateUsername() *UserUpsertBulk {
+	return u.Update(func(s *UserUpsert) {
+		s.UpdateUsername()
+	})
+}
+
+// ClearUsername clears the value of the "username" field.
+func (u *UserUpsertBulk) ClearUsername() *UserUpsertBulk {
+	return u.Update(func(s *UserUpsert) {
+		s.ClearUsername()
 	})
 }
 

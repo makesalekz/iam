@@ -3,6 +3,7 @@
 package migrate
 
 import (
+	"entgo.io/ent/dialect/entsql"
 	"entgo.io/ent/dialect/sql/schema"
 	"entgo.io/ent/schema/field"
 )
@@ -38,6 +39,7 @@ var (
 		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
 		{Name: "phone", Type: field.TypeString, Unique: true, Nullable: true},
 		{Name: "email", Type: field.TypeString, Unique: true, Nullable: true},
+		{Name: "username", Type: field.TypeString, Unique: true, Nullable: true},
 		{Name: "name", Type: field.TypeString, Default: ""},
 		{Name: "bio", Type: field.TypeString, Default: ""},
 		{Name: "avatar", Type: field.TypeString, Nullable: true},
@@ -55,6 +57,16 @@ var (
 		Name:       "users",
 		Columns:    UsersColumns,
 		PrimaryKey: []*schema.Column{UsersColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "user_username",
+				Unique:  true,
+				Columns: []*schema.Column{UsersColumns[4]},
+				Annotation: &entsql.IndexAnnotation{
+					Where: "username is not null",
+				},
+			},
+		},
 	}
 	// UserPrivaciesColumns holds the columns for the "user_privacies" table.
 	UserPrivaciesColumns = []*schema.Column{
