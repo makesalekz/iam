@@ -12,13 +12,13 @@ option java_package = "iam.v1";
 service Users {
   // GetOwnProfile
   // This is self explanotory, returns own profile
-  rpc GetOwnProfile(utils.v1.ActorRequest) returns (UserFullReply);
+  rpc GetOwnProfile(utils.v1.EmptyRequest) returns (UserFullReply);
   // UpdateOwnProfile
   // This is self explanotory, update own profile
   rpc UpdateOwnProfile(UpdateOwnProfileRequest) returns (UserFullReply);
   // DeleteOwnProfile
   // This is self explanotory, delete own profile
-  rpc DeleteOwnProfile(utils.v1.ActorRequest) returns (utils.v1.EmptyReply);
+  rpc DeleteOwnProfile(utils.v1.EmptyRequest) returns (utils.v1.EmptyReply);
   // GetUserFull
   // Returns full information about user
   // Request: userId of seeking user
@@ -46,7 +46,6 @@ message UserFullReply {
 }
 
 message UpdateOwnProfileRequest {
-  int64 actorId = 8;
   string phone = 1;
   string email = 2;
   string username = 9;
@@ -77,8 +76,6 @@ message UserReply {
 }
 
 message GetUsersRequest {
-  // TODO. Deprecated. Marked for deletion
-  int64 actorId = 10;
   repeated int64 ids = 1;
   repeated string phones = 2;
   repeated string emails = 3;
