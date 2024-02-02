@@ -3,10 +3,12 @@ package data
 import (
 	"context"
 
-	iam_v1 "gitlab.calendaria.team/services/iam/api/iam/v1"
+	v1 "gitlab.calendaria.team/services/contacts/api/contacts/v1"
 	"gitlab.calendaria.team/services/iam/internal/conf"
 	notifications_v1 "gitlab.calendaria.team/services/notifications/api/notifications/v1"
-	"gitlab.calendaria.team/services/utils/v1/dialer"
+	"gitlab.calendaria.team/services/utils/v1/config"
+	jwtp "gitlab.calendaria.team/services/utils/v1/jwt"
+	"gitlab.calendaria.team/services/utils/v2/dialer"
 )
 
 type NotificationsRemote struct {
@@ -14,24 +16,35 @@ type NotificationsRemote struct {
 	conf   *conf.Bootstrap
 }
 
-func NewNotificationsRemote(d *dialer.Dialer, conf *conf.Bootstrap) (*NotificationsRemote, error) {
+func NewNotificationsRemote(
+	conf *conf.Bootstrap,
+	c *config.Config,
+	jwt *jwtp.JwtProcessor,
+) (*NotificationsRemote, error) {
+	dialer, err := dialer.NewServiceDialer(c, jwt, "notifications", conf.Discovery.Notifications)
+	if err != nil {
+		return nil, err
+	}
+
 	return &NotificationsRemote{
-		dialer: d,
+		dialer: dialer,
 		conf:   conf,
 	}, nil
 }
 
 func (r *NotificationsRemote) GetSenderClient(ctx context.Context) (notifications_v1.SenderClient, error) {
-	return dialer.NewDialerBuilder(r.dialer, notifications_v1.NewSenderClient).
-		SetEndpoint(r.conf.Discovery.Notifications).
-		SetTimeout(r.conf.Discovery.NotificationsTimeout.AsDuration()).
-		Conn(ctx, nil)
+	conn, err := r.dialer.Connect(ctx)
+	if err != nil {
+		return nil, v1.ErrorGrpcConnection("can't connect to iam: %s", err.Error())
+	}
+
+	return notifications_v1.NewSenderClient(conn), nil
 }
 
 func (r *NotificationsRemote) PersonalSmsSender(ctx context.Context, phone, message string) error {
 	client, err := r.GetSenderClient(ctx)
 	if err != nil {
-		return iam_v1.ErrorGrpcConnection("notifications: %s", err.Error())
+		return err
 	}
 
 	_, err = client.PersonalSmsSender(ctx, &notifications_v1.PersonalSmsSenderRequest{

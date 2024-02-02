@@ -3,35 +3,45 @@ package data
 import (
 	"context"
 
-	contacts_v1 "gitlab.calendaria.team/services/contacts/api/contacts/v1"
-	iam_v1 "gitlab.calendaria.team/services/iam/api/iam/v1"
+	v1 "gitlab.calendaria.team/services/contacts/api/contacts/v1"
 	"gitlab.calendaria.team/services/iam/internal/conf"
-	"gitlab.calendaria.team/services/utils/v1/dialer"
+	"gitlab.calendaria.team/services/utils/v1/config"
+	jwtp "gitlab.calendaria.team/services/utils/v1/jwt"
+	"gitlab.calendaria.team/services/utils/v2/dialer"
 )
 
 type ContactsRemote struct {
 	dialer *dialer.Dialer
-	conf   *conf.Bootstrap
 }
 
-func NewContactsRemote(dialer *dialer.Dialer, conf *conf.Bootstrap) (*ContactsRemote, error) {
+func NewContactsRemote(
+	conf *conf.Bootstrap,
+	c *config.Config,
+	jwt *jwtp.JwtProcessor,
+) (*ContactsRemote, error) {
+	dialer, err := dialer.NewServiceDialer(c, jwt, "contacts", conf.Discovery.Contacts)
+	if err != nil {
+		return nil, err
+	}
+
 	return &ContactsRemote{
 		dialer: dialer,
-		conf:   conf,
 	}, nil
 }
 
-func (r *ContactsRemote) GetRelationClient(ctx context.Context) (contacts_v1.RelationsClient, error) {
-	return dialer.NewDialerBuilder(r.dialer, contacts_v1.NewRelationsClient).
-		SetEndpoint(r.conf.Discovery.Contacts).
-		SetTimeout(r.conf.Discovery.ContactsTimeout.AsDuration()).
-		Conn(ctx, nil)
+func (r *ContactsRemote) getRelationClient(ctx context.Context) (v1.RelationsClient, error) {
+	conn, err := r.dialer.Connect(ctx)
+	if err != nil {
+		return nil, v1.ErrorGrpcConnection("can't connect to iam: %s", err.Error())
+	}
+
+	return v1.NewRelationsClient(conn), nil
 }
 
-func (r *ContactsRemote) GetRelations(ctx context.Context, req *contacts_v1.GetRelationsRequest) (*contacts_v1.UserRelationsReply, error) {
-	relationsClient, err := r.GetRelationClient(ctx)
+func (r *ContactsRemote) GetRelations(ctx context.Context, req *v1.GetRelationsRequest) (*v1.UserRelationsReply, error) {
+	relationsClient, err := r.getRelationClient(ctx)
 	if err != nil {
-		return nil, iam_v1.ErrorGrpcConnection("contacts: %s", err.Error())
+		return nil, err
 	}
 
 	relations, err := relationsClient.GetRelations(ctx, req)

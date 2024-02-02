@@ -15,7 +15,6 @@ import (
 	"gitlab.calendaria.team/services/iam/internal/server"
 	"gitlab.calendaria.team/services/iam/internal/service"
 	"gitlab.calendaria.team/services/utils/v1/config"
-	"gitlab.calendaria.team/services/utils/v1/dialer"
 	"gitlab.calendaria.team/services/utils/v1/jwt"
 	"gitlab.calendaria.team/services/utils/v1/nats"
 )
@@ -48,19 +47,13 @@ func wireApp(bootstrap *conf.Bootstrap, logger log.Logger) (*kratos.App, func(),
 		return nil, nil, err
 	}
 	queueManager := nats.NewQueueManager(configConfig, encodedConn, logger)
-	dialerDialer, err := dialer.NewDialer(configConfig, jwtProcessor)
+	tenantsRemote, err := data.NewTenantsRemote(bootstrap, configConfig, jwtProcessor)
 	if err != nil {
 		cleanup2()
 		cleanup()
 		return nil, nil, err
 	}
-	tenantsRemote, err := data.NewTenantsRemote(dialerDialer, bootstrap, jwtProcessor)
-	if err != nil {
-		cleanup2()
-		cleanup()
-		return nil, nil, err
-	}
-	notificationsRemote, err := data.NewNotificationsRemote(dialerDialer, bootstrap)
+	notificationsRemote, err := data.NewNotificationsRemote(bootstrap, configConfig, jwtProcessor)
 	if err != nil {
 		cleanup2()
 		cleanup()
@@ -74,7 +67,7 @@ func wireApp(bootstrap *conf.Bootstrap, logger log.Logger) (*kratos.App, func(),
 	}
 	authService := service.NewAuthService(authUsecase)
 	privacyRepo := data.NewPrivacyRepo(dataData)
-	contactsRemote, err := data.NewContactsRemote(dialerDialer, bootstrap)
+	contactsRemote, err := data.NewContactsRemote(bootstrap, configConfig, jwtProcessor)
 	if err != nil {
 		cleanup2()
 		cleanup()
