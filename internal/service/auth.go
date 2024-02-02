@@ -5,38 +5,27 @@ import (
 
 	v1 "gitlab.calendaria.team/services/iam/api/iam/v1"
 	"gitlab.calendaria.team/services/iam/internal/biz"
-
-	"github.com/go-kratos/kratos/v2/log"
+	"gitlab.calendaria.team/services/utils/v2/auth"
 )
 
 type AuthService struct {
 	v1.UnimplementedAuthServer
 
-	log *log.Helper
-	sh  *ServiceHelper
-	au  *biz.AuthUsecase
+	au *biz.AuthUsecase
 }
 
 func NewAuthService(
-	logger log.Logger,
-	sh *ServiceHelper,
 	au *biz.AuthUsecase,
 ) *AuthService {
 	return &AuthService{
-		log: log.NewHelper(logger),
-		sh:  sh,
-		au:  au,
+		au: au,
 	}
 }
 
 func (s *AuthService) AuthByPhone(ctx context.Context, req *v1.AuthByPhoneRequest) (*v1.AuthByPhoneReply, error) {
 	userId, err := s.au.AuthUserByPhone(ctx, req.Phone)
 	if err != nil {
-		if v1.IsInvalidPhoneNumber(err) {
-			return nil, err
-		}
-		s.log.Errorf("au.AuthUserByPhone: ", err)
-		return nil, v1.ErrorInternal("internal error")
+		return nil, err
 	}
 
 	return &v1.AuthByPhoneReply{UserId: userId}, nil
@@ -45,11 +34,7 @@ func (s *AuthService) AuthByPhone(ctx context.Context, req *v1.AuthByPhoneReques
 func (s *AuthService) AuthByCode(ctx context.Context, req *v1.AuthByCodeRequest) (*v1.TokenReply, error) {
 	err := s.au.AuthUserByCode(ctx, req.UserId, req.Code)
 	if err != nil {
-		if v1.IsInvalidCode(err) {
-			return nil, err
-		}
-		s.log.Errorf("au.AuthUserByCode: ", err)
-		return nil, v1.ErrorInternal("internal error")
+		return nil, err
 	}
 
 	accessToken, err := s.au.GenerateAccessToken(ctx, req.UserId)
@@ -69,11 +54,12 @@ func (s *AuthService) AuthByCode(ctx context.Context, req *v1.AuthByCodeRequest)
 }
 
 func (s *AuthService) RefreshToken(ctx context.Context, req *v1.TenantRequest) (*v1.TokenReply, error) {
-	actorId, err := s.sh.GetActorId(ctx, req.ActorId)
-	if err != nil {
-		return nil, err
+	actorId := auth.GetActorIdFromContext(ctx)
+	if actorId == 0 {
+		return nil, v1.ErrorEmptyActorId("empty actor id")
 	}
 
+	var err error
 	var accessToken string
 	if req.TenantId != 0 {
 		accessToken, err = s.au.GenerateTenantToken(ctx, req.TenantId, actorId)

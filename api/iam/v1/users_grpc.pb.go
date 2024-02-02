@@ -37,13 +37,13 @@ const (
 type UsersClient interface {
 	// GetOwnProfile
 	// This is self explanotory, returns own profile
-	GetOwnProfile(ctx context.Context, in *v1.ActorRequest, opts ...grpc.CallOption) (*UserFullReply, error)
+	GetOwnProfile(ctx context.Context, in *v1.EmptyRequest, opts ...grpc.CallOption) (*UserFullReply, error)
 	// UpdateOwnProfile
 	// This is self explanotory, update own profile
 	UpdateOwnProfile(ctx context.Context, in *UpdateOwnProfileRequest, opts ...grpc.CallOption) (*UserFullReply, error)
 	// DeleteOwnProfile
 	// This is self explanotory, delete own profile
-	DeleteOwnProfile(ctx context.Context, in *v1.ActorRequest, opts ...grpc.CallOption) (*v1.EmptyReply, error)
+	DeleteOwnProfile(ctx context.Context, in *v1.EmptyRequest, opts ...grpc.CallOption) (*v1.EmptyReply, error)
 	// GetUserFull
 	// Returns full information about user
 	// Request: userId of seeking user
@@ -72,7 +72,7 @@ func NewUsersClient(cc grpc.ClientConnInterface) UsersClient {
 	return &usersClient{cc}
 }
 
-func (c *usersClient) GetOwnProfile(ctx context.Context, in *v1.ActorRequest, opts ...grpc.CallOption) (*UserFullReply, error) {
+func (c *usersClient) GetOwnProfile(ctx context.Context, in *v1.EmptyRequest, opts ...grpc.CallOption) (*UserFullReply, error) {
 	out := new(UserFullReply)
 	err := c.cc.Invoke(ctx, Users_GetOwnProfile_FullMethodName, in, out, opts...)
 	if err != nil {
@@ -90,7 +90,7 @@ func (c *usersClient) UpdateOwnProfile(ctx context.Context, in *UpdateOwnProfile
 	return out, nil
 }
 
-func (c *usersClient) DeleteOwnProfile(ctx context.Context, in *v1.ActorRequest, opts ...grpc.CallOption) (*v1.EmptyReply, error) {
+func (c *usersClient) DeleteOwnProfile(ctx context.Context, in *v1.EmptyRequest, opts ...grpc.CallOption) (*v1.EmptyReply, error) {
 	out := new(v1.EmptyReply)
 	err := c.cc.Invoke(ctx, Users_DeleteOwnProfile_FullMethodName, in, out, opts...)
 	if err != nil {
@@ -159,13 +159,13 @@ func (c *usersClient) ListUsers(ctx context.Context, in *ListUsersRequest, opts 
 type UsersServer interface {
 	// GetOwnProfile
 	// This is self explanotory, returns own profile
-	GetOwnProfile(context.Context, *v1.ActorRequest) (*UserFullReply, error)
+	GetOwnProfile(context.Context, *v1.EmptyRequest) (*UserFullReply, error)
 	// UpdateOwnProfile
 	// This is self explanotory, update own profile
 	UpdateOwnProfile(context.Context, *UpdateOwnProfileRequest) (*UserFullReply, error)
 	// DeleteOwnProfile
 	// This is self explanotory, delete own profile
-	DeleteOwnProfile(context.Context, *v1.ActorRequest) (*v1.EmptyReply, error)
+	DeleteOwnProfile(context.Context, *v1.EmptyRequest) (*v1.EmptyReply, error)
 	// GetUserFull
 	// Returns full information about user
 	// Request: userId of seeking user
@@ -191,13 +191,13 @@ type UsersServer interface {
 type UnimplementedUsersServer struct {
 }
 
-func (UnimplementedUsersServer) GetOwnProfile(context.Context, *v1.ActorRequest) (*UserFullReply, error) {
+func (UnimplementedUsersServer) GetOwnProfile(context.Context, *v1.EmptyRequest) (*UserFullReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetOwnProfile not implemented")
 }
 func (UnimplementedUsersServer) UpdateOwnProfile(context.Context, *UpdateOwnProfileRequest) (*UserFullReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateOwnProfile not implemented")
 }
-func (UnimplementedUsersServer) DeleteOwnProfile(context.Context, *v1.ActorRequest) (*v1.EmptyReply, error) {
+func (UnimplementedUsersServer) DeleteOwnProfile(context.Context, *v1.EmptyRequest) (*v1.EmptyReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteOwnProfile not implemented")
 }
 func (UnimplementedUsersServer) GetUserFull(context.Context, *GetUserRequest) (*UserFullReply, error) {
@@ -232,7 +232,7 @@ func RegisterUsersServer(s grpc.ServiceRegistrar, srv UsersServer) {
 }
 
 func _Users_GetOwnProfile_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(v1.ActorRequest)
+	in := new(v1.EmptyRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -244,7 +244,7 @@ func _Users_GetOwnProfile_Handler(srv interface{}, ctx context.Context, dec func
 		FullMethod: Users_GetOwnProfile_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(UsersServer).GetOwnProfile(ctx, req.(*v1.ActorRequest))
+		return srv.(UsersServer).GetOwnProfile(ctx, req.(*v1.EmptyRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -268,7 +268,7 @@ func _Users_UpdateOwnProfile_Handler(srv interface{}, ctx context.Context, dec f
 }
 
 func _Users_DeleteOwnProfile_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(v1.ActorRequest)
+	in := new(v1.EmptyRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -280,7 +280,7 @@ func _Users_DeleteOwnProfile_Handler(srv interface{}, ctx context.Context, dec f
 		FullMethod: Users_DeleteOwnProfile_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(UsersServer).DeleteOwnProfile(ctx, req.(*v1.ActorRequest))
+		return srv.(UsersServer).DeleteOwnProfile(ctx, req.(*v1.EmptyRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }

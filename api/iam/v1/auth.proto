@@ -23,20 +23,19 @@ message AuthByPhoneRequest {
 }
 
 message AuthByPhoneReply {
-  int64 user_id = 1;
+  int64 userId = 1;
 }
 
 message AuthByCodeRequest {
-  int64 user_id = 1;
+  int64 userId = 1;
   string code = 2;
 }
 
 message TenantRequest {
-  int64 actor_id = 2;
-  int64 tenant_id = 1;
+  int64 tenantId = 1;
 }
 
 message TokenReply {
-  string access_token = 1;
-  string refresh_token = 2;
+  string accessToken = 1;
+  string refreshToken = 2;
 }

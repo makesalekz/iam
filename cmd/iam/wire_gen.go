@@ -36,7 +36,6 @@ func wireApp(bootstrap *conf.Bootstrap, logger log.Logger) (*kratos.App, func(),
 	if err != nil {
 		return nil, nil, err
 	}
-	serviceHelper := service.NewServiceHelper(jwtProcessor)
 	dataData, cleanup, err := data.NewData(bootstrap, configConfig, logger)
 	if err != nil {
 		return nil, nil, err
@@ -73,7 +72,7 @@ func wireApp(bootstrap *conf.Bootstrap, logger log.Logger) (*kratos.App, func(),
 		cleanup()
 		return nil, nil, err
 	}
-	authService := service.NewAuthService(logger, serviceHelper, authUsecase)
+	authService := service.NewAuthService(authUsecase)
 	privacyRepo := data.NewPrivacyRepo(dataData)
 	contactsRemote, err := data.NewContactsRemote(dialerDialer, bootstrap)
 	if err != nil {
@@ -87,14 +86,14 @@ func wireApp(bootstrap *conf.Bootstrap, logger log.Logger) (*kratos.App, func(),
 		cleanup()
 		return nil, nil, err
 	}
-	usersService := service.NewUsersService(logger, serviceHelper, usersUsecase)
+	usersService := service.NewUsersService(logger, usersUsecase)
 	privacyUsecase, err := biz.NewPrivacyUsecase(privacyRepo)
 	if err != nil {
 		cleanup2()
 		cleanup()
 		return nil, nil, err
 	}
-	privacyService := service.NewPrivacyService(logger, serviceHelper, privacyUsecase)
+	privacyService := service.NewPrivacyService(privacyUsecase)
 	settingsRepo := data.NewSettingsRepo(dataData)
 	settingsUsecase, err := biz.NewSettingsUsecase(settingsRepo)
 	if err != nil {
@@ -102,7 +101,7 @@ func wireApp(bootstrap *conf.Bootstrap, logger log.Logger) (*kratos.App, func(),
 		cleanup()
 		return nil, nil, err
 	}
-	settingsService := service.NewSettingsService(serviceHelper, settingsUsecase)
+	settingsService := service.NewSettingsService(settingsUsecase)
 	grpcServer := server.NewGRPCServer(bootstrap, jwtProcessor, authService, usersService, privacyService, settingsService)
 	httpServer := server.NewHTTPServer(bootstrap)
 	app := newApp(logger, configConfig, grpcServer, httpServer)

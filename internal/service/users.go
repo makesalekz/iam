@@ -9,32 +9,30 @@ import (
 	"gitlab.calendaria.team/services/iam/internal/biz"
 	"gitlab.calendaria.team/services/iam/internal/data"
 	utils_v1 "gitlab.calendaria.team/services/utils/api/utils/v1"
+	"gitlab.calendaria.team/services/utils/v2/auth"
 )
 
 type UsersService struct {
 	v1.UnimplementedUsersServer
 
 	log *log.Helper
-	sh  *ServiceHelper
 	uc  *biz.UsersUsecase
 }
 
 func NewUsersService(
 	logger log.Logger,
-	sh *ServiceHelper,
 	uc *biz.UsersUsecase,
 ) *UsersService {
 	return &UsersService{
-		log: log.NewHelper(logger),
-		sh:  sh,
+		log: log.NewHelper(log.With(logger, "module", "service/users")),
 		uc:  uc,
 	}
 }
 
-func (s *UsersService) GetOwnProfile(ctx context.Context, req *utils_v1.ActorRequest) (*v1.UserFullReply, error) {
-	actorId, err := s.sh.GetActorId(ctx, req.ActorId)
-	if err != nil {
-		return nil, err
+func (s *UsersService) GetOwnProfile(ctx context.Context, req *utils_v1.EmptyRequest) (*v1.UserFullReply, error) {
+	actorId := auth.GetActorIdFromContext(ctx)
+	if actorId == 0 {
+		return nil, v1.ErrorEmptyActorId("empty actor id")
 	}
 
 	user, err := s.uc.GetUserProfile(ctx, data.GetUserFilterDto{UserId: actorId})
@@ -55,16 +53,16 @@ func (s *UsersService) GetOwnProfile(ctx context.Context, req *utils_v1.ActorReq
 		}
 		result.Tenants = resultTenants
 	} else {
-		s.log.Warnf("tenants: ", err)
+		s.log.Errorf("tenants: ", err)
 	}
 
 	return &result, nil
 }
 
 func (s *UsersService) UpdateOwnProfile(ctx context.Context, req *v1.UpdateOwnProfileRequest) (*v1.UserFullReply, error) {
-	actorId, err := s.sh.GetActorId(ctx, req.ActorId)
-	if err != nil {
-		return nil, err
+	actorId := auth.GetActorIdFromContext(ctx)
+	if actorId == 0 {
+		return nil, v1.ErrorEmptyActorId("empty actor id")
 	}
 
 	user, err := s.uc.UpdateUserProfile(ctx, actorId, data.UpdateUserDto{
@@ -94,21 +92,21 @@ func (s *UsersService) UpdateOwnProfile(ctx context.Context, req *v1.UpdateOwnPr
 			}
 			result.Tenants = resultTenants
 		} else {
-			s.log.Warnf("tenants: ", err)
+			s.log.Errorf("tenants: ", err)
 		}
 	}
 
 	return &result, nil
 }
 
-func (s *UsersService) DeleteOwnProfile(ctx context.Context, req *utils_v1.ActorRequest) (*utils_v1.EmptyReply, error) {
-	actorId, err := s.sh.GetActorId(ctx, req.ActorId)
-	if err != nil {
-		return nil, err
+func (s *UsersService) DeleteOwnProfile(ctx context.Context, req *utils_v1.EmptyRequest) (*utils_v1.EmptyReply, error) {
+	actorId := auth.GetActorIdFromContext(ctx)
+	if actorId == 0 {
+		return nil, v1.ErrorEmptyActorId("empty actor id")
 	}
 
 	// TODO мягко удалить или "пофиксить" все связанные сущности
-	err = s.uc.DeleteUser(ctx, actorId)
+	err := s.uc.DeleteUser(ctx, actorId)
 	if err != nil {
 		return nil, err
 	}
@@ -157,7 +155,10 @@ func (s *UsersService) ListUsers(ctx context.Context, req *v1.ListUsersRequest) 
 }
 
 func (s *UsersService) GetUsers(ctx context.Context, req *v1.GetUsersRequest) (*v1.UsersReply, error) {
-	actorId, _ := s.sh.GetActorId(ctx, req.ActorId)
+	actorId := auth.GetActorIdFromContext(ctx)
+	if actorId == 0 {
+		return nil, v1.ErrorEmptyActorId("empty actor id")
+	}
 
 	filter := data.GetUsersFilterDto{
 		UsersIds:      req.GetIds(),

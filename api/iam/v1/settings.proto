@@ -9,12 +9,11 @@ option java_multiple_files = true;
 option java_package = "iam.v1";
 
 service Settings {
-  rpc GetSettings(utils.v1.ActorRequest) returns (SettingsReply);
+  rpc GetSettings(utils.v1.EmptyRequest) returns (SettingsReply);
   rpc UpdateSettings(SettingsRequest) returns (SettingsReply);
 }
 
 message SettingsRequest {
-  int64 actorId = 2;
   map<string, string> settings = 1;
 }
 
