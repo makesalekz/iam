@@ -54,15 +54,13 @@ func (r *TenantsRemote) getMembersClient(ctx context.Context) (tenants_v1.Member
 	return tenants_v1.NewMembersClient(conn), nil
 }
 
-func (r *TenantsRemote) GetUserTenants(ctx context.Context, actorId int64) ([]*tenants_v1.Tenant, error) {
+func (r *TenantsRemote) GetUserTenants(ctx context.Context) ([]*tenants_v1.Tenant, error) {
 	client, err := r.getTenantsClient(ctx)
 	if err != nil {
 		return nil, err
 	}
 
-	reply, err := client.ListTenants(ctx, &tenants_v1.ListTenantsRequest{
-		ActorId: actorId,
-	})
+	reply, err := client.ListTenants(ctx, &tenants_v1.ListTenantsRequest{})
 	if err != nil {
 		return nil, err
 	}

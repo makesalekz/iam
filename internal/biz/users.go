@@ -2,6 +2,7 @@ package biz
 
 import (
 	"context"
+
 	"github.com/go-kratos/kratos/v2/log"
 	contacts_v1 "gitlab.calendaria.team/services/contacts/api/contacts/v1"
 	iam_v1 "gitlab.calendaria.team/services/iam/api/iam/v1"
@@ -57,9 +58,7 @@ func (uc *UsersUsecase) includeRelations(ctx context.Context, actorId int64, use
 		userIds[i] = user.ID
 	}
 
-	relationsReply, err := uc.contacts.GetRelations(ctx, &contacts_v1.GetRelationsRequest{
-		ActorId: actorId,
-		UserIds: userIds})
+	relationsReply, err := uc.contacts.GetRelations(ctx, &contacts_v1.GetRelationsRequest{UserIds: userIds})
 	if err != nil {
 		if contacts_v1.IsNotFound(err) {
 			return nil
@@ -260,8 +259,8 @@ func (uc *UsersUsecase) GetUsers(ctx context.Context, actorId int64, filter data
 	return replyUsers, nil
 }
 
-func (uc *UsersUsecase) GetUserTenants(ctx context.Context, actorId int64) ([]*tenants_v1.Tenant, error) {
-	tenants, err := uc.tenants.GetUserTenants(ctx, actorId)
+func (uc *UsersUsecase) GetUserTenants(ctx context.Context) ([]*tenants_v1.Tenant, error) {
+	tenants, err := uc.tenants.GetUserTenants(ctx)
 	if err != nil {
 		return nil, tenants_v1.ErrorServiceFailed("tenants: %s", err.Error())
 	}
