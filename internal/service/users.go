@@ -155,10 +155,7 @@ func (s *UsersService) ListUsers(ctx context.Context, req *v1.ListUsersRequest) 
 }
 
 func (s *UsersService) GetUsers(ctx context.Context, req *v1.GetUsersRequest) (*v1.UsersReply, error) {
-	actorId := auth.GetActorIdFromContext(ctx)
-	if actorId == 0 {
-		return nil, v1.ErrorEmptyActorId("empty actor id")
-	}
+	actorId := auth.GetActorIdFromContext(ctx) // TODO: remove deprecated
 
 	filter := data.GetUsersFilterDto{
 		UsersIds:      req.GetIds(),
