@@ -42,7 +42,7 @@ func (s *UsersService) GetOwnProfile(ctx context.Context, req *utils_v1.EmptyReq
 
 	result := v1.UserFullReply{User: userItemToV1User(user)}
 
-	tenants, err := s.uc.GetUserTenants(ctx, actorId)
+	tenants, err := s.uc.GetUserTenants(ctx)
 	if err == nil {
 		resultTenants := make([]*v1.TenantShort, len(tenants))
 		for i, tenant := range tenants {
@@ -53,7 +53,7 @@ func (s *UsersService) GetOwnProfile(ctx context.Context, req *utils_v1.EmptyReq
 		}
 		result.Tenants = resultTenants
 	} else {
-		s.log.Errorf("tenants: ", err)
+		s.log.Error(err.Error())
 	}
 
 	return &result, nil
@@ -81,7 +81,7 @@ func (s *UsersService) UpdateOwnProfile(ctx context.Context, req *v1.UpdateOwnPr
 	result := v1.UserFullReply{User: userItemToV1User(user)}
 
 	if req.WithTenants {
-		tenants, err := s.uc.GetUserTenants(ctx, actorId)
+		tenants, err := s.uc.GetUserTenants(ctx)
 		if err == nil {
 			resultTenants := make([]*v1.TenantShort, len(tenants))
 			for i, tenant := range tenants {
@@ -92,7 +92,7 @@ func (s *UsersService) UpdateOwnProfile(ctx context.Context, req *v1.UpdateOwnPr
 			}
 			result.Tenants = resultTenants
 		} else {
-			s.log.Errorf("tenants: ", err)
+			s.log.Error(err.Error())
 		}
 	}
 

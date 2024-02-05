@@ -367,6 +367,8 @@ gitlab.calendaria.team/services/notifications v1.1.0 h1:67dpbBJfl6yADJtgbNiWXHKN
 gitlab.calendaria.team/services/notifications v1.1.0/go.mod h1:l5MoMpHy5X5WFXEudxdjgoGhUejVMRQxZuCCS7xzlhE=
 gitlab.calendaria.team/services/tenants v0.2.0 h1:FyA18Lg6IeNPRSbxGSMq6pQilFDDoZbOJNhpxhIUmag=
 gitlab.calendaria.team/services/tenants v0.2.0/go.mod h1:nNz0hslMqBQrkHZ2gTmf7Iomx2r19D8h562FS885SQ4=
+gitlab.calendaria.team/services/tenants v0.3.0 h1:BCOIQxKHlwYwrPnqNBxW1tSVApoTw18NXF9Ntr6FCh8=
+gitlab.calendaria.team/services/tenants v0.3.0/go.mod h1:UhobxCRVgYfJC5tpi+6vMH7ZfKFcX8822mieq3maSbU=
 gitlab.calendaria.team/services/utils v0.2.6 h1:29y5wO6H8Dw41H1iZJRGfVdL8GSfh/1vm9dzGLpT00o=
 gitlab.calendaria.team/services/utils v0.2.6/go.mod h1:LwrYx8kqqSOQoy7xgekgGibJCyzg5cu1h0rZxTw6hYo=
 gitlab.calendaria.team/services/utils v0.2.7 h1:5pKnOUGXafTkmnB10Q+C+fs7wKXA/4H7wzcgwKgxWk0=
