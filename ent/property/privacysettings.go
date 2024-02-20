@@ -14,7 +14,7 @@ const (
 
 // Values provides list valid values for Enum.
 func (PrivacySettings) Values() (kinds []string) {
-	for _, s := range []PrivacySettings{MyLastActions, MyProfileImage, MyEvents, GroupChatInvite, EventInvite} {
+	for _, s := range []PrivacySettings{MyLastActions, MyProfileImage, MyEvents, GroupChatInvite, EventInvite, MySlots, SlotsDetails} {
 		kinds = append(kinds, string(s))
 	}
 	return
