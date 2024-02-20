@@ -8,6 +8,8 @@ const (
 	MyEvents        PrivacySettings = "MY_EVENTS"
 	GroupChatInvite PrivacySettings = "GROUP_CHAT_INVITE"
 	EventInvite     PrivacySettings = "EVENT_INVITE"
+	MySlots         PrivacySettings = "MY_SLOTS"
+	SlotsDetails    PrivacySettings = "SLOTS_DETAILS"
 )
 
 // Values provides list valid values for Enum.
