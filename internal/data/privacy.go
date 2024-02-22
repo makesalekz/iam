@@ -37,6 +37,8 @@ func DefaultPrivacies() map[string]string {
 		string(property.MyEvents):        string(property.All),
 		string(property.GroupChatInvite): string(property.All),
 		string(property.EventInvite):     string(property.All),
+		string(property.MySlots):         string(property.NoOne),
+		string(property.SlotsDetails):    string(property.NoOne),
 	}
 }
 

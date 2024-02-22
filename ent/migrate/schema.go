@@ -71,7 +71,7 @@ var (
 	// UserPrivaciesColumns holds the columns for the "user_privacies" table.
 	UserPrivaciesColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt64, Increment: true},
-		{Name: "setting", Type: field.TypeEnum, Enums: []string{"MY_LAST_ACTIONS", "MY_PROFILE_IMAGE", "MY_EVENTS", "GROUP_CHAT_INVITE", "EVENT_INVITE"}},
+		{Name: "setting", Type: field.TypeEnum, Enums: []string{"MY_LAST_ACTIONS", "MY_PROFILE_IMAGE", "MY_EVENTS", "GROUP_CHAT_INVITE", "EVENT_INVITE", "MY_SLOTS", "SLOTS_DETAILS"}},
 		{Name: "option", Type: field.TypeEnum, Enums: []string{"ALL", "MY_CONTACTS", "NO_ONE"}},
 		{Name: "updated_at", Type: field.TypeTime},
 		{Name: "user_id", Type: field.TypeInt64},

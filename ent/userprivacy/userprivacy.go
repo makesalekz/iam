@@ -64,7 +64,7 @@ var (
 // SettingValidator is a validator for the "setting" field enum values. It is called by the builders before save.
 func SettingValidator(s property.PrivacySettings) error {
 	switch s {
-	case "MY_LAST_ACTIONS", "MY_PROFILE_IMAGE", "MY_EVENTS", "GROUP_CHAT_INVITE", "EVENT_INVITE":
+	case "MY_LAST_ACTIONS", "MY_PROFILE_IMAGE", "MY_EVENTS", "GROUP_CHAT_INVITE", "EVENT_INVITE", "MY_SLOTS", "SLOTS_DETAILS":
 		return nil
 	default:
 		return fmt.Errorf("userprivacy: invalid enum value for setting field: %q", s)
