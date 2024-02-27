@@ -161,7 +161,6 @@ func (s *UsersService) GetUsers(ctx context.Context, req *v1.GetUsersRequest) (*
 		UsersIds:      req.GetIds(),
 		Phones:        req.GetPhones(),
 		Emails:        req.GetEmails(),
-		WithRelation:  req.GetWithRelation(),
 		WithPrivacies: req.WithPrivacies,
 		WithVerified:  req.WithVerified,
 	}
@@ -260,6 +259,9 @@ func userItemToV1ShortUser(user *biz.UserItem) *v1.UserShort {
 	}
 	if user.Avatar != nil {
 		replyUser.Avatar = *user.Avatar
+	}
+	if user.PersonalTenantID != nil {
+		replyUser.PersonalTenantId = user.PersonalTenantID
 	}
 
 	return replyUser

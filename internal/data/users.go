@@ -18,6 +18,7 @@ type UpdateUserDto struct {
 	Bio      *string
 	Avatar   string
 	Timezone string
+	TenantId int64
 }
 type GetUserFilterDto struct {
 	UserId int64
@@ -108,6 +109,11 @@ func (r *usersRepo) UpdateUserData(ctx context.Context, user *ent.User, dto Upda
 	if dto.Timezone != "" { // !required to finish the registration
 		shouldUpdate = true
 		query.SetTimezone(dto.Timezone).SetIsActive(true)
+	}
+
+	if dto.TenantId != 0 {
+		shouldUpdate = true
+		query.SetPersonalTenantID(dto.TenantId)
 	}
 
 	if !shouldUpdate {

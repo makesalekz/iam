@@ -34,6 +34,7 @@ message UserShort {
   string lastLoginAt = 7;
   optional bool isPhoneVerified = 10;
   optional bool isEmailVerified = 11;
+  optional int64 personalTenantId = 13;
 
   // Deprecated. Marked for deletion
   optional Relation relation = 8;

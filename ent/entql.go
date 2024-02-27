@@ -48,21 +48,22 @@ var schemaGraph = func() *sqlgraph.Schema {
 		},
 		Type: "User",
 		Fields: map[string]*sqlgraph.FieldSpec{
-			user.FieldDeletedAt:     {Type: field.TypeTime, Column: user.FieldDeletedAt},
-			user.FieldPhone:         {Type: field.TypeString, Column: user.FieldPhone},
-			user.FieldEmail:         {Type: field.TypeString, Column: user.FieldEmail},
-			user.FieldUsername:      {Type: field.TypeString, Column: user.FieldUsername},
-			user.FieldName:          {Type: field.TypeString, Column: user.FieldName},
-			user.FieldBio:           {Type: field.TypeString, Column: user.FieldBio},
-			user.FieldAvatar:        {Type: field.TypeString, Column: user.FieldAvatar},
-			user.FieldTimezone:      {Type: field.TypeString, Column: user.FieldTimezone},
-			user.FieldIsActive:      {Type: field.TypeBool, Column: user.FieldIsActive},
-			user.FieldPhoneVerified: {Type: field.TypeBool, Column: user.FieldPhoneVerified},
-			user.FieldEmailVerified: {Type: field.TypeBool, Column: user.FieldEmailVerified},
-			user.FieldLastLoginAt:   {Type: field.TypeTime, Column: user.FieldLastLoginAt},
-			user.FieldCreatedAt:     {Type: field.TypeTime, Column: user.FieldCreatedAt},
-			user.FieldUpdatedAt:     {Type: field.TypeTime, Column: user.FieldUpdatedAt},
-			user.FieldBioUpdatedAt:  {Type: field.TypeTime, Column: user.FieldBioUpdatedAt},
+			user.FieldDeletedAt:        {Type: field.TypeTime, Column: user.FieldDeletedAt},
+			user.FieldPhone:            {Type: field.TypeString, Column: user.FieldPhone},
+			user.FieldEmail:            {Type: field.TypeString, Column: user.FieldEmail},
+			user.FieldUsername:         {Type: field.TypeString, Column: user.FieldUsername},
+			user.FieldName:             {Type: field.TypeString, Column: user.FieldName},
+			user.FieldBio:              {Type: field.TypeString, Column: user.FieldBio},
+			user.FieldAvatar:           {Type: field.TypeString, Column: user.FieldAvatar},
+			user.FieldTimezone:         {Type: field.TypeString, Column: user.FieldTimezone},
+			user.FieldIsActive:         {Type: field.TypeBool, Column: user.FieldIsActive},
+			user.FieldPhoneVerified:    {Type: field.TypeBool, Column: user.FieldPhoneVerified},
+			user.FieldEmailVerified:    {Type: field.TypeBool, Column: user.FieldEmailVerified},
+			user.FieldLastLoginAt:      {Type: field.TypeTime, Column: user.FieldLastLoginAt},
+			user.FieldCreatedAt:        {Type: field.TypeTime, Column: user.FieldCreatedAt},
+			user.FieldUpdatedAt:        {Type: field.TypeTime, Column: user.FieldUpdatedAt},
+			user.FieldBioUpdatedAt:     {Type: field.TypeTime, Column: user.FieldBioUpdatedAt},
+			user.FieldPersonalTenantID: {Type: field.TypeInt64, Column: user.FieldPersonalTenantID},
 		},
 	}
 	graph.Nodes[2] = &sqlgraph.Node{
@@ -341,6 +342,11 @@ func (f *UserFilter) WhereUpdatedAt(p entql.TimeP) {
 // WhereBioUpdatedAt applies the entql time.Time predicate on the bio_updated_at field.
 func (f *UserFilter) WhereBioUpdatedAt(p entql.TimeP) {
 	f.Where(p.Field(user.FieldBioUpdatedAt))
+}
+
+// WherePersonalTenantID applies the entql int64 predicate on the personal_tenant_id field.
+func (f *UserFilter) WherePersonalTenantID(p entql.Int64P) {
+	f.Where(p.Field(user.FieldPersonalTenantID))
 }
 
 // addPredicate implements the predicateAdder interface.

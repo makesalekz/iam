@@ -17,6 +17,7 @@ import (
 	"gitlab.calendaria.team/services/utils/v1/config"
 	"gitlab.calendaria.team/services/utils/v1/jwt"
 	"gitlab.calendaria.team/services/utils/v1/nats"
+	"gitlab.calendaria.team/services/utils/v2/dialer"
 )
 
 import (
@@ -47,13 +48,19 @@ func wireApp(bootstrap *conf.Bootstrap, logger log.Logger) (*kratos.App, func(),
 		return nil, nil, err
 	}
 	queueManager := nats.NewQueueManager(configConfig, encodedConn, logger)
-	tenantsRemote, err := data.NewTenantsRemote(bootstrap, configConfig, jwtProcessor)
+	iDialerManager, err := dialer.NewServiceDialerManager(configConfig, jwtProcessor)
 	if err != nil {
 		cleanup2()
 		cleanup()
 		return nil, nil, err
 	}
-	notificationsRemote, err := data.NewNotificationsRemote(bootstrap, configConfig, jwtProcessor)
+	tenantsRemote, err := data.NewTenantsRemote(bootstrap, iDialerManager)
+	if err != nil {
+		cleanup2()
+		cleanup()
+		return nil, nil, err
+	}
+	notificationsRemote, err := data.NewNotificationsRemote(bootstrap, iDialerManager)
 	if err != nil {
 		cleanup2()
 		cleanup()
@@ -67,13 +74,7 @@ func wireApp(bootstrap *conf.Bootstrap, logger log.Logger) (*kratos.App, func(),
 	}
 	authService := service.NewAuthService(authUsecase)
 	privacyRepo := data.NewPrivacyRepo(dataData)
-	contactsRemote, err := data.NewContactsRemote(bootstrap, configConfig, jwtProcessor)
-	if err != nil {
-		cleanup2()
-		cleanup()
-		return nil, nil, err
-	}
-	usersUsecase, err := biz.NewUsersUsecase(logger, jwtProcessor, usersRepo, otpRepo, privacyRepo, contactsRemote, tenantsRemote)
+	usersUsecase, err := biz.NewUsersUsecase(logger, jwtProcessor, usersRepo, otpRepo, privacyRepo, tenantsRemote)
 	if err != nil {
 		cleanup2()
 		cleanup()

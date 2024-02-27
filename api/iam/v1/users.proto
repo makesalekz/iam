@@ -81,8 +81,6 @@ message GetUsersRequest {
   repeated string emails = 3;
   bool withPrivacies = 6;
   bool withVerified = 9;
-  // TODO. Deprecated. Marked for deletion
-  bool withRelation = 5;
 }
 
 message ListUsersRequest {

@@ -232,6 +232,20 @@ func (uc *UserCreate) SetNillableBioUpdatedAt(t *time.Time) *UserCreate {
 	return uc
 }
 
+// SetPersonalTenantID sets the "personal_tenant_id" field.
+func (uc *UserCreate) SetPersonalTenantID(i int64) *UserCreate {
+	uc.mutation.SetPersonalTenantID(i)
+	return uc
+}
+
+// SetNillablePersonalTenantID sets the "personal_tenant_id" field if the given value is not nil.
+func (uc *UserCreate) SetNillablePersonalTenantID(i *int64) *UserCreate {
+	if i != nil {
+		uc.SetPersonalTenantID(*i)
+	}
+	return uc
+}
+
 // SetID sets the "id" field.
 func (uc *UserCreate) SetID(i int64) *UserCreate {
 	uc.mutation.SetID(i)
@@ -444,6 +458,10 @@ func (uc *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 	if value, ok := uc.mutation.BioUpdatedAt(); ok {
 		_spec.SetField(user.FieldBioUpdatedAt, field.TypeTime, value)
 		_node.BioUpdatedAt = &value
+	}
+	if value, ok := uc.mutation.PersonalTenantID(); ok {
+		_spec.SetField(user.FieldPersonalTenantID, field.TypeInt64, value)
+		_node.PersonalTenantID = &value
 	}
 	return _node, _spec
 }
@@ -710,6 +728,30 @@ func (u *UserUpsert) UpdateBioUpdatedAt() *UserUpsert {
 // ClearBioUpdatedAt clears the value of the "bio_updated_at" field.
 func (u *UserUpsert) ClearBioUpdatedAt() *UserUpsert {
 	u.SetNull(user.FieldBioUpdatedAt)
+	return u
+}
+
+// SetPersonalTenantID sets the "personal_tenant_id" field.
+func (u *UserUpsert) SetPersonalTenantID(v int64) *UserUpsert {
+	u.Set(user.FieldPersonalTenantID, v)
+	return u
+}
+
+// UpdatePersonalTenantID sets the "personal_tenant_id" field to the value that was provided on create.
+func (u *UserUpsert) UpdatePersonalTenantID() *UserUpsert {
+	u.SetExcluded(user.FieldPersonalTenantID)
+	return u
+}
+
+// AddPersonalTenantID adds v to the "personal_tenant_id" field.
+func (u *UserUpsert) AddPersonalTenantID(v int64) *UserUpsert {
+	u.Add(user.FieldPersonalTenantID, v)
+	return u
+}
+
+// ClearPersonalTenantID clears the value of the "personal_tenant_id" field.
+func (u *UserUpsert) ClearPersonalTenantID() *UserUpsert {
+	u.SetNull(user.FieldPersonalTenantID)
 	return u
 }
 
@@ -1010,6 +1052,34 @@ func (u *UserUpsertOne) UpdateBioUpdatedAt() *UserUpsertOne {
 func (u *UserUpsertOne) ClearBioUpdatedAt() *UserUpsertOne {
 	return u.Update(func(s *UserUpsert) {
 		s.ClearBioUpdatedAt()
+	})
+}
+
+// SetPersonalTenantID sets the "personal_tenant_id" field.
+func (u *UserUpsertOne) SetPersonalTenantID(v int64) *UserUpsertOne {
+	return u.Update(func(s *UserUpsert) {
+		s.SetPersonalTenantID(v)
+	})
+}
+
+// AddPersonalTenantID adds v to the "personal_tenant_id" field.
+func (u *UserUpsertOne) AddPersonalTenantID(v int64) *UserUpsertOne {
+	return u.Update(func(s *UserUpsert) {
+		s.AddPersonalTenantID(v)
+	})
+}
+
+// UpdatePersonalTenantID sets the "personal_tenant_id" field to the value that was provided on create.
+func (u *UserUpsertOne) UpdatePersonalTenantID() *UserUpsertOne {
+	return u.Update(func(s *UserUpsert) {
+		s.UpdatePersonalTenantID()
+	})
+}
+
+// ClearPersonalTenantID clears the value of the "personal_tenant_id" field.
+func (u *UserUpsertOne) ClearPersonalTenantID() *UserUpsertOne {
+	return u.Update(func(s *UserUpsert) {
+		s.ClearPersonalTenantID()
 	})
 }
 
@@ -1476,6 +1546,34 @@ func (u *UserUpsertBulk) UpdateBioUpdatedAt() *UserUpsertBulk {
 func (u *UserUpsertBulk) ClearBioUpdatedAt() *UserUpsertBulk {
 	return u.Update(func(s *UserUpsert) {
 		s.ClearBioUpdatedAt()
+	})
+}
+
+// SetPersonalTenantID sets the "personal_tenant_id" field.
+func (u *UserUpsertBulk) SetPersonalTenantID(v int64) *UserUpsertBulk {
+	return u.Update(func(s *UserUpsert) {
+		s.SetPersonalTenantID(v)
+	})
+}
+
+// AddPersonalTenantID adds v to the "personal_tenant_id" field.
+func (u *UserUpsertBulk) AddPersonalTenantID(v int64) *UserUpsertBulk {
+	return u.Update(func(s *UserUpsert) {
+		s.AddPersonalTenantID(v)
+	})
+}
+
+// UpdatePersonalTenantID sets the "personal_tenant_id" field to the value that was provided on create.
+func (u *UserUpsertBulk) UpdatePersonalTenantID() *UserUpsertBulk {
+	return u.Update(func(s *UserUpsert) {
+		s.UpdatePersonalTenantID()
+	})
+}
+
+// ClearPersonalTenantID clears the value of the "personal_tenant_id" field.
+func (u *UserUpsertBulk) ClearPersonalTenantID() *UserUpsertBulk {
+	return u.Update(func(s *UserUpsert) {
+		s.ClearPersonalTenantID()
 	})
 }
 

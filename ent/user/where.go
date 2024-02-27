@@ -129,6 +129,11 @@ func BioUpdatedAt(v time.Time) predicate.User {
 	return predicate.User(sql.FieldEQ(FieldBioUpdatedAt, v))
 }
 
+// PersonalTenantID applies equality check predicate on the "personal_tenant_id" field. It's identical to PersonalTenantIDEQ.
+func PersonalTenantID(v int64) predicate.User {
+	return predicate.User(sql.FieldEQ(FieldPersonalTenantID, v))
+}
+
 // DeletedAtEQ applies the EQ predicate on the "deleted_at" field.
 func DeletedAtEQ(v time.Time) predicate.User {
 	return predicate.User(sql.FieldEQ(FieldDeletedAt, v))
@@ -872,6 +877,56 @@ func BioUpdatedAtIsNil() predicate.User {
 // BioUpdatedAtNotNil applies the NotNil predicate on the "bio_updated_at" field.
 func BioUpdatedAtNotNil() predicate.User {
 	return predicate.User(sql.FieldNotNull(FieldBioUpdatedAt))
+}
+
+// PersonalTenantIDEQ applies the EQ predicate on the "personal_tenant_id" field.
+func PersonalTenantIDEQ(v int64) predicate.User {
+	return predicate.User(sql.FieldEQ(FieldPersonalTenantID, v))
+}
+
+// PersonalTenantIDNEQ applies the NEQ predicate on the "personal_tenant_id" field.
+func PersonalTenantIDNEQ(v int64) predicate.User {
+	return predicate.User(sql.FieldNEQ(FieldPersonalTenantID, v))
+}
+
+// PersonalTenantIDIn applies the In predicate on the "personal_tenant_id" field.
+func PersonalTenantIDIn(vs ...int64) predicate.User {
+	return predicate.User(sql.FieldIn(FieldPersonalTenantID, vs...))
+}
+
+// PersonalTenantIDNotIn applies the NotIn predicate on the "personal_tenant_id" field.
+func PersonalTenantIDNotIn(vs ...int64) predicate.User {
+	return predicate.User(sql.FieldNotIn(FieldPersonalTenantID, vs...))
+}
+
+// PersonalTenantIDGT applies the GT predicate on the "personal_tenant_id" field.
+func PersonalTenantIDGT(v int64) predicate.User {
+	return predicate.User(sql.FieldGT(FieldPersonalTenantID, v))
+}
+
+// PersonalTenantIDGTE applies the GTE predicate on the "personal_tenant_id" field.
+func PersonalTenantIDGTE(v int64) predicate.User {
+	return predicate.User(sql.FieldGTE(FieldPersonalTenantID, v))
+}
+
+// PersonalTenantIDLT applies the LT predicate on the "personal_tenant_id" field.
+func PersonalTenantIDLT(v int64) predicate.User {
+	return predicate.User(sql.FieldLT(FieldPersonalTenantID, v))
+}
+
+// PersonalTenantIDLTE applies the LTE predicate on the "personal_tenant_id" field.
+func PersonalTenantIDLTE(v int64) predicate.User {
+	return predicate.User(sql.FieldLTE(FieldPersonalTenantID, v))
+}
+
+// PersonalTenantIDIsNil applies the IsNil predicate on the "personal_tenant_id" field.
+func PersonalTenantIDIsNil() predicate.User {
+	return predicate.User(sql.FieldIsNull(FieldPersonalTenantID))
+}
+
+// PersonalTenantIDNotNil applies the NotNil predicate on the "personal_tenant_id" field.
+func PersonalTenantIDNotNil() predicate.User {
+	return predicate.User(sql.FieldNotNull(FieldPersonalTenantID))
 }
 
 // And groups predicates with the AND operator between them.

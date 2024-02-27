@@ -47,7 +47,9 @@ type User struct {
 	UpdatedAt time.Time `json:"updated_at,omitempty"`
 	// the time when user's bio has been changed
 	BioUpdatedAt *time.Time `json:"bio_updated_at,omitempty"`
-	selectValues sql.SelectValues
+	// personal tenant id of user
+	PersonalTenantID *int64 `json:"personal_tenant_id,omitempty"`
+	selectValues     sql.SelectValues
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -57,7 +59,7 @@ func (*User) scanValues(columns []string) ([]any, error) {
 		switch columns[i] {
 		case user.FieldIsActive, user.FieldPhoneVerified, user.FieldEmailVerified:
 			values[i] = new(sql.NullBool)
-		case user.FieldID:
+		case user.FieldID, user.FieldPersonalTenantID:
 			values[i] = new(sql.NullInt64)
 		case user.FieldPhone, user.FieldEmail, user.FieldUsername, user.FieldName, user.FieldBio, user.FieldAvatar, user.FieldTimezone:
 			values[i] = new(sql.NullString)
@@ -180,6 +182,13 @@ func (u *User) assignValues(columns []string, values []any) error {
 				u.BioUpdatedAt = new(time.Time)
 				*u.BioUpdatedAt = value.Time
 			}
+		case user.FieldPersonalTenantID:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field personal_tenant_id", values[i])
+			} else if value.Valid {
+				u.PersonalTenantID = new(int64)
+				*u.PersonalTenantID = value.Int64
+			}
 		default:
 			u.selectValues.Set(columns[i], values[i])
 		}
@@ -271,6 +280,11 @@ func (u *User) String() string {
 	if v := u.BioUpdatedAt; v != nil {
 		builder.WriteString("bio_updated_at=")
 		builder.WriteString(v.Format(time.ANSIC))
+	}
+	builder.WriteString(", ")
+	if v := u.PersonalTenantID; v != nil {
+		builder.WriteString("personal_tenant_id=")
+		builder.WriteString(fmt.Sprintf("%v", *v))
 	}
 	builder.WriteByte(')')
 	return builder.String()
