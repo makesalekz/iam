@@ -25,6 +25,7 @@ enum ErrorReason {
   INVALID_CODE = 13 [(errors.code) = 401];
   INVALID_EMAIL = 14 [(errors.code) = 400];
   INVALID_TIMEZONE = 15 [(errors.code) = 400];
+  INVALID_USERNAME = 16 [(errors.code) = 400];
 
   USER_NOT_FOUND = 20 [(errors.code) = 404];
   INVALID_REQUEST = 21 [(errors.code) = 400];
