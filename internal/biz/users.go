@@ -3,6 +3,7 @@ package biz
 import (
 	"context"
 	"errors"
+
 	"github.com/lib/pq"
 
 	"github.com/go-kratos/kratos/v2/log"
@@ -265,7 +266,7 @@ func (uc *UsersUsecase) GetUsers(ctx context.Context, actorId int64, filter data
 
 	//TODO. Deprecated. marked for deletion
 	if filter.WithRelation && actorId != 0 {
-		err = uc.includeRelations(ctx, actorId, replyUsers...)
+		_ = uc.includeRelations(ctx, actorId, replyUsers...)
 	}
 
 	if filter.WithPrivacies {
