@@ -2,6 +2,8 @@ package service
 
 import (
 	"context"
+	"strconv"
+	"strings"
 	"time"
 
 	"github.com/go-kratos/kratos/v2/log"
@@ -63,6 +65,14 @@ func (s *UsersService) UpdateOwnProfile(ctx context.Context, req *v1.UpdateOwnPr
 	actorId := auth.GetActorIdFromContext(ctx)
 	if actorId == 0 {
 		return nil, v1.ErrorEmptyActorId("empty actor id")
+	}
+
+	// check for default username format user{number}
+	if len(req.Username) > 4 && strings.ToLower(req.Username[:4]) == "user" {
+		_, err := strconv.ParseInt(req.Username[4:], 10, 64)
+		if err == nil {
+			return nil, v1.ErrorInvalidUsername("forbidden username format")
+		}
 	}
 
 	user, err := s.uc.UpdateUserProfile(ctx, actorId, data.UpdateUserDto{

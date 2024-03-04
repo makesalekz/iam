@@ -2,6 +2,9 @@ package biz
 
 import (
 	"context"
+	"errors"
+
+	"github.com/lib/pq"
 
 	"github.com/go-kratos/kratos/v2/log"
 	iam_v1 "gitlab.calendaria.team/services/iam/api/iam/v1"
@@ -30,6 +33,14 @@ type UsersUsecase struct {
 	privaciesRepo data.PrivacyRepo
 	tenants       *data.TenantsRemote
 }
+
+type ConstraintKey string
+
+const (
+	USERNAME ConstraintKey = "users_username_key"
+	EMAIL    ConstraintKey = "users_email_key"
+	PHONE    ConstraintKey = "users_phone_key"
+)
 
 // NewUsersUsecase .
 func NewUsersUsecase(logger log.Logger,
@@ -144,7 +155,22 @@ func (uc *UsersUsecase) UpdateUserProfile(ctx context.Context, userId int64, dto
 	updatedUser, err := uc.usersRepo.UpdateUserData(ctx, user, dto)
 	if err != nil {
 		if u_error.IsUniqueViolation(err) {
-			return nil, v1.ErrorInvalidRequest("user with such phone, username or email already exists")
+			var pqError *pq.Error
+			ok := errors.As(err, &pqError)
+			if !ok {
+				return nil, v1.ErrorDatabaseQuery("database error: %s", err.Error())
+			}
+
+			switch pqError.Constraint {
+			case string(USERNAME):
+				return nil, v1.ErrorInvalidUsername("user with such username already exists")
+			case string(EMAIL):
+				return nil, v1.ErrorInvalidEmail("user with such email already exists")
+			case string(PHONE):
+				return nil, v1.ErrorInvalidPhoneNumber("user with such phone number already exists")
+			default:
+				return nil, v1.ErrorInvalidRequest("some user details are already exists")
+			}
 		}
 		return nil, v1.ErrorDatabaseQuery("database error: %s", err.Error())
 	}
