@@ -173,26 +173,18 @@ func (uc *AuthUsecase) GenerateIdToken(ctx context.Context, userId int64) (strin
 	return result, nil
 }
 
-func (uc *AuthUsecase) GenerateAccessToken(ctx context.Context, userId int64) (string, error) {
-	duration := ACCESS_TOKEN_DURATION
-	debug := os.Getenv("DEBUG")
-	if debug != "" { // set access token duration to 1 month in debug mode
-		duration = REFRESH_TOKEN_DURATION
-	}
-
-	claims := &jwtv4.RegisteredClaims{
-		Issuer:    "iam",
-		Audience:  jwtv4.ClaimStrings{"personal"},
-		Subject:   strconv.FormatInt(userId, 10),
-		IssuedAt:  jwtv4.NewNumericDate(time.Now()),
-		ExpiresAt: jwtv4.NewNumericDate(time.Now().Add(duration)),
-	}
-	token := jwtv4.NewWithClaims(jwtv4.SigningMethodHS256, claims)
-
-	result, err := token.SignedString(uc.jwt.GetSecret())
+func (uc *AuthUsecase) GeneratePersonalToken(ctx context.Context, userId int64) (string, error) {
+	user, err := uc.usersRepo.GetUserById(ctx, userId)
 	if err != nil {
-		uc.log.Errorf("token.SignedString: %s", err.Error())
-		return "", v1.ErrorInternal("internal error")
+		return "", v1.ErrorDatabaseQuery("get user: %s", err.Error())
+	}
+	if user.DefaultTenantID == nil {
+		return "", v1.ErrorInternal("personal tenant non existent")
+	}
+
+	result, err := uc.GenerateTenantToken(ctx, *user.DefaultTenantID, userId)
+	if err != nil {
+		return "", err
 	}
 
 	return result, nil

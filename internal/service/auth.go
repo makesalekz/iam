@@ -37,7 +37,7 @@ func (s *AuthService) AuthByCode(ctx context.Context, req *v1.AuthByCodeRequest)
 		return nil, err
 	}
 
-	accessToken, err := s.au.GenerateAccessToken(ctx, req.UserId)
+	accessToken, err := s.au.GeneratePersonalToken(ctx, req.UserId)
 	if err != nil {
 		return nil, err
 	}
@@ -64,7 +64,7 @@ func (s *AuthService) RefreshToken(ctx context.Context, req *v1.TenantRequest) (
 	if req.TenantId != 0 {
 		accessToken, err = s.au.GenerateTenantToken(ctx, req.TenantId, actorId)
 	} else {
-		accessToken, err = s.au.GenerateAccessToken(ctx, actorId)
+		accessToken, err = s.au.GeneratePersonalToken(ctx, actorId)
 	}
 	if err != nil {
 		return nil, err
