@@ -8,7 +8,6 @@ import (
 	"time"
 
 	"github.com/go-kratos/kratos/v2/log"
-	"github.com/go-kratos/kratos/v2/metadata"
 	jwtv4 "github.com/golang-jwt/jwt/v4"
 	"github.com/nyaruka/phonenumbers"
 	v1 "gitlab.calendaria.team/services/iam/api/iam/v1"
@@ -19,6 +18,7 @@ import (
 	tenants_v1 "gitlab.calendaria.team/services/tenants/api/tenants/v1"
 	"gitlab.calendaria.team/services/utils/v1/jwt"
 	"gitlab.calendaria.team/services/utils/v1/nats"
+	"gitlab.calendaria.team/services/utils/v2/auth"
 )
 
 const DEFAULT_REGION = "KZ"
@@ -122,13 +122,13 @@ func (uc *AuthUsecase) handleUserVerification(ctx context.Context, user *ent.Use
 	userShort := userShortFromDto(user)
 
 	if user.DefaultTenantID == nil {
-		ctx = metadata.AppendToClientContext(context.Background(), "x-md-global-actor-id", strconv.FormatInt(user.ID, 10))
-		personalTenant, err := uc.tenants.CreateTenants(ctx, PERSONAL_WORKSPACE)
+		tenantContext := auth.AppendAuthIds(ctx, user.ID, 0)
+		personalTenant, err := uc.tenants.CreateTenants(tenantContext, PERSONAL_WORKSPACE)
 		if err != nil {
 			return v1.ErrorGrpcConnection("CreateTenants error: %s", err.Error())
 		}
 
-		_, err = uc.usersRepo.UpdateUserData(ctx, user, data.UpdateUserDto{TenantId: personalTenant.Id})
+		_, err = uc.usersRepo.UpdateUserData(tenantContext, user, data.UpdateUserDto{TenantId: personalTenant.Id})
 		if err != nil {
 			return v1.ErrorDatabaseQuery("UpdateUserData gone wrong: %s", err.Error())
 		}
