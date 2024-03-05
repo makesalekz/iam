@@ -113,7 +113,7 @@ func (r *usersRepo) UpdateUserData(ctx context.Context, user *ent.User, dto Upda
 
 	if dto.TenantId != 0 {
 		shouldUpdate = true
-		query.SetPersonalTenantID(dto.TenantId)
+		query.SetDefaultTenantID(dto.TenantId)
 	}
 
 	if !shouldUpdate {

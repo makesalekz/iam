@@ -25,7 +25,7 @@ const DEFAULT_REGION = "KZ"
 const AUTH_OTP_DURATION = 5 * time.Minute
 const ACCESS_TOKEN_DURATION = 10 * time.Minute
 const REFRESH_TOKEN_DURATION = 30 * 24 * time.Hour
-const PERSONAL_WS = "PERSONAL"
+const PERSONAL_WORKSPACE = "MY_WORKSPACE"
 
 // GreeterUsecase is a Greeter usecase.
 type AuthUsecase struct {
@@ -121,9 +121,9 @@ func (uc *AuthUsecase) AuthUserByCode(ctx context.Context, userId int64, code st
 func (uc *AuthUsecase) handleUserVerification(ctx context.Context, user *ent.User, otp *ent.OneTimePassword) error {
 	userShort := userShortFromDto(user)
 
-	if user.PersonalTenantID == nil {
-		ctx = metadata.AppendToClientContext(ctx, "x-md-global-actor-id", strconv.FormatInt(user.ID, 10))
-		personalTenant, err := uc.tenants.CreateTenants(ctx, PERSONAL_WS)
+	if user.DefaultTenantID == nil {
+		ctx = metadata.AppendToClientContext(context.Background(), "x-md-global-actor-id", strconv.FormatInt(user.ID, 10))
+		personalTenant, err := uc.tenants.CreateTenants(ctx, PERSONAL_WORKSPACE)
 		if err != nil {
 			return v1.ErrorGrpcConnection("CreateTenants error: %s", err.Error())
 		}

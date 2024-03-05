@@ -275,30 +275,30 @@ func (uu *UserUpdate) ClearBioUpdatedAt() *UserUpdate {
 	return uu
 }
 
-// SetPersonalTenantID sets the "personal_tenant_id" field.
-func (uu *UserUpdate) SetPersonalTenantID(i int64) *UserUpdate {
-	uu.mutation.ResetPersonalTenantID()
-	uu.mutation.SetPersonalTenantID(i)
+// SetDefaultTenantID sets the "default_tenant_id" field.
+func (uu *UserUpdate) SetDefaultTenantID(i int64) *UserUpdate {
+	uu.mutation.ResetDefaultTenantID()
+	uu.mutation.SetDefaultTenantID(i)
 	return uu
 }
 
-// SetNillablePersonalTenantID sets the "personal_tenant_id" field if the given value is not nil.
-func (uu *UserUpdate) SetNillablePersonalTenantID(i *int64) *UserUpdate {
+// SetNillableDefaultTenantID sets the "default_tenant_id" field if the given value is not nil.
+func (uu *UserUpdate) SetNillableDefaultTenantID(i *int64) *UserUpdate {
 	if i != nil {
-		uu.SetPersonalTenantID(*i)
+		uu.SetDefaultTenantID(*i)
 	}
 	return uu
 }
 
-// AddPersonalTenantID adds i to the "personal_tenant_id" field.
-func (uu *UserUpdate) AddPersonalTenantID(i int64) *UserUpdate {
-	uu.mutation.AddPersonalTenantID(i)
+// AddDefaultTenantID adds i to the "default_tenant_id" field.
+func (uu *UserUpdate) AddDefaultTenantID(i int64) *UserUpdate {
+	uu.mutation.AddDefaultTenantID(i)
 	return uu
 }
 
-// ClearPersonalTenantID clears the value of the "personal_tenant_id" field.
-func (uu *UserUpdate) ClearPersonalTenantID() *UserUpdate {
-	uu.mutation.ClearPersonalTenantID()
+// ClearDefaultTenantID clears the value of the "default_tenant_id" field.
+func (uu *UserUpdate) ClearDefaultTenantID() *UserUpdate {
+	uu.mutation.ClearDefaultTenantID()
 	return uu
 }
 
@@ -412,14 +412,14 @@ func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if uu.mutation.BioUpdatedAtCleared() {
 		_spec.ClearField(user.FieldBioUpdatedAt, field.TypeTime)
 	}
-	if value, ok := uu.mutation.PersonalTenantID(); ok {
-		_spec.SetField(user.FieldPersonalTenantID, field.TypeInt64, value)
+	if value, ok := uu.mutation.DefaultTenantID(); ok {
+		_spec.SetField(user.FieldDefaultTenantID, field.TypeInt64, value)
 	}
-	if value, ok := uu.mutation.AddedPersonalTenantID(); ok {
-		_spec.AddField(user.FieldPersonalTenantID, field.TypeInt64, value)
+	if value, ok := uu.mutation.AddedDefaultTenantID(); ok {
+		_spec.AddField(user.FieldDefaultTenantID, field.TypeInt64, value)
 	}
-	if uu.mutation.PersonalTenantIDCleared() {
-		_spec.ClearField(user.FieldPersonalTenantID, field.TypeInt64)
+	if uu.mutation.DefaultTenantIDCleared() {
+		_spec.ClearField(user.FieldDefaultTenantID, field.TypeInt64)
 	}
 	_spec.AddModifiers(uu.modifiers...)
 	if n, err = sqlgraph.UpdateNodes(ctx, uu.driver, _spec); err != nil {
@@ -689,30 +689,30 @@ func (uuo *UserUpdateOne) ClearBioUpdatedAt() *UserUpdateOne {
 	return uuo
 }
 
-// SetPersonalTenantID sets the "personal_tenant_id" field.
-func (uuo *UserUpdateOne) SetPersonalTenantID(i int64) *UserUpdateOne {
-	uuo.mutation.ResetPersonalTenantID()
-	uuo.mutation.SetPersonalTenantID(i)
+// SetDefaultTenantID sets the "default_tenant_id" field.
+func (uuo *UserUpdateOne) SetDefaultTenantID(i int64) *UserUpdateOne {
+	uuo.mutation.ResetDefaultTenantID()
+	uuo.mutation.SetDefaultTenantID(i)
 	return uuo
 }
 
-// SetNillablePersonalTenantID sets the "personal_tenant_id" field if the given value is not nil.
-func (uuo *UserUpdateOne) SetNillablePersonalTenantID(i *int64) *UserUpdateOne {
+// SetNillableDefaultTenantID sets the "default_tenant_id" field if the given value is not nil.
+func (uuo *UserUpdateOne) SetNillableDefaultTenantID(i *int64) *UserUpdateOne {
 	if i != nil {
-		uuo.SetPersonalTenantID(*i)
+		uuo.SetDefaultTenantID(*i)
 	}
 	return uuo
 }
 
-// AddPersonalTenantID adds i to the "personal_tenant_id" field.
-func (uuo *UserUpdateOne) AddPersonalTenantID(i int64) *UserUpdateOne {
-	uuo.mutation.AddPersonalTenantID(i)
+// AddDefaultTenantID adds i to the "default_tenant_id" field.
+func (uuo *UserUpdateOne) AddDefaultTenantID(i int64) *UserUpdateOne {
+	uuo.mutation.AddDefaultTenantID(i)
 	return uuo
 }
 
-// ClearPersonalTenantID clears the value of the "personal_tenant_id" field.
-func (uuo *UserUpdateOne) ClearPersonalTenantID() *UserUpdateOne {
-	uuo.mutation.ClearPersonalTenantID()
+// ClearDefaultTenantID clears the value of the "default_tenant_id" field.
+func (uuo *UserUpdateOne) ClearDefaultTenantID() *UserUpdateOne {
+	uuo.mutation.ClearDefaultTenantID()
 	return uuo
 }
 
@@ -856,14 +856,14 @@ func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) 
 	if uuo.mutation.BioUpdatedAtCleared() {
 		_spec.ClearField(user.FieldBioUpdatedAt, field.TypeTime)
 	}
-	if value, ok := uuo.mutation.PersonalTenantID(); ok {
-		_spec.SetField(user.FieldPersonalTenantID, field.TypeInt64, value)
+	if value, ok := uuo.mutation.DefaultTenantID(); ok {
+		_spec.SetField(user.FieldDefaultTenantID, field.TypeInt64, value)
 	}
-	if value, ok := uuo.mutation.AddedPersonalTenantID(); ok {
-		_spec.AddField(user.FieldPersonalTenantID, field.TypeInt64, value)
+	if value, ok := uuo.mutation.AddedDefaultTenantID(); ok {
+		_spec.AddField(user.FieldDefaultTenantID, field.TypeInt64, value)
 	}
-	if uuo.mutation.PersonalTenantIDCleared() {
-		_spec.ClearField(user.FieldPersonalTenantID, field.TypeInt64)
+	if uuo.mutation.DefaultTenantIDCleared() {
+		_spec.ClearField(user.FieldDefaultTenantID, field.TypeInt64)
 	}
 	_spec.AddModifiers(uuo.modifiers...)
 	_node = &User{config: uuo.config}

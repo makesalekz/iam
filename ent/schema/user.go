@@ -35,7 +35,7 @@ func (User) Fields() []ent.Field {
 		field.Time("created_at").Default(time.Now).Comment("the time when user has been created"),
 		field.Time("updated_at").Default(time.Now).Comment("the time when user was last changed"),
 		field.Time("bio_updated_at").Nillable().Optional().Comment("the time when user's bio has been changed"),
-		field.Int64("personal_tenant_id").Nillable().Optional().Comment("personal tenant id of user"),
+		field.Int64("default_tenant_id").Nillable().Optional().Comment("default tenant id of user"),
 	}
 }
 

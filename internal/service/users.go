@@ -270,9 +270,6 @@ func userItemToV1ShortUser(user *biz.UserItem) *v1.UserShort {
 	if user.Avatar != nil {
 		replyUser.Avatar = *user.Avatar
 	}
-	if user.PersonalTenantID != nil {
-		replyUser.PersonalTenantId = user.PersonalTenantID
-	}
 
 	return replyUser
 }
