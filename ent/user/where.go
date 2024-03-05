@@ -129,6 +129,11 @@ func BioUpdatedAt(v time.Time) predicate.User {
 	return predicate.User(sql.FieldEQ(FieldBioUpdatedAt, v))
 }
 
+// DefaultTenantID applies equality check predicate on the "default_tenant_id" field. It's identical to DefaultTenantIDEQ.
+func DefaultTenantID(v int64) predicate.User {
+	return predicate.User(sql.FieldEQ(FieldDefaultTenantID, v))
+}
+
 // DeletedAtEQ applies the EQ predicate on the "deleted_at" field.
 func DeletedAtEQ(v time.Time) predicate.User {
 	return predicate.User(sql.FieldEQ(FieldDeletedAt, v))
@@ -872,6 +877,56 @@ func BioUpdatedAtIsNil() predicate.User {
 // BioUpdatedAtNotNil applies the NotNil predicate on the "bio_updated_at" field.
 func BioUpdatedAtNotNil() predicate.User {
 	return predicate.User(sql.FieldNotNull(FieldBioUpdatedAt))
+}
+
+// DefaultTenantIDEQ applies the EQ predicate on the "default_tenant_id" field.
+func DefaultTenantIDEQ(v int64) predicate.User {
+	return predicate.User(sql.FieldEQ(FieldDefaultTenantID, v))
+}
+
+// DefaultTenantIDNEQ applies the NEQ predicate on the "default_tenant_id" field.
+func DefaultTenantIDNEQ(v int64) predicate.User {
+	return predicate.User(sql.FieldNEQ(FieldDefaultTenantID, v))
+}
+
+// DefaultTenantIDIn applies the In predicate on the "default_tenant_id" field.
+func DefaultTenantIDIn(vs ...int64) predicate.User {
+	return predicate.User(sql.FieldIn(FieldDefaultTenantID, vs...))
+}
+
+// DefaultTenantIDNotIn applies the NotIn predicate on the "default_tenant_id" field.
+func DefaultTenantIDNotIn(vs ...int64) predicate.User {
+	return predicate.User(sql.FieldNotIn(FieldDefaultTenantID, vs...))
+}
+
+// DefaultTenantIDGT applies the GT predicate on the "default_tenant_id" field.
+func DefaultTenantIDGT(v int64) predicate.User {
+	return predicate.User(sql.FieldGT(FieldDefaultTenantID, v))
+}
+
+// DefaultTenantIDGTE applies the GTE predicate on the "default_tenant_id" field.
+func DefaultTenantIDGTE(v int64) predicate.User {
+	return predicate.User(sql.FieldGTE(FieldDefaultTenantID, v))
+}
+
+// DefaultTenantIDLT applies the LT predicate on the "default_tenant_id" field.
+func DefaultTenantIDLT(v int64) predicate.User {
+	return predicate.User(sql.FieldLT(FieldDefaultTenantID, v))
+}
+
+// DefaultTenantIDLTE applies the LTE predicate on the "default_tenant_id" field.
+func DefaultTenantIDLTE(v int64) predicate.User {
+	return predicate.User(sql.FieldLTE(FieldDefaultTenantID, v))
+}
+
+// DefaultTenantIDIsNil applies the IsNil predicate on the "default_tenant_id" field.
+func DefaultTenantIDIsNil() predicate.User {
+	return predicate.User(sql.FieldIsNull(FieldDefaultTenantID))
+}
+
+// DefaultTenantIDNotNil applies the NotNil predicate on the "default_tenant_id" field.
+func DefaultTenantIDNotNil() predicate.User {
+	return predicate.User(sql.FieldNotNull(FieldDefaultTenantID))
 }
 
 // And groups predicates with the AND operator between them.

@@ -68,7 +68,7 @@ func (s *UsersService) UpdateOwnProfile(ctx context.Context, req *v1.UpdateOwnPr
 	}
 
 	// check for default username format user{number}
-	if strings.ToLower(req.Username[:4]) == "user" {
+	if len(req.Username) > 4 && strings.ToLower(req.Username[:4]) == "user" {
 		_, err := strconv.ParseInt(req.Username[4:], 10, 64)
 		if err == nil {
 			return nil, v1.ErrorInvalidUsername("forbidden username format")
@@ -171,7 +171,6 @@ func (s *UsersService) GetUsers(ctx context.Context, req *v1.GetUsersRequest) (*
 		UsersIds:      req.GetIds(),
 		Phones:        req.GetPhones(),
 		Emails:        req.GetEmails(),
-		WithRelation:  req.GetWithRelation(),
 		WithPrivacies: req.WithPrivacies,
 		WithVerified:  req.WithVerified,
 	}

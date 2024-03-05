@@ -8,6 +8,7 @@ package iam_v1
 
 import (
 	context "context"
+	v1 "gitlab.calendaria.team/services/utils/api/utils/v1"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
@@ -19,9 +20,10 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	Auth_AuthByPhone_FullMethodName  = "/iam.v1.Auth/AuthByPhone"
-	Auth_AuthByCode_FullMethodName   = "/iam.v1.Auth/AuthByCode"
-	Auth_RefreshToken_FullMethodName = "/iam.v1.Auth/RefreshToken"
+	Auth_AuthByPhone_FullMethodName           = "/iam.v1.Auth/AuthByPhone"
+	Auth_AuthByCode_FullMethodName            = "/iam.v1.Auth/AuthByCode"
+	Auth_RefreshToken_FullMethodName          = "/iam.v1.Auth/RefreshToken"
+	Auth_TempAddDefaultTenants_FullMethodName = "/iam.v1.Auth/TempAddDefaultTenants"
 )
 
 // AuthClient is the client API for Auth service.
@@ -37,6 +39,7 @@ type AuthClient interface {
 	// here request: id from AuthByPhone, code from message returns: bearer token
 	AuthByCode(ctx context.Context, in *AuthByCodeRequest, opts ...grpc.CallOption) (*TokenReply, error)
 	RefreshToken(ctx context.Context, in *TenantRequest, opts ...grpc.CallOption) (*TokenReply, error)
+	TempAddDefaultTenants(ctx context.Context, in *v1.EmptyRequest, opts ...grpc.CallOption) (*v1.EmptyReply, error)
 }
 
 type authClient struct {
@@ -74,6 +77,15 @@ func (c *authClient) RefreshToken(ctx context.Context, in *TenantRequest, opts .
 	return out, nil
 }
 
+func (c *authClient) TempAddDefaultTenants(ctx context.Context, in *v1.EmptyRequest, opts ...grpc.CallOption) (*v1.EmptyReply, error) {
+	out := new(v1.EmptyReply)
+	err := c.cc.Invoke(ctx, Auth_TempAddDefaultTenants_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // AuthServer is the server API for Auth service.
 // All implementations must embed UnimplementedAuthServer
 // for forward compatibility
@@ -87,6 +99,7 @@ type AuthServer interface {
 	// here request: id from AuthByPhone, code from message returns: bearer token
 	AuthByCode(context.Context, *AuthByCodeRequest) (*TokenReply, error)
 	RefreshToken(context.Context, *TenantRequest) (*TokenReply, error)
+	TempAddDefaultTenants(context.Context, *v1.EmptyRequest) (*v1.EmptyReply, error)
 	mustEmbedUnimplementedAuthServer()
 }
 
@@ -102,6 +115,9 @@ func (UnimplementedAuthServer) AuthByCode(context.Context, *AuthByCodeRequest) (
 }
 func (UnimplementedAuthServer) RefreshToken(context.Context, *TenantRequest) (*TokenReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RefreshToken not implemented")
+}
+func (UnimplementedAuthServer) TempAddDefaultTenants(context.Context, *v1.EmptyRequest) (*v1.EmptyReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method TempAddDefaultTenants not implemented")
 }
 func (UnimplementedAuthServer) mustEmbedUnimplementedAuthServer() {}
 
@@ -170,6 +186,24 @@ func _Auth_RefreshToken_Handler(srv interface{}, ctx context.Context, dec func(i
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Auth_TempAddDefaultTenants_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(v1.EmptyRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AuthServer).TempAddDefaultTenants(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Auth_TempAddDefaultTenants_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AuthServer).TempAddDefaultTenants(ctx, req.(*v1.EmptyRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Auth_ServiceDesc is the grpc.ServiceDesc for Auth service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -188,6 +222,10 @@ var Auth_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "RefreshToken",
 			Handler:    _Auth_RefreshToken_Handler,
+		},
+		{
+			MethodName: "TempAddDefaultTenants",
+			Handler:    _Auth_TempAddDefaultTenants_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

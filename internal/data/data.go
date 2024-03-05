@@ -7,8 +7,8 @@ import (
 	"gitlab.calendaria.team/services/iam/ent"
 	"gitlab.calendaria.team/services/iam/internal/conf"
 	"gitlab.calendaria.team/services/utils/v1/config"
-	"gitlab.calendaria.team/services/utils/v1/dialer"
 	"gitlab.calendaria.team/services/utils/v1/jwt"
+	"gitlab.calendaria.team/services/utils/v2/dialer"
 
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/google/wire"
@@ -22,13 +22,12 @@ var ProviderSet = wire.NewSet(
 	NewData,
 	config.NewConfig,
 	jwt.NewJwtProcessor,
+	dialer.NewServiceDialerManager,
 	NewNatsClient,
 	NewUsersRepo,
 	NewOtpRepo,
 	NewPrivacyRepo,
 	NewSettingsRepo,
-	dialer.NewDialer,
-	NewContactsRemote,
 	NewNotificationsRemote,
 	NewTenantsRemote,
 )

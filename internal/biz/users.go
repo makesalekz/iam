@@ -7,7 +7,6 @@ import (
 	"github.com/lib/pq"
 
 	"github.com/go-kratos/kratos/v2/log"
-	contacts_v1 "gitlab.calendaria.team/services/contacts/api/contacts/v1"
 	iam_v1 "gitlab.calendaria.team/services/iam/api/iam/v1"
 	v1 "gitlab.calendaria.team/services/iam/api/iam/v1"
 	"gitlab.calendaria.team/services/iam/ent"
@@ -32,7 +31,6 @@ type UsersUsecase struct {
 	usersRepo     data.UsersRepo
 	otpRepo       data.OtpRepo
 	privaciesRepo data.PrivacyRepo
-	contacts      *data.ContactsRemote
 	tenants       *data.TenantsRemote
 }
 
@@ -50,7 +48,6 @@ func NewUsersUsecase(logger log.Logger,
 	usersRepo data.UsersRepo,
 	otpRepo data.OtpRepo,
 	privaciesRepo data.PrivacyRepo,
-	contacts *data.ContactsRemote,
 	tenants *data.TenantsRemote,
 ) (*UsersUsecase, error) {
 	return &UsersUsecase{
@@ -58,48 +55,8 @@ func NewUsersUsecase(logger log.Logger,
 		usersRepo:     usersRepo,
 		otpRepo:       otpRepo,
 		privaciesRepo: privaciesRepo,
-		contacts:      contacts,
 		tenants:       tenants,
 	}, nil
-}
-
-func (uc *UsersUsecase) includeRelations(ctx context.Context, actorId int64, users ...*UserItem) error {
-	userIds := make([]int64, len(users))
-	for i, user := range users {
-		userIds[i] = user.ID
-	}
-
-	relationsReply, err := uc.contacts.GetRelations(ctx, &contacts_v1.GetRelationsRequest{UserIds: userIds})
-	if err != nil {
-		if contacts_v1.IsNotFound(err) {
-			return nil
-		}
-		return iam_v1.ErrorServiceFailed("contacts: %s", err.Error())
-	}
-
-	relations := relationsReply.GetRelations()
-	if relations == nil {
-		return nil
-	}
-
-	relationMap := make(map[int64]*contacts_v1.Relation)
-	for _, relation := range relations {
-		relationMap[relation.GetUserId()] = relation
-	}
-
-	for _, user := range users {
-		relation, ok := relationMap[user.ID]
-		if !ok {
-			continue
-		}
-
-		user.Relation = &iam_v1.Relation{
-			IsBlocked: relation.GetIsBlocked(),
-			IsMuted:   relation.GetIsMuted(),
-		}
-	}
-
-	return nil
 }
 
 func (uc *UsersUsecase) includePrivacies(ctx context.Context, users ...*UserItem) error {
@@ -262,11 +219,6 @@ func (uc *UsersUsecase) GetUsers(ctx context.Context, actorId int64, filter data
 	replyUsers := make([]*UserItem, len(users))
 	for i, user := range users {
 		replyUsers[i] = &UserItem{User: user}
-	}
-
-	//TODO. Deprecated. marked for deletion
-	if filter.WithRelation && actorId != 0 {
-		_ = uc.includeRelations(ctx, actorId, replyUsers...)
 	}
 
 	if filter.WithPrivacies {

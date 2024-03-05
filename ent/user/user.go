@@ -44,6 +44,8 @@ const (
 	FieldUpdatedAt = "updated_at"
 	// FieldBioUpdatedAt holds the string denoting the bio_updated_at field in the database.
 	FieldBioUpdatedAt = "bio_updated_at"
+	// FieldDefaultTenantID holds the string denoting the default_tenant_id field in the database.
+	FieldDefaultTenantID = "default_tenant_id"
 	// Table holds the table name of the user in the database.
 	Table = "users"
 )
@@ -66,6 +68,7 @@ var Columns = []string{
 	FieldCreatedAt,
 	FieldUpdatedAt,
 	FieldBioUpdatedAt,
+	FieldDefaultTenantID,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -187,4 +190,9 @@ func ByUpdatedAt(opts ...sql.OrderTermOption) OrderOption {
 // ByBioUpdatedAt orders the results by the bio_updated_at field.
 func ByBioUpdatedAt(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldBioUpdatedAt, opts...).ToFunc()
+}
+
+// ByDefaultTenantID orders the results by the default_tenant_id field.
+func ByDefaultTenantID(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldDefaultTenantID, opts...).ToFunc()
 }

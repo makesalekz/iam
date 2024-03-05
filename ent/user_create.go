@@ -232,6 +232,20 @@ func (uc *UserCreate) SetNillableBioUpdatedAt(t *time.Time) *UserCreate {
 	return uc
 }
 
+// SetDefaultTenantID sets the "default_tenant_id" field.
+func (uc *UserCreate) SetDefaultTenantID(i int64) *UserCreate {
+	uc.mutation.SetDefaultTenantID(i)
+	return uc
+}
+
+// SetNillableDefaultTenantID sets the "default_tenant_id" field if the given value is not nil.
+func (uc *UserCreate) SetNillableDefaultTenantID(i *int64) *UserCreate {
+	if i != nil {
+		uc.SetDefaultTenantID(*i)
+	}
+	return uc
+}
+
 // SetID sets the "id" field.
 func (uc *UserCreate) SetID(i int64) *UserCreate {
 	uc.mutation.SetID(i)
@@ -444,6 +458,10 @@ func (uc *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 	if value, ok := uc.mutation.BioUpdatedAt(); ok {
 		_spec.SetField(user.FieldBioUpdatedAt, field.TypeTime, value)
 		_node.BioUpdatedAt = &value
+	}
+	if value, ok := uc.mutation.DefaultTenantID(); ok {
+		_spec.SetField(user.FieldDefaultTenantID, field.TypeInt64, value)
+		_node.DefaultTenantID = &value
 	}
 	return _node, _spec
 }
@@ -710,6 +728,30 @@ func (u *UserUpsert) UpdateBioUpdatedAt() *UserUpsert {
 // ClearBioUpdatedAt clears the value of the "bio_updated_at" field.
 func (u *UserUpsert) ClearBioUpdatedAt() *UserUpsert {
 	u.SetNull(user.FieldBioUpdatedAt)
+	return u
+}
+
+// SetDefaultTenantID sets the "default_tenant_id" field.
+func (u *UserUpsert) SetDefaultTenantID(v int64) *UserUpsert {
+	u.Set(user.FieldDefaultTenantID, v)
+	return u
+}
+
+// UpdateDefaultTenantID sets the "default_tenant_id" field to the value that was provided on create.
+func (u *UserUpsert) UpdateDefaultTenantID() *UserUpsert {
+	u.SetExcluded(user.FieldDefaultTenantID)
+	return u
+}
+
+// AddDefaultTenantID adds v to the "default_tenant_id" field.
+func (u *UserUpsert) AddDefaultTenantID(v int64) *UserUpsert {
+	u.Add(user.FieldDefaultTenantID, v)
+	return u
+}
+
+// ClearDefaultTenantID clears the value of the "default_tenant_id" field.
+func (u *UserUpsert) ClearDefaultTenantID() *UserUpsert {
+	u.SetNull(user.FieldDefaultTenantID)
 	return u
 }
 
@@ -1010,6 +1052,34 @@ func (u *UserUpsertOne) UpdateBioUpdatedAt() *UserUpsertOne {
 func (u *UserUpsertOne) ClearBioUpdatedAt() *UserUpsertOne {
 	return u.Update(func(s *UserUpsert) {
 		s.ClearBioUpdatedAt()
+	})
+}
+
+// SetDefaultTenantID sets the "default_tenant_id" field.
+func (u *UserUpsertOne) SetDefaultTenantID(v int64) *UserUpsertOne {
+	return u.Update(func(s *UserUpsert) {
+		s.SetDefaultTenantID(v)
+	})
+}
+
+// AddDefaultTenantID adds v to the "default_tenant_id" field.
+func (u *UserUpsertOne) AddDefaultTenantID(v int64) *UserUpsertOne {
+	return u.Update(func(s *UserUpsert) {
+		s.AddDefaultTenantID(v)
+	})
+}
+
+// UpdateDefaultTenantID sets the "default_tenant_id" field to the value that was provided on create.
+func (u *UserUpsertOne) UpdateDefaultTenantID() *UserUpsertOne {
+	return u.Update(func(s *UserUpsert) {
+		s.UpdateDefaultTenantID()
+	})
+}
+
+// ClearDefaultTenantID clears the value of the "default_tenant_id" field.
+func (u *UserUpsertOne) ClearDefaultTenantID() *UserUpsertOne {
+	return u.Update(func(s *UserUpsert) {
+		s.ClearDefaultTenantID()
 	})
 }
 
@@ -1476,6 +1546,34 @@ func (u *UserUpsertBulk) UpdateBioUpdatedAt() *UserUpsertBulk {
 func (u *UserUpsertBulk) ClearBioUpdatedAt() *UserUpsertBulk {
 	return u.Update(func(s *UserUpsert) {
 		s.ClearBioUpdatedAt()
+	})
+}
+
+// SetDefaultTenantID sets the "default_tenant_id" field.
+func (u *UserUpsertBulk) SetDefaultTenantID(v int64) *UserUpsertBulk {
+	return u.Update(func(s *UserUpsert) {
+		s.SetDefaultTenantID(v)
+	})
+}
+
+// AddDefaultTenantID adds v to the "default_tenant_id" field.
+func (u *UserUpsertBulk) AddDefaultTenantID(v int64) *UserUpsertBulk {
+	return u.Update(func(s *UserUpsert) {
+		s.AddDefaultTenantID(v)
+	})
+}
+
+// UpdateDefaultTenantID sets the "default_tenant_id" field to the value that was provided on create.
+func (u *UserUpsertBulk) UpdateDefaultTenantID() *UserUpsertBulk {
+	return u.Update(func(s *UserUpsert) {
+		s.UpdateDefaultTenantID()
+	})
+}
+
+// ClearDefaultTenantID clears the value of the "default_tenant_id" field.
+func (u *UserUpsertBulk) ClearDefaultTenantID() *UserUpsertBulk {
+	return u.Update(func(s *UserUpsert) {
+		s.ClearDefaultTenantID()
 	})
 }
 

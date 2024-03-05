@@ -20,15 +20,16 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	Users_GetOwnProfile_FullMethodName       = "/iam.v1.Users/GetOwnProfile"
-	Users_UpdateOwnProfile_FullMethodName    = "/iam.v1.Users/UpdateOwnProfile"
-	Users_DeleteOwnProfile_FullMethodName    = "/iam.v1.Users/DeleteOwnProfile"
-	Users_GetUserFull_FullMethodName         = "/iam.v1.Users/GetUserFull"
-	Users_GetUserByFilterFull_FullMethodName = "/iam.v1.Users/GetUserByFilterFull"
-	Users_GetUser_FullMethodName             = "/iam.v1.Users/GetUser"
-	Users_GetUserByFilter_FullMethodName     = "/iam.v1.Users/GetUserByFilter"
-	Users_GetUsers_FullMethodName            = "/iam.v1.Users/GetUsers"
-	Users_ListUsers_FullMethodName           = "/iam.v1.Users/ListUsers"
+	Users_GetOwnProfile_FullMethodName        = "/iam.v1.Users/GetOwnProfile"
+	Users_UpdateOwnProfile_FullMethodName     = "/iam.v1.Users/UpdateOwnProfile"
+	Users_DeleteOwnProfile_FullMethodName     = "/iam.v1.Users/DeleteOwnProfile"
+	Users_GetUserFull_FullMethodName          = "/iam.v1.Users/GetUserFull"
+	Users_GetUserByFilterFull_FullMethodName  = "/iam.v1.Users/GetUserByFilterFull"
+	Users_GetUser_FullMethodName              = "/iam.v1.Users/GetUser"
+	Users_GetUserByFilter_FullMethodName      = "/iam.v1.Users/GetUserByFilter"
+	Users_GetUsers_FullMethodName             = "/iam.v1.Users/GetUsers"
+	Users_ListUsers_FullMethodName            = "/iam.v1.Users/ListUsers"
+	Users_AppendDefaultTenants_FullMethodName = "/iam.v1.Users/AppendDefaultTenants"
 )
 
 // UsersClient is the client API for Users service.
@@ -62,6 +63,7 @@ type UsersClient interface {
 	// users that has these fields
 	GetUsers(ctx context.Context, in *GetUsersRequest, opts ...grpc.CallOption) (*UsersReply, error)
 	ListUsers(ctx context.Context, in *ListUsersRequest, opts ...grpc.CallOption) (*UsersReply, error)
+	AppendDefaultTenants(ctx context.Context, in *v1.EmptyRequest, opts ...grpc.CallOption) (*v1.EmptyReply, error)
 }
 
 type usersClient struct {
@@ -153,6 +155,15 @@ func (c *usersClient) ListUsers(ctx context.Context, in *ListUsersRequest, opts 
 	return out, nil
 }
 
+func (c *usersClient) AppendDefaultTenants(ctx context.Context, in *v1.EmptyRequest, opts ...grpc.CallOption) (*v1.EmptyReply, error) {
+	out := new(v1.EmptyReply)
+	err := c.cc.Invoke(ctx, Users_AppendDefaultTenants_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // UsersServer is the server API for Users service.
 // All implementations must embed UnimplementedUsersServer
 // for forward compatibility
@@ -184,6 +195,7 @@ type UsersServer interface {
 	// users that has these fields
 	GetUsers(context.Context, *GetUsersRequest) (*UsersReply, error)
 	ListUsers(context.Context, *ListUsersRequest) (*UsersReply, error)
+	AppendDefaultTenants(context.Context, *v1.EmptyRequest) (*v1.EmptyReply, error)
 	mustEmbedUnimplementedUsersServer()
 }
 
@@ -217,6 +229,9 @@ func (UnimplementedUsersServer) GetUsers(context.Context, *GetUsersRequest) (*Us
 }
 func (UnimplementedUsersServer) ListUsers(context.Context, *ListUsersRequest) (*UsersReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListUsers not implemented")
+}
+func (UnimplementedUsersServer) AppendDefaultTenants(context.Context, *v1.EmptyRequest) (*v1.EmptyReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method AppendDefaultTenants not implemented")
 }
 func (UnimplementedUsersServer) mustEmbedUnimplementedUsersServer() {}
 
@@ -393,6 +408,24 @@ func _Users_ListUsers_Handler(srv interface{}, ctx context.Context, dec func(int
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Users_AppendDefaultTenants_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(v1.EmptyRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UsersServer).AppendDefaultTenants(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Users_AppendDefaultTenants_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UsersServer).AppendDefaultTenants(ctx, req.(*v1.EmptyRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Users_ServiceDesc is the grpc.ServiceDesc for Users service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -435,6 +468,10 @@ var Users_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "ListUsers",
 			Handler:    _Users_ListUsers_Handler,
+		},
+		{
+			MethodName: "AppendDefaultTenants",
+			Handler:    _Users_AppendDefaultTenants_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

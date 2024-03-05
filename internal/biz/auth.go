@@ -18,12 +18,14 @@ import (
 	tenants_v1 "gitlab.calendaria.team/services/tenants/api/tenants/v1"
 	"gitlab.calendaria.team/services/utils/v1/jwt"
 	"gitlab.calendaria.team/services/utils/v1/nats"
+	"gitlab.calendaria.team/services/utils/v2/auth"
 )
 
 const DEFAULT_REGION = "KZ"
 const AUTH_OTP_DURATION = 5 * time.Minute
 const ACCESS_TOKEN_DURATION = 10 * time.Minute
 const REFRESH_TOKEN_DURATION = 30 * 24 * time.Hour
+const PERSONAL_WORKSPACE = "My Workspace"
 
 // GreeterUsecase is a Greeter usecase.
 type AuthUsecase struct {
@@ -119,6 +121,19 @@ func (uc *AuthUsecase) AuthUserByCode(ctx context.Context, userId int64, code st
 func (uc *AuthUsecase) handleUserVerification(ctx context.Context, user *ent.User, otp *ent.OneTimePassword) error {
 	userShort := userShortFromDto(user)
 
+	if user.DefaultTenantID == nil {
+		tenantContext := auth.AppendAuthIds(ctx, user.ID, 0)
+		personalTenant, err := uc.tenants.CreateTenants(tenantContext, PERSONAL_WORKSPACE)
+		if err != nil {
+			return v1.ErrorGrpcConnection("CreateTenants error: %s", err.Error())
+		}
+
+		_, err = uc.usersRepo.UpdateUserData(tenantContext, user, data.UpdateUserDto{TenantId: personalTenant.Id})
+		if err != nil {
+			return v1.ErrorDatabaseQuery("UpdateUserData gone wrong: %s", err.Error())
+		}
+	}
+
 	switch otp.Type {
 	case property.Phone:
 		if user.PhoneVerified {
@@ -159,25 +174,17 @@ func (uc *AuthUsecase) GenerateIdToken(ctx context.Context, userId int64) (strin
 }
 
 func (uc *AuthUsecase) GenerateAccessToken(ctx context.Context, userId int64) (string, error) {
-	duration := ACCESS_TOKEN_DURATION
-	debug := os.Getenv("DEBUG")
-	if debug != "" { // set access token duration to 1 month in debug mode
-		duration = REFRESH_TOKEN_DURATION
-	}
-
-	claims := &jwtv4.RegisteredClaims{
-		Issuer:    "iam",
-		Audience:  jwtv4.ClaimStrings{"personal"},
-		Subject:   strconv.FormatInt(userId, 10),
-		IssuedAt:  jwtv4.NewNumericDate(time.Now()),
-		ExpiresAt: jwtv4.NewNumericDate(time.Now().Add(duration)),
-	}
-	token := jwtv4.NewWithClaims(jwtv4.SigningMethodHS256, claims)
-
-	result, err := token.SignedString(uc.jwt.GetSecret())
+	user, err := uc.usersRepo.GetUserById(ctx, userId)
 	if err != nil {
-		uc.log.Errorf("token.SignedString: %s", err.Error())
-		return "", v1.ErrorInternal("internal error")
+		return "", v1.ErrorDatabaseQuery("get user: %s", err.Error())
+	}
+	if user.DefaultTenantID == nil {
+		return "", v1.ErrorInternal("personal tenant non existent")
+	}
+
+	result, err := uc.GenerateTenantToken(ctx, *user.DefaultTenantID, userId)
+	if err != nil {
+		return "", err
 	}
 
 	return result, nil
@@ -238,4 +245,25 @@ func userShortFromDto(user *ent.User) *v1.UserShort {
 	}
 
 	return replyUser
+}
+
+func (uc *AuthUsecase) TempAddDefaultTenants(ctx context.Context) error {
+	users, err := uc.usersRepo.TempGetUsersWithoutDefaultTenant(ctx)
+	if err != nil {
+		return v1.ErrorInternal("can't get users without tenant")
+	}
+
+	for _, user := range users {
+		tenant, err := uc.tenants.CreateTenants(auth.AppendAuthIds(context.Background(), user.ID, 0), PERSONAL_WORKSPACE)
+		if err != nil {
+			return v1.ErrorInternal("can't create tenant %s", err.Error())
+		}
+
+		_, err = uc.usersRepo.UpdateUserData(ctx, user, data.UpdateUserDto{TenantId: tenant.Id})
+		if err != nil {
+			return v1.ErrorInternal("can't update tenant id %s", err.Error())
+		}
+	}
+
+	return nil
 }

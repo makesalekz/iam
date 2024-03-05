@@ -6,29 +6,24 @@ import (
 	v1 "gitlab.calendaria.team/services/contacts/api/contacts/v1"
 	"gitlab.calendaria.team/services/iam/internal/conf"
 	notifications_v1 "gitlab.calendaria.team/services/notifications/api/notifications/v1"
-	"gitlab.calendaria.team/services/utils/v1/config"
-	jwtp "gitlab.calendaria.team/services/utils/v1/jwt"
 	"gitlab.calendaria.team/services/utils/v2/dialer"
 )
 
 type NotificationsRemote struct {
-	dialer *dialer.Dialer
-	conf   *conf.Bootstrap
+	dialer dialer.IDialer
 }
 
 func NewNotificationsRemote(
 	conf *conf.Bootstrap,
-	c *config.Config,
-	jwt *jwtp.JwtProcessor,
+	dm dialer.IDialerManager,
 ) (*NotificationsRemote, error) {
-	dialer, err := dialer.NewServiceDialer(c, jwt, "notifications", conf.Discovery.Notifications)
+	dialer, err := dm.NewServiceDialer("notifications", conf.Discovery.Notifications)
 	if err != nil {
 		return nil, err
 	}
 
 	return &NotificationsRemote{
 		dialer: dialer,
-		conf:   conf,
 	}, nil
 }
 

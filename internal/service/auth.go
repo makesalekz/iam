@@ -5,6 +5,7 @@ import (
 
 	v1 "gitlab.calendaria.team/services/iam/api/iam/v1"
 	"gitlab.calendaria.team/services/iam/internal/biz"
+	utils_v1 "gitlab.calendaria.team/services/utils/api/utils/v1"
 	"gitlab.calendaria.team/services/utils/v2/auth"
 )
 
@@ -79,4 +80,13 @@ func (s *AuthService) RefreshToken(ctx context.Context, req *v1.TenantRequest) (
 		AccessToken:  accessToken,
 		RefreshToken: refreshToken,
 	}, nil
+}
+
+func (s *AuthService) TempAddDefaultTenants(ctx context.Context, req *utils_v1.EmptyRequest) (*utils_v1.EmptyReply, error) {
+	err := s.au.TempAddDefaultTenants(ctx)
+	if err != nil {
+		return &utils_v1.EmptyReply{}, err
+	}
+
+	return &utils_v1.EmptyReply{}, nil
 }

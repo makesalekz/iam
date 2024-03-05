@@ -690,28 +690,30 @@ func (m *OneTimePasswordMutation) ResetEdge(name string) error {
 // UserMutation represents an operation that mutates the User nodes in the graph.
 type UserMutation struct {
 	config
-	op             Op
-	typ            string
-	id             *int64
-	deleted_at     *time.Time
-	phone          *string
-	email          *string
-	username       *string
-	name           *string
-	bio            *string
-	avatar         *string
-	timezone       *string
-	is_active      *bool
-	phone_verified *bool
-	email_verified *bool
-	last_login_at  *time.Time
-	created_at     *time.Time
-	updated_at     *time.Time
-	bio_updated_at *time.Time
-	clearedFields  map[string]struct{}
-	done           bool
-	oldValue       func(context.Context) (*User, error)
-	predicates     []predicate.User
+	op                   Op
+	typ                  string
+	id                   *int64
+	deleted_at           *time.Time
+	phone                *string
+	email                *string
+	username             *string
+	name                 *string
+	bio                  *string
+	avatar               *string
+	timezone             *string
+	is_active            *bool
+	phone_verified       *bool
+	email_verified       *bool
+	last_login_at        *time.Time
+	created_at           *time.Time
+	updated_at           *time.Time
+	bio_updated_at       *time.Time
+	default_tenant_id    *int64
+	adddefault_tenant_id *int64
+	clearedFields        map[string]struct{}
+	done                 bool
+	oldValue             func(context.Context) (*User, error)
+	predicates           []predicate.User
 }
 
 var _ ent.Mutation = (*UserMutation)(nil)
@@ -1436,6 +1438,76 @@ func (m *UserMutation) ResetBioUpdatedAt() {
 	delete(m.clearedFields, user.FieldBioUpdatedAt)
 }
 
+// SetDefaultTenantID sets the "default_tenant_id" field.
+func (m *UserMutation) SetDefaultTenantID(i int64) {
+	m.default_tenant_id = &i
+	m.adddefault_tenant_id = nil
+}
+
+// DefaultTenantID returns the value of the "default_tenant_id" field in the mutation.
+func (m *UserMutation) DefaultTenantID() (r int64, exists bool) {
+	v := m.default_tenant_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldDefaultTenantID returns the old "default_tenant_id" field's value of the User entity.
+// If the User object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *UserMutation) OldDefaultTenantID(ctx context.Context) (v *int64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldDefaultTenantID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldDefaultTenantID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldDefaultTenantID: %w", err)
+	}
+	return oldValue.DefaultTenantID, nil
+}
+
+// AddDefaultTenantID adds i to the "default_tenant_id" field.
+func (m *UserMutation) AddDefaultTenantID(i int64) {
+	if m.adddefault_tenant_id != nil {
+		*m.adddefault_tenant_id += i
+	} else {
+		m.adddefault_tenant_id = &i
+	}
+}
+
+// AddedDefaultTenantID returns the value that was added to the "default_tenant_id" field in this mutation.
+func (m *UserMutation) AddedDefaultTenantID() (r int64, exists bool) {
+	v := m.adddefault_tenant_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ClearDefaultTenantID clears the value of the "default_tenant_id" field.
+func (m *UserMutation) ClearDefaultTenantID() {
+	m.default_tenant_id = nil
+	m.adddefault_tenant_id = nil
+	m.clearedFields[user.FieldDefaultTenantID] = struct{}{}
+}
+
+// DefaultTenantIDCleared returns if the "default_tenant_id" field was cleared in this mutation.
+func (m *UserMutation) DefaultTenantIDCleared() bool {
+	_, ok := m.clearedFields[user.FieldDefaultTenantID]
+	return ok
+}
+
+// ResetDefaultTenantID resets all changes to the "default_tenant_id" field.
+func (m *UserMutation) ResetDefaultTenantID() {
+	m.default_tenant_id = nil
+	m.adddefault_tenant_id = nil
+	delete(m.clearedFields, user.FieldDefaultTenantID)
+}
+
 // Where appends a list predicates to the UserMutation builder.
 func (m *UserMutation) Where(ps ...predicate.User) {
 	m.predicates = append(m.predicates, ps...)
@@ -1470,7 +1542,7 @@ func (m *UserMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *UserMutation) Fields() []string {
-	fields := make([]string, 0, 15)
+	fields := make([]string, 0, 16)
 	if m.deleted_at != nil {
 		fields = append(fields, user.FieldDeletedAt)
 	}
@@ -1516,6 +1588,9 @@ func (m *UserMutation) Fields() []string {
 	if m.bio_updated_at != nil {
 		fields = append(fields, user.FieldBioUpdatedAt)
 	}
+	if m.default_tenant_id != nil {
+		fields = append(fields, user.FieldDefaultTenantID)
+	}
 	return fields
 }
 
@@ -1554,6 +1629,8 @@ func (m *UserMutation) Field(name string) (ent.Value, bool) {
 		return m.UpdatedAt()
 	case user.FieldBioUpdatedAt:
 		return m.BioUpdatedAt()
+	case user.FieldDefaultTenantID:
+		return m.DefaultTenantID()
 	}
 	return nil, false
 }
@@ -1593,6 +1670,8 @@ func (m *UserMutation) OldField(ctx context.Context, name string) (ent.Value, er
 		return m.OldUpdatedAt(ctx)
 	case user.FieldBioUpdatedAt:
 		return m.OldBioUpdatedAt(ctx)
+	case user.FieldDefaultTenantID:
+		return m.OldDefaultTenantID(ctx)
 	}
 	return nil, fmt.Errorf("unknown User field %s", name)
 }
@@ -1707,6 +1786,13 @@ func (m *UserMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetBioUpdatedAt(v)
 		return nil
+	case user.FieldDefaultTenantID:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetDefaultTenantID(v)
+		return nil
 	}
 	return fmt.Errorf("unknown User field %s", name)
 }
@@ -1714,13 +1800,21 @@ func (m *UserMutation) SetField(name string, value ent.Value) error {
 // AddedFields returns all numeric fields that were incremented/decremented during
 // this mutation.
 func (m *UserMutation) AddedFields() []string {
-	return nil
+	var fields []string
+	if m.adddefault_tenant_id != nil {
+		fields = append(fields, user.FieldDefaultTenantID)
+	}
+	return fields
 }
 
 // AddedField returns the numeric value that was incremented/decremented on a field
 // with the given name. The second boolean return value indicates that this field
 // was not set, or was not defined in the schema.
 func (m *UserMutation) AddedField(name string) (ent.Value, bool) {
+	switch name {
+	case user.FieldDefaultTenantID:
+		return m.AddedDefaultTenantID()
+	}
 	return nil, false
 }
 
@@ -1729,6 +1823,13 @@ func (m *UserMutation) AddedField(name string) (ent.Value, bool) {
 // type.
 func (m *UserMutation) AddField(name string, value ent.Value) error {
 	switch name {
+	case user.FieldDefaultTenantID:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddDefaultTenantID(v)
+		return nil
 	}
 	return fmt.Errorf("unknown User numeric field %s", name)
 }
@@ -1754,6 +1855,9 @@ func (m *UserMutation) ClearedFields() []string {
 	}
 	if m.FieldCleared(user.FieldBioUpdatedAt) {
 		fields = append(fields, user.FieldBioUpdatedAt)
+	}
+	if m.FieldCleared(user.FieldDefaultTenantID) {
+		fields = append(fields, user.FieldDefaultTenantID)
 	}
 	return fields
 }
@@ -1786,6 +1890,9 @@ func (m *UserMutation) ClearField(name string) error {
 		return nil
 	case user.FieldBioUpdatedAt:
 		m.ClearBioUpdatedAt()
+		return nil
+	case user.FieldDefaultTenantID:
+		m.ClearDefaultTenantID()
 		return nil
 	}
 	return fmt.Errorf("unknown User nullable field %s", name)
@@ -1839,6 +1946,9 @@ func (m *UserMutation) ResetField(name string) error {
 		return nil
 	case user.FieldBioUpdatedAt:
 		m.ResetBioUpdatedAt()
+		return nil
+	case user.FieldDefaultTenantID:
+		m.ResetDefaultTenantID()
 		return nil
 	}
 	return fmt.Errorf("unknown User field %s", name)

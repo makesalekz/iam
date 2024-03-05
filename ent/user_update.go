@@ -275,6 +275,33 @@ func (uu *UserUpdate) ClearBioUpdatedAt() *UserUpdate {
 	return uu
 }
 
+// SetDefaultTenantID sets the "default_tenant_id" field.
+func (uu *UserUpdate) SetDefaultTenantID(i int64) *UserUpdate {
+	uu.mutation.ResetDefaultTenantID()
+	uu.mutation.SetDefaultTenantID(i)
+	return uu
+}
+
+// SetNillableDefaultTenantID sets the "default_tenant_id" field if the given value is not nil.
+func (uu *UserUpdate) SetNillableDefaultTenantID(i *int64) *UserUpdate {
+	if i != nil {
+		uu.SetDefaultTenantID(*i)
+	}
+	return uu
+}
+
+// AddDefaultTenantID adds i to the "default_tenant_id" field.
+func (uu *UserUpdate) AddDefaultTenantID(i int64) *UserUpdate {
+	uu.mutation.AddDefaultTenantID(i)
+	return uu
+}
+
+// ClearDefaultTenantID clears the value of the "default_tenant_id" field.
+func (uu *UserUpdate) ClearDefaultTenantID() *UserUpdate {
+	uu.mutation.ClearDefaultTenantID()
+	return uu
+}
+
 // Mutation returns the UserMutation object of the builder.
 func (uu *UserUpdate) Mutation() *UserMutation {
 	return uu.mutation
@@ -384,6 +411,15 @@ func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if uu.mutation.BioUpdatedAtCleared() {
 		_spec.ClearField(user.FieldBioUpdatedAt, field.TypeTime)
+	}
+	if value, ok := uu.mutation.DefaultTenantID(); ok {
+		_spec.SetField(user.FieldDefaultTenantID, field.TypeInt64, value)
+	}
+	if value, ok := uu.mutation.AddedDefaultTenantID(); ok {
+		_spec.AddField(user.FieldDefaultTenantID, field.TypeInt64, value)
+	}
+	if uu.mutation.DefaultTenantIDCleared() {
+		_spec.ClearField(user.FieldDefaultTenantID, field.TypeInt64)
 	}
 	_spec.AddModifiers(uu.modifiers...)
 	if n, err = sqlgraph.UpdateNodes(ctx, uu.driver, _spec); err != nil {
@@ -653,6 +689,33 @@ func (uuo *UserUpdateOne) ClearBioUpdatedAt() *UserUpdateOne {
 	return uuo
 }
 
+// SetDefaultTenantID sets the "default_tenant_id" field.
+func (uuo *UserUpdateOne) SetDefaultTenantID(i int64) *UserUpdateOne {
+	uuo.mutation.ResetDefaultTenantID()
+	uuo.mutation.SetDefaultTenantID(i)
+	return uuo
+}
+
+// SetNillableDefaultTenantID sets the "default_tenant_id" field if the given value is not nil.
+func (uuo *UserUpdateOne) SetNillableDefaultTenantID(i *int64) *UserUpdateOne {
+	if i != nil {
+		uuo.SetDefaultTenantID(*i)
+	}
+	return uuo
+}
+
+// AddDefaultTenantID adds i to the "default_tenant_id" field.
+func (uuo *UserUpdateOne) AddDefaultTenantID(i int64) *UserUpdateOne {
+	uuo.mutation.AddDefaultTenantID(i)
+	return uuo
+}
+
+// ClearDefaultTenantID clears the value of the "default_tenant_id" field.
+func (uuo *UserUpdateOne) ClearDefaultTenantID() *UserUpdateOne {
+	uuo.mutation.ClearDefaultTenantID()
+	return uuo
+}
+
 // Mutation returns the UserMutation object of the builder.
 func (uuo *UserUpdateOne) Mutation() *UserMutation {
 	return uuo.mutation
@@ -792,6 +855,15 @@ func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) 
 	}
 	if uuo.mutation.BioUpdatedAtCleared() {
 		_spec.ClearField(user.FieldBioUpdatedAt, field.TypeTime)
+	}
+	if value, ok := uuo.mutation.DefaultTenantID(); ok {
+		_spec.SetField(user.FieldDefaultTenantID, field.TypeInt64, value)
+	}
+	if value, ok := uuo.mutation.AddedDefaultTenantID(); ok {
+		_spec.AddField(user.FieldDefaultTenantID, field.TypeInt64, value)
+	}
+	if uuo.mutation.DefaultTenantIDCleared() {
+		_spec.ClearField(user.FieldDefaultTenantID, field.TypeInt64)
 	}
 	_spec.AddModifiers(uuo.modifiers...)
 	_node = &User{config: uuo.config}
