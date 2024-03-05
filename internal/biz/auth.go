@@ -25,7 +25,7 @@ const DEFAULT_REGION = "KZ"
 const AUTH_OTP_DURATION = 5 * time.Minute
 const ACCESS_TOKEN_DURATION = 10 * time.Minute
 const REFRESH_TOKEN_DURATION = 30 * 24 * time.Hour
-const PERSONAL_WORKSPACE = "MY_WORKSPACE"
+const PERSONAL_WORKSPACE = "My Workspace"
 
 // GreeterUsecase is a Greeter usecase.
 type AuthUsecase struct {
