@@ -49,6 +49,8 @@ type UsersRepo interface {
 	GetUsers(ctx context.Context, filter GetUsersFilterDto) ([]*ent.User, error)
 	PhoneVerified(ctx context.Context, userId int64) error
 	EmailVerified(ctx context.Context, userId int64) error
+
+	TempGetUsersWithoutDefaultTenant(ctx context.Context) ([]*ent.User, error)
 }
 
 type usersRepo struct {
@@ -250,4 +252,10 @@ func (r *usersRepo) EmailVerified(ctx context.Context, userId int64) error {
 		SetEmailVerified(true).
 		SetUsername(fmt.Sprintf("user%v", userId)).
 		Exec(ctx)
+}
+
+func (r *usersRepo) TempGetUsersWithoutDefaultTenant(ctx context.Context) ([]*ent.User, error) {
+	return r.db.User.Query().
+		Where(user.DefaultTenantIDIsNil()).
+		All(ctx)
 }

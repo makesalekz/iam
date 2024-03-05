@@ -173,7 +173,7 @@ func (uc *AuthUsecase) GenerateIdToken(ctx context.Context, userId int64) (strin
 	return result, nil
 }
 
-func (uc *AuthUsecase) GeneratePersonalToken(ctx context.Context, userId int64) (string, error) {
+func (uc *AuthUsecase) GenerateAccessToken(ctx context.Context, userId int64) (string, error) {
 	user, err := uc.usersRepo.GetUserById(ctx, userId)
 	if err != nil {
 		return "", v1.ErrorDatabaseQuery("get user: %s", err.Error())
@@ -245,4 +245,25 @@ func userShortFromDto(user *ent.User) *v1.UserShort {
 	}
 
 	return replyUser
+}
+
+func (uc *AuthUsecase) TempAddDefaultTenants(ctx context.Context) error {
+	users, err := uc.usersRepo.TempGetUsersWithoutDefaultTenant(ctx)
+	if err != nil {
+		return v1.ErrorInternal("can't get users without tenant")
+	}
+
+	for _, user := range users {
+		tenant, err := uc.tenants.CreateTenants(auth.AppendAuthIds(context.Background(), user.ID, 0), PERSONAL_WORKSPACE)
+		if err != nil {
+			return v1.ErrorInternal("can't create tenant %s", err.Error())
+		}
+
+		_, err = uc.usersRepo.UpdateUserData(ctx, user, data.UpdateUserDto{TenantId: tenant.Id})
+		if err != nil {
+			return v1.ErrorInternal("can't update tenant id %s", err.Error())
+		}
+	}
+
+	return nil
 }
