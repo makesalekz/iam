@@ -51,8 +51,6 @@ services:
     volumes:
       - ./configs:/data/conf
     restart: unless-stopped
-    profiles:
-      - dev
     environment:
       - DEBUG=1
       - AUTOMIGRATE=true
