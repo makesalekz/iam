@@ -42,13 +42,8 @@ func validUsername(actorId int64, username string) bool {
 	}
 
 	// username must contain only lowercase letters and numbers
-	re := regexp.MustCompile(`^[a-z0-9]+$`)
+	re := regexp.MustCompile(`^[a-z][a-z0-9]+$`)
 	if !re.MatchString(username) {
-		return false
-	}
-
-	// username can't start with number
-	if _, err := strconv.ParseInt(username[:1], 10, 64); err == nil {
 		return false
 	}
 
