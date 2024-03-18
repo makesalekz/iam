@@ -43,12 +43,7 @@ func validUsername(actorId int64, username string) bool {
 
 	// username must contain only lowercase letters and numbers
 	re := regexp.MustCompile(`^[a-z][a-z0-9]+$`)
-	if !re.MatchString(username) {
-		return false
-	}
-
-	return true
-
+	return !re.MatchString(username)
 }
 
 func (s *UsersService) GetOwnProfile(ctx context.Context, req *utils_v1.EmptyRequest) (*v1.UserFullReply, error) {
