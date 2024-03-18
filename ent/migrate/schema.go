@@ -39,7 +39,7 @@ var (
 		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
 		{Name: "phone", Type: field.TypeString, Unique: true, Nullable: true},
 		{Name: "email", Type: field.TypeString, Unique: true, Nullable: true},
-		{Name: "username", Type: field.TypeString, Unique: true, Nullable: true},
+		{Name: "username", Type: field.TypeString, Unique: true, Nullable: true, Size: 25},
 		{Name: "name", Type: field.TypeString, Default: ""},
 		{Name: "bio", Type: field.TypeString, Default: ""},
 		{Name: "avatar", Type: field.TypeString, Nullable: true},

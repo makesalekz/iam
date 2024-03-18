@@ -23,7 +23,7 @@ func (User) Fields() []ent.Field {
 		field.Int64("id").Immutable(),
 		field.String("phone").Unique().Nillable().Optional().Comment("phone of a user"),
 		field.String("email").Unique().Nillable().Optional().Comment("email of a user"),
-		field.String("username").Unique().Nillable().Optional().Comment("username of a user"),
+		field.String("username").MinLen(3).MaxLen(25).Unique().Nillable().Optional().Comment("username of a user"),
 		field.String("name").Default("").Comment("this field contains a name that user set up"),
 		field.String("bio").Default("").Comment("this field a biography of a user"),
 		field.String("avatar").Nillable().Optional().Comment("a string contains link to a profile pic"),

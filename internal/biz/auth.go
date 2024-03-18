@@ -80,7 +80,7 @@ func (uc *AuthUsecase) AuthUserByPhone(ctx context.Context, phone string) (int64
 		}
 	}
 
-	otp, err := uc.otpRepo.CreateOneTimePassword(ctx, int64(user.ID), property.Phone, AUTH_OTP_DURATION)
+	otp, err := uc.otpRepo.CreateOneTimePassword(ctx, user.ID, property.Phone, AUTH_OTP_DURATION)
 	if err != nil {
 		return 0, v1.ErrorDatabaseQuery("database error: %s", err.Error())
 	}
@@ -93,7 +93,7 @@ func (uc *AuthUsecase) AuthUserByPhone(ctx context.Context, phone string) (int64
 		}
 	}
 
-	return int64(user.ID), nil
+	return user.ID, nil
 }
 
 func (uc *AuthUsecase) AuthUserByCode(ctx context.Context, userId int64, code string) error {
