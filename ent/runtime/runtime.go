@@ -37,6 +37,24 @@ func init() {
 	user.Interceptors[0] = userMixinInters0[0]
 	userFields := schema.User{}.Fields()
 	_ = userFields
+	// userDescUsername is the schema descriptor for username field.
+	userDescUsername := userFields[3].Descriptor()
+	// user.UsernameValidator is a validator for the "username" field. It is called by the builders before save.
+	user.UsernameValidator = func() func(string) error {
+		validators := userDescUsername.Validators
+		fns := [...]func(string) error{
+			validators[0].(func(string) error),
+			validators[1].(func(string) error),
+		}
+		return func(username string) error {
+			for _, fn := range fns {
+				if err := fn(username); err != nil {
+					return err
+				}
+			}
+			return nil
+		}
+	}()
 	// userDescName is the schema descriptor for name field.
 	userDescName := userFields[4].Descriptor()
 	// user.DefaultName holds the default value on creation for the name field.

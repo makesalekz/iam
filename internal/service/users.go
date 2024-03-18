@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"regexp"
 	"strconv"
 	"strings"
 	"time"
@@ -29,6 +30,30 @@ func NewUsersService(
 		log: log.NewHelper(log.With(logger, "module", "service/users")),
 		uc:  uc,
 	}
+}
+
+func validUsername(actorId int64, username string) bool {
+	// username can't be default format (user{number}), only access to own user id
+	if len(username) > 4 && strings.ToLower(username[:4]) == "user" {
+		userId, err := strconv.ParseInt(username[4:], 10, 64)
+		if err == nil && userId != actorId {
+			return false
+		}
+	}
+
+	// username must contain only lowercase letters and numbers
+	re := regexp.MustCompile(`^[a-z0-9]+$`)
+	if !re.MatchString(username) {
+		return false
+	}
+
+	// username can't start with number
+	if _, err := strconv.ParseInt(username[:1], 10, 64); err == nil {
+		return false
+	}
+
+	return true
+
 }
 
 func (s *UsersService) GetOwnProfile(ctx context.Context, req *utils_v1.EmptyRequest) (*v1.UserFullReply, error) {
@@ -67,12 +92,8 @@ func (s *UsersService) UpdateOwnProfile(ctx context.Context, req *v1.UpdateOwnPr
 		return nil, v1.ErrorEmptyActorId("empty actor id")
 	}
 
-	// check for default username format user{number}
-	if len(req.Username) > 4 && strings.ToLower(req.Username[:4]) == "user" {
-		_, err := strconv.ParseInt(req.Username[4:], 10, 64)
-		if err == nil {
-			return nil, v1.ErrorInvalidUsername("forbidden username format")
-		}
+	if !validUsername(actorId, req.Username) {
+		return nil, v1.ErrorInvalidUsername("forbidden username format")
 	}
 
 	user, err := s.uc.UpdateUserProfile(ctx, actorId, data.UpdateUserDto{
