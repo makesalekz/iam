@@ -3,14 +3,10 @@ package biz
 import (
 	"context"
 	"fmt"
+	v1 "gitlab.calendaria.team/services/iam/api/iam/v1"
 	"os"
 	"strconv"
 	"time"
-
-	"github.com/go-kratos/kratos/v2/log"
-	jwtv4 "github.com/golang-jwt/jwt/v4"
-	"github.com/nyaruka/phonenumbers"
-	v1 "gitlab.calendaria.team/services/iam/api/iam/v1"
 
 	"gitlab.calendaria.team/services/iam/ent"
 	"gitlab.calendaria.team/services/iam/ent/property"
@@ -19,6 +15,11 @@ import (
 	"gitlab.calendaria.team/services/utils/v1/jwt"
 	"gitlab.calendaria.team/services/utils/v1/nats"
 	"gitlab.calendaria.team/services/utils/v2/auth"
+	utils_struc "gitlab.calendaria.team/services/utils/v2/struc"
+
+	"github.com/go-kratos/kratos/v2/log"
+	jwtv4 "github.com/golang-jwt/jwt/v4"
+	"github.com/nyaruka/phonenumbers"
 )
 
 const DEFAULT_REGION = "KZ"
@@ -132,6 +133,11 @@ func (uc *AuthUsecase) handleUserVerification(ctx context.Context, user *ent.Use
 		if err != nil {
 			return v1.ErrorDatabaseQuery("UpdateUserData gone wrong: %s", err.Error())
 		}
+
+		uc.queue.GetRemote(QueueEventsDefaultCalendars).Pub(&utils_struc.AuthIds{
+			ActorId:  user.ID,
+			TenantId: personalTenant.Id,
+		})
 	}
 
 	switch otp.Type {
