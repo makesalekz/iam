@@ -3,22 +3,22 @@ package biz
 import (
 	"context"
 	"fmt"
-	v1 "gitlab.calendaria.team/services/iam/api/iam/v1"
 	"os"
 	"strconv"
 	"time"
 
+	v1 "gitlab.calendaria.team/services/iam/api/iam/v1"
 	"gitlab.calendaria.team/services/iam/ent"
 	"gitlab.calendaria.team/services/iam/ent/property"
 	"gitlab.calendaria.team/services/iam/internal/data"
 	tenants_v1 "gitlab.calendaria.team/services/tenants/api/tenants/v1"
-	"gitlab.calendaria.team/services/utils/v1/jwt"
-	"gitlab.calendaria.team/services/utils/v1/nats"
-	"gitlab.calendaria.team/services/utils/v2/auth"
-	utils_struc "gitlab.calendaria.team/services/utils/v2/struc"
+	u_jwt "gitlab.calendaria.team/services/utils/v1/jwt"
+	u_nats "gitlab.calendaria.team/services/utils/v1/nats"
+	u_auth "gitlab.calendaria.team/services/utils/v2/auth"
+	u_struc "gitlab.calendaria.team/services/utils/v2/struc"
 
 	"github.com/go-kratos/kratos/v2/log"
-	jwtv4 "github.com/golang-jwt/jwt/v4"
+	"github.com/golang-jwt/jwt/v5"
 	"github.com/nyaruka/phonenumbers"
 )
 
@@ -31,8 +31,8 @@ const PERSONAL_WORKSPACE = "My Workspace"
 // GreeterUsecase is a Greeter usecase.
 type AuthUsecase struct {
 	log           *log.Helper
-	queue         *nats.QueueManager
-	jwt           *jwt.JwtProcessor
+	queue         *u_nats.QueueManager
+	jwt           *u_jwt.JwtProcessor
 	usersRepo     data.UsersRepo
 	otpRepo       data.OtpRepo
 	tenants       *data.TenantsRemote
@@ -42,10 +42,10 @@ type AuthUsecase struct {
 // NewAuthUsecase new a Greeter usecase.
 func NewAuthUsecase(
 	logger log.Logger,
-	jwt *jwt.JwtProcessor,
+	jwt *u_jwt.JwtProcessor,
 	usersRepo data.UsersRepo,
 	otpRepo data.OtpRepo,
-	queue *nats.QueueManager,
+	queue *u_nats.QueueManager,
 	tenants *data.TenantsRemote,
 	notifications *data.NotificationsRemote,
 ) (*AuthUsecase, error) {
@@ -123,7 +123,7 @@ func (uc *AuthUsecase) handleUserVerification(ctx context.Context, user *ent.Use
 	userShort := userShortFromDto(user)
 
 	if user.DefaultTenantID == nil {
-		tenantContext := auth.AppendAuthIds(ctx, user.ID, 0)
+		tenantContext := u_auth.AppendAuthIds(ctx, user.ID, 0)
 		personalTenant, err := uc.tenants.CreateTenants(tenantContext, PERSONAL_WORKSPACE)
 		if err != nil {
 			return v1.ErrorGrpcConnection("CreateTenants error: %s", err.Error())
@@ -134,7 +134,7 @@ func (uc *AuthUsecase) handleUserVerification(ctx context.Context, user *ent.Use
 			return v1.ErrorDatabaseQuery("UpdateUserData gone wrong: %s", err.Error())
 		}
 
-		uc.queue.GetRemote(QueueEventsDefaultCalendars).Pub(&utils_struc.AuthIds{
+		uc.queue.GetRemote(QueueEventsDefaultCalendars).Pub(&u_struc.AuthIds{
 			ActorId:  user.ID,
 			TenantId: personalTenant.Id,
 		})
@@ -161,14 +161,14 @@ func (uc *AuthUsecase) handleUserVerification(ctx context.Context, user *ent.Use
 }
 
 func (uc *AuthUsecase) GenerateIdToken(ctx context.Context, userId int64) (string, error) {
-	claims := &jwtv4.RegisteredClaims{
+	claims := &jwt.RegisteredClaims{
 		Issuer:    "iam",
-		Audience:  jwtv4.ClaimStrings{"refresh"},
+		Audience:  jwt.ClaimStrings{"refresh"},
 		Subject:   strconv.FormatInt(userId, 10),
-		IssuedAt:  jwtv4.NewNumericDate(time.Now()),
-		ExpiresAt: jwtv4.NewNumericDate(time.Now().Add(REFRESH_TOKEN_DURATION)),
+		IssuedAt:  jwt.NewNumericDate(time.Now()),
+		ExpiresAt: jwt.NewNumericDate(time.Now().Add(REFRESH_TOKEN_DURATION)),
 	}
-	token := jwtv4.NewWithClaims(jwtv4.SigningMethodHS256, claims)
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 
 	result, err := token.SignedString(uc.jwt.GetSecret())
 	if err != nil {
@@ -203,13 +203,13 @@ func (uc *AuthUsecase) GenerateTenantToken(ctx context.Context, tenantId, userId
 		duration = REFRESH_TOKEN_DURATION
 	}
 
-	claims := &jwt.TenantClaims{
-		RegisteredClaims: jwtv4.RegisteredClaims{
+	claims := &u_jwt.TenantClaims{
+		RegisteredClaims: jwt.RegisteredClaims{
 			Issuer:    "iam",
-			Audience:  jwtv4.ClaimStrings{"tenant"},
+			Audience:  jwt.ClaimStrings{"tenant"},
 			Subject:   strconv.FormatInt(userId, 10),
-			IssuedAt:  jwtv4.NewNumericDate(time.Now()),
-			ExpiresAt: jwtv4.NewNumericDate(time.Now().Add(duration)),
+			IssuedAt:  jwt.NewNumericDate(time.Now()),
+			ExpiresAt: jwt.NewNumericDate(time.Now().Add(duration)),
 		},
 		TenantId: tenantId,
 	}
@@ -222,7 +222,7 @@ func (uc *AuthUsecase) GenerateTenantToken(ctx context.Context, tenantId, userId
 	claims.MemberId = reply.Member
 	claims.GroupsIds = reply.Groups
 
-	token := jwtv4.NewWithClaims(jwtv4.SigningMethodHS256, claims)
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 
 	result, err := token.SignedString(uc.jwt.GetSecret())
 	if err != nil {
@@ -260,7 +260,7 @@ func (uc *AuthUsecase) TempAddDefaultTenants(ctx context.Context) error {
 	}
 
 	for _, user := range users {
-		tenant, err := uc.tenants.CreateTenants(auth.AppendAuthIds(context.Background(), user.ID, 0), PERSONAL_WORKSPACE)
+		tenant, err := uc.tenants.CreateTenants(u_auth.AppendAuthIds(context.Background(), user.ID, 0), PERSONAL_WORKSPACE)
 		if err != nil {
 			return v1.ErrorInternal("can't create tenant %s", err.Error())
 		}
