@@ -15,7 +15,7 @@ require (
 	gitlab.calendaria.team/services/contacts v1.5.0
 	gitlab.calendaria.team/services/notifications v1.1.0
 	gitlab.calendaria.team/services/tenants v0.3.0
-	gitlab.calendaria.team/services/utils v0.2.15-tracing2
+	gitlab.calendaria.team/services/utils v0.2.15
 	go.uber.org/automaxprocs v1.5.3
 	google.golang.org/grpc v1.61.1
 	google.golang.org/protobuf v1.32.0
