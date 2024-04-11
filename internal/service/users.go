@@ -33,6 +33,10 @@ func NewUsersService(
 }
 
 func validUsername(actorId int64, username string) bool {
+	if username == "" {
+		return true
+	}
+
 	// username can't be default format (user{number}), only access to own user id
 	if len(username) > 4 && strings.ToLower(username[:4]) == "user" {
 		userId, err := strconv.ParseInt(username[4:], 10, 64)
