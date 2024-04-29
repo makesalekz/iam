@@ -17,6 +17,7 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"gitlab.calendaria.team/services/iam/ent/onetimepassword"
 	"gitlab.calendaria.team/services/iam/ent/user"
+	"gitlab.calendaria.team/services/iam/ent/usercredentials"
 	"gitlab.calendaria.team/services/iam/ent/userprivacy"
 	"gitlab.calendaria.team/services/iam/ent/usersettings"
 )
@@ -30,6 +31,8 @@ type Client struct {
 	OneTimePassword *OneTimePasswordClient
 	// User is the client for interacting with the User builders.
 	User *UserClient
+	// UserCredentials is the client for interacting with the UserCredentials builders.
+	UserCredentials *UserCredentialsClient
 	// UserPrivacy is the client for interacting with the UserPrivacy builders.
 	UserPrivacy *UserPrivacyClient
 	// UserSettings is the client for interacting with the UserSettings builders.
@@ -47,6 +50,7 @@ func (c *Client) init() {
 	c.Schema = migrate.NewSchema(c.driver)
 	c.OneTimePassword = NewOneTimePasswordClient(c.config)
 	c.User = NewUserClient(c.config)
+	c.UserCredentials = NewUserCredentialsClient(c.config)
 	c.UserPrivacy = NewUserPrivacyClient(c.config)
 	c.UserSettings = NewUserSettingsClient(c.config)
 }
@@ -143,6 +147,7 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		config:          cfg,
 		OneTimePassword: NewOneTimePasswordClient(cfg),
 		User:            NewUserClient(cfg),
+		UserCredentials: NewUserCredentialsClient(cfg),
 		UserPrivacy:     NewUserPrivacyClient(cfg),
 		UserSettings:    NewUserSettingsClient(cfg),
 	}, nil
@@ -166,6 +171,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		config:          cfg,
 		OneTimePassword: NewOneTimePasswordClient(cfg),
 		User:            NewUserClient(cfg),
+		UserCredentials: NewUserCredentialsClient(cfg),
 		UserPrivacy:     NewUserPrivacyClient(cfg),
 		UserSettings:    NewUserSettingsClient(cfg),
 	}, nil
@@ -198,6 +204,7 @@ func (c *Client) Close() error {
 func (c *Client) Use(hooks ...Hook) {
 	c.OneTimePassword.Use(hooks...)
 	c.User.Use(hooks...)
+	c.UserCredentials.Use(hooks...)
 	c.UserPrivacy.Use(hooks...)
 	c.UserSettings.Use(hooks...)
 }
@@ -207,6 +214,7 @@ func (c *Client) Use(hooks ...Hook) {
 func (c *Client) Intercept(interceptors ...Interceptor) {
 	c.OneTimePassword.Intercept(interceptors...)
 	c.User.Intercept(interceptors...)
+	c.UserCredentials.Intercept(interceptors...)
 	c.UserPrivacy.Intercept(interceptors...)
 	c.UserSettings.Intercept(interceptors...)
 }
@@ -218,6 +226,8 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 		return c.OneTimePassword.mutate(ctx, m)
 	case *UserMutation:
 		return c.User.mutate(ctx, m)
+	case *UserCredentialsMutation:
+		return c.UserCredentials.mutate(ctx, m)
 	case *UserPrivacyMutation:
 		return c.UserPrivacy.mutate(ctx, m)
 	case *UserSettingsMutation:
@@ -508,6 +518,157 @@ func (c *UserClient) mutate(ctx context.Context, m *UserMutation) (Value, error)
 		return (&UserDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
 	default:
 		return nil, fmt.Errorf("ent: unknown User mutation op: %q", m.Op())
+	}
+}
+
+// UserCredentialsClient is a client for the UserCredentials schema.
+type UserCredentialsClient struct {
+	config
+}
+
+// NewUserCredentialsClient returns a client for the UserCredentials from the given config.
+func NewUserCredentialsClient(c config) *UserCredentialsClient {
+	return &UserCredentialsClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `usercredentials.Hooks(f(g(h())))`.
+func (c *UserCredentialsClient) Use(hooks ...Hook) {
+	c.hooks.UserCredentials = append(c.hooks.UserCredentials, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `usercredentials.Intercept(f(g(h())))`.
+func (c *UserCredentialsClient) Intercept(interceptors ...Interceptor) {
+	c.inters.UserCredentials = append(c.inters.UserCredentials, interceptors...)
+}
+
+// Create returns a builder for creating a UserCredentials entity.
+func (c *UserCredentialsClient) Create() *UserCredentialsCreate {
+	mutation := newUserCredentialsMutation(c.config, OpCreate)
+	return &UserCredentialsCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of UserCredentials entities.
+func (c *UserCredentialsClient) CreateBulk(builders ...*UserCredentialsCreate) *UserCredentialsCreateBulk {
+	return &UserCredentialsCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *UserCredentialsClient) MapCreateBulk(slice any, setFunc func(*UserCredentialsCreate, int)) *UserCredentialsCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &UserCredentialsCreateBulk{err: fmt.Errorf("calling to UserCredentialsClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*UserCredentialsCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &UserCredentialsCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for UserCredentials.
+func (c *UserCredentialsClient) Update() *UserCredentialsUpdate {
+	mutation := newUserCredentialsMutation(c.config, OpUpdate)
+	return &UserCredentialsUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *UserCredentialsClient) UpdateOne(uc *UserCredentials) *UserCredentialsUpdateOne {
+	mutation := newUserCredentialsMutation(c.config, OpUpdateOne, withUserCredentials(uc))
+	return &UserCredentialsUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *UserCredentialsClient) UpdateOneID(id int64) *UserCredentialsUpdateOne {
+	mutation := newUserCredentialsMutation(c.config, OpUpdateOne, withUserCredentialsID(id))
+	return &UserCredentialsUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for UserCredentials.
+func (c *UserCredentialsClient) Delete() *UserCredentialsDelete {
+	mutation := newUserCredentialsMutation(c.config, OpDelete)
+	return &UserCredentialsDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *UserCredentialsClient) DeleteOne(uc *UserCredentials) *UserCredentialsDeleteOne {
+	return c.DeleteOneID(uc.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *UserCredentialsClient) DeleteOneID(id int64) *UserCredentialsDeleteOne {
+	builder := c.Delete().Where(usercredentials.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &UserCredentialsDeleteOne{builder}
+}
+
+// Query returns a query builder for UserCredentials.
+func (c *UserCredentialsClient) Query() *UserCredentialsQuery {
+	return &UserCredentialsQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeUserCredentials},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a UserCredentials entity by its id.
+func (c *UserCredentialsClient) Get(ctx context.Context, id int64) (*UserCredentials, error) {
+	return c.Query().Where(usercredentials.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *UserCredentialsClient) GetX(ctx context.Context, id int64) *UserCredentials {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryUser queries the user edge of a UserCredentials.
+func (c *UserCredentialsClient) QueryUser(uc *UserCredentials) *UserQuery {
+	query := (&UserClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := uc.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(usercredentials.Table, usercredentials.FieldID, id),
+			sqlgraph.To(user.Table, user.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, usercredentials.UserTable, usercredentials.UserColumn),
+		)
+		fromV = sqlgraph.Neighbors(uc.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *UserCredentialsClient) Hooks() []Hook {
+	hooks := c.hooks.UserCredentials
+	return append(hooks[:len(hooks):len(hooks)], usercredentials.Hooks[:]...)
+}
+
+// Interceptors returns the client interceptors.
+func (c *UserCredentialsClient) Interceptors() []Interceptor {
+	inters := c.inters.UserCredentials
+	return append(inters[:len(inters):len(inters)], usercredentials.Interceptors[:]...)
+}
+
+func (c *UserCredentialsClient) mutate(ctx context.Context, m *UserCredentialsMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&UserCredentialsCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&UserCredentialsUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&UserCredentialsUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&UserCredentialsDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown UserCredentials mutation op: %q", m.Op())
 	}
 }
 
@@ -812,9 +973,10 @@ func (c *UserSettingsClient) mutate(ctx context.Context, m *UserSettingsMutation
 // hooks and interceptors per client, for fast access.
 type (
 	hooks struct {
-		OneTimePassword, User, UserPrivacy, UserSettings []ent.Hook
+		OneTimePassword, User, UserCredentials, UserPrivacy, UserSettings []ent.Hook
 	}
 	inters struct {
-		OneTimePassword, User, UserPrivacy, UserSettings []ent.Interceptor
+		OneTimePassword, User, UserCredentials, UserPrivacy,
+		UserSettings []ent.Interceptor
 	}
 )

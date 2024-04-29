@@ -33,6 +33,18 @@ func (f UserFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error)
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.UserMutation", m)
 }
 
+// The UserCredentialsFunc type is an adapter to allow the use of ordinary
+// function as UserCredentials mutator.
+type UserCredentialsFunc func(context.Context, *ent.UserCredentialsMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f UserCredentialsFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.UserCredentialsMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.UserCredentialsMutation", m)
+}
+
 // The UserPrivacyFunc type is an adapter to allow the use of ordinary
 // function as UserPrivacy mutator.
 type UserPrivacyFunc func(context.Context, *ent.UserPrivacyMutation) (ent.Value, error)

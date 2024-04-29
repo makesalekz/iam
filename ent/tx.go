@@ -16,6 +16,8 @@ type Tx struct {
 	OneTimePassword *OneTimePasswordClient
 	// User is the client for interacting with the User builders.
 	User *UserClient
+	// UserCredentials is the client for interacting with the UserCredentials builders.
+	UserCredentials *UserCredentialsClient
 	// UserPrivacy is the client for interacting with the UserPrivacy builders.
 	UserPrivacy *UserPrivacyClient
 	// UserSettings is the client for interacting with the UserSettings builders.
@@ -153,6 +155,7 @@ func (tx *Tx) Client() *Client {
 func (tx *Tx) init() {
 	tx.OneTimePassword = NewOneTimePasswordClient(tx.config)
 	tx.User = NewUserClient(tx.config)
+	tx.UserCredentials = NewUserCredentialsClient(tx.config)
 	tx.UserPrivacy = NewUserPrivacyClient(tx.config)
 	tx.UserSettings = NewUserSettingsClient(tx.config)
 }

@@ -6,6 +6,7 @@ import (
 	"gitlab.calendaria.team/services/iam/ent/onetimepassword"
 	"gitlab.calendaria.team/services/iam/ent/predicate"
 	"gitlab.calendaria.team/services/iam/ent/user"
+	"gitlab.calendaria.team/services/iam/ent/usercredentials"
 	"gitlab.calendaria.team/services/iam/ent/userprivacy"
 	"gitlab.calendaria.team/services/iam/ent/usersettings"
 
@@ -17,7 +18,7 @@ import (
 
 // schemaGraph holds a representation of ent/schema at runtime.
 var schemaGraph = func() *sqlgraph.Schema {
-	graph := &sqlgraph.Schema{Nodes: make([]*sqlgraph.Node, 4)}
+	graph := &sqlgraph.Schema{Nodes: make([]*sqlgraph.Node, 5)}
 	graph.Nodes[0] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   onetimepassword.Table,
@@ -68,6 +69,30 @@ var schemaGraph = func() *sqlgraph.Schema {
 	}
 	graph.Nodes[2] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
+			Table:   usercredentials.Table,
+			Columns: usercredentials.Columns,
+			ID: &sqlgraph.FieldSpec{
+				Type:   field.TypeInt64,
+				Column: usercredentials.FieldID,
+			},
+		},
+		Type: "UserCredentials",
+		Fields: map[string]*sqlgraph.FieldSpec{
+			usercredentials.FieldDeletedAt:    {Type: field.TypeTime, Column: usercredentials.FieldDeletedAt},
+			usercredentials.FieldUserID:       {Type: field.TypeInt64, Column: usercredentials.FieldUserID},
+			usercredentials.FieldMail:         {Type: field.TypeString, Column: usercredentials.FieldMail},
+			usercredentials.FieldDisplayName:  {Type: field.TypeString, Column: usercredentials.FieldDisplayName},
+			usercredentials.FieldType:         {Type: field.TypeEnum, Column: usercredentials.FieldType},
+			usercredentials.FieldAccessToken:  {Type: field.TypeString, Column: usercredentials.FieldAccessToken},
+			usercredentials.FieldTokenType:    {Type: field.TypeString, Column: usercredentials.FieldTokenType},
+			usercredentials.FieldRefreshToken: {Type: field.TypeString, Column: usercredentials.FieldRefreshToken},
+			usercredentials.FieldExpiresAt:    {Type: field.TypeTime, Column: usercredentials.FieldExpiresAt},
+			usercredentials.FieldCreatedAt:    {Type: field.TypeTime, Column: usercredentials.FieldCreatedAt},
+			usercredentials.FieldUpdatedAt:    {Type: field.TypeTime, Column: usercredentials.FieldUpdatedAt},
+		},
+	}
+	graph.Nodes[3] = &sqlgraph.Node{
+		NodeSpec: sqlgraph.NodeSpec{
 			Table:   userprivacy.Table,
 			Columns: userprivacy.Columns,
 			ID: &sqlgraph.FieldSpec{
@@ -83,7 +108,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			userprivacy.FieldUpdatedAt: {Type: field.TypeTime, Column: userprivacy.FieldUpdatedAt},
 		},
 	}
-	graph.Nodes[3] = &sqlgraph.Node{
+	graph.Nodes[4] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   usersettings.Table,
 			Columns: usersettings.Columns,
@@ -110,6 +135,18 @@ var schemaGraph = func() *sqlgraph.Schema {
 			Bidi:    false,
 		},
 		"OneTimePassword",
+		"User",
+	)
+	graph.MustAddE(
+		"user",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   usercredentials.UserTable,
+			Columns: []string{usercredentials.UserColumn},
+			Bidi:    false,
+		},
+		"UserCredentials",
 		"User",
 	)
 	graph.MustAddE(
@@ -350,6 +387,115 @@ func (f *UserFilter) WhereDefaultTenantID(p entql.Int64P) {
 }
 
 // addPredicate implements the predicateAdder interface.
+func (ucq *UserCredentialsQuery) addPredicate(pred func(s *sql.Selector)) {
+	ucq.predicates = append(ucq.predicates, pred)
+}
+
+// Filter returns a Filter implementation to apply filters on the UserCredentialsQuery builder.
+func (ucq *UserCredentialsQuery) Filter() *UserCredentialsFilter {
+	return &UserCredentialsFilter{config: ucq.config, predicateAdder: ucq}
+}
+
+// addPredicate implements the predicateAdder interface.
+func (m *UserCredentialsMutation) addPredicate(pred func(s *sql.Selector)) {
+	m.predicates = append(m.predicates, pred)
+}
+
+// Filter returns an entql.Where implementation to apply filters on the UserCredentialsMutation builder.
+func (m *UserCredentialsMutation) Filter() *UserCredentialsFilter {
+	return &UserCredentialsFilter{config: m.config, predicateAdder: m}
+}
+
+// UserCredentialsFilter provides a generic filtering capability at runtime for UserCredentialsQuery.
+type UserCredentialsFilter struct {
+	predicateAdder
+	config
+}
+
+// Where applies the entql predicate on the query filter.
+func (f *UserCredentialsFilter) Where(p entql.P) {
+	f.addPredicate(func(s *sql.Selector) {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[2].Type, p, s); err != nil {
+			s.AddError(err)
+		}
+	})
+}
+
+// WhereID applies the entql int64 predicate on the id field.
+func (f *UserCredentialsFilter) WhereID(p entql.Int64P) {
+	f.Where(p.Field(usercredentials.FieldID))
+}
+
+// WhereDeletedAt applies the entql time.Time predicate on the deleted_at field.
+func (f *UserCredentialsFilter) WhereDeletedAt(p entql.TimeP) {
+	f.Where(p.Field(usercredentials.FieldDeletedAt))
+}
+
+// WhereUserID applies the entql int64 predicate on the user_id field.
+func (f *UserCredentialsFilter) WhereUserID(p entql.Int64P) {
+	f.Where(p.Field(usercredentials.FieldUserID))
+}
+
+// WhereMail applies the entql string predicate on the mail field.
+func (f *UserCredentialsFilter) WhereMail(p entql.StringP) {
+	f.Where(p.Field(usercredentials.FieldMail))
+}
+
+// WhereDisplayName applies the entql string predicate on the display_name field.
+func (f *UserCredentialsFilter) WhereDisplayName(p entql.StringP) {
+	f.Where(p.Field(usercredentials.FieldDisplayName))
+}
+
+// WhereType applies the entql string predicate on the type field.
+func (f *UserCredentialsFilter) WhereType(p entql.StringP) {
+	f.Where(p.Field(usercredentials.FieldType))
+}
+
+// WhereAccessToken applies the entql string predicate on the access_token field.
+func (f *UserCredentialsFilter) WhereAccessToken(p entql.StringP) {
+	f.Where(p.Field(usercredentials.FieldAccessToken))
+}
+
+// WhereTokenType applies the entql string predicate on the token_type field.
+func (f *UserCredentialsFilter) WhereTokenType(p entql.StringP) {
+	f.Where(p.Field(usercredentials.FieldTokenType))
+}
+
+// WhereRefreshToken applies the entql string predicate on the refresh_token field.
+func (f *UserCredentialsFilter) WhereRefreshToken(p entql.StringP) {
+	f.Where(p.Field(usercredentials.FieldRefreshToken))
+}
+
+// WhereExpiresAt applies the entql time.Time predicate on the expires_at field.
+func (f *UserCredentialsFilter) WhereExpiresAt(p entql.TimeP) {
+	f.Where(p.Field(usercredentials.FieldExpiresAt))
+}
+
+// WhereCreatedAt applies the entql time.Time predicate on the created_at field.
+func (f *UserCredentialsFilter) WhereCreatedAt(p entql.TimeP) {
+	f.Where(p.Field(usercredentials.FieldCreatedAt))
+}
+
+// WhereUpdatedAt applies the entql time.Time predicate on the updated_at field.
+func (f *UserCredentialsFilter) WhereUpdatedAt(p entql.TimeP) {
+	f.Where(p.Field(usercredentials.FieldUpdatedAt))
+}
+
+// WhereHasUser applies a predicate to check if query has an edge user.
+func (f *UserCredentialsFilter) WhereHasUser() {
+	f.Where(entql.HasEdge("user"))
+}
+
+// WhereHasUserWith applies a predicate to check if query has an edge user with a given conditions (other predicates).
+func (f *UserCredentialsFilter) WhereHasUserWith(preds ...predicate.User) {
+	f.Where(entql.HasEdgeWith("user", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
+// addPredicate implements the predicateAdder interface.
 func (upq *UserPrivacyQuery) addPredicate(pred func(s *sql.Selector)) {
 	upq.predicates = append(upq.predicates, pred)
 }
@@ -378,7 +524,7 @@ type UserPrivacyFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *UserPrivacyFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[2].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[3].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -452,7 +598,7 @@ type UserSettingsFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *UserSettingsFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[3].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[4].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
