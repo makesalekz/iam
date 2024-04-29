@@ -12,6 +12,7 @@ import (
 type CredentialsRepo interface {
 	CreateCredential(ctx context.Context, actorId int64, token *oauth2.Token) (*ent.UserCredentials, error)
 	GetCredential(ctx context.Context, userId int64, provider property.Provider) (*ent.UserCredentials, error)
+	ListCredentials(ctx context.Context, userId int64) ([]*ent.UserCredentials, error)
 	DeleteCredential(ctx context.Context, userId, credentialId int64) (int, error)
 }
 
@@ -44,6 +45,14 @@ func (r *credentialsRepo) GetCredential(ctx context.Context, userId int64, provi
 		).
 		Order(ent.Desc(usercredentials.FieldID)).
 		First(ctx)
+}
+
+func (r *credentialsRepo) ListCredentials(ctx context.Context, userId int64) ([]*ent.UserCredentials, error) {
+	return r.db.UserCredentials.Query().
+		Where(
+			usercredentials.UserID(userId),
+		).
+		All(ctx)
 }
 
 func (r *credentialsRepo) DeleteCredential(ctx context.Context, userId, credentialId int64) (int, error) {

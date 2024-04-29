@@ -41,19 +41,19 @@ func (uc *CredentialsUsecase) AuthByGoogle(ctx context.Context, actorId int64, a
 	// read credentials, change path to your google credentials file
 	b, err := os.ReadFile("../configs/credentials_test.json")
 	if err != nil {
-		log.Fatalf("Unable to read client secret file: %v", err)
+		return iam_v1.ErrorServiceFailed("Unable to read client secret file: %v", err.Error())
 	}
 
 	// get config from credentials
 	config, err := google.ConfigFromJSON(b, calendar.CalendarScope)
 	if err != nil {
-		log.Fatalf("Unable to parse client secret file to config: %v", err)
+		return iam_v1.ErrorServiceFailed("Unable to parse client secret file to config: %v", err.Error())
 	}
 
 	// exchange auth code to token
 	tok, err := config.Exchange(context.TODO(), authCode)
 	if err != nil {
-		log.Fatalf("Unable to retrieve token from web: %v", err)
+		return iam_v1.ErrorServiceFailed("Unable to retrieve token from web: %v", err.Error())
 	}
 
 	// save tokens to database
@@ -65,16 +65,20 @@ func (uc *CredentialsUsecase) AuthByGoogle(ctx context.Context, actorId int64, a
 	return nil
 }
 
-func (uc *CredentialsUsecase) GetOwnCredentials(ctx context.Context, actorId int64) (*ent.UserCredentials, error) {
-	return uc.credentialsRepo.GetCredential(ctx, actorId, property.Google)
+func (uc *CredentialsUsecase) GetCredential(ctx context.Context, actorId int64, provider property.Provider) (*ent.UserCredentials, error) {
+	return uc.credentialsRepo.GetCredential(ctx, actorId, provider)
 }
 
-func (uc *CredentialsUsecase) DeleteCredentials(ctx context.Context, actorId, credentialId int64) error {
+func (uc *CredentialsUsecase) ListCredentials(ctx context.Context, actorId int64) ([]*ent.UserCredentials, error) {
+	return uc.credentialsRepo.ListCredentials(ctx, actorId)
+}
+
+func (uc *CredentialsUsecase) DeleteCredential(ctx context.Context, actorId, credentialId int64) error {
 	deletedCount, err := uc.credentialsRepo.DeleteCredential(ctx, actorId, credentialId)
 	if err != nil {
 		return iam_v1.ErrorDatabaseQuery("database error: %s", err.Error())
 	} else if deletedCount == 0 {
-		return iam_v1.ErrorSyncNotFound("sync not found")
+		return iam_v1.ErrorCredentialNotFound("credential not found")
 	}
 
 	return nil

@@ -157,6 +157,18 @@ func ErrorInvalidUsername(format string, args ...interface{}) *errors.Error {
 	return errors.New(400, ErrorReason_INVALID_USERNAME.String(), fmt.Sprintf(format, args...))
 }
 
+func IsInvalidProvider(err error) bool {
+	if err == nil {
+		return false
+	}
+	e := errors.FromError(err)
+	return e.Reason == ErrorReason_INVALID_PROVIDER.String() && e.Code == 400
+}
+
+func ErrorInvalidProvider(format string, args ...interface{}) *errors.Error {
+	return errors.New(400, ErrorReason_INVALID_PROVIDER.String(), fmt.Sprintf(format, args...))
+}
+
 func IsUserNotFound(err error) bool {
 	if err == nil {
 		return false
@@ -217,14 +229,14 @@ func ErrorCommonChatNotFound(format string, args ...interface{}) *errors.Error {
 	return errors.New(404, ErrorReason_COMMON_CHAT_NOT_FOUND.String(), fmt.Sprintf(format, args...))
 }
 
-func IsSyncNotFound(err error) bool {
+func IsCredentialNotFound(err error) bool {
 	if err == nil {
 		return false
 	}
 	e := errors.FromError(err)
-	return e.Reason == ErrorReason_SYNC_NOT_FOUND.String() && e.Code == 404
+	return e.Reason == ErrorReason_CREDENTIAL_NOT_FOUND.String() && e.Code == 404
 }
 
-func ErrorSyncNotFound(format string, args ...interface{}) *errors.Error {
-	return errors.New(404, ErrorReason_SYNC_NOT_FOUND.String(), fmt.Sprintf(format, args...))
+func ErrorCredentialNotFound(format string, args ...interface{}) *errors.Error {
+	return errors.New(404, ErrorReason_CREDENTIAL_NOT_FOUND.String(), fmt.Sprintf(format, args...))
 }

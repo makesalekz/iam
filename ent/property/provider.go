@@ -1,5 +1,7 @@
 package property
 
+import "slices"
+
 type Provider string
 
 const (
@@ -8,8 +10,12 @@ const (
 	Apple   Provider = "APPLE"
 )
 
+func getProviders() []Provider {
+	return []Provider{Google, Outlook, Apple}
+}
+
 func (Provider) Values() (kinds []string) {
-	for _, s := range []Provider{Google, Outlook, Apple} {
+	for _, s := range getProviders() {
 		kinds = append(kinds, string(s))
 	}
 	return
@@ -17,4 +23,8 @@ func (Provider) Values() (kinds []string) {
 
 func (p Provider) Value() string {
 	return string(p)
+}
+
+func (p Provider) IsValid() bool {
+	return slices.Contains(getProviders(), p)
 }
