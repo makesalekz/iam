@@ -50,13 +50,20 @@ message TenantShort {
   string name = 3;
 }
 
+message UserCredentialsShort {
+  int64 id = 1;
+  optional string mail = 3;
+  optional string displayName = 4;
+  optional string provider = 5;
+}
+
 message UserCredentials {
   int64 id = 1;
   int64 userId = 2;
   string accessToken = 3;
   optional string mail = 4;
   optional string displayName = 5;
-  optional string type = 6;
+  optional string provider = 6;
   optional string tokenType = 7;
   optional string refreshToken = 8;
   optional string expiresAt = 9;

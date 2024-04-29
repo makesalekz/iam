@@ -27,8 +27,8 @@ type UserCredentials struct {
 	Mail *string `json:"mail,omitempty"`
 	// DisplayName holds the value of the "display_name" field.
 	DisplayName *string `json:"display_name,omitempty"`
-	// Type holds the value of the "type" field.
-	Type *property.Provider `json:"type,omitempty"`
+	// Provider holds the value of the "provider" field.
+	Provider *property.Provider `json:"provider,omitempty"`
 	// AccessToken holds the value of the "access_token" field.
 	AccessToken string `json:"access_token,omitempty"`
 	// TokenType holds the value of the "token_type" field.
@@ -76,7 +76,7 @@ func (*UserCredentials) scanValues(columns []string) ([]any, error) {
 		switch columns[i] {
 		case usercredentials.FieldID, usercredentials.FieldUserID:
 			values[i] = new(sql.NullInt64)
-		case usercredentials.FieldMail, usercredentials.FieldDisplayName, usercredentials.FieldType, usercredentials.FieldAccessToken, usercredentials.FieldTokenType, usercredentials.FieldRefreshToken:
+		case usercredentials.FieldMail, usercredentials.FieldDisplayName, usercredentials.FieldProvider, usercredentials.FieldAccessToken, usercredentials.FieldTokenType, usercredentials.FieldRefreshToken:
 			values[i] = new(sql.NullString)
 		case usercredentials.FieldDeletedAt, usercredentials.FieldExpiresAt, usercredentials.FieldCreatedAt, usercredentials.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
@@ -128,12 +128,12 @@ func (uc *UserCredentials) assignValues(columns []string, values []any) error {
 				uc.DisplayName = new(string)
 				*uc.DisplayName = value.String
 			}
-		case usercredentials.FieldType:
+		case usercredentials.FieldProvider:
 			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field type", values[i])
+				return fmt.Errorf("unexpected type %T for field provider", values[i])
 			} else if value.Valid {
-				uc.Type = new(property.Provider)
-				*uc.Type = property.Provider(value.String)
+				uc.Provider = new(property.Provider)
+				*uc.Provider = property.Provider(value.String)
 			}
 		case usercredentials.FieldAccessToken:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -233,8 +233,8 @@ func (uc *UserCredentials) String() string {
 		builder.WriteString(*v)
 	}
 	builder.WriteString(", ")
-	if v := uc.Type; v != nil {
-		builder.WriteString("type=")
+	if v := uc.Provider; v != nil {
+		builder.WriteString("provider=")
 		builder.WriteString(fmt.Sprintf("%v", *v))
 	}
 	builder.WriteString(", ")

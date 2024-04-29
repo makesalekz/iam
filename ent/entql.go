@@ -82,7 +82,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			usercredentials.FieldUserID:       {Type: field.TypeInt64, Column: usercredentials.FieldUserID},
 			usercredentials.FieldMail:         {Type: field.TypeString, Column: usercredentials.FieldMail},
 			usercredentials.FieldDisplayName:  {Type: field.TypeString, Column: usercredentials.FieldDisplayName},
-			usercredentials.FieldType:         {Type: field.TypeEnum, Column: usercredentials.FieldType},
+			usercredentials.FieldProvider:     {Type: field.TypeEnum, Column: usercredentials.FieldProvider},
 			usercredentials.FieldAccessToken:  {Type: field.TypeString, Column: usercredentials.FieldAccessToken},
 			usercredentials.FieldTokenType:    {Type: field.TypeString, Column: usercredentials.FieldTokenType},
 			usercredentials.FieldRefreshToken: {Type: field.TypeString, Column: usercredentials.FieldRefreshToken},
@@ -446,9 +446,9 @@ func (f *UserCredentialsFilter) WhereDisplayName(p entql.StringP) {
 	f.Where(p.Field(usercredentials.FieldDisplayName))
 }
 
-// WhereType applies the entql string predicate on the type field.
-func (f *UserCredentialsFilter) WhereType(p entql.StringP) {
-	f.Where(p.Field(usercredentials.FieldType))
+// WhereProvider applies the entql string predicate on the provider field.
+func (f *UserCredentialsFilter) WhereProvider(p entql.StringP) {
+	f.Where(p.Field(usercredentials.FieldProvider))
 }
 
 // WhereAccessToken applies the entql string predicate on the access_token field.

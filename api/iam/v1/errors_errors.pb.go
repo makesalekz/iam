@@ -216,3 +216,15 @@ func IsCommonChatNotFound(err error) bool {
 func ErrorCommonChatNotFound(format string, args ...interface{}) *errors.Error {
 	return errors.New(404, ErrorReason_COMMON_CHAT_NOT_FOUND.String(), fmt.Sprintf(format, args...))
 }
+
+func IsSyncNotFound(err error) bool {
+	if err == nil {
+		return false
+	}
+	e := errors.FromError(err)
+	return e.Reason == ErrorReason_SYNC_NOT_FOUND.String() && e.Code == 404
+}
+
+func ErrorSyncNotFound(format string, args ...interface{}) *errors.Error {
+	return errors.New(404, ErrorReason_SYNC_NOT_FOUND.String(), fmt.Sprintf(format, args...))
+}

@@ -72,16 +72,16 @@ func (ucc *UserCredentialsCreate) SetNillableDisplayName(s *string) *UserCredent
 	return ucc
 }
 
-// SetType sets the "type" field.
-func (ucc *UserCredentialsCreate) SetType(pr property.Provider) *UserCredentialsCreate {
-	ucc.mutation.SetType(pr)
+// SetProvider sets the "provider" field.
+func (ucc *UserCredentialsCreate) SetProvider(pr property.Provider) *UserCredentialsCreate {
+	ucc.mutation.SetProvider(pr)
 	return ucc
 }
 
-// SetNillableType sets the "type" field if the given value is not nil.
-func (ucc *UserCredentialsCreate) SetNillableType(pr *property.Provider) *UserCredentialsCreate {
+// SetNillableProvider sets the "provider" field if the given value is not nil.
+func (ucc *UserCredentialsCreate) SetNillableProvider(pr *property.Provider) *UserCredentialsCreate {
 	if pr != nil {
-		ucc.SetType(*pr)
+		ucc.SetProvider(*pr)
 	}
 	return ucc
 }
@@ -226,9 +226,9 @@ func (ucc *UserCredentialsCreate) check() error {
 	if _, ok := ucc.mutation.UserID(); !ok {
 		return &ValidationError{Name: "user_id", err: errors.New(`ent: missing required field "UserCredentials.user_id"`)}
 	}
-	if v, ok := ucc.mutation.GetType(); ok {
-		if err := usercredentials.TypeValidator(v); err != nil {
-			return &ValidationError{Name: "type", err: fmt.Errorf(`ent: validator failed for field "UserCredentials.type": %w`, err)}
+	if v, ok := ucc.mutation.Provider(); ok {
+		if err := usercredentials.ProviderValidator(v); err != nil {
+			return &ValidationError{Name: "provider", err: fmt.Errorf(`ent: validator failed for field "UserCredentials.provider": %w`, err)}
 		}
 	}
 	if _, ok := ucc.mutation.AccessToken(); !ok {
@@ -282,9 +282,9 @@ func (ucc *UserCredentialsCreate) createSpec() (*UserCredentials, *sqlgraph.Crea
 		_spec.SetField(usercredentials.FieldDisplayName, field.TypeString, value)
 		_node.DisplayName = &value
 	}
-	if value, ok := ucc.mutation.GetType(); ok {
-		_spec.SetField(usercredentials.FieldType, field.TypeEnum, value)
-		_node.Type = &value
+	if value, ok := ucc.mutation.Provider(); ok {
+		_spec.SetField(usercredentials.FieldProvider, field.TypeEnum, value)
+		_node.Provider = &value
 	}
 	if value, ok := ucc.mutation.AccessToken(); ok {
 		_spec.SetField(usercredentials.FieldAccessToken, field.TypeString, value)
@@ -445,21 +445,21 @@ func (u *UserCredentialsUpsert) ClearDisplayName() *UserCredentialsUpsert {
 	return u
 }
 
-// SetType sets the "type" field.
-func (u *UserCredentialsUpsert) SetType(v property.Provider) *UserCredentialsUpsert {
-	u.Set(usercredentials.FieldType, v)
+// SetProvider sets the "provider" field.
+func (u *UserCredentialsUpsert) SetProvider(v property.Provider) *UserCredentialsUpsert {
+	u.Set(usercredentials.FieldProvider, v)
 	return u
 }
 
-// UpdateType sets the "type" field to the value that was provided on create.
-func (u *UserCredentialsUpsert) UpdateType() *UserCredentialsUpsert {
-	u.SetExcluded(usercredentials.FieldType)
+// UpdateProvider sets the "provider" field to the value that was provided on create.
+func (u *UserCredentialsUpsert) UpdateProvider() *UserCredentialsUpsert {
+	u.SetExcluded(usercredentials.FieldProvider)
 	return u
 }
 
-// ClearType clears the value of the "type" field.
-func (u *UserCredentialsUpsert) ClearType() *UserCredentialsUpsert {
-	u.SetNull(usercredentials.FieldType)
+// ClearProvider clears the value of the "provider" field.
+func (u *UserCredentialsUpsert) ClearProvider() *UserCredentialsUpsert {
+	u.SetNull(usercredentials.FieldProvider)
 	return u
 }
 
@@ -670,24 +670,24 @@ func (u *UserCredentialsUpsertOne) ClearDisplayName() *UserCredentialsUpsertOne 
 	})
 }
 
-// SetType sets the "type" field.
-func (u *UserCredentialsUpsertOne) SetType(v property.Provider) *UserCredentialsUpsertOne {
+// SetProvider sets the "provider" field.
+func (u *UserCredentialsUpsertOne) SetProvider(v property.Provider) *UserCredentialsUpsertOne {
 	return u.Update(func(s *UserCredentialsUpsert) {
-		s.SetType(v)
+		s.SetProvider(v)
 	})
 }
 
-// UpdateType sets the "type" field to the value that was provided on create.
-func (u *UserCredentialsUpsertOne) UpdateType() *UserCredentialsUpsertOne {
+// UpdateProvider sets the "provider" field to the value that was provided on create.
+func (u *UserCredentialsUpsertOne) UpdateProvider() *UserCredentialsUpsertOne {
 	return u.Update(func(s *UserCredentialsUpsert) {
-		s.UpdateType()
+		s.UpdateProvider()
 	})
 }
 
-// ClearType clears the value of the "type" field.
-func (u *UserCredentialsUpsertOne) ClearType() *UserCredentialsUpsertOne {
+// ClearProvider clears the value of the "provider" field.
+func (u *UserCredentialsUpsertOne) ClearProvider() *UserCredentialsUpsertOne {
 	return u.Update(func(s *UserCredentialsUpsert) {
-		s.ClearType()
+		s.ClearProvider()
 	})
 }
 
@@ -1077,24 +1077,24 @@ func (u *UserCredentialsUpsertBulk) ClearDisplayName() *UserCredentialsUpsertBul
 	})
 }
 
-// SetType sets the "type" field.
-func (u *UserCredentialsUpsertBulk) SetType(v property.Provider) *UserCredentialsUpsertBulk {
+// SetProvider sets the "provider" field.
+func (u *UserCredentialsUpsertBulk) SetProvider(v property.Provider) *UserCredentialsUpsertBulk {
 	return u.Update(func(s *UserCredentialsUpsert) {
-		s.SetType(v)
+		s.SetProvider(v)
 	})
 }
 
-// UpdateType sets the "type" field to the value that was provided on create.
-func (u *UserCredentialsUpsertBulk) UpdateType() *UserCredentialsUpsertBulk {
+// UpdateProvider sets the "provider" field to the value that was provided on create.
+func (u *UserCredentialsUpsertBulk) UpdateProvider() *UserCredentialsUpsertBulk {
 	return u.Update(func(s *UserCredentialsUpsert) {
-		s.UpdateType()
+		s.UpdateProvider()
 	})
 }
 
-// ClearType clears the value of the "type" field.
-func (u *UserCredentialsUpsertBulk) ClearType() *UserCredentialsUpsertBulk {
+// ClearProvider clears the value of the "provider" field.
+func (u *UserCredentialsUpsertBulk) ClearProvider() *UserCredentialsUpsertBulk {
 	return u.Update(func(s *UserCredentialsUpsert) {
-		s.ClearType()
+		s.ClearProvider()
 	})
 }
 

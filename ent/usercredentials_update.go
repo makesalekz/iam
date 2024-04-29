@@ -105,23 +105,23 @@ func (ucu *UserCredentialsUpdate) ClearDisplayName() *UserCredentialsUpdate {
 	return ucu
 }
 
-// SetType sets the "type" field.
-func (ucu *UserCredentialsUpdate) SetType(pr property.Provider) *UserCredentialsUpdate {
-	ucu.mutation.SetType(pr)
+// SetProvider sets the "provider" field.
+func (ucu *UserCredentialsUpdate) SetProvider(pr property.Provider) *UserCredentialsUpdate {
+	ucu.mutation.SetProvider(pr)
 	return ucu
 }
 
-// SetNillableType sets the "type" field if the given value is not nil.
-func (ucu *UserCredentialsUpdate) SetNillableType(pr *property.Provider) *UserCredentialsUpdate {
+// SetNillableProvider sets the "provider" field if the given value is not nil.
+func (ucu *UserCredentialsUpdate) SetNillableProvider(pr *property.Provider) *UserCredentialsUpdate {
 	if pr != nil {
-		ucu.SetType(*pr)
+		ucu.SetProvider(*pr)
 	}
 	return ucu
 }
 
-// ClearType clears the value of the "type" field.
-func (ucu *UserCredentialsUpdate) ClearType() *UserCredentialsUpdate {
-	ucu.mutation.ClearType()
+// ClearProvider clears the value of the "provider" field.
+func (ucu *UserCredentialsUpdate) ClearProvider() *UserCredentialsUpdate {
+	ucu.mutation.ClearProvider()
 	return ucu
 }
 
@@ -272,9 +272,9 @@ func (ucu *UserCredentialsUpdate) ExecX(ctx context.Context) {
 
 // check runs all checks and user-defined validators on the builder.
 func (ucu *UserCredentialsUpdate) check() error {
-	if v, ok := ucu.mutation.GetType(); ok {
-		if err := usercredentials.TypeValidator(v); err != nil {
-			return &ValidationError{Name: "type", err: fmt.Errorf(`ent: validator failed for field "UserCredentials.type": %w`, err)}
+	if v, ok := ucu.mutation.Provider(); ok {
+		if err := usercredentials.ProviderValidator(v); err != nil {
+			return &ValidationError{Name: "provider", err: fmt.Errorf(`ent: validator failed for field "UserCredentials.provider": %w`, err)}
 		}
 	}
 	if _, ok := ucu.mutation.UserID(); ucu.mutation.UserCleared() && !ok {
@@ -319,11 +319,11 @@ func (ucu *UserCredentialsUpdate) sqlSave(ctx context.Context) (n int, err error
 	if ucu.mutation.DisplayNameCleared() {
 		_spec.ClearField(usercredentials.FieldDisplayName, field.TypeString)
 	}
-	if value, ok := ucu.mutation.GetType(); ok {
-		_spec.SetField(usercredentials.FieldType, field.TypeEnum, value)
+	if value, ok := ucu.mutation.Provider(); ok {
+		_spec.SetField(usercredentials.FieldProvider, field.TypeEnum, value)
 	}
-	if ucu.mutation.TypeCleared() {
-		_spec.ClearField(usercredentials.FieldType, field.TypeEnum)
+	if ucu.mutation.ProviderCleared() {
+		_spec.ClearField(usercredentials.FieldProvider, field.TypeEnum)
 	}
 	if value, ok := ucu.mutation.AccessToken(); ok {
 		_spec.SetField(usercredentials.FieldAccessToken, field.TypeString, value)
@@ -477,23 +477,23 @@ func (ucuo *UserCredentialsUpdateOne) ClearDisplayName() *UserCredentialsUpdateO
 	return ucuo
 }
 
-// SetType sets the "type" field.
-func (ucuo *UserCredentialsUpdateOne) SetType(pr property.Provider) *UserCredentialsUpdateOne {
-	ucuo.mutation.SetType(pr)
+// SetProvider sets the "provider" field.
+func (ucuo *UserCredentialsUpdateOne) SetProvider(pr property.Provider) *UserCredentialsUpdateOne {
+	ucuo.mutation.SetProvider(pr)
 	return ucuo
 }
 
-// SetNillableType sets the "type" field if the given value is not nil.
-func (ucuo *UserCredentialsUpdateOne) SetNillableType(pr *property.Provider) *UserCredentialsUpdateOne {
+// SetNillableProvider sets the "provider" field if the given value is not nil.
+func (ucuo *UserCredentialsUpdateOne) SetNillableProvider(pr *property.Provider) *UserCredentialsUpdateOne {
 	if pr != nil {
-		ucuo.SetType(*pr)
+		ucuo.SetProvider(*pr)
 	}
 	return ucuo
 }
 
-// ClearType clears the value of the "type" field.
-func (ucuo *UserCredentialsUpdateOne) ClearType() *UserCredentialsUpdateOne {
-	ucuo.mutation.ClearType()
+// ClearProvider clears the value of the "provider" field.
+func (ucuo *UserCredentialsUpdateOne) ClearProvider() *UserCredentialsUpdateOne {
+	ucuo.mutation.ClearProvider()
 	return ucuo
 }
 
@@ -657,9 +657,9 @@ func (ucuo *UserCredentialsUpdateOne) ExecX(ctx context.Context) {
 
 // check runs all checks and user-defined validators on the builder.
 func (ucuo *UserCredentialsUpdateOne) check() error {
-	if v, ok := ucuo.mutation.GetType(); ok {
-		if err := usercredentials.TypeValidator(v); err != nil {
-			return &ValidationError{Name: "type", err: fmt.Errorf(`ent: validator failed for field "UserCredentials.type": %w`, err)}
+	if v, ok := ucuo.mutation.Provider(); ok {
+		if err := usercredentials.ProviderValidator(v); err != nil {
+			return &ValidationError{Name: "provider", err: fmt.Errorf(`ent: validator failed for field "UserCredentials.provider": %w`, err)}
 		}
 	}
 	if _, ok := ucuo.mutation.UserID(); ucuo.mutation.UserCleared() && !ok {
@@ -721,11 +721,11 @@ func (ucuo *UserCredentialsUpdateOne) sqlSave(ctx context.Context) (_node *UserC
 	if ucuo.mutation.DisplayNameCleared() {
 		_spec.ClearField(usercredentials.FieldDisplayName, field.TypeString)
 	}
-	if value, ok := ucuo.mutation.GetType(); ok {
-		_spec.SetField(usercredentials.FieldType, field.TypeEnum, value)
+	if value, ok := ucuo.mutation.Provider(); ok {
+		_spec.SetField(usercredentials.FieldProvider, field.TypeEnum, value)
 	}
-	if ucuo.mutation.TypeCleared() {
-		_spec.ClearField(usercredentials.FieldType, field.TypeEnum)
+	if ucuo.mutation.ProviderCleared() {
+		_spec.ClearField(usercredentials.FieldProvider, field.TypeEnum)
 	}
 	if value, ok := ucuo.mutation.AccessToken(); ok {
 		_spec.SetField(usercredentials.FieldAccessToken, field.TypeString, value)

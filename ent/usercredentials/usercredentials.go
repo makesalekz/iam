@@ -25,8 +25,8 @@ const (
 	FieldMail = "mail"
 	// FieldDisplayName holds the string denoting the display_name field in the database.
 	FieldDisplayName = "display_name"
-	// FieldType holds the string denoting the type field in the database.
-	FieldType = "type"
+	// FieldProvider holds the string denoting the provider field in the database.
+	FieldProvider = "provider"
 	// FieldAccessToken holds the string denoting the access_token field in the database.
 	FieldAccessToken = "access_token"
 	// FieldTokenType holds the string denoting the token_type field in the database.
@@ -59,7 +59,7 @@ var Columns = []string{
 	FieldUserID,
 	FieldMail,
 	FieldDisplayName,
-	FieldType,
+	FieldProvider,
 	FieldAccessToken,
 	FieldTokenType,
 	FieldRefreshToken,
@@ -92,13 +92,13 @@ var (
 	DefaultUpdatedAt func() time.Time
 )
 
-// TypeValidator is a validator for the "type" field enum values. It is called by the builders before save.
-func TypeValidator(_type property.Provider) error {
-	switch _type {
+// ProviderValidator is a validator for the "provider" field enum values. It is called by the builders before save.
+func ProviderValidator(pr property.Provider) error {
+	switch pr {
 	case "GOOGLE", "OUTLOOK", "APPLE":
 		return nil
 	default:
-		return fmt.Errorf("usercredentials: invalid enum value for type field: %q", _type)
+		return fmt.Errorf("usercredentials: invalid enum value for provider field: %q", pr)
 	}
 }
 
@@ -130,9 +130,9 @@ func ByDisplayName(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldDisplayName, opts...).ToFunc()
 }
 
-// ByType orders the results by the type field.
-func ByType(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldType, opts...).ToFunc()
+// ByProvider orders the results by the provider field.
+func ByProvider(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldProvider, opts...).ToFunc()
 }
 
 // ByAccessToken orders the results by the access_token field.

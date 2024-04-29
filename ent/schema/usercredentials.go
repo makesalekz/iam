@@ -21,7 +21,7 @@ func (UserCredentials) Fields() []ent.Field {
 		field.Int64("user_id"),
 		field.String("mail").Optional().Nillable(),
 		field.String("display_name").Optional().Nillable(),
-		field.Enum("type").GoType(property.Provider("")).Optional().Nillable(),
+		field.Enum("provider").GoType(property.Provider("")).Optional().Nillable(),
 		field.String("access_token"),
 		field.String("token_type").Optional().Nillable(),
 		field.String("refresh_token").Optional().Nillable(),

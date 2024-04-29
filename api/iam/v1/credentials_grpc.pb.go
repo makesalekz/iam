@@ -20,9 +20,10 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	Credentials_AuthByGoogle_FullMethodName = "/iam.v1.Credentials/AuthByGoogle"
-	Credentials_GetOwnSync_FullMethodName   = "/iam.v1.Credentials/GetOwnSync"
-	Credentials_DeleteSync_FullMethodName   = "/iam.v1.Credentials/DeleteSync"
+	Credentials_AuthByGoogle_FullMethodName     = "/iam.v1.Credentials/AuthByGoogle"
+	Credentials_GetCredential_FullMethodName    = "/iam.v1.Credentials/GetCredential"
+	Credentials_ListCredentials_FullMethodName  = "/iam.v1.Credentials/ListCredentials"
+	Credentials_DeleteCredential_FullMethodName = "/iam.v1.Credentials/DeleteCredential"
 )
 
 // CredentialsClient is the client API for Credentials service.
@@ -30,8 +31,9 @@ const (
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type CredentialsClient interface {
 	AuthByGoogle(ctx context.Context, in *AuthByGoogleRequest, opts ...grpc.CallOption) (*v1.EmptyReply, error)
-	GetOwnSync(ctx context.Context, in *v1.EmptyRequest, opts ...grpc.CallOption) (*CredentialsReply, error)
-	DeleteSync(ctx context.Context, in *CredentialsRequest, opts ...grpc.CallOption) (*v1.EmptyReply, error)
+	GetCredential(ctx context.Context, in *GetCredentialRequest, opts ...grpc.CallOption) (*CredentialReply, error)
+	ListCredentials(ctx context.Context, in *v1.EmptyRequest, opts ...grpc.CallOption) (*ListCredentialsReply, error)
+	DeleteCredential(ctx context.Context, in *CredentialsRequest, opts ...grpc.CallOption) (*v1.EmptyReply, error)
 }
 
 type credentialsClient struct {
@@ -51,18 +53,27 @@ func (c *credentialsClient) AuthByGoogle(ctx context.Context, in *AuthByGoogleRe
 	return out, nil
 }
 
-func (c *credentialsClient) GetOwnSync(ctx context.Context, in *v1.EmptyRequest, opts ...grpc.CallOption) (*CredentialsReply, error) {
-	out := new(CredentialsReply)
-	err := c.cc.Invoke(ctx, Credentials_GetOwnSync_FullMethodName, in, out, opts...)
+func (c *credentialsClient) GetCredential(ctx context.Context, in *GetCredentialRequest, opts ...grpc.CallOption) (*CredentialReply, error) {
+	out := new(CredentialReply)
+	err := c.cc.Invoke(ctx, Credentials_GetCredential_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *credentialsClient) DeleteSync(ctx context.Context, in *CredentialsRequest, opts ...grpc.CallOption) (*v1.EmptyReply, error) {
+func (c *credentialsClient) ListCredentials(ctx context.Context, in *v1.EmptyRequest, opts ...grpc.CallOption) (*ListCredentialsReply, error) {
+	out := new(ListCredentialsReply)
+	err := c.cc.Invoke(ctx, Credentials_ListCredentials_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *credentialsClient) DeleteCredential(ctx context.Context, in *CredentialsRequest, opts ...grpc.CallOption) (*v1.EmptyReply, error) {
 	out := new(v1.EmptyReply)
-	err := c.cc.Invoke(ctx, Credentials_DeleteSync_FullMethodName, in, out, opts...)
+	err := c.cc.Invoke(ctx, Credentials_DeleteCredential_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -74,8 +85,9 @@ func (c *credentialsClient) DeleteSync(ctx context.Context, in *CredentialsReque
 // for forward compatibility
 type CredentialsServer interface {
 	AuthByGoogle(context.Context, *AuthByGoogleRequest) (*v1.EmptyReply, error)
-	GetOwnSync(context.Context, *v1.EmptyRequest) (*CredentialsReply, error)
-	DeleteSync(context.Context, *CredentialsRequest) (*v1.EmptyReply, error)
+	GetCredential(context.Context, *GetCredentialRequest) (*CredentialReply, error)
+	ListCredentials(context.Context, *v1.EmptyRequest) (*ListCredentialsReply, error)
+	DeleteCredential(context.Context, *CredentialsRequest) (*v1.EmptyReply, error)
 	mustEmbedUnimplementedCredentialsServer()
 }
 
@@ -86,11 +98,14 @@ type UnimplementedCredentialsServer struct {
 func (UnimplementedCredentialsServer) AuthByGoogle(context.Context, *AuthByGoogleRequest) (*v1.EmptyReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AuthByGoogle not implemented")
 }
-func (UnimplementedCredentialsServer) GetOwnSync(context.Context, *v1.EmptyRequest) (*CredentialsReply, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetOwnSync not implemented")
+func (UnimplementedCredentialsServer) GetCredential(context.Context, *GetCredentialRequest) (*CredentialReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetCredential not implemented")
 }
-func (UnimplementedCredentialsServer) DeleteSync(context.Context, *CredentialsRequest) (*v1.EmptyReply, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method DeleteSync not implemented")
+func (UnimplementedCredentialsServer) ListCredentials(context.Context, *v1.EmptyRequest) (*ListCredentialsReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListCredentials not implemented")
+}
+func (UnimplementedCredentialsServer) DeleteCredential(context.Context, *CredentialsRequest) (*v1.EmptyReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteCredential not implemented")
 }
 func (UnimplementedCredentialsServer) mustEmbedUnimplementedCredentialsServer() {}
 
@@ -123,38 +138,56 @@ func _Credentials_AuthByGoogle_Handler(srv interface{}, ctx context.Context, dec
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Credentials_GetOwnSync_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _Credentials_GetCredential_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetCredentialRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CredentialsServer).GetCredential(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Credentials_GetCredential_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CredentialsServer).GetCredential(ctx, req.(*GetCredentialRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Credentials_ListCredentials_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(v1.EmptyRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(CredentialsServer).GetOwnSync(ctx, in)
+		return srv.(CredentialsServer).ListCredentials(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: Credentials_GetOwnSync_FullMethodName,
+		FullMethod: Credentials_ListCredentials_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(CredentialsServer).GetOwnSync(ctx, req.(*v1.EmptyRequest))
+		return srv.(CredentialsServer).ListCredentials(ctx, req.(*v1.EmptyRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Credentials_DeleteSync_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _Credentials_DeleteCredential_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(CredentialsRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(CredentialsServer).DeleteSync(ctx, in)
+		return srv.(CredentialsServer).DeleteCredential(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: Credentials_DeleteSync_FullMethodName,
+		FullMethod: Credentials_DeleteCredential_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(CredentialsServer).DeleteSync(ctx, req.(*CredentialsRequest))
+		return srv.(CredentialsServer).DeleteCredential(ctx, req.(*CredentialsRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -171,12 +204,16 @@ var Credentials_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _Credentials_AuthByGoogle_Handler,
 		},
 		{
-			MethodName: "GetOwnSync",
-			Handler:    _Credentials_GetOwnSync_Handler,
+			MethodName: "GetCredential",
+			Handler:    _Credentials_GetCredential_Handler,
 		},
 		{
-			MethodName: "DeleteSync",
-			Handler:    _Credentials_DeleteSync_Handler,
+			MethodName: "ListCredentials",
+			Handler:    _Credentials_ListCredentials_Handler,
+		},
+		{
+			MethodName: "DeleteCredential",
+			Handler:    _Credentials_DeleteCredential_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

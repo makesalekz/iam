@@ -32,4 +32,5 @@ enum ErrorReason {
   CONTACT_NOT_FOUND = 22 [(errors.code) = 404];
   RELATION_NOT_FOUND = 23 [(errors.code) = 404];
   COMMON_CHAT_NOT_FOUND = 24 [(errors.code) = 404];
+  SYNC_NOT_FOUND = 25 [(errors.code) = 404];
 }

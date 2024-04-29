@@ -2013,7 +2013,7 @@ type UserCredentialsMutation struct {
 	deleted_at    *time.Time
 	mail          *string
 	display_name  *string
-	_type         *property.Provider
+	provider      *property.Provider
 	access_token  *string
 	token_type    *string
 	refresh_token *string
@@ -2309,53 +2309,53 @@ func (m *UserCredentialsMutation) ResetDisplayName() {
 	delete(m.clearedFields, usercredentials.FieldDisplayName)
 }
 
-// SetType sets the "type" field.
-func (m *UserCredentialsMutation) SetType(pr property.Provider) {
-	m._type = &pr
+// SetProvider sets the "provider" field.
+func (m *UserCredentialsMutation) SetProvider(pr property.Provider) {
+	m.provider = &pr
 }
 
-// GetType returns the value of the "type" field in the mutation.
-func (m *UserCredentialsMutation) GetType() (r property.Provider, exists bool) {
-	v := m._type
+// Provider returns the value of the "provider" field in the mutation.
+func (m *UserCredentialsMutation) Provider() (r property.Provider, exists bool) {
+	v := m.provider
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// OldType returns the old "type" field's value of the UserCredentials entity.
+// OldProvider returns the old "provider" field's value of the UserCredentials entity.
 // If the UserCredentials object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *UserCredentialsMutation) OldType(ctx context.Context) (v *property.Provider, err error) {
+func (m *UserCredentialsMutation) OldProvider(ctx context.Context) (v *property.Provider, err error) {
 	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldType is only allowed on UpdateOne operations")
+		return v, errors.New("OldProvider is only allowed on UpdateOne operations")
 	}
 	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldType requires an ID field in the mutation")
+		return v, errors.New("OldProvider requires an ID field in the mutation")
 	}
 	oldValue, err := m.oldValue(ctx)
 	if err != nil {
-		return v, fmt.Errorf("querying old value for OldType: %w", err)
+		return v, fmt.Errorf("querying old value for OldProvider: %w", err)
 	}
-	return oldValue.Type, nil
+	return oldValue.Provider, nil
 }
 
-// ClearType clears the value of the "type" field.
-func (m *UserCredentialsMutation) ClearType() {
-	m._type = nil
-	m.clearedFields[usercredentials.FieldType] = struct{}{}
+// ClearProvider clears the value of the "provider" field.
+func (m *UserCredentialsMutation) ClearProvider() {
+	m.provider = nil
+	m.clearedFields[usercredentials.FieldProvider] = struct{}{}
 }
 
-// TypeCleared returns if the "type" field was cleared in this mutation.
-func (m *UserCredentialsMutation) TypeCleared() bool {
-	_, ok := m.clearedFields[usercredentials.FieldType]
+// ProviderCleared returns if the "provider" field was cleared in this mutation.
+func (m *UserCredentialsMutation) ProviderCleared() bool {
+	_, ok := m.clearedFields[usercredentials.FieldProvider]
 	return ok
 }
 
-// ResetType resets all changes to the "type" field.
-func (m *UserCredentialsMutation) ResetType() {
-	m._type = nil
-	delete(m.clearedFields, usercredentials.FieldType)
+// ResetProvider resets all changes to the "provider" field.
+func (m *UserCredentialsMutation) ResetProvider() {
+	m.provider = nil
+	delete(m.clearedFields, usercredentials.FieldProvider)
 }
 
 // SetAccessToken sets the "access_token" field.
@@ -2687,8 +2687,8 @@ func (m *UserCredentialsMutation) Fields() []string {
 	if m.display_name != nil {
 		fields = append(fields, usercredentials.FieldDisplayName)
 	}
-	if m._type != nil {
-		fields = append(fields, usercredentials.FieldType)
+	if m.provider != nil {
+		fields = append(fields, usercredentials.FieldProvider)
 	}
 	if m.access_token != nil {
 		fields = append(fields, usercredentials.FieldAccessToken)
@@ -2724,8 +2724,8 @@ func (m *UserCredentialsMutation) Field(name string) (ent.Value, bool) {
 		return m.Mail()
 	case usercredentials.FieldDisplayName:
 		return m.DisplayName()
-	case usercredentials.FieldType:
-		return m.GetType()
+	case usercredentials.FieldProvider:
+		return m.Provider()
 	case usercredentials.FieldAccessToken:
 		return m.AccessToken()
 	case usercredentials.FieldTokenType:
@@ -2755,8 +2755,8 @@ func (m *UserCredentialsMutation) OldField(ctx context.Context, name string) (en
 		return m.OldMail(ctx)
 	case usercredentials.FieldDisplayName:
 		return m.OldDisplayName(ctx)
-	case usercredentials.FieldType:
-		return m.OldType(ctx)
+	case usercredentials.FieldProvider:
+		return m.OldProvider(ctx)
 	case usercredentials.FieldAccessToken:
 		return m.OldAccessToken(ctx)
 	case usercredentials.FieldTokenType:
@@ -2806,12 +2806,12 @@ func (m *UserCredentialsMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetDisplayName(v)
 		return nil
-	case usercredentials.FieldType:
+	case usercredentials.FieldProvider:
 		v, ok := value.(property.Provider)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.SetType(v)
+		m.SetProvider(v)
 		return nil
 	case usercredentials.FieldAccessToken:
 		v, ok := value.(string)
@@ -2897,8 +2897,8 @@ func (m *UserCredentialsMutation) ClearedFields() []string {
 	if m.FieldCleared(usercredentials.FieldDisplayName) {
 		fields = append(fields, usercredentials.FieldDisplayName)
 	}
-	if m.FieldCleared(usercredentials.FieldType) {
-		fields = append(fields, usercredentials.FieldType)
+	if m.FieldCleared(usercredentials.FieldProvider) {
+		fields = append(fields, usercredentials.FieldProvider)
 	}
 	if m.FieldCleared(usercredentials.FieldTokenType) {
 		fields = append(fields, usercredentials.FieldTokenType)
@@ -2932,8 +2932,8 @@ func (m *UserCredentialsMutation) ClearField(name string) error {
 	case usercredentials.FieldDisplayName:
 		m.ClearDisplayName()
 		return nil
-	case usercredentials.FieldType:
-		m.ClearType()
+	case usercredentials.FieldProvider:
+		m.ClearProvider()
 		return nil
 	case usercredentials.FieldTokenType:
 		m.ClearTokenType()
@@ -2964,8 +2964,8 @@ func (m *UserCredentialsMutation) ResetField(name string) error {
 	case usercredentials.FieldDisplayName:
 		m.ResetDisplayName()
 		return nil
-	case usercredentials.FieldType:
-		m.ResetType()
+	case usercredentials.FieldProvider:
+		m.ResetProvider()
 		return nil
 	case usercredentials.FieldAccessToken:
 		m.ResetAccessToken()

@@ -326,44 +326,44 @@ func DisplayNameContainsFold(v string) predicate.UserCredentials {
 	return predicate.UserCredentials(sql.FieldContainsFold(FieldDisplayName, v))
 }
 
-// TypeEQ applies the EQ predicate on the "type" field.
-func TypeEQ(v property.Provider) predicate.UserCredentials {
+// ProviderEQ applies the EQ predicate on the "provider" field.
+func ProviderEQ(v property.Provider) predicate.UserCredentials {
 	vc := v
-	return predicate.UserCredentials(sql.FieldEQ(FieldType, vc))
+	return predicate.UserCredentials(sql.FieldEQ(FieldProvider, vc))
 }
 
-// TypeNEQ applies the NEQ predicate on the "type" field.
-func TypeNEQ(v property.Provider) predicate.UserCredentials {
+// ProviderNEQ applies the NEQ predicate on the "provider" field.
+func ProviderNEQ(v property.Provider) predicate.UserCredentials {
 	vc := v
-	return predicate.UserCredentials(sql.FieldNEQ(FieldType, vc))
+	return predicate.UserCredentials(sql.FieldNEQ(FieldProvider, vc))
 }
 
-// TypeIn applies the In predicate on the "type" field.
-func TypeIn(vs ...property.Provider) predicate.UserCredentials {
+// ProviderIn applies the In predicate on the "provider" field.
+func ProviderIn(vs ...property.Provider) predicate.UserCredentials {
 	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
-	return predicate.UserCredentials(sql.FieldIn(FieldType, v...))
+	return predicate.UserCredentials(sql.FieldIn(FieldProvider, v...))
 }
 
-// TypeNotIn applies the NotIn predicate on the "type" field.
-func TypeNotIn(vs ...property.Provider) predicate.UserCredentials {
+// ProviderNotIn applies the NotIn predicate on the "provider" field.
+func ProviderNotIn(vs ...property.Provider) predicate.UserCredentials {
 	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
-	return predicate.UserCredentials(sql.FieldNotIn(FieldType, v...))
+	return predicate.UserCredentials(sql.FieldNotIn(FieldProvider, v...))
 }
 
-// TypeIsNil applies the IsNil predicate on the "type" field.
-func TypeIsNil() predicate.UserCredentials {
-	return predicate.UserCredentials(sql.FieldIsNull(FieldType))
+// ProviderIsNil applies the IsNil predicate on the "provider" field.
+func ProviderIsNil() predicate.UserCredentials {
+	return predicate.UserCredentials(sql.FieldIsNull(FieldProvider))
 }
 
-// TypeNotNil applies the NotNil predicate on the "type" field.
-func TypeNotNil() predicate.UserCredentials {
-	return predicate.UserCredentials(sql.FieldNotNull(FieldType))
+// ProviderNotNil applies the NotNil predicate on the "provider" field.
+func ProviderNotNil() predicate.UserCredentials {
+	return predicate.UserCredentials(sql.FieldNotNull(FieldProvider))
 }
 
 // AccessTokenEQ applies the EQ predicate on the "access_token" field.
