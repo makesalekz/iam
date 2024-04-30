@@ -11,7 +11,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"gitlab.calendaria.team/services/iam/ent/property"
+	"gitlab.calendaria.team/services/iam/ent/enum"
 	"gitlab.calendaria.team/services/iam/ent/user"
 	"gitlab.calendaria.team/services/iam/ent/usersettings"
 )
@@ -31,8 +31,8 @@ func (usc *UserSettingsCreate) SetUserID(i int64) *UserSettingsCreate {
 }
 
 // SetSetting sets the "setting" field.
-func (usc *UserSettingsCreate) SetSetting(pr property.Settings) *UserSettingsCreate {
-	usc.mutation.SetSetting(pr)
+func (usc *UserSettingsCreate) SetSetting(e enum.Settings) *UserSettingsCreate {
+	usc.mutation.SetSetting(e)
 	return usc
 }
 
@@ -245,7 +245,7 @@ func (u *UserSettingsUpsert) UpdateUserID() *UserSettingsUpsert {
 }
 
 // SetSetting sets the "setting" field.
-func (u *UserSettingsUpsert) SetSetting(v property.Settings) *UserSettingsUpsert {
+func (u *UserSettingsUpsert) SetSetting(v enum.Settings) *UserSettingsUpsert {
 	u.Set(usersettings.FieldSetting, v)
 	return u
 }
@@ -335,7 +335,7 @@ func (u *UserSettingsUpsertOne) UpdateUserID() *UserSettingsUpsertOne {
 }
 
 // SetSetting sets the "setting" field.
-func (u *UserSettingsUpsertOne) SetSetting(v property.Settings) *UserSettingsUpsertOne {
+func (u *UserSettingsUpsertOne) SetSetting(v enum.Settings) *UserSettingsUpsertOne {
 	return u.Update(func(s *UserSettingsUpsert) {
 		s.SetSetting(v)
 	})
@@ -595,7 +595,7 @@ func (u *UserSettingsUpsertBulk) UpdateUserID() *UserSettingsUpsertBulk {
 }
 
 // SetSetting sets the "setting" field.
-func (u *UserSettingsUpsertBulk) SetSetting(v property.Settings) *UserSettingsUpsertBulk {
+func (u *UserSettingsUpsertBulk) SetSetting(v enum.Settings) *UserSettingsUpsertBulk {
 	return u.Update(func(s *UserSettingsUpsert) {
 		s.SetSetting(v)
 	})

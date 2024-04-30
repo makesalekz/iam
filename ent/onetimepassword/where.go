@@ -7,8 +7,8 @@ import (
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
+	"gitlab.calendaria.team/services/iam/ent/enum"
 	"gitlab.calendaria.team/services/iam/ent/predicate"
-	"gitlab.calendaria.team/services/iam/ent/property"
 )
 
 // ID filters vertices based on their ID field.
@@ -167,19 +167,19 @@ func CodeContainsFold(v string) predicate.OneTimePassword {
 }
 
 // TypeEQ applies the EQ predicate on the "type" field.
-func TypeEQ(v property.OneTimePasswordType) predicate.OneTimePassword {
+func TypeEQ(v enum.OneTimePasswordType) predicate.OneTimePassword {
 	vc := v
 	return predicate.OneTimePassword(sql.FieldEQ(FieldType, vc))
 }
 
 // TypeNEQ applies the NEQ predicate on the "type" field.
-func TypeNEQ(v property.OneTimePasswordType) predicate.OneTimePassword {
+func TypeNEQ(v enum.OneTimePasswordType) predicate.OneTimePassword {
 	vc := v
 	return predicate.OneTimePassword(sql.FieldNEQ(FieldType, vc))
 }
 
 // TypeIn applies the In predicate on the "type" field.
-func TypeIn(vs ...property.OneTimePasswordType) predicate.OneTimePassword {
+func TypeIn(vs ...enum.OneTimePasswordType) predicate.OneTimePassword {
 	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
@@ -188,7 +188,7 @@ func TypeIn(vs ...property.OneTimePasswordType) predicate.OneTimePassword {
 }
 
 // TypeNotIn applies the NotIn predicate on the "type" field.
-func TypeNotIn(vs ...property.OneTimePasswordType) predicate.OneTimePassword {
+func TypeNotIn(vs ...enum.OneTimePasswordType) predicate.OneTimePassword {
 	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]

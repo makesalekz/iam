@@ -9,7 +9,7 @@ import (
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
-	"gitlab.calendaria.team/services/iam/ent/property"
+	"gitlab.calendaria.team/services/iam/ent/enum"
 	"gitlab.calendaria.team/services/iam/ent/user"
 	"gitlab.calendaria.team/services/iam/ent/usercredentials"
 )
@@ -28,7 +28,7 @@ type UserCredentials struct {
 	// DisplayName holds the value of the "display_name" field.
 	DisplayName *string `json:"display_name,omitempty"`
 	// Provider holds the value of the "provider" field.
-	Provider *property.Provider `json:"provider,omitempty"`
+	Provider *enum.Provider `json:"provider,omitempty"`
 	// AccessToken holds the value of the "access_token" field.
 	AccessToken string `json:"access_token,omitempty"`
 	// TokenType holds the value of the "token_type" field.
@@ -132,8 +132,8 @@ func (uc *UserCredentials) assignValues(columns []string, values []any) error {
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field provider", values[i])
 			} else if value.Valid {
-				uc.Provider = new(property.Provider)
-				*uc.Provider = property.Provider(value.String)
+				uc.Provider = new(enum.Provider)
+				*uc.Provider = enum.Provider(value.String)
 			}
 		case usercredentials.FieldAccessToken:
 			if value, ok := values[i].(*sql.NullString); !ok {

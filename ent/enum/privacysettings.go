@@ -1,4 +1,4 @@
-package property
+package enum
 
 type PrivacySettings string
 

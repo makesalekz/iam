@@ -11,7 +11,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"gitlab.calendaria.team/services/iam/ent/property"
+	"gitlab.calendaria.team/services/iam/ent/enum"
 	"gitlab.calendaria.team/services/iam/ent/user"
 	"gitlab.calendaria.team/services/iam/ent/usercredentials"
 )
@@ -73,15 +73,15 @@ func (ucc *UserCredentialsCreate) SetNillableDisplayName(s *string) *UserCredent
 }
 
 // SetProvider sets the "provider" field.
-func (ucc *UserCredentialsCreate) SetProvider(pr property.Provider) *UserCredentialsCreate {
-	ucc.mutation.SetProvider(pr)
+func (ucc *UserCredentialsCreate) SetProvider(e enum.Provider) *UserCredentialsCreate {
+	ucc.mutation.SetProvider(e)
 	return ucc
 }
 
 // SetNillableProvider sets the "provider" field if the given value is not nil.
-func (ucc *UserCredentialsCreate) SetNillableProvider(pr *property.Provider) *UserCredentialsCreate {
-	if pr != nil {
-		ucc.SetProvider(*pr)
+func (ucc *UserCredentialsCreate) SetNillableProvider(e *enum.Provider) *UserCredentialsCreate {
+	if e != nil {
+		ucc.SetProvider(*e)
 	}
 	return ucc
 }
@@ -446,7 +446,7 @@ func (u *UserCredentialsUpsert) ClearDisplayName() *UserCredentialsUpsert {
 }
 
 // SetProvider sets the "provider" field.
-func (u *UserCredentialsUpsert) SetProvider(v property.Provider) *UserCredentialsUpsert {
+func (u *UserCredentialsUpsert) SetProvider(v enum.Provider) *UserCredentialsUpsert {
 	u.Set(usercredentials.FieldProvider, v)
 	return u
 }
@@ -671,7 +671,7 @@ func (u *UserCredentialsUpsertOne) ClearDisplayName() *UserCredentialsUpsertOne 
 }
 
 // SetProvider sets the "provider" field.
-func (u *UserCredentialsUpsertOne) SetProvider(v property.Provider) *UserCredentialsUpsertOne {
+func (u *UserCredentialsUpsertOne) SetProvider(v enum.Provider) *UserCredentialsUpsertOne {
 	return u.Update(func(s *UserCredentialsUpsert) {
 		s.SetProvider(v)
 	})
@@ -1078,7 +1078,7 @@ func (u *UserCredentialsUpsertBulk) ClearDisplayName() *UserCredentialsUpsertBul
 }
 
 // SetProvider sets the "provider" field.
-func (u *UserCredentialsUpsertBulk) SetProvider(v property.Provider) *UserCredentialsUpsertBulk {
+func (u *UserCredentialsUpsertBulk) SetProvider(v enum.Provider) *UserCredentialsUpsertBulk {
 	return u.Update(func(s *UserCredentialsUpsert) {
 		s.SetProvider(v)
 	})

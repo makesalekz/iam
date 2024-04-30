@@ -11,8 +11,8 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"gitlab.calendaria.team/services/iam/ent/enum"
 	"gitlab.calendaria.team/services/iam/ent/predicate"
-	"gitlab.calendaria.team/services/iam/ent/property"
 	"gitlab.calendaria.team/services/iam/ent/user"
 	"gitlab.calendaria.team/services/iam/ent/userprivacy"
 )
@@ -46,29 +46,29 @@ func (upu *UserPrivacyUpdate) SetNillableUserID(i *int64) *UserPrivacyUpdate {
 }
 
 // SetSetting sets the "setting" field.
-func (upu *UserPrivacyUpdate) SetSetting(ps property.PrivacySettings) *UserPrivacyUpdate {
-	upu.mutation.SetSetting(ps)
+func (upu *UserPrivacyUpdate) SetSetting(es enum.PrivacySettings) *UserPrivacyUpdate {
+	upu.mutation.SetSetting(es)
 	return upu
 }
 
 // SetNillableSetting sets the "setting" field if the given value is not nil.
-func (upu *UserPrivacyUpdate) SetNillableSetting(ps *property.PrivacySettings) *UserPrivacyUpdate {
-	if ps != nil {
-		upu.SetSetting(*ps)
+func (upu *UserPrivacyUpdate) SetNillableSetting(es *enum.PrivacySettings) *UserPrivacyUpdate {
+	if es != nil {
+		upu.SetSetting(*es)
 	}
 	return upu
 }
 
 // SetOption sets the "option" field.
-func (upu *UserPrivacyUpdate) SetOption(po property.PrivacyOptions) *UserPrivacyUpdate {
-	upu.mutation.SetOption(po)
+func (upu *UserPrivacyUpdate) SetOption(eo enum.PrivacyOptions) *UserPrivacyUpdate {
+	upu.mutation.SetOption(eo)
 	return upu
 }
 
 // SetNillableOption sets the "option" field if the given value is not nil.
-func (upu *UserPrivacyUpdate) SetNillableOption(po *property.PrivacyOptions) *UserPrivacyUpdate {
-	if po != nil {
-		upu.SetOption(*po)
+func (upu *UserPrivacyUpdate) SetNillableOption(eo *enum.PrivacyOptions) *UserPrivacyUpdate {
+	if eo != nil {
+		upu.SetOption(*eo)
 	}
 	return upu
 }
@@ -241,29 +241,29 @@ func (upuo *UserPrivacyUpdateOne) SetNillableUserID(i *int64) *UserPrivacyUpdate
 }
 
 // SetSetting sets the "setting" field.
-func (upuo *UserPrivacyUpdateOne) SetSetting(ps property.PrivacySettings) *UserPrivacyUpdateOne {
-	upuo.mutation.SetSetting(ps)
+func (upuo *UserPrivacyUpdateOne) SetSetting(es enum.PrivacySettings) *UserPrivacyUpdateOne {
+	upuo.mutation.SetSetting(es)
 	return upuo
 }
 
 // SetNillableSetting sets the "setting" field if the given value is not nil.
-func (upuo *UserPrivacyUpdateOne) SetNillableSetting(ps *property.PrivacySettings) *UserPrivacyUpdateOne {
-	if ps != nil {
-		upuo.SetSetting(*ps)
+func (upuo *UserPrivacyUpdateOne) SetNillableSetting(es *enum.PrivacySettings) *UserPrivacyUpdateOne {
+	if es != nil {
+		upuo.SetSetting(*es)
 	}
 	return upuo
 }
 
 // SetOption sets the "option" field.
-func (upuo *UserPrivacyUpdateOne) SetOption(po property.PrivacyOptions) *UserPrivacyUpdateOne {
-	upuo.mutation.SetOption(po)
+func (upuo *UserPrivacyUpdateOne) SetOption(eo enum.PrivacyOptions) *UserPrivacyUpdateOne {
+	upuo.mutation.SetOption(eo)
 	return upuo
 }
 
 // SetNillableOption sets the "option" field if the given value is not nil.
-func (upuo *UserPrivacyUpdateOne) SetNillableOption(po *property.PrivacyOptions) *UserPrivacyUpdateOne {
-	if po != nil {
-		upuo.SetOption(*po)
+func (upuo *UserPrivacyUpdateOne) SetNillableOption(eo *enum.PrivacyOptions) *UserPrivacyUpdateOne {
+	if eo != nil {
+		upuo.SetOption(*eo)
 	}
 	return upuo
 }

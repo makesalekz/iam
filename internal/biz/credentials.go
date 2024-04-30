@@ -3,7 +3,7 @@ package biz
 import (
 	"context"
 	"gitlab.calendaria.team/services/iam/ent"
-	"gitlab.calendaria.team/services/iam/ent/property"
+	"gitlab.calendaria.team/services/iam/ent/enum"
 	"os"
 
 	iam_v1 "gitlab.calendaria.team/services/iam/api/iam/v1"
@@ -51,7 +51,7 @@ func (uc *CredentialsUsecase) AuthByGoogle(ctx context.Context, actorId int64, a
 	}
 
 	// exchange auth code to token
-	tok, err := config.Exchange(context.TODO(), authCode)
+	tok, err := config.Exchange(ctx, authCode)
 	if err != nil {
 		return iam_v1.ErrorServiceFailed("Unable to retrieve token from web: %v", err.Error())
 	}
@@ -65,7 +65,7 @@ func (uc *CredentialsUsecase) AuthByGoogle(ctx context.Context, actorId int64, a
 	return nil
 }
 
-func (uc *CredentialsUsecase) GetCredential(ctx context.Context, actorId int64, provider property.Provider) (*ent.UserCredentials, error) {
+func (uc *CredentialsUsecase) GetCredential(ctx context.Context, actorId int64, provider enum.Provider) (*ent.UserCredentials, error) {
 	return uc.credentialsRepo.GetCredential(ctx, actorId, provider)
 }
 

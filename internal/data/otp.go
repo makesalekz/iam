@@ -7,15 +7,15 @@ import (
 	"time"
 
 	"gitlab.calendaria.team/services/iam/ent"
+	"gitlab.calendaria.team/services/iam/ent/enum"
 	"gitlab.calendaria.team/services/iam/ent/onetimepassword"
-	"gitlab.calendaria.team/services/iam/ent/property"
 )
 
 const digits = "0123456789"
 
 // OtpRepo
 type OtpRepo interface {
-	CreateOneTimePassword(ctx context.Context, userId int64, t property.OneTimePasswordType, duration time.Duration) (*ent.OneTimePassword, error)
+	CreateOneTimePassword(ctx context.Context, userId int64, t enum.OneTimePasswordType, duration time.Duration) (*ent.OneTimePassword, error)
 	CheckOneTimePassword(ctx context.Context, userId int64, code string) (*ent.OneTimePassword, error)
 }
 
@@ -38,7 +38,7 @@ func generateRandomNumber(n int) string {
 	return string(result)
 }
 
-func (r *otpRepo) CreateOneTimePassword(ctx context.Context, userId int64, t property.OneTimePasswordType, duration time.Duration) (*ent.OneTimePassword, error) {
+func (r *otpRepo) CreateOneTimePassword(ctx context.Context, userId int64, t enum.OneTimePasswordType, duration time.Duration) (*ent.OneTimePassword, error) {
 	code := generateRandomNumber(6)
 	expiresAt := time.Now().Add(duration)
 

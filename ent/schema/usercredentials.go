@@ -4,7 +4,7 @@ import (
 	"gitlab.calendaria.team/services/iam/ent/mixins"
 	"time"
 
-	"gitlab.calendaria.team/services/iam/ent/property"
+	"gitlab.calendaria.team/services/iam/ent/enum"
 
 	"entgo.io/ent"
 	"entgo.io/ent/schema/edge"
@@ -21,7 +21,7 @@ func (UserCredentials) Fields() []ent.Field {
 		field.Int64("user_id"),
 		field.String("mail").Optional().Nillable(),
 		field.String("display_name").Optional().Nillable(),
-		field.Enum("provider").GoType(property.Provider("")).Optional().Nillable(),
+		field.Enum("provider").GoType(enum.Provider("")).Optional().Nillable(),
 		field.String("access_token"),
 		field.String("token_type").Optional().Nillable(),
 		field.String("refresh_token").Optional().Nillable(),

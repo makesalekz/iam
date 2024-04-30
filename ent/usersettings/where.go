@@ -7,8 +7,8 @@ import (
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
+	"gitlab.calendaria.team/services/iam/ent/enum"
 	"gitlab.calendaria.team/services/iam/ent/predicate"
-	"gitlab.calendaria.team/services/iam/ent/property"
 )
 
 // ID filters vertices based on their ID field.
@@ -92,19 +92,19 @@ func UserIDNotIn(vs ...int64) predicate.UserSettings {
 }
 
 // SettingEQ applies the EQ predicate on the "setting" field.
-func SettingEQ(v property.Settings) predicate.UserSettings {
+func SettingEQ(v enum.Settings) predicate.UserSettings {
 	vc := v
 	return predicate.UserSettings(sql.FieldEQ(FieldSetting, vc))
 }
 
 // SettingNEQ applies the NEQ predicate on the "setting" field.
-func SettingNEQ(v property.Settings) predicate.UserSettings {
+func SettingNEQ(v enum.Settings) predicate.UserSettings {
 	vc := v
 	return predicate.UserSettings(sql.FieldNEQ(FieldSetting, vc))
 }
 
 // SettingIn applies the In predicate on the "setting" field.
-func SettingIn(vs ...property.Settings) predicate.UserSettings {
+func SettingIn(vs ...enum.Settings) predicate.UserSettings {
 	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
@@ -113,7 +113,7 @@ func SettingIn(vs ...property.Settings) predicate.UserSettings {
 }
 
 // SettingNotIn applies the NotIn predicate on the "setting" field.
-func SettingNotIn(vs ...property.Settings) predicate.UserSettings {
+func SettingNotIn(vs ...enum.Settings) predicate.UserSettings {
 	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]

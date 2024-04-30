@@ -3,7 +3,7 @@ package service
 import (
 	"context"
 	"gitlab.calendaria.team/services/iam/ent"
-	"gitlab.calendaria.team/services/iam/ent/property"
+	"gitlab.calendaria.team/services/iam/ent/enum"
 	"time"
 
 	iam_v1 "gitlab.calendaria.team/services/iam/api/iam/v1"
@@ -106,7 +106,7 @@ func (s *CredentialsService) GetCredential(ctx context.Context, req *iam_v1.GetC
 		return nil, iam_v1.ErrorEmptyActorId("empty actor id")
 	}
 
-	provider := property.Provider(req.Provider)
+	provider := enum.Provider(req.Provider)
 	if !provider.IsValid() {
 		return nil, iam_v1.ErrorInvalidProvider("invalid provider")
 	}

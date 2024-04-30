@@ -11,8 +11,8 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"gitlab.calendaria.team/services/iam/ent/enum"
 	"gitlab.calendaria.team/services/iam/ent/predicate"
-	"gitlab.calendaria.team/services/iam/ent/property"
 	"gitlab.calendaria.team/services/iam/ent/user"
 	"gitlab.calendaria.team/services/iam/ent/usercredentials"
 )
@@ -106,15 +106,15 @@ func (ucu *UserCredentialsUpdate) ClearDisplayName() *UserCredentialsUpdate {
 }
 
 // SetProvider sets the "provider" field.
-func (ucu *UserCredentialsUpdate) SetProvider(pr property.Provider) *UserCredentialsUpdate {
-	ucu.mutation.SetProvider(pr)
+func (ucu *UserCredentialsUpdate) SetProvider(e enum.Provider) *UserCredentialsUpdate {
+	ucu.mutation.SetProvider(e)
 	return ucu
 }
 
 // SetNillableProvider sets the "provider" field if the given value is not nil.
-func (ucu *UserCredentialsUpdate) SetNillableProvider(pr *property.Provider) *UserCredentialsUpdate {
-	if pr != nil {
-		ucu.SetProvider(*pr)
+func (ucu *UserCredentialsUpdate) SetNillableProvider(e *enum.Provider) *UserCredentialsUpdate {
+	if e != nil {
+		ucu.SetProvider(*e)
 	}
 	return ucu
 }
@@ -478,15 +478,15 @@ func (ucuo *UserCredentialsUpdateOne) ClearDisplayName() *UserCredentialsUpdateO
 }
 
 // SetProvider sets the "provider" field.
-func (ucuo *UserCredentialsUpdateOne) SetProvider(pr property.Provider) *UserCredentialsUpdateOne {
-	ucuo.mutation.SetProvider(pr)
+func (ucuo *UserCredentialsUpdateOne) SetProvider(e enum.Provider) *UserCredentialsUpdateOne {
+	ucuo.mutation.SetProvider(e)
 	return ucuo
 }
 
 // SetNillableProvider sets the "provider" field if the given value is not nil.
-func (ucuo *UserCredentialsUpdateOne) SetNillableProvider(pr *property.Provider) *UserCredentialsUpdateOne {
-	if pr != nil {
-		ucuo.SetProvider(*pr)
+func (ucuo *UserCredentialsUpdateOne) SetNillableProvider(e *enum.Provider) *UserCredentialsUpdateOne {
+	if e != nil {
+		ucuo.SetProvider(*e)
 	}
 	return ucuo
 }

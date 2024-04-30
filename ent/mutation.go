@@ -11,9 +11,9 @@ import (
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
+	"gitlab.calendaria.team/services/iam/ent/enum"
 	"gitlab.calendaria.team/services/iam/ent/onetimepassword"
 	"gitlab.calendaria.team/services/iam/ent/predicate"
-	"gitlab.calendaria.team/services/iam/ent/property"
 	"gitlab.calendaria.team/services/iam/ent/user"
 	"gitlab.calendaria.team/services/iam/ent/usercredentials"
 	"gitlab.calendaria.team/services/iam/ent/userprivacy"
@@ -43,7 +43,7 @@ type OneTimePasswordMutation struct {
 	typ           string
 	id            *int64
 	code          *string
-	_type         *property.OneTimePasswordType
+	_type         *enum.OneTimePasswordType
 	is_used       *bool
 	expires_at    *time.Time
 	created_at    *time.Time
@@ -226,12 +226,12 @@ func (m *OneTimePasswordMutation) ResetCode() {
 }
 
 // SetType sets the "type" field.
-func (m *OneTimePasswordMutation) SetType(ptpt property.OneTimePasswordType) {
-	m._type = &ptpt
+func (m *OneTimePasswordMutation) SetType(etpt enum.OneTimePasswordType) {
+	m._type = &etpt
 }
 
 // GetType returns the value of the "type" field in the mutation.
-func (m *OneTimePasswordMutation) GetType() (r property.OneTimePasswordType, exists bool) {
+func (m *OneTimePasswordMutation) GetType() (r enum.OneTimePasswordType, exists bool) {
 	v := m._type
 	if v == nil {
 		return
@@ -242,7 +242,7 @@ func (m *OneTimePasswordMutation) GetType() (r property.OneTimePasswordType, exi
 // OldType returns the old "type" field's value of the OneTimePassword entity.
 // If the OneTimePassword object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *OneTimePasswordMutation) OldType(ctx context.Context) (v property.OneTimePasswordType, err error) {
+func (m *OneTimePasswordMutation) OldType(ctx context.Context) (v enum.OneTimePasswordType, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldType is only allowed on UpdateOne operations")
 	}
@@ -514,7 +514,7 @@ func (m *OneTimePasswordMutation) SetField(name string, value ent.Value) error {
 		m.SetCode(v)
 		return nil
 	case onetimepassword.FieldType:
-		v, ok := value.(property.OneTimePasswordType)
+		v, ok := value.(enum.OneTimePasswordType)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
@@ -2013,7 +2013,7 @@ type UserCredentialsMutation struct {
 	deleted_at    *time.Time
 	mail          *string
 	display_name  *string
-	provider      *property.Provider
+	provider      *enum.Provider
 	access_token  *string
 	token_type    *string
 	refresh_token *string
@@ -2310,12 +2310,12 @@ func (m *UserCredentialsMutation) ResetDisplayName() {
 }
 
 // SetProvider sets the "provider" field.
-func (m *UserCredentialsMutation) SetProvider(pr property.Provider) {
-	m.provider = &pr
+func (m *UserCredentialsMutation) SetProvider(e enum.Provider) {
+	m.provider = &e
 }
 
 // Provider returns the value of the "provider" field in the mutation.
-func (m *UserCredentialsMutation) Provider() (r property.Provider, exists bool) {
+func (m *UserCredentialsMutation) Provider() (r enum.Provider, exists bool) {
 	v := m.provider
 	if v == nil {
 		return
@@ -2326,7 +2326,7 @@ func (m *UserCredentialsMutation) Provider() (r property.Provider, exists bool) 
 // OldProvider returns the old "provider" field's value of the UserCredentials entity.
 // If the UserCredentials object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *UserCredentialsMutation) OldProvider(ctx context.Context) (v *property.Provider, err error) {
+func (m *UserCredentialsMutation) OldProvider(ctx context.Context) (v *enum.Provider, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldProvider is only allowed on UpdateOne operations")
 	}
@@ -2807,7 +2807,7 @@ func (m *UserCredentialsMutation) SetField(name string, value ent.Value) error {
 		m.SetDisplayName(v)
 		return nil
 	case usercredentials.FieldProvider:
-		v, ok := value.(property.Provider)
+		v, ok := value.(enum.Provider)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
@@ -3069,8 +3069,8 @@ type UserPrivacyMutation struct {
 	op            Op
 	typ           string
 	id            *int64
-	setting       *property.PrivacySettings
-	option        *property.PrivacyOptions
+	setting       *enum.PrivacySettings
+	option        *enum.PrivacyOptions
 	updated_at    *time.Time
 	clearedFields map[string]struct{}
 	user          *int64
@@ -3215,12 +3215,12 @@ func (m *UserPrivacyMutation) ResetUserID() {
 }
 
 // SetSetting sets the "setting" field.
-func (m *UserPrivacyMutation) SetSetting(ps property.PrivacySettings) {
-	m.setting = &ps
+func (m *UserPrivacyMutation) SetSetting(es enum.PrivacySettings) {
+	m.setting = &es
 }
 
 // Setting returns the value of the "setting" field in the mutation.
-func (m *UserPrivacyMutation) Setting() (r property.PrivacySettings, exists bool) {
+func (m *UserPrivacyMutation) Setting() (r enum.PrivacySettings, exists bool) {
 	v := m.setting
 	if v == nil {
 		return
@@ -3231,7 +3231,7 @@ func (m *UserPrivacyMutation) Setting() (r property.PrivacySettings, exists bool
 // OldSetting returns the old "setting" field's value of the UserPrivacy entity.
 // If the UserPrivacy object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *UserPrivacyMutation) OldSetting(ctx context.Context) (v property.PrivacySettings, err error) {
+func (m *UserPrivacyMutation) OldSetting(ctx context.Context) (v enum.PrivacySettings, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldSetting is only allowed on UpdateOne operations")
 	}
@@ -3251,12 +3251,12 @@ func (m *UserPrivacyMutation) ResetSetting() {
 }
 
 // SetOption sets the "option" field.
-func (m *UserPrivacyMutation) SetOption(po property.PrivacyOptions) {
-	m.option = &po
+func (m *UserPrivacyMutation) SetOption(eo enum.PrivacyOptions) {
+	m.option = &eo
 }
 
 // Option returns the value of the "option" field in the mutation.
-func (m *UserPrivacyMutation) Option() (r property.PrivacyOptions, exists bool) {
+func (m *UserPrivacyMutation) Option() (r enum.PrivacyOptions, exists bool) {
 	v := m.option
 	if v == nil {
 		return
@@ -3267,7 +3267,7 @@ func (m *UserPrivacyMutation) Option() (r property.PrivacyOptions, exists bool) 
 // OldOption returns the old "option" field's value of the UserPrivacy entity.
 // If the UserPrivacy object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *UserPrivacyMutation) OldOption(ctx context.Context) (v property.PrivacyOptions, err error) {
+func (m *UserPrivacyMutation) OldOption(ctx context.Context) (v enum.PrivacyOptions, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldOption is only allowed on UpdateOne operations")
 	}
@@ -3446,14 +3446,14 @@ func (m *UserPrivacyMutation) SetField(name string, value ent.Value) error {
 		m.SetUserID(v)
 		return nil
 	case userprivacy.FieldSetting:
-		v, ok := value.(property.PrivacySettings)
+		v, ok := value.(enum.PrivacySettings)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetSetting(v)
 		return nil
 	case userprivacy.FieldOption:
-		v, ok := value.(property.PrivacyOptions)
+		v, ok := value.(enum.PrivacyOptions)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
@@ -3614,7 +3614,7 @@ type UserSettingsMutation struct {
 	op            Op
 	typ           string
 	id            *int64
-	setting       *property.Settings
+	setting       *enum.Settings
 	value         *string
 	updated_at    *time.Time
 	clearedFields map[string]struct{}
@@ -3760,12 +3760,12 @@ func (m *UserSettingsMutation) ResetUserID() {
 }
 
 // SetSetting sets the "setting" field.
-func (m *UserSettingsMutation) SetSetting(pr property.Settings) {
-	m.setting = &pr
+func (m *UserSettingsMutation) SetSetting(e enum.Settings) {
+	m.setting = &e
 }
 
 // Setting returns the value of the "setting" field in the mutation.
-func (m *UserSettingsMutation) Setting() (r property.Settings, exists bool) {
+func (m *UserSettingsMutation) Setting() (r enum.Settings, exists bool) {
 	v := m.setting
 	if v == nil {
 		return
@@ -3776,7 +3776,7 @@ func (m *UserSettingsMutation) Setting() (r property.Settings, exists bool) {
 // OldSetting returns the old "setting" field's value of the UserSettings entity.
 // If the UserSettings object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *UserSettingsMutation) OldSetting(ctx context.Context) (v property.Settings, err error) {
+func (m *UserSettingsMutation) OldSetting(ctx context.Context) (v enum.Settings, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldSetting is only allowed on UpdateOne operations")
 	}
@@ -3991,7 +3991,7 @@ func (m *UserSettingsMutation) SetField(name string, value ent.Value) error {
 		m.SetUserID(v)
 		return nil
 	case usersettings.FieldSetting:
-		v, ok := value.(property.Settings)
+		v, ok := value.(enum.Settings)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}

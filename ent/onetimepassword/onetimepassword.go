@@ -8,7 +8,7 @@ import (
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
-	"gitlab.calendaria.team/services/iam/ent/property"
+	"gitlab.calendaria.team/services/iam/ent/enum"
 )
 
 const (
@@ -72,7 +72,7 @@ var (
 )
 
 // TypeValidator is a validator for the "type" field enum values. It is called by the builders before save.
-func TypeValidator(_type property.OneTimePasswordType) error {
+func TypeValidator(_type enum.OneTimePasswordType) error {
 	switch _type {
 	case "EMAIL", "PHONE":
 		return nil

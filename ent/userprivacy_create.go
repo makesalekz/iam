@@ -11,7 +11,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"gitlab.calendaria.team/services/iam/ent/property"
+	"gitlab.calendaria.team/services/iam/ent/enum"
 	"gitlab.calendaria.team/services/iam/ent/user"
 	"gitlab.calendaria.team/services/iam/ent/userprivacy"
 )
@@ -31,14 +31,14 @@ func (upc *UserPrivacyCreate) SetUserID(i int64) *UserPrivacyCreate {
 }
 
 // SetSetting sets the "setting" field.
-func (upc *UserPrivacyCreate) SetSetting(ps property.PrivacySettings) *UserPrivacyCreate {
-	upc.mutation.SetSetting(ps)
+func (upc *UserPrivacyCreate) SetSetting(es enum.PrivacySettings) *UserPrivacyCreate {
+	upc.mutation.SetSetting(es)
 	return upc
 }
 
 // SetOption sets the "option" field.
-func (upc *UserPrivacyCreate) SetOption(po property.PrivacyOptions) *UserPrivacyCreate {
-	upc.mutation.SetOption(po)
+func (upc *UserPrivacyCreate) SetOption(eo enum.PrivacyOptions) *UserPrivacyCreate {
+	upc.mutation.SetOption(eo)
 	return upc
 }
 
@@ -250,7 +250,7 @@ func (u *UserPrivacyUpsert) UpdateUserID() *UserPrivacyUpsert {
 }
 
 // SetSetting sets the "setting" field.
-func (u *UserPrivacyUpsert) SetSetting(v property.PrivacySettings) *UserPrivacyUpsert {
+func (u *UserPrivacyUpsert) SetSetting(v enum.PrivacySettings) *UserPrivacyUpsert {
 	u.Set(userprivacy.FieldSetting, v)
 	return u
 }
@@ -262,7 +262,7 @@ func (u *UserPrivacyUpsert) UpdateSetting() *UserPrivacyUpsert {
 }
 
 // SetOption sets the "option" field.
-func (u *UserPrivacyUpsert) SetOption(v property.PrivacyOptions) *UserPrivacyUpsert {
+func (u *UserPrivacyUpsert) SetOption(v enum.PrivacyOptions) *UserPrivacyUpsert {
 	u.Set(userprivacy.FieldOption, v)
 	return u
 }
@@ -340,7 +340,7 @@ func (u *UserPrivacyUpsertOne) UpdateUserID() *UserPrivacyUpsertOne {
 }
 
 // SetSetting sets the "setting" field.
-func (u *UserPrivacyUpsertOne) SetSetting(v property.PrivacySettings) *UserPrivacyUpsertOne {
+func (u *UserPrivacyUpsertOne) SetSetting(v enum.PrivacySettings) *UserPrivacyUpsertOne {
 	return u.Update(func(s *UserPrivacyUpsert) {
 		s.SetSetting(v)
 	})
@@ -354,7 +354,7 @@ func (u *UserPrivacyUpsertOne) UpdateSetting() *UserPrivacyUpsertOne {
 }
 
 // SetOption sets the "option" field.
-func (u *UserPrivacyUpsertOne) SetOption(v property.PrivacyOptions) *UserPrivacyUpsertOne {
+func (u *UserPrivacyUpsertOne) SetOption(v enum.PrivacyOptions) *UserPrivacyUpsertOne {
 	return u.Update(func(s *UserPrivacyUpsert) {
 		s.SetOption(v)
 	})
@@ -600,7 +600,7 @@ func (u *UserPrivacyUpsertBulk) UpdateUserID() *UserPrivacyUpsertBulk {
 }
 
 // SetSetting sets the "setting" field.
-func (u *UserPrivacyUpsertBulk) SetSetting(v property.PrivacySettings) *UserPrivacyUpsertBulk {
+func (u *UserPrivacyUpsertBulk) SetSetting(v enum.PrivacySettings) *UserPrivacyUpsertBulk {
 	return u.Update(func(s *UserPrivacyUpsert) {
 		s.SetSetting(v)
 	})
@@ -614,7 +614,7 @@ func (u *UserPrivacyUpsertBulk) UpdateSetting() *UserPrivacyUpsertBulk {
 }
 
 // SetOption sets the "option" field.
-func (u *UserPrivacyUpsertBulk) SetOption(v property.PrivacyOptions) *UserPrivacyUpsertBulk {
+func (u *UserPrivacyUpsertBulk) SetOption(v enum.PrivacyOptions) *UserPrivacyUpsertBulk {
 	return u.Update(func(s *UserPrivacyUpsert) {
 		s.SetOption(v)
 	})

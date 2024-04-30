@@ -3,7 +3,7 @@ package schema
 import (
 	"time"
 
-	"gitlab.calendaria.team/services/iam/ent/property"
+	"gitlab.calendaria.team/services/iam/ent/enum"
 
 	"entgo.io/ent"
 	"entgo.io/ent/schema/edge"
@@ -20,7 +20,7 @@ func (OneTimePassword) Fields() []ent.Field {
 	return []ent.Field{
 		field.Int64("user_id"),
 		field.String("code").MaxLen(6),
-		field.Enum("type").GoType(property.OneTimePasswordType("")),
+		field.Enum("type").GoType(enum.OneTimePasswordType("")),
 		field.Bool("is_used").Default(false),
 		field.Time("expires_at"),
 		field.Time("created_at").Default(time.Now),
