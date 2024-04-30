@@ -8,7 +8,7 @@ import (
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
-	"gitlab.calendaria.team/services/iam/ent/property"
+	"gitlab.calendaria.team/services/iam/ent/enum"
 )
 
 const (
@@ -62,7 +62,7 @@ var (
 )
 
 // SettingValidator is a validator for the "setting" field enum values. It is called by the builders before save.
-func SettingValidator(s property.Settings) error {
+func SettingValidator(s enum.Settings) error {
 	switch s {
 	case "TEST_SETTING":
 		return nil

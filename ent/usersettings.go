@@ -9,7 +9,7 @@ import (
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
-	"gitlab.calendaria.team/services/iam/ent/property"
+	"gitlab.calendaria.team/services/iam/ent/enum"
 	"gitlab.calendaria.team/services/iam/ent/user"
 	"gitlab.calendaria.team/services/iam/ent/usersettings"
 )
@@ -22,7 +22,7 @@ type UserSettings struct {
 	// UserID holds the value of the "user_id" field.
 	UserID int64 `json:"user_id,omitempty"`
 	// Setting holds the value of the "setting" field.
-	Setting property.Settings `json:"setting,omitempty"`
+	Setting enum.Settings `json:"setting,omitempty"`
 	// Value holds the value of the "value" field.
 	Value string `json:"value,omitempty"`
 	// UpdatedAt holds the value of the "updated_at" field.
@@ -97,7 +97,7 @@ func (us *UserSettings) assignValues(columns []string, values []any) error {
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field setting", values[i])
 			} else if value.Valid {
-				us.Setting = property.Settings(value.String)
+				us.Setting = enum.Settings(value.String)
 			}
 		case usersettings.FieldValue:
 			if value, ok := values[i].(*sql.NullString); !ok {

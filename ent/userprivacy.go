@@ -9,7 +9,7 @@ import (
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
-	"gitlab.calendaria.team/services/iam/ent/property"
+	"gitlab.calendaria.team/services/iam/ent/enum"
 	"gitlab.calendaria.team/services/iam/ent/user"
 	"gitlab.calendaria.team/services/iam/ent/userprivacy"
 )
@@ -22,9 +22,9 @@ type UserPrivacy struct {
 	// UserID holds the value of the "user_id" field.
 	UserID int64 `json:"user_id,omitempty"`
 	// Setting holds the value of the "setting" field.
-	Setting property.PrivacySettings `json:"setting,omitempty"`
+	Setting enum.PrivacySettings `json:"setting,omitempty"`
 	// Option holds the value of the "option" field.
-	Option property.PrivacyOptions `json:"option,omitempty"`
+	Option enum.PrivacyOptions `json:"option,omitempty"`
 	// UpdatedAt holds the value of the "updated_at" field.
 	UpdatedAt time.Time `json:"updated_at,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
@@ -97,13 +97,13 @@ func (up *UserPrivacy) assignValues(columns []string, values []any) error {
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field setting", values[i])
 			} else if value.Valid {
-				up.Setting = property.PrivacySettings(value.String)
+				up.Setting = enum.PrivacySettings(value.String)
 			}
 		case userprivacy.FieldOption:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field option", values[i])
 			} else if value.Valid {
-				up.Option = property.PrivacyOptions(value.String)
+				up.Option = enum.PrivacyOptions(value.String)
 			}
 		case userprivacy.FieldUpdatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {

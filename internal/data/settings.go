@@ -6,7 +6,7 @@ import (
 
 	"entgo.io/ent/dialect/sql"
 	"gitlab.calendaria.team/services/iam/ent"
-	"gitlab.calendaria.team/services/iam/ent/property"
+	"gitlab.calendaria.team/services/iam/ent/enum"
 	"gitlab.calendaria.team/services/iam/ent/usersettings"
 )
 
@@ -44,7 +44,7 @@ func (r *settingsRepo) GetSettings(ctx context.Context, userId int64) (SettingsD
 }
 
 func (r *settingsRepo) UpdateSettings(ctx context.Context, userId int64, dto SettingsData) (SettingsData, error) {
-	var settingsSettings property.Settings
+	var settingsSettings enum.Settings
 	settingsAvailable := settingsSettings.Values()
 
 	builders := make([]*ent.UserSettingsCreate, 0)
@@ -55,7 +55,7 @@ func (r *settingsRepo) UpdateSettings(ctx context.Context, userId int64, dto Set
 		}
 		builder := r.db.UserSettings.Create().
 			SetUserID(userId).
-			SetSetting(property.Settings(setting)).
+			SetSetting(enum.Settings(setting)).
 			SetValue(value)
 
 		builders = append(builders, builder)

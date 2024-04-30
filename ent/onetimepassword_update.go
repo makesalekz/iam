@@ -11,9 +11,9 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"gitlab.calendaria.team/services/iam/ent/enum"
 	"gitlab.calendaria.team/services/iam/ent/onetimepassword"
 	"gitlab.calendaria.team/services/iam/ent/predicate"
-	"gitlab.calendaria.team/services/iam/ent/property"
 	"gitlab.calendaria.team/services/iam/ent/user"
 )
 
@@ -60,15 +60,15 @@ func (otpu *OneTimePasswordUpdate) SetNillableCode(s *string) *OneTimePasswordUp
 }
 
 // SetType sets the "type" field.
-func (otpu *OneTimePasswordUpdate) SetType(ptpt property.OneTimePasswordType) *OneTimePasswordUpdate {
-	otpu.mutation.SetType(ptpt)
+func (otpu *OneTimePasswordUpdate) SetType(etpt enum.OneTimePasswordType) *OneTimePasswordUpdate {
+	otpu.mutation.SetType(etpt)
 	return otpu
 }
 
 // SetNillableType sets the "type" field if the given value is not nil.
-func (otpu *OneTimePasswordUpdate) SetNillableType(ptpt *property.OneTimePasswordType) *OneTimePasswordUpdate {
-	if ptpt != nil {
-		otpu.SetType(*ptpt)
+func (otpu *OneTimePasswordUpdate) SetNillableType(etpt *enum.OneTimePasswordType) *OneTimePasswordUpdate {
+	if etpt != nil {
+		otpu.SetType(*etpt)
 	}
 	return otpu
 }
@@ -289,15 +289,15 @@ func (otpuo *OneTimePasswordUpdateOne) SetNillableCode(s *string) *OneTimePasswo
 }
 
 // SetType sets the "type" field.
-func (otpuo *OneTimePasswordUpdateOne) SetType(ptpt property.OneTimePasswordType) *OneTimePasswordUpdateOne {
-	otpuo.mutation.SetType(ptpt)
+func (otpuo *OneTimePasswordUpdateOne) SetType(etpt enum.OneTimePasswordType) *OneTimePasswordUpdateOne {
+	otpuo.mutation.SetType(etpt)
 	return otpuo
 }
 
 // SetNillableType sets the "type" field if the given value is not nil.
-func (otpuo *OneTimePasswordUpdateOne) SetNillableType(ptpt *property.OneTimePasswordType) *OneTimePasswordUpdateOne {
-	if ptpt != nil {
-		otpuo.SetType(*ptpt)
+func (otpuo *OneTimePasswordUpdateOne) SetNillableType(etpt *enum.OneTimePasswordType) *OneTimePasswordUpdateOne {
+	if etpt != nil {
+		otpuo.SetType(*etpt)
 	}
 	return otpuo
 }

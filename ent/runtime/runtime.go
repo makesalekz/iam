@@ -8,6 +8,7 @@ import (
 	"gitlab.calendaria.team/services/iam/ent/onetimepassword"
 	"gitlab.calendaria.team/services/iam/ent/schema"
 	"gitlab.calendaria.team/services/iam/ent/user"
+	"gitlab.calendaria.team/services/iam/ent/usercredentials"
 	"gitlab.calendaria.team/services/iam/ent/userprivacy"
 	"gitlab.calendaria.team/services/iam/ent/usersettings"
 )
@@ -91,6 +92,21 @@ func init() {
 	userDescUpdatedAt := userFields[13].Descriptor()
 	// user.DefaultUpdatedAt holds the default value on creation for the updated_at field.
 	user.DefaultUpdatedAt = userDescUpdatedAt.Default.(func() time.Time)
+	usercredentialsMixin := schema.UserCredentials{}.Mixin()
+	usercredentialsMixinHooks0 := usercredentialsMixin[0].Hooks()
+	usercredentials.Hooks[0] = usercredentialsMixinHooks0[0]
+	usercredentialsMixinInters0 := usercredentialsMixin[0].Interceptors()
+	usercredentials.Interceptors[0] = usercredentialsMixinInters0[0]
+	usercredentialsFields := schema.UserCredentials{}.Fields()
+	_ = usercredentialsFields
+	// usercredentialsDescCreatedAt is the schema descriptor for created_at field.
+	usercredentialsDescCreatedAt := usercredentialsFields[8].Descriptor()
+	// usercredentials.DefaultCreatedAt holds the default value on creation for the created_at field.
+	usercredentials.DefaultCreatedAt = usercredentialsDescCreatedAt.Default.(func() time.Time)
+	// usercredentialsDescUpdatedAt is the schema descriptor for updated_at field.
+	usercredentialsDescUpdatedAt := usercredentialsFields[9].Descriptor()
+	// usercredentials.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	usercredentials.DefaultUpdatedAt = usercredentialsDescUpdatedAt.Default.(func() time.Time)
 	userprivacyFields := schema.UserPrivacy{}.Fields()
 	_ = userprivacyFields
 	// userprivacyDescUpdatedAt is the schema descriptor for updated_at field.

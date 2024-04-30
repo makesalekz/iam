@@ -24,6 +24,7 @@ func NewGRPCServer(
 	users *service.UsersService,
 	privacy *service.PrivacyService,
 	settings *service.SettingsService,
+	credentials *service.CredentialsService,
 	tracer *u_tracing.Tracer,
 ) *grpc.Server {
 	err := tracer.Initialize()
@@ -59,6 +60,7 @@ func NewGRPCServer(
 	v1.RegisterUsersServer(srv, users)
 	v1.RegisterPrivacyServer(srv, privacy)
 	v1.RegisterSettingsServer(srv, settings)
+	v1.RegisterCredentialsServer(srv, credentials)
 
 	return srv
 }

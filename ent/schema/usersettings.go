@@ -3,7 +3,7 @@ package schema
 import (
 	"time"
 
-	"gitlab.calendaria.team/services/iam/ent/property"
+	"gitlab.calendaria.team/services/iam/ent/enum"
 
 	"entgo.io/ent"
 	"entgo.io/ent/schema/edge"
@@ -20,7 +20,7 @@ type UserSettings struct {
 func (UserSettings) Fields() []ent.Field {
 	return []ent.Field{
 		field.Int64("user_id"),
-		field.Enum("setting").GoType(property.Settings("")),
+		field.Enum("setting").GoType(enum.Settings("")),
 		field.String("value"),
 		field.Time("updated_at").Default(time.Now),
 	}

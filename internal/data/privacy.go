@@ -6,7 +6,7 @@ import (
 
 	"entgo.io/ent/dialect/sql"
 	"gitlab.calendaria.team/services/iam/ent"
-	"gitlab.calendaria.team/services/iam/ent/property"
+	"gitlab.calendaria.team/services/iam/ent/enum"
 	"gitlab.calendaria.team/services/iam/ent/userprivacy"
 )
 
@@ -32,13 +32,13 @@ func NewPrivacyRepo(d *Data) PrivacyRepo {
 
 func DefaultPrivacies() map[string]string {
 	return map[string]string{
-		string(property.MyLastActions):   string(property.All),
-		string(property.MyProfileImage):  string(property.All),
-		string(property.MyEvents):        string(property.All),
-		string(property.GroupChatInvite): string(property.All),
-		string(property.EventInvite):     string(property.All),
-		string(property.MySlots):         string(property.NoOne),
-		string(property.SlotsDetails):    string(property.NoOne),
+		string(enum.MyLastActions):   string(enum.All),
+		string(enum.MyProfileImage):  string(enum.All),
+		string(enum.MyEvents):        string(enum.All),
+		string(enum.GroupChatInvite): string(enum.All),
+		string(enum.EventInvite):     string(enum.All),
+		string(enum.MySlots):         string(enum.NoOne),
+		string(enum.SlotsDetails):    string(enum.NoOne),
 	}
 }
 
@@ -70,7 +70,7 @@ func (r *privacyRepo) GetPrivacies(ctx context.Context, userIds []int64) ([]*ent
 }
 
 func (r *privacyRepo) UpdatePrivacy(ctx context.Context, userId int64, dto PrivacySettingsData) (PrivacySettingsData, error) {
-	var privacySettings property.PrivacySettings
+	var privacySettings enum.PrivacySettings
 	settingsAvailable := privacySettings.Values()
 
 	builders := make([]*ent.UserPrivacyCreate, 0)
@@ -81,8 +81,8 @@ func (r *privacyRepo) UpdatePrivacy(ctx context.Context, userId int64, dto Priva
 		}
 		builder := r.db.UserPrivacy.Create().
 			SetUserID(userId).
-			SetSetting(property.PrivacySettings(setting)).
-			SetOption(property.PrivacyOptions(option))
+			SetSetting(enum.PrivacySettings(setting)).
+			SetOption(enum.PrivacyOptions(option))
 
 		builders = append(builders, builder)
 	}

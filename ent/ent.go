@@ -14,6 +14,7 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"gitlab.calendaria.team/services/iam/ent/onetimepassword"
 	"gitlab.calendaria.team/services/iam/ent/user"
+	"gitlab.calendaria.team/services/iam/ent/usercredentials"
 	"gitlab.calendaria.team/services/iam/ent/userprivacy"
 	"gitlab.calendaria.team/services/iam/ent/usersettings"
 )
@@ -78,6 +79,7 @@ func checkColumn(table, column string) error {
 		columnCheck = sql.NewColumnCheck(map[string]func(string) bool{
 			onetimepassword.Table: onetimepassword.ValidColumn,
 			user.Table:            user.ValidColumn,
+			usercredentials.Table: usercredentials.ValidColumn,
 			userprivacy.Table:     userprivacy.ValidColumn,
 			usersettings.Table:    usersettings.ValidColumn,
 		})

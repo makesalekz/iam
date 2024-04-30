@@ -9,7 +9,7 @@ import (
 
 	v1 "gitlab.calendaria.team/services/iam/api/iam/v1"
 	"gitlab.calendaria.team/services/iam/ent"
-	"gitlab.calendaria.team/services/iam/ent/property"
+	"gitlab.calendaria.team/services/iam/ent/enum"
 	"gitlab.calendaria.team/services/iam/internal/data"
 	tenants_v1 "gitlab.calendaria.team/services/tenants/api/tenants/v1"
 	u_jwt "gitlab.calendaria.team/services/utils/v1/jwt"
@@ -81,7 +81,7 @@ func (uc *AuthUsecase) AuthUserByPhone(ctx context.Context, phone string) (int64
 		}
 	}
 
-	otp, err := uc.otpRepo.CreateOneTimePassword(ctx, user.ID, property.Phone, AUTH_OTP_DURATION)
+	otp, err := uc.otpRepo.CreateOneTimePassword(ctx, user.ID, enum.Phone, AUTH_OTP_DURATION)
 	if err != nil {
 		return 0, v1.ErrorDatabaseQuery("database error: %s", err.Error())
 	}
@@ -141,14 +141,14 @@ func (uc *AuthUsecase) handleUserVerification(ctx context.Context, user *ent.Use
 	}
 
 	switch otp.Type {
-	case property.Phone:
+	case enum.Phone:
 		if user.PhoneVerified {
 			return nil
 		}
 		uc.queue.GetRemote(QueueContactsPhoneVerified).Pub(userShort)
 
 		return uc.usersRepo.PhoneVerified(ctx, userShort.GetId())
-	case property.Email:
+	case enum.Email:
 		if user.EmailVerified {
 			return nil
 		}

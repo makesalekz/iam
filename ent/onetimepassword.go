@@ -9,8 +9,8 @@ import (
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
+	"gitlab.calendaria.team/services/iam/ent/enum"
 	"gitlab.calendaria.team/services/iam/ent/onetimepassword"
-	"gitlab.calendaria.team/services/iam/ent/property"
 	"gitlab.calendaria.team/services/iam/ent/user"
 )
 
@@ -24,7 +24,7 @@ type OneTimePassword struct {
 	// Code holds the value of the "code" field.
 	Code string `json:"code,omitempty"`
 	// Type holds the value of the "type" field.
-	Type property.OneTimePasswordType `json:"type,omitempty"`
+	Type enum.OneTimePasswordType `json:"type,omitempty"`
 	// IsUsed holds the value of the "is_used" field.
 	IsUsed bool `json:"is_used,omitempty"`
 	// ExpiresAt holds the value of the "expires_at" field.
@@ -109,7 +109,7 @@ func (otp *OneTimePassword) assignValues(columns []string, values []any) error {
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field type", values[i])
 			} else if value.Valid {
-				otp.Type = property.OneTimePasswordType(value.String)
+				otp.Type = enum.OneTimePasswordType(value.String)
 			}
 		case onetimepassword.FieldIsUsed:
 			if value, ok := values[i].(*sql.NullBool); !ok {

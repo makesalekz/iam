@@ -8,7 +8,7 @@ import (
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
-	"gitlab.calendaria.team/services/iam/ent/property"
+	"gitlab.calendaria.team/services/iam/ent/enum"
 )
 
 const (
@@ -62,7 +62,7 @@ var (
 )
 
 // SettingValidator is a validator for the "setting" field enum values. It is called by the builders before save.
-func SettingValidator(s property.PrivacySettings) error {
+func SettingValidator(s enum.PrivacySettings) error {
 	switch s {
 	case "MY_LAST_ACTIONS", "MY_PROFILE_IMAGE", "MY_EVENTS", "GROUP_CHAT_INVITE", "EVENT_INVITE", "MY_SLOTS", "SLOTS_DETAILS":
 		return nil
@@ -72,7 +72,7 @@ func SettingValidator(s property.PrivacySettings) error {
 }
 
 // OptionValidator is a validator for the "option" field enum values. It is called by the builders before save.
-func OptionValidator(o property.PrivacyOptions) error {
+func OptionValidator(o enum.PrivacyOptions) error {
 	switch o {
 	case "ALL", "MY_CONTACTS", "NO_ONE":
 		return nil

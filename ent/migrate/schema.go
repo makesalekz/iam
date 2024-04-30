@@ -69,6 +69,35 @@ var (
 			},
 		},
 	}
+	// UserCredentialsColumns holds the columns for the "user_credentials" table.
+	UserCredentialsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt64, Increment: true},
+		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
+		{Name: "mail", Type: field.TypeString, Nullable: true},
+		{Name: "display_name", Type: field.TypeString, Nullable: true},
+		{Name: "provider", Type: field.TypeEnum, Nullable: true, Enums: []string{"GOOGLE", "OUTLOOK", "APPLE"}},
+		{Name: "access_token", Type: field.TypeString},
+		{Name: "token_type", Type: field.TypeString, Nullable: true},
+		{Name: "refresh_token", Type: field.TypeString, Nullable: true},
+		{Name: "expires_at", Type: field.TypeTime, Nullable: true},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "user_id", Type: field.TypeInt64},
+	}
+	// UserCredentialsTable holds the schema information for the "user_credentials" table.
+	UserCredentialsTable = &schema.Table{
+		Name:       "user_credentials",
+		Columns:    UserCredentialsColumns,
+		PrimaryKey: []*schema.Column{UserCredentialsColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "user_credentials_users_user",
+				Columns:    []*schema.Column{UserCredentialsColumns[11]},
+				RefColumns: []*schema.Column{UsersColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+		},
+	}
 	// UserPrivaciesColumns holds the columns for the "user_privacies" table.
 	UserPrivaciesColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt64, Increment: true},
@@ -131,6 +160,7 @@ var (
 	Tables = []*schema.Table{
 		OneTimePasswordsTable,
 		UsersTable,
+		UserCredentialsTable,
 		UserPrivaciesTable,
 		UserSettingsTable,
 	}
@@ -138,6 +168,7 @@ var (
 
 func init() {
 	OneTimePasswordsTable.ForeignKeys[0].RefTable = UsersTable
+	UserCredentialsTable.ForeignKeys[0].RefTable = UsersTable
 	UserPrivaciesTable.ForeignKeys[0].RefTable = UsersTable
 	UserSettingsTable.ForeignKeys[0].RefTable = UsersTable
 }

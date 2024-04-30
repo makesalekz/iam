@@ -1,4 +1,4 @@
-package property
+package enum
 
 type Settings string
 

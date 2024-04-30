@@ -98,7 +98,15 @@ func wireApp(bootstrap *conf.Bootstrap, logger log.Logger) (*kratos.App, func(),
 		return nil, nil, err
 	}
 	settingsService := service.NewSettingsService(settingsUsecase)
-	grpcServer := server.NewGRPCServer(bootstrap, jwtProcessor, authService, usersService, privacyService, settingsService, tracer)
+	credentialsRepo := data.NewCredentialsRepo(dataData)
+	credentialsUsecase, err := biz.NewCredentialsUsecase(logger, queueManager, jwtProcessor, credentialsRepo)
+	if err != nil {
+		cleanup2()
+		cleanup()
+		return nil, nil, err
+	}
+	credentialsService := service.NewCredentialsService(logger, credentialsUsecase)
+	grpcServer := server.NewGRPCServer(bootstrap, jwtProcessor, authService, usersService, privacyService, settingsService, credentialsService, tracer)
 	httpServer := server.NewHTTPServer(bootstrap)
 	app := newApp(logger, configConfig, grpcServer, httpServer)
 	return app, func() {

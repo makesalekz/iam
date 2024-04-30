@@ -7,8 +7,8 @@ import (
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
+	"gitlab.calendaria.team/services/iam/ent/enum"
 	"gitlab.calendaria.team/services/iam/ent/predicate"
-	"gitlab.calendaria.team/services/iam/ent/property"
 )
 
 // ID filters vertices based on their ID field.
@@ -87,19 +87,19 @@ func UserIDNotIn(vs ...int64) predicate.UserPrivacy {
 }
 
 // SettingEQ applies the EQ predicate on the "setting" field.
-func SettingEQ(v property.PrivacySettings) predicate.UserPrivacy {
+func SettingEQ(v enum.PrivacySettings) predicate.UserPrivacy {
 	vc := v
 	return predicate.UserPrivacy(sql.FieldEQ(FieldSetting, vc))
 }
 
 // SettingNEQ applies the NEQ predicate on the "setting" field.
-func SettingNEQ(v property.PrivacySettings) predicate.UserPrivacy {
+func SettingNEQ(v enum.PrivacySettings) predicate.UserPrivacy {
 	vc := v
 	return predicate.UserPrivacy(sql.FieldNEQ(FieldSetting, vc))
 }
 
 // SettingIn applies the In predicate on the "setting" field.
-func SettingIn(vs ...property.PrivacySettings) predicate.UserPrivacy {
+func SettingIn(vs ...enum.PrivacySettings) predicate.UserPrivacy {
 	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
@@ -108,7 +108,7 @@ func SettingIn(vs ...property.PrivacySettings) predicate.UserPrivacy {
 }
 
 // SettingNotIn applies the NotIn predicate on the "setting" field.
-func SettingNotIn(vs ...property.PrivacySettings) predicate.UserPrivacy {
+func SettingNotIn(vs ...enum.PrivacySettings) predicate.UserPrivacy {
 	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
@@ -117,19 +117,19 @@ func SettingNotIn(vs ...property.PrivacySettings) predicate.UserPrivacy {
 }
 
 // OptionEQ applies the EQ predicate on the "option" field.
-func OptionEQ(v property.PrivacyOptions) predicate.UserPrivacy {
+func OptionEQ(v enum.PrivacyOptions) predicate.UserPrivacy {
 	vc := v
 	return predicate.UserPrivacy(sql.FieldEQ(FieldOption, vc))
 }
 
 // OptionNEQ applies the NEQ predicate on the "option" field.
-func OptionNEQ(v property.PrivacyOptions) predicate.UserPrivacy {
+func OptionNEQ(v enum.PrivacyOptions) predicate.UserPrivacy {
 	vc := v
 	return predicate.UserPrivacy(sql.FieldNEQ(FieldOption, vc))
 }
 
 // OptionIn applies the In predicate on the "option" field.
-func OptionIn(vs ...property.PrivacyOptions) predicate.UserPrivacy {
+func OptionIn(vs ...enum.PrivacyOptions) predicate.UserPrivacy {
 	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
@@ -138,7 +138,7 @@ func OptionIn(vs ...property.PrivacyOptions) predicate.UserPrivacy {
 }
 
 // OptionNotIn applies the NotIn predicate on the "option" field.
-func OptionNotIn(vs ...property.PrivacyOptions) predicate.UserPrivacy {
+func OptionNotIn(vs ...enum.PrivacyOptions) predicate.UserPrivacy {
 	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]

@@ -11,8 +11,8 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"gitlab.calendaria.team/services/iam/ent/enum"
 	"gitlab.calendaria.team/services/iam/ent/onetimepassword"
-	"gitlab.calendaria.team/services/iam/ent/property"
 	"gitlab.calendaria.team/services/iam/ent/user"
 )
 
@@ -37,8 +37,8 @@ func (otpc *OneTimePasswordCreate) SetCode(s string) *OneTimePasswordCreate {
 }
 
 // SetType sets the "type" field.
-func (otpc *OneTimePasswordCreate) SetType(ptpt property.OneTimePasswordType) *OneTimePasswordCreate {
-	otpc.mutation.SetType(ptpt)
+func (otpc *OneTimePasswordCreate) SetType(etpt enum.OneTimePasswordType) *OneTimePasswordCreate {
+	otpc.mutation.SetType(etpt)
 	return otpc
 }
 
@@ -300,7 +300,7 @@ func (u *OneTimePasswordUpsert) UpdateCode() *OneTimePasswordUpsert {
 }
 
 // SetType sets the "type" field.
-func (u *OneTimePasswordUpsert) SetType(v property.OneTimePasswordType) *OneTimePasswordUpsert {
+func (u *OneTimePasswordUpsert) SetType(v enum.OneTimePasswordType) *OneTimePasswordUpsert {
 	u.Set(onetimepassword.FieldType, v)
 	return u
 }
@@ -416,7 +416,7 @@ func (u *OneTimePasswordUpsertOne) UpdateCode() *OneTimePasswordUpsertOne {
 }
 
 // SetType sets the "type" field.
-func (u *OneTimePasswordUpsertOne) SetType(v property.OneTimePasswordType) *OneTimePasswordUpsertOne {
+func (u *OneTimePasswordUpsertOne) SetType(v enum.OneTimePasswordType) *OneTimePasswordUpsertOne {
 	return u.Update(func(s *OneTimePasswordUpsert) {
 		s.SetType(v)
 	})
@@ -704,7 +704,7 @@ func (u *OneTimePasswordUpsertBulk) UpdateCode() *OneTimePasswordUpsertBulk {
 }
 
 // SetType sets the "type" field.
-func (u *OneTimePasswordUpsertBulk) SetType(v property.OneTimePasswordType) *OneTimePasswordUpsertBulk {
+func (u *OneTimePasswordUpsertBulk) SetType(v enum.OneTimePasswordType) *OneTimePasswordUpsertBulk {
 	return u.Update(func(s *OneTimePasswordUpsert) {
 		s.SetType(v)
 	})

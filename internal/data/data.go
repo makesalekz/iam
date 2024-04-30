@@ -30,6 +30,7 @@ var ProviderSet = wire.NewSet(
 	NewOtpRepo,
 	NewPrivacyRepo,
 	NewSettingsRepo,
+	NewCredentialsRepo,
 	NewNotificationsRemote,
 	NewTenantsRemote,
 )

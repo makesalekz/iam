@@ -11,8 +11,8 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"gitlab.calendaria.team/services/iam/ent/enum"
 	"gitlab.calendaria.team/services/iam/ent/predicate"
-	"gitlab.calendaria.team/services/iam/ent/property"
 	"gitlab.calendaria.team/services/iam/ent/user"
 	"gitlab.calendaria.team/services/iam/ent/usersettings"
 )
@@ -46,15 +46,15 @@ func (usu *UserSettingsUpdate) SetNillableUserID(i *int64) *UserSettingsUpdate {
 }
 
 // SetSetting sets the "setting" field.
-func (usu *UserSettingsUpdate) SetSetting(pr property.Settings) *UserSettingsUpdate {
-	usu.mutation.SetSetting(pr)
+func (usu *UserSettingsUpdate) SetSetting(e enum.Settings) *UserSettingsUpdate {
+	usu.mutation.SetSetting(e)
 	return usu
 }
 
 // SetNillableSetting sets the "setting" field if the given value is not nil.
-func (usu *UserSettingsUpdate) SetNillableSetting(pr *property.Settings) *UserSettingsUpdate {
-	if pr != nil {
-		usu.SetSetting(*pr)
+func (usu *UserSettingsUpdate) SetNillableSetting(e *enum.Settings) *UserSettingsUpdate {
+	if e != nil {
+		usu.SetSetting(*e)
 	}
 	return usu
 }
@@ -236,15 +236,15 @@ func (usuo *UserSettingsUpdateOne) SetNillableUserID(i *int64) *UserSettingsUpda
 }
 
 // SetSetting sets the "setting" field.
-func (usuo *UserSettingsUpdateOne) SetSetting(pr property.Settings) *UserSettingsUpdateOne {
-	usuo.mutation.SetSetting(pr)
+func (usuo *UserSettingsUpdateOne) SetSetting(e enum.Settings) *UserSettingsUpdateOne {
+	usuo.mutation.SetSetting(e)
 	return usuo
 }
 
 // SetNillableSetting sets the "setting" field if the given value is not nil.
-func (usuo *UserSettingsUpdateOne) SetNillableSetting(pr *property.Settings) *UserSettingsUpdateOne {
-	if pr != nil {
-		usuo.SetSetting(*pr)
+func (usuo *UserSettingsUpdateOne) SetNillableSetting(e *enum.Settings) *UserSettingsUpdateOne {
+	if e != nil {
+		usuo.SetSetting(*e)
 	}
 	return usuo
 }
