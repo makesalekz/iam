@@ -41,4 +41,3 @@ bin/
 .env
 .docker
 configs/config.yaml
-configs/credentials_test.json

@@ -99,7 +99,7 @@ func wireApp(bootstrap *conf.Bootstrap, logger log.Logger) (*kratos.App, func(),
 	}
 	settingsService := service.NewSettingsService(settingsUsecase)
 	credentialsRepo := data.NewCredentialsRepo(dataData)
-	credentialsUsecase, err := biz.NewCredentialsUsecase(logger, queueManager, jwtProcessor, credentialsRepo)
+	credentialsUsecase, err := biz.NewCredentialsUsecase(configConfig, logger, queueManager, jwtProcessor, credentialsRepo)
 	if err != nil {
 		cleanup2()
 		cleanup()

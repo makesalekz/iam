@@ -2,11 +2,11 @@ package service
 
 import (
 	"context"
-	"gitlab.calendaria.team/services/iam/ent"
-	"gitlab.calendaria.team/services/iam/ent/enum"
 	"time"
 
 	iam_v1 "gitlab.calendaria.team/services/iam/api/iam/v1"
+	"gitlab.calendaria.team/services/iam/ent"
+	"gitlab.calendaria.team/services/iam/ent/enum"
 	"gitlab.calendaria.team/services/iam/internal/biz"
 	utils_v1 "gitlab.calendaria.team/services/utils/api/utils/v1"
 	"gitlab.calendaria.team/services/utils/v2/auth"

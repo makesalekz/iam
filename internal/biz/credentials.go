@@ -2,21 +2,21 @@ package biz
 
 import (
 	"context"
+	iam_v1 "gitlab.calendaria.team/services/iam/api/iam/v1"
 	"gitlab.calendaria.team/services/iam/ent"
 	"gitlab.calendaria.team/services/iam/ent/enum"
-	"os"
-
-	iam_v1 "gitlab.calendaria.team/services/iam/api/iam/v1"
 	"gitlab.calendaria.team/services/iam/internal/data"
+	"gitlab.calendaria.team/services/utils/v1/config"
 	u_jwt "gitlab.calendaria.team/services/utils/v1/jwt"
 	u_nats "gitlab.calendaria.team/services/utils/v1/nats"
 
 	"github.com/go-kratos/kratos/v2/log"
+	"github.com/mitchellh/mapstructure"
 	"golang.org/x/oauth2/google"
-	"google.golang.org/api/calendar/v3"
 )
 
 type CredentialsUsecase struct {
+	config          *config.Config
 	log             *log.Helper
 	queue           *u_nats.QueueManager
 	jwt             *u_jwt.JwtProcessor
@@ -24,12 +24,14 @@ type CredentialsUsecase struct {
 }
 
 func NewCredentialsUsecase(
+	config *config.Config,
 	logger log.Logger,
 	queue *u_nats.QueueManager,
 	jwt *u_jwt.JwtProcessor,
 	credentialsRepo data.CredentialsRepo,
 ) (*CredentialsUsecase, error) {
 	return &CredentialsUsecase{
+		config:          config,
 		log:             log.NewHelper(logger),
 		queue:           queue,
 		jwt:             jwt,
@@ -38,14 +40,21 @@ func NewCredentialsUsecase(
 }
 
 func (uc *CredentialsUsecase) AuthByGoogle(ctx context.Context, actorId int64, authCode string) error {
-	// read credentials, change path to your google credentials file
-	b, err := os.ReadFile("../configs/credentials_test.json")
+	// get google credentials
+	mapGoogleCredentials, err := uc.config.ReadGlobalSecretsFor(ctx, "gwebcredentials")
 	if err != nil {
-		return iam_v1.ErrorServiceFailed("Unable to read client secret file: %v", err.Error())
+		return iam_v1.ErrorServiceFailed("Unable to read client secret from vault: %v", err.Error())
+	}
+
+	// decode google credentials
+	googleCredentials := ""
+	err = mapstructure.Decode(mapGoogleCredentials["data"], &googleCredentials)
+	if err != nil {
+		return iam_v1.ErrorServiceFailed("Unable to decode client secret: %v", err.Error())
 	}
 
 	// get config from credentials
-	config, err := google.ConfigFromJSON(b, calendar.CalendarScope)
+	config, err := google.ConfigFromJSON([]byte(googleCredentials))
 	if err != nil {
 		return iam_v1.ErrorServiceFailed("Unable to parse client secret file to config: %v", err.Error())
 	}
