@@ -86,6 +86,22 @@ To save JWT secret in Vault terminal (write command, ENTER, paste secret, CTRL+D
 ```bash
 export VAULT_TOKEN=myroot
 vault kv put -mount=secret app/global/jwt data=-
+
+vault kv put -mount=secret app/global/gwebcredentials data=-
+```
+
+```txt
+secret/data/app/global/gwebcredentials = {{
+  "web": {
+    "client_id": string,
+    "project_id": string,
+    "auth_uri": string,
+    "token_uri": string,
+    "auth_provider_x509_cert_url": string,
+    "client_secret": string,
+    "redirect_uris": []string
+  }
+}}
 ```
 
 ## JWT token for your services
