@@ -7,8 +7,8 @@ import (
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
-	"gitlab.calendaria.team/services/iam/ent/enum"
 	"gitlab.calendaria.team/services/iam/ent/predicate"
+	"gitlab.calendaria.team/services/utils/v2/struc"
 )
 
 // ID filters vertices based on their ID field.
@@ -327,19 +327,19 @@ func DisplayNameContainsFold(v string) predicate.UserCredentials {
 }
 
 // ProviderEQ applies the EQ predicate on the "provider" field.
-func ProviderEQ(v enum.Provider) predicate.UserCredentials {
+func ProviderEQ(v struc.Provider) predicate.UserCredentials {
 	vc := v
 	return predicate.UserCredentials(sql.FieldEQ(FieldProvider, vc))
 }
 
 // ProviderNEQ applies the NEQ predicate on the "provider" field.
-func ProviderNEQ(v enum.Provider) predicate.UserCredentials {
+func ProviderNEQ(v struc.Provider) predicate.UserCredentials {
 	vc := v
 	return predicate.UserCredentials(sql.FieldNEQ(FieldProvider, vc))
 }
 
 // ProviderIn applies the In predicate on the "provider" field.
-func ProviderIn(vs ...enum.Provider) predicate.UserCredentials {
+func ProviderIn(vs ...struc.Provider) predicate.UserCredentials {
 	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
@@ -348,7 +348,7 @@ func ProviderIn(vs ...enum.Provider) predicate.UserCredentials {
 }
 
 // ProviderNotIn applies the NotIn predicate on the "provider" field.
-func ProviderNotIn(vs ...enum.Provider) predicate.UserCredentials {
+func ProviderNotIn(vs ...struc.Provider) predicate.UserCredentials {
 	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
