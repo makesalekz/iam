@@ -376,8 +376,8 @@ gitlab.calendaria.team/services/notifications v1.1.0 h1:67dpbBJfl6yADJtgbNiWXHKN
 gitlab.calendaria.team/services/notifications v1.1.0/go.mod h1:l5MoMpHy5X5WFXEudxdjgoGhUejVMRQxZuCCS7xzlhE=
 gitlab.calendaria.team/services/tenants v0.3.0 h1:BCOIQxKHlwYwrPnqNBxW1tSVApoTw18NXF9Ntr6FCh8=
 gitlab.calendaria.team/services/tenants v0.3.0/go.mod h1:UhobxCRVgYfJC5tpi+6vMH7ZfKFcX8822mieq3maSbU=
-gitlab.calendaria.team/services/utils v0.2.15 h1:mJHNwwMckTyF2lymGgFzLjBdl8iC3Pe86VSa8STkyM8=
-gitlab.calendaria.team/services/utils v0.2.15/go.mod h1:3Njo/e79kDM2gtQx7G2AFwuSKqZrHuaeRtpv1neaVlk=
+gitlab.calendaria.team/services/utils v0.2.17 h1:Nms8PUbTXryw8tj3UYcuAFMZsZPgYsDnLXJDjWPTLBY=
+gitlab.calendaria.team/services/utils v0.2.17/go.mod h1:3Njo/e79kDM2gtQx7G2AFwuSKqZrHuaeRtpv1neaVlk=
 go.opentelemetry.io/otel v1.0.0-RC1/go.mod h1:x9tRa9HK4hSSq7jf2TKbqFbtt58/TGk0f9XiEYISI1I=
 go.opentelemetry.io/otel v1.24.0 h1:0LAOdjNmQeSTzGBzduGe/rU4tZhMwL5rWgtp9Ku5Jfo=
 go.opentelemetry.io/otel v1.24.0/go.mod h1:W7b9Ozg4nkF5tWI5zsXkaKKDjdVjpD4oAt9Qi/MArHo=

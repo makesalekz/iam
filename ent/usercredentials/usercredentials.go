@@ -9,7 +9,7 @@ import (
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
-	"gitlab.calendaria.team/services/iam/ent/enum"
+	"gitlab.calendaria.team/services/utils/v2/struc"
 )
 
 const (
@@ -93,9 +93,9 @@ var (
 )
 
 // ProviderValidator is a validator for the "provider" field enum values. It is called by the builders before save.
-func ProviderValidator(pr enum.Provider) error {
+func ProviderValidator(pr struc.Provider) error {
 	switch pr {
-	case "GOOGLE", "OUTLOOK", "APPLE":
+	case "CALENDARIA", "GOOGLE", "OUTLOOK", "APPLE":
 		return nil
 	default:
 		return fmt.Errorf("usercredentials: invalid enum value for provider field: %q", pr)

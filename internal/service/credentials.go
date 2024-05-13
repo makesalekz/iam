@@ -2,11 +2,11 @@ package service
 
 import (
 	"context"
+	u_struc "gitlab.calendaria.team/services/utils/v2/struc"
 	"time"
 
 	iam_v1 "gitlab.calendaria.team/services/iam/api/iam/v1"
 	"gitlab.calendaria.team/services/iam/ent"
-	"gitlab.calendaria.team/services/iam/ent/enum"
 	"gitlab.calendaria.team/services/iam/internal/biz"
 	utils_v1 "gitlab.calendaria.team/services/utils/api/utils/v1"
 	"gitlab.calendaria.team/services/utils/v2/auth"
@@ -106,7 +106,7 @@ func (s *CredentialsService) GetCredential(ctx context.Context, req *iam_v1.GetC
 		return nil, iam_v1.ErrorEmptyActorId("empty actor id")
 	}
 
-	provider := enum.Provider(req.Provider)
+	provider := u_struc.Provider(req.Provider)
 	if !provider.IsValid() {
 		return nil, iam_v1.ErrorInvalidProvider("invalid provider")
 	}

@@ -2,16 +2,17 @@ package data
 
 import (
 	"context"
-	"gitlab.calendaria.team/services/iam/ent/usercredentials"
 
 	"gitlab.calendaria.team/services/iam/ent"
-	"gitlab.calendaria.team/services/iam/ent/enum"
+	"gitlab.calendaria.team/services/iam/ent/usercredentials"
+	u_struc "gitlab.calendaria.team/services/utils/v2/struc"
+
 	"golang.org/x/oauth2"
 )
 
 type CredentialsRepo interface {
 	CreateCredential(ctx context.Context, actorId int64, token *oauth2.Token) (*ent.UserCredentials, error)
-	GetCredential(ctx context.Context, userId int64, provider enum.Provider) (*ent.UserCredentials, error)
+	GetCredential(ctx context.Context, userId int64, provider u_struc.Provider) (*ent.UserCredentials, error)
 	ListCredentials(ctx context.Context, userId int64) ([]*ent.UserCredentials, error)
 	DeleteCredential(ctx context.Context, userId, credentialId int64) (int, error)
 }
@@ -29,7 +30,7 @@ func NewCredentialsRepo(d *Data) CredentialsRepo {
 func (r *credentialsRepo) CreateCredential(ctx context.Context, actorId int64, token *oauth2.Token) (*ent.UserCredentials, error) {
 	return r.db.UserCredentials.Create().
 		SetUserID(actorId).
-		SetProvider(enum.Google).
+		SetProvider(u_struc.Google).
 		SetAccessToken(token.AccessToken).
 		SetTokenType(token.TokenType).
 		SetRefreshToken(token.RefreshToken).
@@ -37,7 +38,7 @@ func (r *credentialsRepo) CreateCredential(ctx context.Context, actorId int64, t
 		Save(ctx)
 }
 
-func (r *credentialsRepo) GetCredential(ctx context.Context, userId int64, provider enum.Provider) (*ent.UserCredentials, error) {
+func (r *credentialsRepo) GetCredential(ctx context.Context, userId int64, provider u_struc.Provider) (*ent.UserCredentials, error) {
 	return r.db.UserCredentials.Query().
 		Where(
 			usercredentials.UserID(userId),

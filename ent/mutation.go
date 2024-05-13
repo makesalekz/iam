@@ -18,6 +18,7 @@ import (
 	"gitlab.calendaria.team/services/iam/ent/usercredentials"
 	"gitlab.calendaria.team/services/iam/ent/userprivacy"
 	"gitlab.calendaria.team/services/iam/ent/usersettings"
+	"gitlab.calendaria.team/services/utils/v2/struc"
 )
 
 const (
@@ -2013,7 +2014,7 @@ type UserCredentialsMutation struct {
 	deleted_at    *time.Time
 	mail          *string
 	display_name  *string
-	provider      *enum.Provider
+	provider      *struc.Provider
 	access_token  *string
 	token_type    *string
 	refresh_token *string
@@ -2310,12 +2311,12 @@ func (m *UserCredentialsMutation) ResetDisplayName() {
 }
 
 // SetProvider sets the "provider" field.
-func (m *UserCredentialsMutation) SetProvider(e enum.Provider) {
-	m.provider = &e
+func (m *UserCredentialsMutation) SetProvider(s struc.Provider) {
+	m.provider = &s
 }
 
 // Provider returns the value of the "provider" field in the mutation.
-func (m *UserCredentialsMutation) Provider() (r enum.Provider, exists bool) {
+func (m *UserCredentialsMutation) Provider() (r struc.Provider, exists bool) {
 	v := m.provider
 	if v == nil {
 		return
@@ -2326,7 +2327,7 @@ func (m *UserCredentialsMutation) Provider() (r enum.Provider, exists bool) {
 // OldProvider returns the old "provider" field's value of the UserCredentials entity.
 // If the UserCredentials object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *UserCredentialsMutation) OldProvider(ctx context.Context) (v *enum.Provider, err error) {
+func (m *UserCredentialsMutation) OldProvider(ctx context.Context) (v *struc.Provider, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldProvider is only allowed on UpdateOne operations")
 	}
@@ -2807,7 +2808,7 @@ func (m *UserCredentialsMutation) SetField(name string, value ent.Value) error {
 		m.SetDisplayName(v)
 		return nil
 	case usercredentials.FieldProvider:
-		v, ok := value.(enum.Provider)
+		v, ok := value.(struc.Provider)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}

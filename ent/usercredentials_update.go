@@ -11,10 +11,10 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"gitlab.calendaria.team/services/iam/ent/enum"
 	"gitlab.calendaria.team/services/iam/ent/predicate"
 	"gitlab.calendaria.team/services/iam/ent/user"
 	"gitlab.calendaria.team/services/iam/ent/usercredentials"
+	"gitlab.calendaria.team/services/utils/v2/struc"
 )
 
 // UserCredentialsUpdate is the builder for updating UserCredentials entities.
@@ -106,15 +106,15 @@ func (ucu *UserCredentialsUpdate) ClearDisplayName() *UserCredentialsUpdate {
 }
 
 // SetProvider sets the "provider" field.
-func (ucu *UserCredentialsUpdate) SetProvider(e enum.Provider) *UserCredentialsUpdate {
-	ucu.mutation.SetProvider(e)
+func (ucu *UserCredentialsUpdate) SetProvider(s struc.Provider) *UserCredentialsUpdate {
+	ucu.mutation.SetProvider(s)
 	return ucu
 }
 
 // SetNillableProvider sets the "provider" field if the given value is not nil.
-func (ucu *UserCredentialsUpdate) SetNillableProvider(e *enum.Provider) *UserCredentialsUpdate {
-	if e != nil {
-		ucu.SetProvider(*e)
+func (ucu *UserCredentialsUpdate) SetNillableProvider(s *struc.Provider) *UserCredentialsUpdate {
+	if s != nil {
+		ucu.SetProvider(*s)
 	}
 	return ucu
 }
@@ -478,15 +478,15 @@ func (ucuo *UserCredentialsUpdateOne) ClearDisplayName() *UserCredentialsUpdateO
 }
 
 // SetProvider sets the "provider" field.
-func (ucuo *UserCredentialsUpdateOne) SetProvider(e enum.Provider) *UserCredentialsUpdateOne {
-	ucuo.mutation.SetProvider(e)
+func (ucuo *UserCredentialsUpdateOne) SetProvider(s struc.Provider) *UserCredentialsUpdateOne {
+	ucuo.mutation.SetProvider(s)
 	return ucuo
 }
 
 // SetNillableProvider sets the "provider" field if the given value is not nil.
-func (ucuo *UserCredentialsUpdateOne) SetNillableProvider(e *enum.Provider) *UserCredentialsUpdateOne {
-	if e != nil {
-		ucuo.SetProvider(*e)
+func (ucuo *UserCredentialsUpdateOne) SetNillableProvider(s *struc.Provider) *UserCredentialsUpdateOne {
+	if s != nil {
+		ucuo.SetProvider(*s)
 	}
 	return ucuo
 }
