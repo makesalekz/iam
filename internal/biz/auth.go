@@ -86,12 +86,9 @@ func (uc *AuthUsecase) AuthUserByPhone(ctx context.Context, phone string) (int64
 		return 0, v1.ErrorDatabaseQuery("database error: %s", err.Error())
 	}
 
-	debug := os.Getenv("DEBUG")
-	if debug == "" { // don't send sms in debug mode
-		err = uc.notifications.PersonalSmsSender(ctx, phone, fmt.Sprintf("Enter this code to sign in: %s", otp.Code))
-		if err != nil {
-			return 0, v1.ErrorServiceFailed("notification: %s", err.Error())
-		}
+	err = uc.notifications.PersonalSmsSender(ctx, phone, fmt.Sprintf("Enter this code to sign in: %s", otp.Code))
+	if err != nil {
+		return 0, v1.ErrorServiceFailed("notification: %s", err.Error())
 	}
 
 	return user.ID, nil
