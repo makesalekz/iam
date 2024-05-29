@@ -86,7 +86,7 @@ func (uc *AuthUsecase) AuthUserByPhone(ctx context.Context, phone string) (int64
 		return 0, v1.ErrorDatabaseQuery("database error: %s", err.Error())
 	}
 
-	err = uc.notifications.PersonalSmsSender(ctx, phone, fmt.Sprintf("Enter this code to sign in: %s", otp.Code))
+	err = uc.notifications.PersonalSmsSender(ctx, phone, fmt.Sprintf("Calendaria: %s", otp.Code))
 	if err != nil {
 		return 0, v1.ErrorServiceFailed("notification: %s", err.Error())
 	}
