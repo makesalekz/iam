@@ -21,12 +21,15 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+// UserFullReply is a reply with full user information
 type UserFullReply struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	User    *User          `protobuf:"bytes,1,opt,name=user,proto3" json:"user,omitempty"`
+	// user information
+	User *User `protobuf:"bytes,1,opt,name=user,proto3" json:"user,omitempty"`
+	// user's tenants
 	Tenants []*TenantShort `protobuf:"bytes,2,rep,name=tenants,proto3" json:"tenants,omitempty"`
 }
 
@@ -76,19 +79,25 @@ func (x *UserFullReply) GetTenants() []*TenantShort {
 	return nil
 }
 
+// UpdateOwnProfileRequest is a request to update own profile
 type UpdateOwnProfileRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	Phone       string  `protobuf:"bytes,1,opt,name=phone,proto3" json:"phone,omitempty"`
-	Email       string  `protobuf:"bytes,2,opt,name=email,proto3" json:"email,omitempty"`
-	Username    string  `protobuf:"bytes,9,opt,name=username,proto3" json:"username,omitempty"`
-	Name        string  `protobuf:"bytes,3,opt,name=name,proto3" json:"name,omitempty"`
-	Bio         *string `protobuf:"bytes,4,opt,name=bio,proto3,oneof" json:"bio,omitempty"`
-	Avatar      string  `protobuf:"bytes,5,opt,name=avatar,proto3" json:"avatar,omitempty"`
-	Timezone    string  `protobuf:"bytes,6,opt,name=timezone,proto3" json:"timezone,omitempty"`
-	WithTenants bool    `protobuf:"varint,7,opt,name=withTenants,proto3" json:"withTenants,omitempty"`
+	// phone of the user, in any format containing country code
+	Phone    string `protobuf:"bytes,1,opt,name=phone,proto3" json:"phone,omitempty"`
+	Email    string `protobuf:"bytes,2,opt,name=email,proto3" json:"email,omitempty"`
+	Username string `protobuf:"bytes,9,opt,name=username,proto3" json:"username,omitempty"`
+	Name     string `protobuf:"bytes,3,opt,name=name,proto3" json:"name,omitempty"`
+	// bio text of the user
+	Bio *string `protobuf:"bytes,4,opt,name=bio,proto3,oneof" json:"bio,omitempty"`
+	// URL string of avatar of the user
+	Avatar string `protobuf:"bytes,5,opt,name=avatar,proto3" json:"avatar,omitempty"`
+	// timezone of the user
+	Timezone string `protobuf:"bytes,6,opt,name=timezone,proto3" json:"timezone,omitempty"`
+	// if true, include tenants of the user in the reply
+	WithTenants bool `protobuf:"varint,7,opt,name=withTenants,proto3" json:"withTenants,omitempty"`
 }
 
 func (x *UpdateOwnProfileRequest) Reset() {
@@ -179,11 +188,13 @@ func (x *UpdateOwnProfileRequest) GetWithTenants() bool {
 	return false
 }
 
+// GetUserRequest is a request to get user by ID
 type GetUserRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
+	// ID of the user
 	UserId int64 `protobuf:"varint,1,opt,name=userId,proto3" json:"userId,omitempty"`
 }
 
@@ -226,11 +237,13 @@ func (x *GetUserRequest) GetUserId() int64 {
 	return 0
 }
 
+// GetUserByFilterRequest is a request to get user by filter
 type GetUserByFilterRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
+	// search filter
 	Search *SearchFilter `protobuf:"bytes,1,opt,name=search,proto3" json:"search,omitempty"`
 }
 
@@ -273,6 +286,7 @@ func (x *GetUserByFilterRequest) GetSearch() *SearchFilter {
 	return nil
 }
 
+// SearchFilter is a filter to search user
 type SearchFilter struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -343,10 +357,12 @@ type isSearchFilter_Fields interface {
 }
 
 type SearchFilter_Phone struct {
+	// in case of search by phone, search.email should not be present
 	Phone string `protobuf:"bytes,1,opt,name=phone,proto3,oneof"`
 }
 
 type SearchFilter_Email struct {
+	// in case of search by email, search.phone should not be present
 	Email string `protobuf:"bytes,2,opt,name=email,proto3,oneof"`
 }
 
@@ -354,11 +370,13 @@ func (*SearchFilter_Phone) isSearchFilter_Fields() {}
 
 func (*SearchFilter_Email) isSearchFilter_Fields() {}
 
+// UserReply is a reply with short user information
 type UserReply struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
+	// user information
 	User *UserShort `protobuf:"bytes,1,opt,name=user,proto3" json:"user,omitempty"`
 }
 
@@ -401,16 +419,19 @@ func (x *UserReply) GetUser() *UserShort {
 	return nil
 }
 
+// GetUsersRequest is a request to get users by IDs, phones or emails
 type GetUsersRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	Ids           []int64  `protobuf:"varint,1,rep,packed,name=ids,proto3" json:"ids,omitempty"`
-	Phones        []string `protobuf:"bytes,2,rep,name=phones,proto3" json:"phones,omitempty"`
-	Emails        []string `protobuf:"bytes,3,rep,name=emails,proto3" json:"emails,omitempty"`
-	WithPrivacies bool     `protobuf:"varint,6,opt,name=withPrivacies,proto3" json:"withPrivacies,omitempty"`
-	WithVerified  bool     `protobuf:"varint,9,opt,name=withVerified,proto3" json:"withVerified,omitempty"`
+	Ids    []int64  `protobuf:"varint,1,rep,packed,name=ids,proto3" json:"ids,omitempty"`
+	Phones []string `protobuf:"bytes,2,rep,name=phones,proto3" json:"phones,omitempty"`
+	Emails []string `protobuf:"bytes,3,rep,name=emails,proto3" json:"emails,omitempty"`
+	// if true, include privacy settings of the users in the reply
+	WithPrivacies bool `protobuf:"varint,6,opt,name=withPrivacies,proto3" json:"withPrivacies,omitempty"`
+	// if true, include information on the users' verification status in the reply
+	WithVerified bool `protobuf:"varint,9,opt,name=withVerified,proto3" json:"withVerified,omitempty"`
 }
 
 func (x *GetUsersRequest) Reset() {
@@ -480,12 +501,14 @@ func (x *GetUsersRequest) GetWithVerified() bool {
 	return false
 }
 
+// ListUsersRequest is a request to list users by IDs, or using search filter
 type ListUsersRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	Ids      []int64             `protobuf:"varint,1,rep,packed,name=ids,proto3" json:"ids,omitempty"`
+	Ids []int64 `protobuf:"varint,1,rep,packed,name=ids,proto3" json:"ids,omitempty"`
+	// if present, will be used to filter users by fields: phone, email, name
 	Search   string              `protobuf:"bytes,4,opt,name=search,proto3" json:"search,omitempty"`
 	Sort     *v1.SortRequest     `protobuf:"bytes,7,opt,name=sort,proto3" json:"sort,omitempty"`
 	Paginate *v1.PaginateRequest `protobuf:"bytes,8,opt,name=paginate,proto3" json:"paginate,omitempty"`
@@ -665,7 +688,7 @@ var file_api_iam_v1_users_proto_rawDesc = []byte{
 	0x6e, 0x61, 0x74, 0x65, 0x22, 0x35, 0x0a, 0x0a, 0x55, 0x73, 0x65, 0x72, 0x73, 0x52, 0x65, 0x70,
 	0x6c, 0x79, 0x12, 0x27, 0x0a, 0x05, 0x75, 0x73, 0x65, 0x72, 0x73, 0x18, 0x01, 0x20, 0x03, 0x28,
 	0x0b, 0x32, 0x11, 0x2e, 0x69, 0x61, 0x6d, 0x2e, 0x76, 0x31, 0x2e, 0x55, 0x73, 0x65, 0x72, 0x53,
-	0x68, 0x6f, 0x72, 0x74, 0x52, 0x05, 0x75, 0x73, 0x65, 0x72, 0x73, 0x32, 0x97, 0x05, 0x0a, 0x05,
+	0x68, 0x6f, 0x72, 0x74, 0x52, 0x05, 0x75, 0x73, 0x65, 0x72, 0x73, 0x32, 0xd1, 0x04, 0x0a, 0x05,
 	0x55, 0x73, 0x65, 0x72, 0x73, 0x12, 0x3e, 0x0a, 0x0d, 0x47, 0x65, 0x74, 0x4f, 0x77, 0x6e, 0x50,
 	0x72, 0x6f, 0x66, 0x69, 0x6c, 0x65, 0x12, 0x16, 0x2e, 0x75, 0x74, 0x69, 0x6c, 0x73, 0x2e, 0x76,
 	0x31, 0x2e, 0x45, 0x6d, 0x70, 0x74, 0x79, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x15,
@@ -702,16 +725,12 @@ var file_api_iam_v1_users_proto_rawDesc = []byte{
 	0x65, 0x70, 0x6c, 0x79, 0x12, 0x39, 0x0a, 0x09, 0x4c, 0x69, 0x73, 0x74, 0x55, 0x73, 0x65, 0x72,
 	0x73, 0x12, 0x18, 0x2e, 0x69, 0x61, 0x6d, 0x2e, 0x76, 0x31, 0x2e, 0x4c, 0x69, 0x73, 0x74, 0x55,
 	0x73, 0x65, 0x72, 0x73, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x12, 0x2e, 0x69, 0x61,
-	0x6d, 0x2e, 0x76, 0x31, 0x2e, 0x55, 0x73, 0x65, 0x72, 0x73, 0x52, 0x65, 0x70, 0x6c, 0x79, 0x12,
-	0x44, 0x0a, 0x14, 0x41, 0x70, 0x70, 0x65, 0x6e, 0x64, 0x44, 0x65, 0x66, 0x61, 0x75, 0x6c, 0x74,
-	0x54, 0x65, 0x6e, 0x61, 0x6e, 0x74, 0x73, 0x12, 0x16, 0x2e, 0x75, 0x74, 0x69, 0x6c, 0x73, 0x2e,
-	0x76, 0x31, 0x2e, 0x45, 0x6d, 0x70, 0x74, 0x79, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a,
-	0x14, 0x2e, 0x75, 0x74, 0x69, 0x6c, 0x73, 0x2e, 0x76, 0x31, 0x2e, 0x45, 0x6d, 0x70, 0x74, 0x79,
-	0x52, 0x65, 0x70, 0x6c, 0x79, 0x42, 0x41, 0x0a, 0x06, 0x69, 0x61, 0x6d, 0x2e, 0x76, 0x31, 0x50,
-	0x01, 0x5a, 0x35, 0x67, 0x69, 0x74, 0x6c, 0x61, 0x62, 0x2e, 0x63, 0x61, 0x6c, 0x65, 0x6e, 0x64,
-	0x61, 0x72, 0x69, 0x61, 0x2e, 0x74, 0x65, 0x61, 0x6d, 0x2f, 0x73, 0x65, 0x72, 0x76, 0x69, 0x63,
-	0x65, 0x73, 0x2f, 0x69, 0x61, 0x6d, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x69, 0x61, 0x6d, 0x2f, 0x76,
-	0x31, 0x3b, 0x69, 0x61, 0x6d, 0x5f, 0x76, 0x31, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x6d, 0x2e, 0x76, 0x31, 0x2e, 0x55, 0x73, 0x65, 0x72, 0x73, 0x52, 0x65, 0x70, 0x6c, 0x79, 0x42,
+	0x41, 0x0a, 0x06, 0x69, 0x61, 0x6d, 0x2e, 0x76, 0x31, 0x50, 0x01, 0x5a, 0x35, 0x67, 0x69, 0x74,
+	0x6c, 0x61, 0x62, 0x2e, 0x63, 0x61, 0x6c, 0x65, 0x6e, 0x64, 0x61, 0x72, 0x69, 0x61, 0x2e, 0x74,
+	0x65, 0x61, 0x6d, 0x2f, 0x73, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x73, 0x2f, 0x69, 0x61, 0x6d,
+	0x2f, 0x61, 0x70, 0x69, 0x2f, 0x69, 0x61, 0x6d, 0x2f, 0x76, 0x31, 0x3b, 0x69, 0x61, 0x6d, 0x5f,
+	0x76, 0x31, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -762,19 +781,17 @@ var file_api_iam_v1_users_proto_depIdxs = []int32{
 	3,  // 13: iam.v1.Users.GetUserByFilter:input_type -> iam.v1.GetUserByFilterRequest
 	6,  // 14: iam.v1.Users.GetUsers:input_type -> iam.v1.GetUsersRequest
 	7,  // 15: iam.v1.Users.ListUsers:input_type -> iam.v1.ListUsersRequest
-	14, // 16: iam.v1.Users.AppendDefaultTenants:input_type -> utils.v1.EmptyRequest
-	0,  // 17: iam.v1.Users.GetOwnProfile:output_type -> iam.v1.UserFullReply
-	0,  // 18: iam.v1.Users.UpdateOwnProfile:output_type -> iam.v1.UserFullReply
-	15, // 19: iam.v1.Users.DeleteOwnProfile:output_type -> utils.v1.EmptyReply
-	0,  // 20: iam.v1.Users.GetUserFull:output_type -> iam.v1.UserFullReply
-	0,  // 21: iam.v1.Users.GetUserByFilterFull:output_type -> iam.v1.UserFullReply
-	5,  // 22: iam.v1.Users.GetUser:output_type -> iam.v1.UserReply
-	5,  // 23: iam.v1.Users.GetUserByFilter:output_type -> iam.v1.UserReply
-	8,  // 24: iam.v1.Users.GetUsers:output_type -> iam.v1.UsersReply
-	8,  // 25: iam.v1.Users.ListUsers:output_type -> iam.v1.UsersReply
-	15, // 26: iam.v1.Users.AppendDefaultTenants:output_type -> utils.v1.EmptyReply
-	17, // [17:27] is the sub-list for method output_type
-	7,  // [7:17] is the sub-list for method input_type
+	0,  // 16: iam.v1.Users.GetOwnProfile:output_type -> iam.v1.UserFullReply
+	0,  // 17: iam.v1.Users.UpdateOwnProfile:output_type -> iam.v1.UserFullReply
+	15, // 18: iam.v1.Users.DeleteOwnProfile:output_type -> utils.v1.EmptyReply
+	0,  // 19: iam.v1.Users.GetUserFull:output_type -> iam.v1.UserFullReply
+	0,  // 20: iam.v1.Users.GetUserByFilterFull:output_type -> iam.v1.UserFullReply
+	5,  // 21: iam.v1.Users.GetUser:output_type -> iam.v1.UserReply
+	5,  // 22: iam.v1.Users.GetUserByFilter:output_type -> iam.v1.UserReply
+	8,  // 23: iam.v1.Users.GetUsers:output_type -> iam.v1.UsersReply
+	8,  // 24: iam.v1.Users.ListUsers:output_type -> iam.v1.UsersReply
+	16, // [16:25] is the sub-list for method output_type
+	7,  // [7:16] is the sub-list for method input_type
 	7,  // [7:7] is the sub-list for extension type_name
 	7,  // [7:7] is the sub-list for extension extendee
 	0,  // [0:7] is the sub-list for field type_name

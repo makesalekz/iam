@@ -30,9 +30,18 @@ const (
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type CredentialsClient interface {
+	// Authenticate a user by Google OAuth2
+	// Request: Google code
 	AuthByGoogle(ctx context.Context, in *AuthByGoogleRequest, opts ...grpc.CallOption) (*v1.EmptyReply, error)
+	// Get credentials by provider
+	// Request: Provider code
+	// Reply: Full user's credentials
 	GetCredential(ctx context.Context, in *GetCredentialRequest, opts ...grpc.CallOption) (*CredentialReply, error)
+	// Get list of user's credentials
+	// Reply: List of user's credentials
 	ListCredentials(ctx context.Context, in *v1.EmptyRequest, opts ...grpc.CallOption) (*ListCredentialsReply, error)
+	// Delete credentials by record ID
+	// Request: Credentials record ID
 	DeleteCredential(ctx context.Context, in *CredentialsRequest, opts ...grpc.CallOption) (*v1.EmptyReply, error)
 }
 
@@ -84,9 +93,18 @@ func (c *credentialsClient) DeleteCredential(ctx context.Context, in *Credential
 // All implementations must embed UnimplementedCredentialsServer
 // for forward compatibility
 type CredentialsServer interface {
+	// Authenticate a user by Google OAuth2
+	// Request: Google code
 	AuthByGoogle(context.Context, *AuthByGoogleRequest) (*v1.EmptyReply, error)
+	// Get credentials by provider
+	// Request: Provider code
+	// Reply: Full user's credentials
 	GetCredential(context.Context, *GetCredentialRequest) (*CredentialReply, error)
+	// Get list of user's credentials
+	// Reply: List of user's credentials
 	ListCredentials(context.Context, *v1.EmptyRequest) (*ListCredentialsReply, error)
+	// Delete credentials by record ID
+	// Request: Credentials record ID
 	DeleteCredential(context.Context, *CredentialsRequest) (*v1.EmptyReply, error)
 	mustEmbedUnimplementedCredentialsServer()
 }

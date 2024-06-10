@@ -21,6 +21,7 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+// PrivacyRequest is a request to update privacy settings
 type PrivacyRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -68,6 +69,7 @@ func (x *PrivacyRequest) GetSettings() map[string]string {
 	return nil
 }
 
+// PrivacyReply is a reply with privacy settings
 type PrivacyReply struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -115,6 +117,7 @@ func (x *PrivacyReply) GetSettings() map[string]string {
 	return nil
 }
 
+// UsersPrivaciesRequest is a request to get privacy settings of the users' list
 type UsersPrivaciesRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -162,6 +165,7 @@ func (x *UsersPrivaciesRequest) GetIds() []int64 {
 	return nil
 }
 
+// UsersPrivaciesReply is a reply with privacy settings of the users' list
 type UsersPrivaciesReply struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -209,6 +213,7 @@ func (x *UsersPrivaciesReply) GetUsers() []*UserPrivacies {
 	return nil
 }
 
+// UserPrivacies is a privacy settings of the user
 type UserPrivacies struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache

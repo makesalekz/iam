@@ -29,8 +29,16 @@ const (
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type PrivacyClient interface {
+	// Get privacy settings of the current user
+	// Returns: the privacy settings of the current user
 	GetPrivacy(ctx context.Context, in *v1.EmptyRequest, opts ...grpc.CallOption) (*PrivacyReply, error)
+	// Get privacy settings of the users' list
+	// Request: the list of users' ids
+	// Returns: the privacy settings of the users' list
 	GetUsersPrivacies(ctx context.Context, in *UsersPrivaciesRequest, opts ...grpc.CallOption) (*UsersPrivaciesReply, error)
+	// Update privacy settings of the current user
+	// Request: new privacy settings
+	// Returns: the updated privacy settings
 	UpdatePrivacy(ctx context.Context, in *PrivacyRequest, opts ...grpc.CallOption) (*PrivacyReply, error)
 }
 
@@ -73,8 +81,16 @@ func (c *privacyClient) UpdatePrivacy(ctx context.Context, in *PrivacyRequest, o
 // All implementations must embed UnimplementedPrivacyServer
 // for forward compatibility
 type PrivacyServer interface {
+	// Get privacy settings of the current user
+	// Returns: the privacy settings of the current user
 	GetPrivacy(context.Context, *v1.EmptyRequest) (*PrivacyReply, error)
+	// Get privacy settings of the users' list
+	// Request: the list of users' ids
+	// Returns: the privacy settings of the users' list
 	GetUsersPrivacies(context.Context, *UsersPrivaciesRequest) (*UsersPrivaciesReply, error)
+	// Update privacy settings of the current user
+	// Request: new privacy settings
+	// Returns: the updated privacy settings
 	UpdatePrivacy(context.Context, *PrivacyRequest) (*PrivacyReply, error)
 	mustEmbedUnimplementedPrivacyServer()
 }

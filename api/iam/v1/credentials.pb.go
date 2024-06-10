@@ -21,11 +21,13 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+// AuthByGoogleRequest is a request to authenticate a user by Google OAuth2
 type AuthByGoogleRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
+	// Google OAuth2 code
 	AuthCode string `protobuf:"bytes,1,opt,name=auth_code,json=authCode,proto3" json:"auth_code,omitempty"`
 }
 
@@ -68,11 +70,13 @@ func (x *AuthByGoogleRequest) GetAuthCode() string {
 	return ""
 }
 
+// GetCredentialRequest is a request to get credentials by provider
 type GetCredentialRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
+	// Provider code (google, ...)
 	Provider string `protobuf:"bytes,1,opt,name=provider,proto3" json:"provider,omitempty"`
 }
 
@@ -115,11 +119,13 @@ func (x *GetCredentialRequest) GetProvider() string {
 	return ""
 }
 
+// CredentialsRequest is a request to get credentials by record ID
 type CredentialsRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
+	// Credentials record ID
 	CredentialId int64 `protobuf:"varint,1,opt,name=credentialId,proto3" json:"credentialId,omitempty"`
 }
 
@@ -162,11 +168,13 @@ func (x *CredentialsRequest) GetCredentialId() int64 {
 	return 0
 }
 
+// CredentialReply is a reply with full user's credentials to a provider
 type CredentialReply struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
+	// Full user's credentials
 	Credential *UserCredentials `protobuf:"bytes,1,opt,name=credential,proto3" json:"credential,omitempty"`
 }
 
@@ -209,11 +217,13 @@ func (x *CredentialReply) GetCredential() *UserCredentials {
 	return nil
 }
 
+// ListCredentialsReply is a reply with a list of credentials
 type ListCredentialsReply struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
+	// List of credentials
 	Credentials []*UserCredentialsShort `protobuf:"bytes,1,rep,name=credentials,proto3" json:"credentials,omitempty"`
 }
 

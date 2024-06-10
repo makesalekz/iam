@@ -265,7 +265,6 @@ func userItemToV1ShortUser(user *biz.UserItem) *v1.UserShort {
 		Name:        user.Name,
 		LastLoginAt: user.LastLoginAt.Format(time.RFC3339),
 		Privacies:   user.Privacies,
-		Relation:    user.Relation,
 	}
 
 	if user.WithVerified {
