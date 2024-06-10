@@ -4,9 +4,6 @@ import (
 	"context"
 	"errors"
 
-	"github.com/lib/pq"
-
-	"github.com/go-kratos/kratos/v2/log"
 	iam_v1 "gitlab.calendaria.team/services/iam/api/iam/v1"
 	v1 "gitlab.calendaria.team/services/iam/api/iam/v1"
 	"gitlab.calendaria.team/services/iam/ent"
@@ -15,12 +12,14 @@ import (
 	utils_v1 "gitlab.calendaria.team/services/utils/api/utils/v1"
 	u_error "gitlab.calendaria.team/services/utils/v1/error"
 	"gitlab.calendaria.team/services/utils/v1/jwt"
+
+	"github.com/go-kratos/kratos/v2/log"
+	"github.com/lib/pq"
 )
 
 type UserItem struct {
 	*ent.User
 
-	Relation     *v1.Relation
 	Privacies    map[string]string
 	WithVerified bool
 }

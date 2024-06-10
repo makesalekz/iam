@@ -28,7 +28,12 @@ const (
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type SettingsClient interface {
+	// GetSettings returns the current settings
+	// Returns: the current settings of the current user
 	GetSettings(ctx context.Context, in *v1.EmptyRequest, opts ...grpc.CallOption) (*SettingsReply, error)
+	// UpdateSettings updates the settings of the current user
+	// Request: the new settings to update
+	// Returns: the updated settings of the current user
 	UpdateSettings(ctx context.Context, in *SettingsRequest, opts ...grpc.CallOption) (*SettingsReply, error)
 }
 
@@ -62,7 +67,12 @@ func (c *settingsClient) UpdateSettings(ctx context.Context, in *SettingsRequest
 // All implementations must embed UnimplementedSettingsServer
 // for forward compatibility
 type SettingsServer interface {
+	// GetSettings returns the current settings
+	// Returns: the current settings of the current user
 	GetSettings(context.Context, *v1.EmptyRequest) (*SettingsReply, error)
+	// UpdateSettings updates the settings of the current user
+	// Request: the new settings to update
+	// Returns: the updated settings of the current user
 	UpdateSettings(context.Context, *SettingsRequest) (*SettingsReply, error)
 	mustEmbedUnimplementedSettingsServer()
 }

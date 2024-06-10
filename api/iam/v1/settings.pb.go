@@ -21,6 +21,7 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+// SettingsRequest is the request to update the settings
 type SettingsRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -68,6 +69,7 @@ func (x *SettingsRequest) GetSettings() map[string]string {
 	return nil
 }
 
+// SettingsReply is the settings of the current user
 type SettingsReply struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
