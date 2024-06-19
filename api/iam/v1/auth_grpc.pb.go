@@ -32,11 +32,11 @@ type AuthClient interface {
 	// Auth by Phone
 	// Request: phone number
 	// Returns: id of newly created or existing user
-	AuthByPhone(ctx context.Context, in *AuthByPhoneRequest, opts ...grpc.CallOption) (*AuthReply, error)
+	AuthByPhone(ctx context.Context, in *AuthByPhoneRequest, opts ...grpc.CallOption) (*AuthByPhoneReply, error)
 	// Auth by Email
 	// Request: email address
 	// Returns: id of newly created or existing user
-	AuthByEmail(ctx context.Context, in *AuthByEmailRequest, opts ...grpc.CallOption) (*AuthReply, error)
+	AuthByEmail(ctx context.Context, in *AuthByEmailRequest, opts ...grpc.CallOption) (*AuthByPhoneReply, error)
 	// Auth by Code
 	// after you authorized by phone, you suppose to enter code that you've got
 	// Request: id from AuthByPhone, code from message
@@ -56,8 +56,8 @@ func NewAuthClient(cc grpc.ClientConnInterface) AuthClient {
 	return &authClient{cc}
 }
 
-func (c *authClient) AuthByPhone(ctx context.Context, in *AuthByPhoneRequest, opts ...grpc.CallOption) (*AuthReply, error) {
-	out := new(AuthReply)
+func (c *authClient) AuthByPhone(ctx context.Context, in *AuthByPhoneRequest, opts ...grpc.CallOption) (*AuthByPhoneReply, error) {
+	out := new(AuthByPhoneReply)
 	err := c.cc.Invoke(ctx, Auth_AuthByPhone_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -65,8 +65,8 @@ func (c *authClient) AuthByPhone(ctx context.Context, in *AuthByPhoneRequest, op
 	return out, nil
 }
 
-func (c *authClient) AuthByEmail(ctx context.Context, in *AuthByEmailRequest, opts ...grpc.CallOption) (*AuthReply, error) {
-	out := new(AuthReply)
+func (c *authClient) AuthByEmail(ctx context.Context, in *AuthByEmailRequest, opts ...grpc.CallOption) (*AuthByPhoneReply, error) {
+	out := new(AuthByPhoneReply)
 	err := c.cc.Invoke(ctx, Auth_AuthByEmail_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -99,11 +99,11 @@ type AuthServer interface {
 	// Auth by Phone
 	// Request: phone number
 	// Returns: id of newly created or existing user
-	AuthByPhone(context.Context, *AuthByPhoneRequest) (*AuthReply, error)
+	AuthByPhone(context.Context, *AuthByPhoneRequest) (*AuthByPhoneReply, error)
 	// Auth by Email
 	// Request: email address
 	// Returns: id of newly created or existing user
-	AuthByEmail(context.Context, *AuthByEmailRequest) (*AuthReply, error)
+	AuthByEmail(context.Context, *AuthByEmailRequest) (*AuthByPhoneReply, error)
 	// Auth by Code
 	// after you authorized by phone, you suppose to enter code that you've got
 	// Request: id from AuthByPhone, code from message
@@ -120,10 +120,10 @@ type AuthServer interface {
 type UnimplementedAuthServer struct {
 }
 
-func (UnimplementedAuthServer) AuthByPhone(context.Context, *AuthByPhoneRequest) (*AuthReply, error) {
+func (UnimplementedAuthServer) AuthByPhone(context.Context, *AuthByPhoneRequest) (*AuthByPhoneReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AuthByPhone not implemented")
 }
-func (UnimplementedAuthServer) AuthByEmail(context.Context, *AuthByEmailRequest) (*AuthReply, error) {
+func (UnimplementedAuthServer) AuthByEmail(context.Context, *AuthByEmailRequest) (*AuthByPhoneReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AuthByEmail not implemented")
 }
 func (UnimplementedAuthServer) AuthByCode(context.Context, *AuthByCodeRequest) (*TokenReply, error) {

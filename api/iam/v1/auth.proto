@@ -10,12 +10,12 @@ service Auth {
   // Auth by Phone
   // Request: phone number
   // Returns: id of newly created or existing user
-  rpc AuthByPhone(AuthByPhoneRequest) returns (AuthReply);
+  rpc AuthByPhone(AuthByPhoneRequest) returns (AuthByPhoneReply);
 
   // Auth by Email
   // Request: email address
   // Returns: id of newly created or existing user
-  rpc AuthByEmail(AuthByEmailRequest) returns (AuthReply);
+  rpc AuthByEmail(AuthByEmailRequest) returns (AuthByPhoneReply);
 
   // Auth by Code
   // after you authorized by phone, you suppose to enter code that you've got
@@ -44,7 +44,7 @@ message AuthByEmailRequest {
 }
 
 /* AuthByPhoneReply is a response to authenticate by phone number */
-message AuthReply {
+message AuthByPhoneReply {
   // id of newly created or existing user
   int64 userId = 1;
 }
