@@ -20,6 +20,7 @@ const _ = grpc.SupportPackageIsVersion7
 
 const (
 	Auth_AuthByPhone_FullMethodName  = "/iam.v1.Auth/AuthByPhone"
+	Auth_AuthByEmail_FullMethodName  = "/iam.v1.Auth/AuthByEmail"
 	Auth_AuthByCode_FullMethodName   = "/iam.v1.Auth/AuthByCode"
 	Auth_RefreshToken_FullMethodName = "/iam.v1.Auth/RefreshToken"
 )
@@ -31,7 +32,11 @@ type AuthClient interface {
 	// Auth by Phone
 	// Request: phone number
 	// Returns: id of newly created or existing user
-	AuthByPhone(ctx context.Context, in *AuthByPhoneRequest, opts ...grpc.CallOption) (*AuthByPhoneReply, error)
+	AuthByPhone(ctx context.Context, in *AuthByPhoneRequest, opts ...grpc.CallOption) (*AuthReply, error)
+	// Auth by Email
+	// Request: email address
+	// Returns: id of newly created or existing user
+	AuthByEmail(ctx context.Context, in *AuthByEmailRequest, opts ...grpc.CallOption) (*AuthReply, error)
 	// Auth by Code
 	// after you authorized by phone, you suppose to enter code that you've got
 	// Request: id from AuthByPhone, code from message
@@ -51,9 +56,18 @@ func NewAuthClient(cc grpc.ClientConnInterface) AuthClient {
 	return &authClient{cc}
 }
 
-func (c *authClient) AuthByPhone(ctx context.Context, in *AuthByPhoneRequest, opts ...grpc.CallOption) (*AuthByPhoneReply, error) {
-	out := new(AuthByPhoneReply)
+func (c *authClient) AuthByPhone(ctx context.Context, in *AuthByPhoneRequest, opts ...grpc.CallOption) (*AuthReply, error) {
+	out := new(AuthReply)
 	err := c.cc.Invoke(ctx, Auth_AuthByPhone_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *authClient) AuthByEmail(ctx context.Context, in *AuthByEmailRequest, opts ...grpc.CallOption) (*AuthReply, error) {
+	out := new(AuthReply)
+	err := c.cc.Invoke(ctx, Auth_AuthByEmail_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -85,7 +99,11 @@ type AuthServer interface {
 	// Auth by Phone
 	// Request: phone number
 	// Returns: id of newly created or existing user
-	AuthByPhone(context.Context, *AuthByPhoneRequest) (*AuthByPhoneReply, error)
+	AuthByPhone(context.Context, *AuthByPhoneRequest) (*AuthReply, error)
+	// Auth by Email
+	// Request: email address
+	// Returns: id of newly created or existing user
+	AuthByEmail(context.Context, *AuthByEmailRequest) (*AuthReply, error)
 	// Auth by Code
 	// after you authorized by phone, you suppose to enter code that you've got
 	// Request: id from AuthByPhone, code from message
@@ -102,8 +120,11 @@ type AuthServer interface {
 type UnimplementedAuthServer struct {
 }
 
-func (UnimplementedAuthServer) AuthByPhone(context.Context, *AuthByPhoneRequest) (*AuthByPhoneReply, error) {
+func (UnimplementedAuthServer) AuthByPhone(context.Context, *AuthByPhoneRequest) (*AuthReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AuthByPhone not implemented")
+}
+func (UnimplementedAuthServer) AuthByEmail(context.Context, *AuthByEmailRequest) (*AuthReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method AuthByEmail not implemented")
 }
 func (UnimplementedAuthServer) AuthByCode(context.Context, *AuthByCodeRequest) (*TokenReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AuthByCode not implemented")
@@ -138,6 +159,24 @@ func _Auth_AuthByPhone_Handler(srv interface{}, ctx context.Context, dec func(in
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(AuthServer).AuthByPhone(ctx, req.(*AuthByPhoneRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Auth_AuthByEmail_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(AuthByEmailRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AuthServer).AuthByEmail(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Auth_AuthByEmail_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AuthServer).AuthByEmail(ctx, req.(*AuthByEmailRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -188,6 +227,10 @@ var Auth_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "AuthByPhone",
 			Handler:    _Auth_AuthByPhone_Handler,
+		},
+		{
+			MethodName: "AuthByEmail",
+			Handler:    _Auth_AuthByEmail_Handler,
 		},
 		{
 			MethodName: "AuthByCode",

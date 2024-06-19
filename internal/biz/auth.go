@@ -94,6 +94,34 @@ func (uc *AuthUsecase) AuthUserByPhone(ctx context.Context, phone string) (int64
 	return user.ID, nil
 }
 
+func (uc *AuthUsecase) AuthUserByEmail(ctx context.Context, email, lang string) (int64, error) {
+	user, err := uc.usersRepo.GetUserByEmail(ctx, email)
+	if err != nil {
+		if ent.IsNotFound(err) {
+			user, err = uc.usersRepo.CreateUserWithEmail(ctx, email)
+		}
+		if err != nil {
+			return 0, v1.ErrorDatabaseQuery("database error: %s", err.Error())
+		}
+	}
+
+	otp, err := uc.otpRepo.CreateOneTimePassword(ctx, user.ID, enum.Email, AUTH_OTP_DURATION)
+	if err != nil {
+		return 0, v1.ErrorDatabaseQuery("database error: %s", err.Error())
+	}
+
+	emailDetails := map[string]string{
+		"AuthCode": otp.Code,
+		"Email":    email,
+	}
+	err = uc.notifications.PersonalEmailSender(ctx, email, "confirm_email", lang, emailDetails)
+	if err != nil {
+		return 0, v1.ErrorServiceFailed("notification: %s", err.Error())
+	}
+
+	return user.ID, nil
+}
+
 func (uc *AuthUsecase) AuthUserByCode(ctx context.Context, userId int64, code string) error {
 	user, err := uc.usersRepo.GetUserById(ctx, userId)
 	if err != nil {

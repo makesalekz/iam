@@ -52,3 +52,21 @@ func (r *NotificationsRemote) PersonalSmsSender(ctx context.Context, phone, mess
 
 	return nil
 }
+
+func (r *NotificationsRemote) PersonalEmailSender(ctx context.Context, email, emailType, language string, data map[string]string) error {
+	client, err := r.GetSenderClient(ctx)
+	if err != nil {
+		return err
+	}
+	_, err = client.EmailSender(ctx, &notifications_v1.EmailSenderRequest{
+		Language: &language,
+		Emails:   []string{email},
+		Type:     emailType,
+		Data:     data,
+	})
+	if err != nil {
+		return err
+	}
+
+	return nil
+}

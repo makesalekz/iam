@@ -23,13 +23,22 @@ func NewAuthService(
 	}
 }
 
-func (s *AuthService) AuthByPhone(ctx context.Context, req *v1.AuthByPhoneRequest) (*v1.AuthByPhoneReply, error) {
+func (s *AuthService) AuthByPhone(ctx context.Context, req *v1.AuthByPhoneRequest) (*v1.AuthReply, error) {
 	userId, err := s.au.AuthUserByPhone(ctx, req.Phone)
 	if err != nil {
 		return nil, err
 	}
 
-	return &v1.AuthByPhoneReply{UserId: userId}, nil
+	return &v1.AuthReply{UserId: userId}, nil
+}
+
+func (s *AuthService) AuthByEmail(ctx context.Context, req *v1.AuthByEmailRequest) (*v1.AuthReply, error) {
+	userId, err := s.au.AuthUserByEmail(ctx, req.Email, req.Language)
+	if err != nil {
+		return nil, err
+	}
+
+	return &v1.AuthReply{UserId: userId}, nil
 }
 
 func (s *AuthService) AuthByCode(ctx context.Context, req *v1.AuthByCodeRequest) (*v1.TokenReply, error) {
