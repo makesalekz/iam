@@ -32,6 +32,15 @@ func (s *AuthService) AuthByPhone(ctx context.Context, req *v1.AuthByPhoneReques
 	return &v1.AuthByPhoneReply{UserId: userId}, nil
 }
 
+func (s *AuthService) AuthByEmail(ctx context.Context, req *v1.AuthByEmailRequest) (*v1.AuthByPhoneReply, error) {
+	userId, err := s.au.AuthUserByEmail(ctx, req.Email, req.Language)
+	if err != nil {
+		return nil, err
+	}
+
+	return &v1.AuthByPhoneReply{UserId: userId}, nil
+}
+
 func (s *AuthService) AuthByCode(ctx context.Context, req *v1.AuthByCodeRequest) (*v1.TokenReply, error) {
 	err := s.au.AuthUserByCode(ctx, req.UserId, req.Code)
 	if err != nil {
