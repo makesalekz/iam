@@ -20,13 +20,21 @@ import (
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/nyaruka/phonenumbers"
+	"golang.org/x/exp/rand"
 )
 
-const DEFAULT_REGION = "KZ"
-const AUTH_OTP_DURATION = 5 * time.Minute
-const ACCESS_TOKEN_DURATION = 10 * time.Minute
-const REFRESH_TOKEN_DURATION = 30 * 24 * time.Hour
-const PERSONAL_WORKSPACE = "My Workspace"
+const otpLength = 6
+const digits = "0123456789"
+const debugOtpCode = "777333"
+
+const verifiablePhone = "+77710012030"
+const verifiableOtpCode = "667423"
+
+const defaultRegion = "KZ"
+const authOtpDuration = 5 * time.Minute
+const accessTokenDuration = 10 * time.Minute
+const refreshTokenDuration = 30 * 24 * time.Hour
+const personalWorkspace = "My Workspace"
 
 // GreeterUsecase is a Greeter usecase.
 type AuthUsecase struct {
@@ -61,7 +69,7 @@ func NewAuthUsecase(
 }
 
 func (uc *AuthUsecase) AuthUserByPhone(ctx context.Context, phone string) (int64, error) {
-	phoneNumber, err := phonenumbers.Parse(phone, DEFAULT_REGION)
+	phoneNumber, err := phonenumbers.Parse(phone, defaultRegion)
 	if err != nil {
 		return 0, v1.ErrorInvalidPhoneNumber("parse error: %s", err.Error())
 	}
@@ -81,7 +89,21 @@ func (uc *AuthUsecase) AuthUserByPhone(ctx context.Context, phone string) (int64
 		}
 	}
 
-	otp, err := uc.otpRepo.CreateOneTimePassword(ctx, user.ID, enum.Phone, AUTH_OTP_DURATION)
+	var code string
+	switch {
+	case phone == verifiablePhone:
+		// use fixed code for verifiable phone
+		code = verifiableOtpCode
+
+	case os.Getenv("DEBUG") != "":
+		// use fixed code in debug mode
+		code = debugOtpCode
+
+	default:
+		code = generateRandomNumber(otpLength)
+	}
+
+	otp, err := uc.otpRepo.CreateOneTimePassword(ctx, user.ID, enum.Phone, code, authOtpDuration)
 	if err != nil {
 		return 0, v1.ErrorDatabaseQuery("database error: %s", err.Error())
 	}
@@ -105,7 +127,15 @@ func (uc *AuthUsecase) AuthUserByEmail(ctx context.Context, email, lang string) 
 		}
 	}
 
-	otp, err := uc.otpRepo.CreateOneTimePassword(ctx, user.ID, enum.Email, AUTH_OTP_DURATION)
+	var code string
+	if os.Getenv("DEBUG") != "" {
+		// use fixed code in debug mode
+		code = debugOtpCode
+	} else {
+		code = generateRandomNumber(otpLength)
+	}
+
+	otp, err := uc.otpRepo.CreateOneTimePassword(ctx, user.ID, enum.Email, code, authOtpDuration)
 	if err != nil {
 		return 0, v1.ErrorDatabaseQuery("database error: %s", err.Error())
 	}
@@ -122,8 +152,8 @@ func (uc *AuthUsecase) AuthUserByEmail(ctx context.Context, email, lang string) 
 	return user.ID, nil
 }
 
-func (uc *AuthUsecase) AuthUserByCode(ctx context.Context, userId int64, code string) error {
-	user, err := uc.usersRepo.GetUserById(ctx, userId)
+func (uc *AuthUsecase) AuthUserByCode(ctx context.Context, userID int64, code string) error {
+	user, err := uc.usersRepo.GetUserById(ctx, userID)
 	if err != nil {
 		return v1.ErrorDatabaseQuery("database error: %s", err.Error())
 	}
@@ -149,19 +179,19 @@ func (uc *AuthUsecase) handleUserVerification(ctx context.Context, user *ent.Use
 
 	if user.DefaultTenantID == nil {
 		tenantContext := u_auth.AppendAuthIds(ctx, user.ID, 0)
-		personalTenant, err := uc.tenants.CreateTenants(tenantContext, PERSONAL_WORKSPACE)
+		personalTenant, err := uc.tenants.CreateTenants(tenantContext, personalWorkspace)
 		if err != nil {
 			return v1.ErrorGrpcConnection("CreateTenants error: %s", err.Error())
 		}
 
-		_, err = uc.usersRepo.UpdateUserData(tenantContext, user, data.UpdateUserDto{TenantId: personalTenant.Id})
+		_, err = uc.usersRepo.UpdateUserData(tenantContext, user, data.UpdateUserDto{TenantId: personalTenant.GetId()})
 		if err != nil {
 			return v1.ErrorDatabaseQuery("UpdateUserData gone wrong: %s", err.Error())
 		}
 
 		uc.queue.GetRemote(QueueEventsDefaultCalendars).Pub(&u_struc.AuthIds{
 			ActorId:  user.ID,
-			TenantId: personalTenant.Id,
+			TenantId: personalTenant.GetId(),
 		})
 	}
 
@@ -185,13 +215,13 @@ func (uc *AuthUsecase) handleUserVerification(ctx context.Context, user *ent.Use
 	return v1.ErrorInternal("unrecognized otpType")
 }
 
-func (uc *AuthUsecase) GenerateIdToken(ctx context.Context, userId int64) (string, error) {
+func (uc *AuthUsecase) GenerateIDToken(ctx context.Context, userID int64) (string, error) {
 	claims := &jwt.RegisteredClaims{
 		Issuer:    "iam",
 		Audience:  jwt.ClaimStrings{"refresh"},
-		Subject:   strconv.FormatInt(userId, 10),
+		Subject:   strconv.FormatInt(userID, 10),
 		IssuedAt:  jwt.NewNumericDate(time.Now()),
-		ExpiresAt: jwt.NewNumericDate(time.Now().Add(REFRESH_TOKEN_DURATION)),
+		ExpiresAt: jwt.NewNumericDate(time.Now().Add(refreshTokenDuration)),
 	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 
@@ -204,8 +234,8 @@ func (uc *AuthUsecase) GenerateIdToken(ctx context.Context, userId int64) (strin
 	return result, nil
 }
 
-func (uc *AuthUsecase) GenerateAccessToken(ctx context.Context, userId int64) (string, error) {
-	user, err := uc.usersRepo.GetUserById(ctx, userId)
+func (uc *AuthUsecase) GenerateAccessToken(ctx context.Context, userID int64) (string, error) {
+	user, err := uc.usersRepo.GetUserById(ctx, userID)
 	if err != nil {
 		return "", v1.ErrorDatabaseQuery("get user: %s", err.Error())
 	}
@@ -213,7 +243,7 @@ func (uc *AuthUsecase) GenerateAccessToken(ctx context.Context, userId int64) (s
 		return "", v1.ErrorInternal("personal tenant non existent")
 	}
 
-	result, err := uc.GenerateTenantToken(ctx, *user.DefaultTenantID, userId)
+	result, err := uc.GenerateTenantToken(ctx, *user.DefaultTenantID, userID)
 	if err != nil {
 		return "", err
 	}
@@ -221,31 +251,31 @@ func (uc *AuthUsecase) GenerateAccessToken(ctx context.Context, userId int64) (s
 	return result, nil
 }
 
-func (uc *AuthUsecase) GenerateTenantToken(ctx context.Context, tenantId, userId int64) (string, error) {
-	duration := ACCESS_TOKEN_DURATION
+func (uc *AuthUsecase) GenerateTenantToken(ctx context.Context, tenantID, userID int64) (string, error) {
+	duration := accessTokenDuration
 	debug := os.Getenv("DEBUG")
 	if debug != "" { // set access token duration to 1 month in debug mode
-		duration = REFRESH_TOKEN_DURATION
+		duration = refreshTokenDuration
 	}
 
 	claims := &u_jwt.TenantClaims{
 		RegisteredClaims: jwt.RegisteredClaims{
 			Issuer:    "iam",
 			Audience:  jwt.ClaimStrings{"tenant"},
-			Subject:   strconv.FormatInt(userId, 10),
+			Subject:   strconv.FormatInt(userID, 10),
 			IssuedAt:  jwt.NewNumericDate(time.Now()),
 			ExpiresAt: jwt.NewNumericDate(time.Now().Add(duration)),
 		},
-		TenantId: tenantId,
+		TenantId: tenantID,
 	}
 
-	reply, err := uc.tenants.GetMemberIdentities(ctx, tenantId, userId)
+	reply, err := uc.tenants.GetMemberIdentities(ctx, tenantID, userID)
 	if err != nil {
 		return "", tenants_v1.ErrorServiceFailed("tenants: %s", err.Error())
 	}
 
-	claims.MemberId = reply.Member
-	claims.GroupsIds = reply.Groups
+	claims.MemberId = reply.GetMember()
+	claims.GroupsIds = reply.GetGroups()
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 
@@ -278,23 +308,10 @@ func userShortFromDto(user *ent.User) *v1.UserShort {
 	return replyUser
 }
 
-func (uc *AuthUsecase) TempAddDefaultTenants(ctx context.Context) error {
-	users, err := uc.usersRepo.TempGetUsersWithoutDefaultTenant(ctx)
-	if err != nil {
-		return v1.ErrorInternal("can't get users without tenant")
+func generateRandomNumber(n int) string {
+	result := make([]byte, n)
+	for i := range result {
+		result[i] = digits[rand.Int63()%int64(len(digits))]
 	}
-
-	for _, user := range users {
-		tenant, err := uc.tenants.CreateTenants(u_auth.AppendAuthIds(context.Background(), user.ID, 0), PERSONAL_WORKSPACE)
-		if err != nil {
-			return v1.ErrorInternal("can't create tenant %s", err.Error())
-		}
-
-		_, err = uc.usersRepo.UpdateUserData(ctx, user, data.UpdateUserDto{TenantId: tenant.Id})
-		if err != nil {
-			return v1.ErrorInternal("can't update tenant id %s", err.Error())
-		}
-	}
-
-	return nil
+	return string(result)
 }

@@ -21,7 +21,7 @@ func ParsePhone(phone string) (string, error) {
 		return "", v1.ErrorInvalidPhoneNumber("phone is empty")
 	}
 
-	phoneNumber, err := phonenumbers.Parse(phone, DEFAULT_REGION)
+	phoneNumber, err := phonenumbers.Parse(phone, defaultRegion)
 	if err != nil {
 		return "", v1.ErrorInvalidPhoneNumber("parse error: %s", err.Error())
 	}
