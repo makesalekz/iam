@@ -5,7 +5,6 @@ import (
 
 	v1 "gitlab.calendaria.team/services/iam/api/iam/v1"
 	"gitlab.calendaria.team/services/iam/internal/biz"
-	utils_v1 "gitlab.calendaria.team/services/utils/api/utils/v1"
 	"gitlab.calendaria.team/services/utils/v2/auth"
 )
 
@@ -24,35 +23,35 @@ func NewAuthService(
 }
 
 func (s *AuthService) AuthByPhone(ctx context.Context, req *v1.AuthByPhoneRequest) (*v1.AuthByPhoneReply, error) {
-	userId, err := s.au.AuthUserByPhone(ctx, req.Phone)
+	userID, err := s.au.AuthUserByPhone(ctx, req.GetPhone())
 	if err != nil {
 		return nil, err
 	}
 
-	return &v1.AuthByPhoneReply{UserId: userId}, nil
+	return &v1.AuthByPhoneReply{UserId: userID}, nil
 }
 
 func (s *AuthService) AuthByEmail(ctx context.Context, req *v1.AuthByEmailRequest) (*v1.AuthByPhoneReply, error) {
-	userId, err := s.au.AuthUserByEmail(ctx, req.Email, req.Language)
+	userID, err := s.au.AuthUserByEmail(ctx, req.GetEmail(), req.GetLanguage())
 	if err != nil {
 		return nil, err
 	}
 
-	return &v1.AuthByPhoneReply{UserId: userId}, nil
+	return &v1.AuthByPhoneReply{UserId: userID}, nil
 }
 
 func (s *AuthService) AuthByCode(ctx context.Context, req *v1.AuthByCodeRequest) (*v1.TokenReply, error) {
-	err := s.au.AuthUserByCode(ctx, req.UserId, req.Code)
+	err := s.au.AuthUserByCode(ctx, req.GetUserId(), req.GetCode())
 	if err != nil {
 		return nil, err
 	}
 
-	accessToken, err := s.au.GenerateAccessToken(ctx, req.UserId)
+	accessToken, err := s.au.GenerateAccessToken(ctx, req.GetUserId())
 	if err != nil {
 		return nil, err
 	}
 
-	refreshToken, err := s.au.GenerateIdToken(ctx, req.UserId)
+	refreshToken, err := s.au.GenerateIDToken(ctx, req.GetUserId())
 	if err != nil {
 		return nil, err
 	}
@@ -64,23 +63,23 @@ func (s *AuthService) AuthByCode(ctx context.Context, req *v1.AuthByCodeRequest)
 }
 
 func (s *AuthService) RefreshToken(ctx context.Context, req *v1.TenantRequest) (*v1.TokenReply, error) {
-	actorId := auth.GetActorIdFromContext(ctx)
-	if actorId == 0 {
+	actorID := auth.GetActorIdFromContext(ctx)
+	if actorID == 0 {
 		return nil, v1.ErrorEmptyActorId("empty actor id")
 	}
 
 	var err error
 	var accessToken string
-	if req.TenantId != 0 {
-		accessToken, err = s.au.GenerateTenantToken(ctx, req.TenantId, actorId)
+	if req.GetTenantId() != 0 {
+		accessToken, err = s.au.GenerateTenantToken(ctx, req.GetTenantId(), actorID)
 	} else {
-		accessToken, err = s.au.GenerateAccessToken(ctx, actorId)
+		accessToken, err = s.au.GenerateAccessToken(ctx, actorID)
 	}
 	if err != nil {
 		return nil, err
 	}
 
-	refreshToken, err := s.au.GenerateIdToken(ctx, actorId)
+	refreshToken, err := s.au.GenerateIDToken(ctx, actorID)
 	if err != nil {
 		return nil, err
 	}
@@ -89,13 +88,4 @@ func (s *AuthService) RefreshToken(ctx context.Context, req *v1.TenantRequest) (
 		AccessToken:  accessToken,
 		RefreshToken: refreshToken,
 	}, nil
-}
-
-func (s *AuthService) TempAddDefaultTenants(ctx context.Context, req *utils_v1.EmptyRequest) (*utils_v1.EmptyReply, error) {
-	err := s.au.TempAddDefaultTenants(ctx)
-	if err != nil {
-		return &utils_v1.EmptyReply{}, err
-	}
-
-	return &utils_v1.EmptyReply{}, nil
 }

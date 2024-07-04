@@ -2,8 +2,6 @@ package data
 
 import (
 	"context"
-	"math/rand"
-	"os"
 	"time"
 
 	"gitlab.calendaria.team/services/iam/ent"
@@ -11,12 +9,17 @@ import (
 	"gitlab.calendaria.team/services/iam/ent/onetimepassword"
 )
 
-const digits = "0123456789"
-
-// OtpRepo
+// OtpRepo.
 type OtpRepo interface {
-	CreateOneTimePassword(ctx context.Context, userId int64, t enum.OneTimePasswordType, duration time.Duration) (*ent.OneTimePassword, error)
-	CheckOneTimePassword(ctx context.Context, userId int64, code string) (*ent.OneTimePassword, error)
+	CreateOneTimePassword(
+		ctx context.Context,
+		userID int64,
+		typee enum.OneTimePasswordType,
+		code string,
+		duration time.Duration,
+	) (*ent.OneTimePassword, error)
+
+	CheckOneTimePassword(ctx context.Context, userID int64, code string) (*ent.OneTimePassword, error)
 }
 
 type otpRepo struct {
@@ -30,29 +33,21 @@ func NewOtpRepo(d *Data) OtpRepo {
 	}
 }
 
-func generateRandomNumber(n int) string {
-	result := make([]byte, n)
-	for i := range result {
-		result[i] = digits[rand.Int63()%int64(len(digits))]
-	}
-	return string(result)
-}
-
-func (r *otpRepo) CreateOneTimePassword(ctx context.Context, userId int64, t enum.OneTimePasswordType, duration time.Duration) (*ent.OneTimePassword, error) {
-	code := generateRandomNumber(6)
+func (r *otpRepo) CreateOneTimePassword(
+	ctx context.Context,
+	userID int64,
+	typee enum.OneTimePasswordType,
+	code string,
+	duration time.Duration,
+) (*ent.OneTimePassword, error) {
 	expiresAt := time.Now().Add(duration)
 
-	debug := os.Getenv("DEBUG")
-	if debug != "" { // use fixed code in debug mode
-		code = "777333"
-	}
-
-	return r.db.OneTimePassword.Create().SetUserID(userId).SetCode(code).SetType(t).SetExpiresAt(expiresAt).Save(ctx)
+	return r.db.OneTimePassword.Create().SetUserID(userID).SetCode(code).SetType(typee).SetExpiresAt(expiresAt).Save(ctx)
 }
 
-func (r *otpRepo) CheckOneTimePassword(ctx context.Context, userId int64, code string) (*ent.OneTimePassword, error) {
+func (r *otpRepo) CheckOneTimePassword(ctx context.Context, userID int64, code string) (*ent.OneTimePassword, error) {
 	otp, err := r.db.OneTimePassword.Query().Where(
-		onetimepassword.UserID(userId),
+		onetimepassword.UserID(userID),
 		onetimepassword.Code(code),
 		onetimepassword.IsUsed(false),
 		onetimepassword.ExpiresAtGT(time.Now()),
