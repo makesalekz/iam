@@ -32,12 +32,10 @@ service Contacts {
 }
 
 message CreateContactRequest {
-  int64 actorId = 1;
   ContactDto contact = 2;
 }
 
 message CreateContactsRequest {
-  int64 actorId = 1;
   repeated ContactDto contacts = 2;
 }
 
@@ -53,7 +51,6 @@ message UpdateContactRequest {
 }
 
 message DeleteContactRequest {
-  int64 actorId = 1;
   int64 contactId = 2;
 }
 
@@ -67,6 +64,7 @@ message ContactReply {
 
 message GetContactsRequest {
   repeated int64 ids = 1;
+  string search = 2;
 }
 
 message GetContactsReply {
@@ -74,7 +72,6 @@ message GetContactsReply {
 }
 
 message ListContactsRequest {
-  int64 actorId = 1;
   // A general string which will be used for search, similar to DB %LIKE%
   optional string query = 5;
   optional bool withBlocked = 6;
@@ -87,12 +84,10 @@ message ListContactsReply {
 }
 
 message UserIdRequest {
-  int64 actorId = 1;
   int64 userId = 2;
 }
 
 message UserIdsRequest {
-  int64 actorId = 1;
   repeated int64 userIds = 2;
 }
 
