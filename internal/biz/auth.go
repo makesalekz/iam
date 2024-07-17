@@ -216,12 +216,22 @@ func (uc *AuthUsecase) handleUserVerification(ctx context.Context, user *ent.Use
 }
 
 func (uc *AuthUsecase) GenerateIDToken(ctx context.Context, userID int64) (string, error) {
+	duration := refreshTokenDuration
+	tokenDuration := os.Getenv("REFRESH_TOKEN_DURATION")
+	if tokenDuration != "" {
+		d, err := time.ParseDuration(tokenDuration)
+		if err != nil {
+			return "", v1.ErrorInternal("internal error")
+		}
+		duration = d
+	}
+
 	claims := &jwt.RegisteredClaims{
 		Issuer:    "iam",
 		Audience:  jwt.ClaimStrings{"refresh"},
 		Subject:   strconv.FormatInt(userID, 10),
 		IssuedAt:  jwt.NewNumericDate(time.Now()),
-		ExpiresAt: jwt.NewNumericDate(time.Now().Add(refreshTokenDuration)),
+		ExpiresAt: jwt.NewNumericDate(time.Now().Add(duration)),
 	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 
@@ -253,9 +263,18 @@ func (uc *AuthUsecase) GenerateAccessToken(ctx context.Context, userID int64) (s
 
 func (uc *AuthUsecase) GenerateTenantToken(ctx context.Context, tenantID, userID int64) (string, error) {
 	duration := accessTokenDuration
-	debug := os.Getenv("DEBUG")
-	if debug != "" { // set access token duration to 1 month in debug mode
-		duration = refreshTokenDuration
+	tokenDuration := os.Getenv("TOKEN_DURATION")
+	if tokenDuration != "" {
+		d, err := time.ParseDuration(tokenDuration)
+		if err != nil {
+			return "", v1.ErrorInternal("internal error")
+		}
+		duration = d
+	} else {
+		debug := os.Getenv("DEBUG")
+		if debug != "" { // set access token duration to 1 month in debug mode
+			duration = refreshTokenDuration
+		}
 	}
 
 	claims := &u_jwt.TenantClaims{

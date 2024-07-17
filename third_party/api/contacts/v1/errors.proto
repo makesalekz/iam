@@ -18,6 +18,7 @@ enum ErrorReason {
   SERVICE_FAILED = 2;
   DATABASE_QUERY = 3;
   FORBIDDEN = 4 [(errors.code) = 403];
+  EMPTY_ACTOR_ID = 5;
 
   UNAUTHORIZED = 10 [(errors.code) = 401];
   NOT_FOUND = 11 [(errors.code) = 404];
@@ -26,4 +27,5 @@ enum ErrorReason {
   SELF_MUTE = 14 [(errors.code) = 403];
 
   INVALID_REQUEST = 20 [(errors.code) = 400];
+  CONTACT_ALREADY_EXISTS = 21 [(errors.code) = 409];
 }
