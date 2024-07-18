@@ -70,12 +70,12 @@ func NewAuthUsecase(
 	}
 
 	// set default access token duration
-	accessTokenDuration := defaultAccessTokenDuration
+	uc.accessTokenDuration = defaultAccessTokenDuration
 
 	// set default refresh token duration if debug mode is enabled
 	debug := os.Getenv("DEBUG")
 	if debug != "" { // set access token duration to 1 month in debug mode
-		accessTokenDuration = defaultRefreshTokenDuration
+		uc.accessTokenDuration = defaultRefreshTokenDuration
 	}
 
 	// set access token duration from environment variable if it is set
@@ -83,23 +83,21 @@ func NewAuthUsecase(
 	if accessDuration != "" {
 		duration, err := time.ParseDuration(accessDuration)
 		if err == nil {
-			accessTokenDuration = duration
+			uc.accessTokenDuration = duration
 		}
 	}
-	uc.accessTokenDuration = accessTokenDuration
 
 	// set default refresh token duration
-	refreshTokenDuration := defaultRefreshTokenDuration
+	uc.refreshTokenDuration = defaultRefreshTokenDuration
 
 	// set refresh token duration from environment variable if it is set
 	refreshDuration := os.Getenv("REFRESH_TOKEN_DURATION")
 	if refreshDuration != "" {
 		duration, err := time.ParseDuration(refreshDuration)
 		if err == nil {
-			refreshTokenDuration = duration
+			uc.refreshTokenDuration = duration
 		}
 	}
-	uc.refreshTokenDuration = refreshTokenDuration
 
 	return uc, nil
 }
