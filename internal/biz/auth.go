@@ -32,19 +32,21 @@ const verifiableOtpCode = "667423"
 
 const defaultRegion = "KZ"
 const authOtpDuration = 5 * time.Minute
-const accessTokenDuration = 10 * time.Minute
-const refreshTokenDuration = 30 * 24 * time.Hour
+const defaultAccessTokenDuration = 10 * time.Minute
+const defaultRefreshTokenDuration = 30 * 24 * time.Hour
 const personalWorkspace = "My Workspace"
 
 // GreeterUsecase is a Greeter usecase.
 type AuthUsecase struct {
-	log           *log.Helper
-	queue         *u_nats.QueueManager
-	jwt           *u_jwt.JwtProcessor
-	usersRepo     data.UsersRepo
-	otpRepo       data.OtpRepo
-	tenants       *data.TenantsRemote
-	notifications *data.NotificationsRemote
+	log                  *log.Helper
+	queue                *u_nats.QueueManager
+	jwt                  *u_jwt.JwtProcessor
+	usersRepo            data.UsersRepo
+	otpRepo              data.OtpRepo
+	tenants              *data.TenantsRemote
+	notifications        *data.NotificationsRemote
+	accessTokenDuration  time.Duration
+	refreshTokenDuration time.Duration
 }
 
 // NewAuthUsecase new a Greeter usecase.
@@ -57,7 +59,7 @@ func NewAuthUsecase(
 	tenants *data.TenantsRemote,
 	notifications *data.NotificationsRemote,
 ) (*AuthUsecase, error) {
-	return &AuthUsecase{
+	uc := &AuthUsecase{
 		log:           log.NewHelper(logger),
 		jwt:           jwt,
 		usersRepo:     usersRepo,
@@ -65,7 +67,41 @@ func NewAuthUsecase(
 		queue:         queue,
 		tenants:       tenants,
 		notifications: notifications,
-	}, nil
+	}
+
+	// set default access token duration
+	accessTokenDuration := defaultAccessTokenDuration
+
+	// set default refresh token duration if debug mode is enabled
+	debug := os.Getenv("DEBUG")
+	if debug != "" { // set access token duration to 1 month in debug mode
+		accessTokenDuration = defaultRefreshTokenDuration
+	}
+
+	// set access token duration from environment variable if it is set
+	accessDuration := os.Getenv("TOKEN_DURATION")
+	if accessDuration != "" {
+		duration, err := time.ParseDuration(accessDuration)
+		if err == nil {
+			accessTokenDuration = duration
+		}
+	}
+	uc.accessTokenDuration = accessTokenDuration
+
+	// set default refresh token duration
+	refreshTokenDuration := defaultRefreshTokenDuration
+
+	// set refresh token duration from environment variable if it is set
+	refreshDuration := os.Getenv("REFRESH_TOKEN_DURATION")
+	if refreshDuration != "" {
+		duration, err := time.ParseDuration(refreshDuration)
+		if err == nil {
+			refreshTokenDuration = duration
+		}
+	}
+	uc.refreshTokenDuration = refreshTokenDuration
+
+	return uc, nil
 }
 
 func (uc *AuthUsecase) AuthUserByPhone(ctx context.Context, phone string) (int64, error) {
@@ -216,22 +252,12 @@ func (uc *AuthUsecase) handleUserVerification(ctx context.Context, user *ent.Use
 }
 
 func (uc *AuthUsecase) GenerateIDToken(ctx context.Context, userID int64) (string, error) {
-	duration := refreshTokenDuration
-	tokenDuration := os.Getenv("REFRESH_TOKEN_DURATION")
-	if tokenDuration != "" {
-		d, err := time.ParseDuration(tokenDuration)
-		if err != nil {
-			return "", v1.ErrorInternal("internal error")
-		}
-		duration = d
-	}
-
 	claims := &jwt.RegisteredClaims{
 		Issuer:    "iam",
 		Audience:  jwt.ClaimStrings{"refresh"},
 		Subject:   strconv.FormatInt(userID, 10),
 		IssuedAt:  jwt.NewNumericDate(time.Now()),
-		ExpiresAt: jwt.NewNumericDate(time.Now().Add(duration)),
+		ExpiresAt: jwt.NewNumericDate(time.Now().Add(uc.refreshTokenDuration)),
 	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 
@@ -262,28 +288,13 @@ func (uc *AuthUsecase) GenerateAccessToken(ctx context.Context, userID int64) (s
 }
 
 func (uc *AuthUsecase) GenerateTenantToken(ctx context.Context, tenantID, userID int64) (string, error) {
-	duration := accessTokenDuration
-	tokenDuration := os.Getenv("TOKEN_DURATION")
-	if tokenDuration != "" {
-		d, err := time.ParseDuration(tokenDuration)
-		if err != nil {
-			return "", v1.ErrorInternal("internal error")
-		}
-		duration = d
-	} else {
-		debug := os.Getenv("DEBUG")
-		if debug != "" { // set access token duration to 1 month in debug mode
-			duration = refreshTokenDuration
-		}
-	}
-
 	claims := &u_jwt.TenantClaims{
 		RegisteredClaims: jwt.RegisteredClaims{
 			Issuer:    "iam",
 			Audience:  jwt.ClaimStrings{"tenant"},
 			Subject:   strconv.FormatInt(userID, 10),
 			IssuedAt:  jwt.NewNumericDate(time.Now()),
-			ExpiresAt: jwt.NewNumericDate(time.Now().Add(duration)),
+			ExpiresAt: jwt.NewNumericDate(time.Now().Add(uc.accessTokenDuration)),
 		},
 		TenantId: tenantID,
 	}
