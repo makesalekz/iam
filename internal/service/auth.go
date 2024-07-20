@@ -41,17 +41,22 @@ func (s *AuthService) AuthByEmail(ctx context.Context, req *v1.AuthByEmailReques
 }
 
 func (s *AuthService) AuthByCode(ctx context.Context, req *v1.AuthByCodeRequest) (*v1.TokenReply, error) {
-	err := s.au.AuthUserByCode(ctx, req.GetUserId(), req.GetCode())
+	user, err := s.au.GetUserByID(ctx, req.GetUserId())
 	if err != nil {
 		return nil, err
 	}
 
-	accessToken, err := s.au.GenerateAccessToken(ctx, req.GetUserId())
+	err = s.au.AuthUserByCode(ctx, user, req.GetCode())
 	if err != nil {
 		return nil, err
 	}
 
-	refreshToken, err := s.au.GenerateIDToken(ctx, req.GetUserId())
+	accessToken, err := s.au.GenerateAccessToken(ctx, user)
+	if err != nil {
+		return nil, err
+	}
+
+	refreshToken, err := s.au.GenerateIDToken(ctx, user.ID)
 	if err != nil {
 		return nil, err
 	}
@@ -73,7 +78,12 @@ func (s *AuthService) RefreshToken(ctx context.Context, req *v1.TenantRequest) (
 	if req.GetTenantId() != 0 {
 		accessToken, err = s.au.GenerateTenantToken(ctx, req.GetTenantId(), actorID)
 	} else {
-		accessToken, err = s.au.GenerateAccessToken(ctx, actorID)
+		user, err2 := s.au.GetUserByID(ctx, actorID)
+		if err2 != nil {
+			return nil, err2
+		}
+
+		accessToken, err = s.au.GenerateAccessToken(ctx, user)
 	}
 	if err != nil {
 		return nil, err

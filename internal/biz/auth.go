@@ -186,12 +186,19 @@ func (uc *AuthUsecase) AuthUserByEmail(ctx context.Context, email, lang string) 
 	return user.ID, nil
 }
 
-func (uc *AuthUsecase) AuthUserByCode(ctx context.Context, userID int64, code string) error {
+func (uc *AuthUsecase) GetUserByID(ctx context.Context, userID int64) (*ent.User, error) {
 	user, err := uc.usersRepo.GetUserById(ctx, userID)
 	if err != nil {
-		return v1.ErrorDatabaseQuery("database error: %s", err.Error())
+		if ent.IsNotFound(err) {
+			return nil, v1.ErrorUserNotFound("user not found")
+		}
+		return nil, v1.ErrorDatabaseQuery("database error: %s", err.Error())
 	}
 
+	return user, nil
+}
+
+func (uc *AuthUsecase) AuthUserByCode(ctx context.Context, user *ent.User, code string) error {
 	otp, err := uc.otpRepo.CheckOneTimePassword(ctx, user.ID, code)
 	if err != nil {
 		if ent.IsNotFound(err) {
@@ -200,12 +207,7 @@ func (uc *AuthUsecase) AuthUserByCode(ctx context.Context, userID int64, code st
 		return v1.ErrorDatabaseQuery("database error: %s", err.Error())
 	}
 
-	err = uc.handleUserVerification(ctx, user, otp)
-	if err != nil {
-		return err
-	}
-
-	return nil
+	return uc.handleUserVerification(ctx, user, otp)
 }
 
 func (uc *AuthUsecase) handleUserVerification(ctx context.Context, user *ent.User, otp *ent.OneTimePassword) error {
@@ -268,21 +270,12 @@ func (uc *AuthUsecase) GenerateIDToken(ctx context.Context, userID int64) (strin
 	return result, nil
 }
 
-func (uc *AuthUsecase) GenerateAccessToken(ctx context.Context, userID int64) (string, error) {
-	user, err := uc.usersRepo.GetUserById(ctx, userID)
-	if err != nil {
-		return "", v1.ErrorDatabaseQuery("get user: %s", err.Error())
-	}
+func (uc *AuthUsecase) GenerateAccessToken(ctx context.Context, user *ent.User) (string, error) {
 	if user.DefaultTenantID == nil {
 		return "", v1.ErrorInternal("personal tenant non existent")
 	}
 
-	result, err := uc.GenerateTenantToken(ctx, *user.DefaultTenantID, userID)
-	if err != nil {
-		return "", err
-	}
-
-	return result, nil
+	return uc.GenerateTenantToken(ctx, *user.DefaultTenantID, user.ID)
 }
 
 func (uc *AuthUsecase) GenerateTenantToken(ctx context.Context, tenantID, userID int64) (string, error) {
