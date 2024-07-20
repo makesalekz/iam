@@ -31,9 +31,9 @@ const verifiablePhone = "+77710012030"
 const verifiableOtpCode = "667423"
 
 const defaultRegion = "KZ"
-const authOtpDuration = 5 * time.Minute
-const defaultAccessTokenDuration = 10 * time.Minute
-const defaultRefreshTokenDuration = 30 * 24 * time.Hour
+const authOtpDuration = time.Duration(5) * time.Minute
+const defaultAccessTokenDuration = time.Duration(10) * time.Minute
+const defaultRefreshTokenDuration = time.Duration(30*24) * time.Hour
 const personalWorkspace = "My Workspace"
 
 // GreeterUsecase is a Greeter usecase.
