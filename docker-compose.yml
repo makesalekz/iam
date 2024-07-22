@@ -27,8 +27,8 @@ services:
       - db
     environment:
       - DEBUG=1
-      - TOKEN_DURATION=20s
-      - REFRESH_TOKEN_DURATION=24h
+      - TOKEN_DURATION=10m
+      - REFRESH_TOKEN_DURATION=30d
       - SERVICE_NAME=${SERVICE_NAME}
       - CONSUL_ADDRESS=${CONSUL_ADDRESS}
       - VAULT_ADDRESS=${VAULT_ADDRESS}
