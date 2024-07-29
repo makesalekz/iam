@@ -220,15 +220,22 @@ func (uc *AuthUsecase) handleUserVerification(ctx context.Context, user *ent.Use
 			return v1.ErrorGrpcConnection("CreateTenants error: %s", err.Error())
 		}
 
-		_, err = uc.usersRepo.UpdateUserData(tenantContext, user, data.UpdateUserDto{TenantId: personalTenant.GetId()})
+		_, err = uc.usersRepo.UpdateUserData(
+			tenantContext, user, data.UpdateUserDto{TenantId: personalTenant.GetId()},
+		)
 		if err != nil {
 			return v1.ErrorDatabaseQuery("UpdateUserData gone wrong: %s", err.Error())
 		}
 
-		uc.queue.GetRemote(QueueEventsDefaultCalendars).Pub(&u_struc.AuthIds{
-			ActorId:  user.ID,
-			TenantId: personalTenant.GetId(),
-		})
+		tenantID := personalTenant.GetId()
+		user.DefaultTenantID = &tenantID
+
+		uc.queue.GetRemote(QueueEventsDefaultCalendars).Pub(
+			&u_struc.AuthIds{
+				ActorId:  user.ID,
+				TenantId: personalTenant.GetId(),
+			},
+		)
 	}
 
 	switch otp.Type {
