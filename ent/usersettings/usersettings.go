@@ -64,7 +64,7 @@ var (
 // SettingValidator is a validator for the "setting" field enum values. It is called by the builders before save.
 func SettingValidator(s enum.Settings) error {
 	switch s {
-	case "TEST_SETTING":
+	case "TEST_SETTING", "LANGUAGE", "THEME":
 		return nil
 	default:
 		return fmt.Errorf("usersettings: invalid enum value for setting field: %q", s)
