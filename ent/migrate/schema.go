@@ -130,7 +130,7 @@ var (
 	// UserSettingsColumns holds the columns for the "user_settings" table.
 	UserSettingsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt64, Increment: true},
-		{Name: "setting", Type: field.TypeEnum, Enums: []string{"TEST_SETTING"}},
+		{Name: "setting", Type: field.TypeEnum, Enums: []string{"TEST_SETTING", "LANGUAGE", "THEME"}},
 		{Name: "value", Type: field.TypeString},
 		{Name: "updated_at", Type: field.TypeTime},
 		{Name: "user_id", Type: field.TypeInt64},
