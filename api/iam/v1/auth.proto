@@ -22,7 +22,6 @@ service Auth {
   // Request: id from AuthByPhone, code from message
   // Returns: auth tokens
   rpc AuthByCode(AuthByCodeRequest) returns (TokenReply);
-
   // Refresh Token
   // Request: tenant id
   // Returns: auth tokens
@@ -33,6 +32,8 @@ service Auth {
 message AuthByPhoneRequest {
   // phone number, in any format, containing country code
   string phone = 1;
+  string name = 3;
+  bool isRegistrationNeeded = 2;
 }
 
 /* AuthByEmailRequest is a request to authenticate by email */
@@ -41,6 +42,8 @@ message AuthByEmailRequest {
   string email = 1;
   // user interface language
   string language = 2;
+  string name = 3;
+  bool isRegistrationNeeded = 4;
 }
 
 /* AuthByPhoneReply is a response to authenticate by phone number */

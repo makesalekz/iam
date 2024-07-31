@@ -102,7 +102,9 @@ func NewAuthUsecase(
 	return uc, nil
 }
 
-func (uc *AuthUsecase) AuthUserByPhone(ctx context.Context, phone string) (int64, error) {
+func (uc *AuthUsecase) AuthUserByPhone(ctx context.Context, phone, name string, isRegistrationNeeded bool) (
+	int64, error,
+) {
 	phoneNumber, err := phonenumbers.Parse(phone, defaultRegion)
 	if err != nil {
 		return 0, v1.ErrorInvalidPhoneNumber("parse error: %s", err.Error())
@@ -116,7 +118,11 @@ func (uc *AuthUsecase) AuthUserByPhone(ctx context.Context, phone string) (int64
 	user, err := uc.usersRepo.GetUserByPhone(ctx, phone)
 	if err != nil {
 		if ent.IsNotFound(err) {
-			user, err = uc.usersRepo.CreateUserWithPhone(ctx, phone)
+			if isRegistrationNeeded {
+				return 0, v1.ErrorInvalidRequest("phone not registered")
+			}
+
+			user, err = uc.usersRepo.CreateUserWithPhone(ctx, phone, name)
 		}
 		if err != nil {
 			return 0, v1.ErrorDatabaseQuery("database error: %s", err.Error())
@@ -150,11 +156,17 @@ func (uc *AuthUsecase) AuthUserByPhone(ctx context.Context, phone string) (int64
 	return user.ID, nil
 }
 
-func (uc *AuthUsecase) AuthUserByEmail(ctx context.Context, email, lang string) (int64, error) {
+func (uc *AuthUsecase) AuthUserByEmail(ctx context.Context, email, name, lang string, isRegistrationNeeded bool) (
+	int64, error,
+) {
 	user, err := uc.usersRepo.GetUserByEmail(ctx, email)
 	if err != nil {
 		if ent.IsNotFound(err) {
-			user, err = uc.usersRepo.CreateUserWithEmail(ctx, email)
+			if isRegistrationNeeded {
+				return 0, v1.ErrorInvalidRequest("email not registered")
+			}
+
+			user, err = uc.usersRepo.CreateUserWithEmail(ctx, email, name)
 		}
 		if err != nil {
 			return 0, v1.ErrorDatabaseQuery("database error: %s", err.Error())

@@ -41,11 +41,13 @@ type UsersRepo interface {
 	GetUserById(ctx context.Context, id int64) (*ent.User, error)
 	GetUserByPhone(ctx context.Context, phone string) (*ent.User, error)
 	GetUserByEmail(ctx context.Context, email string) (*ent.User, error)
-	CreateUserWithPhone(ctx context.Context, phone string) (*ent.User, error)
-	CreateUserWithEmail(ctx context.Context, email string) (*ent.User, error)
+	CreateUserWithPhone(ctx context.Context, phone, name string) (*ent.User, error)
+	CreateUserWithEmail(ctx context.Context, email, name string) (*ent.User, error)
 	UpdateUserData(ctx context.Context, user *ent.User, dto UpdateUserDto) (*ent.User, error)
 	DeleteUser(ctx context.Context, id int64) error
-	ListUsers(ctx context.Context, filter GetUsersFilterDto, sort *utils_v1.SortRequest, paginate *utils_v1.PaginateRequest) ([]*ent.User, error)
+	ListUsers(
+		ctx context.Context, filter GetUsersFilterDto, sort *utils_v1.SortRequest, paginate *utils_v1.PaginateRequest,
+	) ([]*ent.User, error)
 	GetUsers(ctx context.Context, filter GetUsersFilterDto) ([]*ent.User, error)
 	PhoneVerified(ctx context.Context, userId int64) error
 	EmailVerified(ctx context.Context, userId int64) error
@@ -64,12 +66,24 @@ func NewUsersRepo(d *Data) UsersRepo {
 	}
 }
 
-func (r *usersRepo) CreateUserWithPhone(ctx context.Context, phone string) (*ent.User, error) {
-	return r.db.User.Create().SetPhone(phone).Save(ctx)
+func (r *usersRepo) CreateUserWithPhone(ctx context.Context, phone, name string) (*ent.User, error) {
+	query := r.db.User.Create().SetPhone(phone)
+
+	if name != "" {
+		query.SetName(name)
+	}
+
+	return query.Save(ctx)
 }
 
-func (r *usersRepo) CreateUserWithEmail(ctx context.Context, email string) (*ent.User, error) {
-	return r.db.User.Create().SetEmail(email).Save(ctx)
+func (r *usersRepo) CreateUserWithEmail(ctx context.Context, email, name string) (*ent.User, error) {
+	query := r.db.User.Create().SetEmail(email)
+
+	if name != "" {
+		query.SetName(name)
+	}
+
+	return query.Save(ctx)
 }
 
 func (r *usersRepo) UpdateUserData(ctx context.Context, user *ent.User, dto UpdateUserDto) (*ent.User, error) {
@@ -141,7 +155,9 @@ func (r *usersRepo) GetUserByEmail(ctx context.Context, email string) (*ent.User
 	return r.db.User.Query().Where(user.Email(email)).First(ctx)
 }
 
-func (r *usersRepo) ListUsers(ctx context.Context, filter GetUsersFilterDto, sort *utils_v1.SortRequest, paginate *utils_v1.PaginateRequest) ([]*ent.User, error) {
+func (r *usersRepo) ListUsers(
+	ctx context.Context, filter GetUsersFilterDto, sort *utils_v1.SortRequest, paginate *utils_v1.PaginateRequest,
+) ([]*ent.User, error) {
 	if len(filter.UsersIds) == 0 && len(filter.Phones) == 0 && len(filter.Emails) == 0 {
 		return []*ent.User{}, nil
 	}
@@ -151,7 +167,8 @@ func (r *usersRepo) ListUsers(ctx context.Context, filter GetUsersFilterDto, sor
 			user.IDIn(filter.UsersIds...),
 			user.PhoneIn(filter.Phones...),
 			user.EmailIn(filter.Emails...),
-		))
+		),
+	)
 
 	if filter.Search != "" {
 		query = query.Where(
@@ -219,7 +236,8 @@ func (r *usersRepo) GetUsers(ctx context.Context, filter GetUsersFilterDto) ([]*
 			user.IDIn(filter.UsersIds...),
 			user.PhoneIn(filter.Phones...),
 			user.EmailIn(filter.Emails...),
-		))
+		),
+	)
 
 	if filter.Search != "" {
 		query = query.Where(
