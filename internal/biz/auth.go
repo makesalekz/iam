@@ -102,7 +102,7 @@ func NewAuthUsecase(
 	return uc, nil
 }
 
-func (uc *AuthUsecase) AuthUserByPhone(ctx context.Context, phone string, isRegistrationNeeded bool) (
+func (uc *AuthUsecase) AuthUserByPhone(ctx context.Context, phone string, isRegistrationNeeded, isRegistration bool) (
 	int64, error,
 ) {
 	phoneNumber, err := phonenumbers.Parse(phone, DefaultRegion)
@@ -116,6 +116,10 @@ func (uc *AuthUsecase) AuthUserByPhone(ctx context.Context, phone string, isRegi
 	phone = phonenumbers.Format(phoneNumber, phonenumbers.E164)
 
 	user, err := uc.usersRepo.GetUserByPhone(ctx, phone)
+	if err == nil && isRegistration {
+		return 0, v1.ErrorUserAlreadyExist("phone already registered")
+	}
+
 	if err != nil {
 		if ent.IsNotFound(err) {
 			if isRegistrationNeeded {
@@ -156,10 +160,16 @@ func (uc *AuthUsecase) AuthUserByPhone(ctx context.Context, phone string, isRegi
 	return user.ID, nil
 }
 
-func (uc *AuthUsecase) AuthUserByEmail(ctx context.Context, email, lang string, isRegistrationNeeded bool) (
+func (uc *AuthUsecase) AuthUserByEmail(
+	ctx context.Context, email, lang string, isRegistrationNeeded, isRegistration bool,
+) (
 	int64, error,
 ) {
 	user, err := uc.usersRepo.GetUserByEmail(ctx, email)
+	if err == nil && isRegistration {
+		return 0, v1.ErrorUserAlreadyExist("phone already registered")
+	}
+
 	if err != nil {
 		if ent.IsNotFound(err) {
 			if isRegistrationNeeded {
