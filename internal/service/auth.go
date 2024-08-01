@@ -32,9 +32,7 @@ func (s *AuthService) AuthByPhone(ctx context.Context, req *v1.AuthByPhoneReques
 }
 
 func (s *AuthService) AuthByEmail(ctx context.Context, req *v1.AuthByEmailRequest) (*v1.AuthByPhoneReply, error) {
-	userID, err := s.au.AuthUserByEmail(
-		ctx, req.GetEmail(), req.GetLanguage(), req.GetIsRegistrationNeeded(),
-	)
+	userID, err := s.au.AuthUserByEmail(ctx, req.GetEmail(), req.GetLanguage(), req.GetIsRegistrationNeeded())
 	if err != nil {
 		return nil, err
 	}

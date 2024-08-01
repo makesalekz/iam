@@ -156,7 +156,7 @@ func (uc *AuthUsecase) AuthUserByPhone(ctx context.Context, phone string, isRegi
 	return user.ID, nil
 }
 
-func (uc *AuthUsecase) AuthUserByEmail(ctx context.Context, email, name, lang string, isRegistrationNeeded bool) (
+func (uc *AuthUsecase) AuthUserByEmail(ctx context.Context, email, lang string, isRegistrationNeeded bool) (
 	int64, error,
 ) {
 	user, err := uc.usersRepo.GetUserByEmail(ctx, email)
