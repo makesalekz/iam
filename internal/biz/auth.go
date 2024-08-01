@@ -119,7 +119,7 @@ func (uc *AuthUsecase) AuthUserByPhone(ctx context.Context, phone, name string, 
 	if err != nil {
 		if ent.IsNotFound(err) {
 			if isRegistrationNeeded {
-				return 0, v1.ErrorInvalidRequest("phone not registered")
+				return 0, v1.ErrorUnauthorized("phone not registered")
 			}
 
 			user, err = uc.usersRepo.CreateUserWithPhone(ctx, phone, name)
