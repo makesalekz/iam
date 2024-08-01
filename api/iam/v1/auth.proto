@@ -32,7 +32,6 @@ service Auth {
 message AuthByPhoneRequest {
   // phone number, in any format, containing country code
   string phone = 1;
-  string name = 3;
   bool isRegistrationNeeded = 2;
 }
 
@@ -42,7 +41,6 @@ message AuthByEmailRequest {
   string email = 1;
   // user interface language
   string language = 2;
-  string name = 3;
   bool isRegistrationNeeded = 4;
 }
 

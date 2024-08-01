@@ -31,8 +31,8 @@ type UsersRepo interface {
 	GetUserByID(ctx context.Context, id int64) (*ent.User, error)
 	GetUserByPhone(ctx context.Context, phone string) (*ent.User, error)
 	GetUserByEmail(ctx context.Context, email string) (*ent.User, error)
-	CreateUserWithPhone(ctx context.Context, phone, name string) (*ent.User, error)
-	CreateUserWithEmail(ctx context.Context, email, name string) (*ent.User, error)
+	CreateUserWithPhone(ctx context.Context, phone string) (*ent.User, error)
+	CreateUserWithEmail(ctx context.Context, email string) (*ent.User, error)
 	UpdateUserData(ctx context.Context, user *ent.User, dto UpdateUserDto) (*ent.User, error)
 	DeleteUser(ctx context.Context, id int64) error
 	ListUsers(
@@ -56,24 +56,12 @@ func NewUsersRepo(d *Data) UsersRepo {
 	}
 }
 
-func (r *usersRepo) CreateUserWithPhone(ctx context.Context, phone, name string) (*ent.User, error) {
-	query := r.db.User.Create().SetPhone(phone)
-
-	if name != "" {
-		query.SetName(name)
-	}
-
-	return query.Save(ctx)
+func (r *usersRepo) CreateUserWithPhone(ctx context.Context, phone string) (*ent.User, error) {
+	return r.db.User.Create().SetPhone(phone).Save(ctx)
 }
 
-func (r *usersRepo) CreateUserWithEmail(ctx context.Context, email, name string) (*ent.User, error) {
-	query := r.db.User.Create().SetEmail(email)
-
-	if name != "" {
-		query.SetName(name)
-	}
-
-	return query.Save(ctx)
+func (r *usersRepo) CreateUserWithEmail(ctx context.Context, email string) (*ent.User, error) {
+	return r.db.User.Create().SetEmail(email).Save(ctx)
 }
 
 func (r *usersRepo) UpdateUserData(ctx context.Context, user *ent.User, dto UpdateUserDto) (*ent.User, error) {

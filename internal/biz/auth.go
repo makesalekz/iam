@@ -102,7 +102,7 @@ func NewAuthUsecase(
 	return uc, nil
 }
 
-func (uc *AuthUsecase) AuthUserByPhone(ctx context.Context, phone, name string, isRegistrationNeeded bool) (
+func (uc *AuthUsecase) AuthUserByPhone(ctx context.Context, phone string, isRegistrationNeeded bool) (
 	int64, error,
 ) {
 	phoneNumber, err := phonenumbers.Parse(phone, DefaultRegion)
@@ -122,7 +122,7 @@ func (uc *AuthUsecase) AuthUserByPhone(ctx context.Context, phone, name string, 
 				return 0, v1.ErrorUnauthorized("phone not registered")
 			}
 
-			user, err = uc.usersRepo.CreateUserWithPhone(ctx, phone, name)
+			user, err = uc.usersRepo.CreateUserWithPhone(ctx, phone)
 		}
 		if err != nil {
 			return 0, v1.ErrorDatabaseQuery("database error: %s", err.Error())
@@ -166,7 +166,7 @@ func (uc *AuthUsecase) AuthUserByEmail(ctx context.Context, email, name, lang st
 				return 0, v1.ErrorInvalidRequest("email not registered")
 			}
 
-			user, err = uc.usersRepo.CreateUserWithEmail(ctx, email, name)
+			user, err = uc.usersRepo.CreateUserWithEmail(ctx, email)
 		}
 		if err != nil {
 			return 0, v1.ErrorDatabaseQuery("database error: %s", err.Error())
