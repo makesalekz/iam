@@ -30,7 +30,7 @@ const debugOtpCode = "777333"
 const verifiablePhone = "+77710012030"
 const verifiableOtpCode = "667423"
 
-const defaultRegion = "KZ"
+const DefaultRegion = "KZ"
 const authOtpDuration = time.Duration(5) * time.Minute
 const defaultAccessTokenDuration = time.Duration(10) * time.Minute
 const defaultRefreshTokenDuration = time.Duration(30*24) * time.Hour
@@ -105,7 +105,7 @@ func NewAuthUsecase(
 func (uc *AuthUsecase) AuthUserByPhone(ctx context.Context, phone, name string, isRegistrationNeeded bool) (
 	int64, error,
 ) {
-	phoneNumber, err := phonenumbers.Parse(phone, defaultRegion)
+	phoneNumber, err := phonenumbers.Parse(phone, DefaultRegion)
 	if err != nil {
 		return 0, v1.ErrorInvalidPhoneNumber("parse error: %s", err.Error())
 	}
@@ -199,7 +199,7 @@ func (uc *AuthUsecase) AuthUserByEmail(ctx context.Context, email, name, lang st
 }
 
 func (uc *AuthUsecase) GetUserByID(ctx context.Context, userID int64) (*ent.User, error) {
-	user, err := uc.usersRepo.GetUserById(ctx, userID)
+	user, err := uc.usersRepo.GetUserByID(ctx, userID)
 	if err != nil {
 		if ent.IsNotFound(err) {
 			return nil, v1.ErrorUserNotFound("user not found")
@@ -233,7 +233,7 @@ func (uc *AuthUsecase) handleUserVerification(ctx context.Context, user *ent.Use
 		}
 
 		_, err = uc.usersRepo.UpdateUserData(
-			tenantContext, user, data.UpdateUserDto{TenantId: personalTenant.GetId()},
+			tenantContext, user, data.UpdateUserDto{TenantID: personalTenant.GetId()},
 		)
 		if err != nil {
 			return v1.ErrorDatabaseQuery("UpdateUserData gone wrong: %s", err.Error())

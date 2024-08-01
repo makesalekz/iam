@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"net/mail"
 	"regexp"
 	"strconv"
 	"strings"
@@ -11,6 +12,7 @@ import (
 	v1 "gitlab.calendaria.team/services/iam/api/iam/v1"
 	"gitlab.calendaria.team/services/iam/internal/biz"
 	"gitlab.calendaria.team/services/iam/internal/data"
+	tenants_v1 "gitlab.calendaria.team/services/tenants/api/tenants/v1"
 	utils_v1 "gitlab.calendaria.team/services/utils/api/utils/v1"
 	"gitlab.calendaria.team/services/utils/v2/auth"
 )
@@ -32,15 +34,15 @@ func NewUsersService(
 	}
 }
 
-func validUsername(actorId int64, username string) bool {
+func validUsername(actorID int64, username string) bool {
 	if username == "" {
 		return true
 	}
 
 	// username can't be default format (user{number}), only access to own user id
 	if len(username) > 4 && strings.ToLower(username[:4]) == "user" {
-		userId, err := strconv.ParseInt(username[4:], 10, 64)
-		if err == nil && userId != actorId {
+		userID, err := strconv.ParseInt(username[4:], 10, 64)
+		if err == nil && userID != actorID {
 			return false
 		}
 	}
@@ -51,12 +53,12 @@ func validUsername(actorId int64, username string) bool {
 }
 
 func (s *UsersService) GetOwnProfile(ctx context.Context, req *utils_v1.EmptyRequest) (*v1.UserFullReply, error) {
-	actorId := auth.GetActorIdFromContext(ctx)
-	if actorId == 0 {
+	actorID := auth.GetActorIdFromContext(ctx)
+	if actorID == 0 {
 		return nil, v1.ErrorEmptyActorId("empty actor id")
 	}
 
-	user, err := s.uc.GetUserProfile(ctx, data.GetUserFilterDto{UserId: actorId})
+	user, err := s.uc.GetUserProfile(ctx, data.GetUserFilterDto{UserID: actorID})
 	if err != nil {
 		return nil, err
 	}
@@ -68,8 +70,8 @@ func (s *UsersService) GetOwnProfile(ctx context.Context, req *utils_v1.EmptyReq
 		resultTenants := make([]*v1.TenantShort, len(tenants))
 		for i, tenant := range tenants {
 			resultTenants[i] = &v1.TenantShort{
-				Id:   tenant.Id,
-				Name: tenant.Name,
+				Id:   tenant.GetId(),
+				Name: tenant.GetName(),
 			}
 		}
 		result.Tenants = resultTenants
@@ -80,39 +82,71 @@ func (s *UsersService) GetOwnProfile(ctx context.Context, req *utils_v1.EmptyReq
 	return &result, nil
 }
 
-func (s *UsersService) UpdateOwnProfile(ctx context.Context, req *v1.UpdateOwnProfileRequest) (*v1.UserFullReply, error) {
-	actorId := auth.GetActorIdFromContext(ctx)
-	if actorId == 0 {
+func (s *UsersService) UpdateOwnProfile(ctx context.Context, req *v1.UpdateOwnProfileRequest) (
+	*v1.UserFullReply, error,
+) {
+	actorID := auth.GetActorIdFromContext(ctx)
+	if actorID == 0 {
 		return nil, v1.ErrorEmptyActorId("empty actor id")
 	}
 
-	if !validUsername(actorId, req.Username) {
+	if !validUsername(actorID, req.GetUsername()) {
 		return nil, v1.ErrorInvalidUsername("forbidden username format")
 	}
 
-	user, err := s.uc.UpdateUserProfile(ctx, actorId, data.UpdateUserDto{
-		Phone:    req.Phone,
-		Email:    req.Email,
-		Name:     req.Name,
-		Username: req.Username,
-		Bio:      req.Bio,
-		Avatar:   req.Avatar,
-		Timezone: req.Timezone,
-	})
+	var email *mail.Address
+
+	var err error
+
+	dto := data.UpdateUserDto{
+		Phone:    req.GetPhone(),
+		Email:    req.GetEmail(),
+		Name:     req.GetName(),
+		Username: req.GetUsername(),
+		Bio:      req.Bio, //nolint:protogetter // optional field, acquired by ref
+		Avatar:   req.GetAvatar(),
+		Timezone: req.GetTimezone(),
+	}
+
+	if dto.Phone != "" {
+		dto.Phone, err = ParsePhone(dto.Phone)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	if dto.Email != "" {
+		email, err = ParseEmail(dto.Email)
+		if err != nil {
+			return nil, err
+		}
+		dto.Email = email.Address
+	}
+
+	if dto.Timezone != "" {
+		err = CheckTimezone(dto.Timezone)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	user, err := s.uc.UpdateUserProfile(ctx, actorID, dto)
 	if err != nil {
 		return nil, err
 	}
 
 	result := v1.UserFullReply{User: userItemToV1User(user)}
 
-	if req.WithTenants {
-		tenants, err := s.uc.GetUserTenants(ctx)
+	if req.GetWithTenants() {
+		var tenants []*tenants_v1.Tenant
+
+		tenants, err = s.uc.GetUserTenants(ctx)
 		if err == nil {
 			resultTenants := make([]*v1.TenantShort, len(tenants))
 			for i, tenant := range tenants {
 				resultTenants[i] = &v1.TenantShort{
-					Id:   tenant.Id,
-					Name: tenant.Name,
+					Id:   tenant.GetId(),
+					Name: tenant.GetName(),
 				}
 			}
 			result.Tenants = resultTenants
@@ -125,13 +159,13 @@ func (s *UsersService) UpdateOwnProfile(ctx context.Context, req *v1.UpdateOwnPr
 }
 
 func (s *UsersService) DeleteOwnProfile(ctx context.Context, req *utils_v1.EmptyRequest) (*utils_v1.EmptyReply, error) {
-	actorId := auth.GetActorIdFromContext(ctx)
-	if actorId == 0 {
+	actorID := auth.GetActorIdFromContext(ctx)
+	if actorID == 0 {
 		return nil, v1.ErrorEmptyActorId("empty actor id")
 	}
 
 	// TODO мягко удалить или "пофиксить" все связанные сущности
-	err := s.uc.DeleteUser(ctx, actorId)
+	err := s.uc.DeleteUser(ctx, actorID)
 	if err != nil {
 		return nil, err
 	}
@@ -141,7 +175,7 @@ func (s *UsersService) DeleteOwnProfile(ctx context.Context, req *utils_v1.Empty
 
 func (s *UsersService) GetUserFull(ctx context.Context, req *v1.GetUserRequest) (*v1.UserFullReply, error) {
 	filter := data.GetUserFilterDto{
-		UserId: req.GetUserId(),
+		UserID: req.GetUserId(),
 	}
 
 	user, err := s.uc.GetUserProfile(ctx, filter)
@@ -154,7 +188,7 @@ func (s *UsersService) GetUserFull(ctx context.Context, req *v1.GetUserRequest) 
 
 func (s *UsersService) GetUser(ctx context.Context, req *v1.GetUserRequest) (*v1.UserReply, error) {
 	filter := data.GetUserFilterDto{
-		UserId: req.GetUserId(),
+		UserID: req.GetUserId(),
 	}
 
 	user, err := s.uc.GetUserProfile(ctx, filter)
@@ -167,11 +201,11 @@ func (s *UsersService) GetUser(ctx context.Context, req *v1.GetUserRequest) (*v1
 
 func (s *UsersService) ListUsers(ctx context.Context, req *v1.ListUsersRequest) (*v1.UsersReply, error) {
 	filter := data.GetUsersFilterDto{
-		UsersIds: req.GetIds(),
+		UsersIDs: req.GetIds(),
 		Search:   req.GetSearch(),
 	}
 
-	users, err := s.uc.ListUsers(ctx, filter, req.Sort, req.Paginate)
+	users, err := s.uc.ListUsers(ctx, filter, req.GetSort(), req.GetPaginate())
 	if err != nil {
 		return nil, err
 	}
@@ -180,17 +214,17 @@ func (s *UsersService) ListUsers(ctx context.Context, req *v1.ListUsersRequest) 
 }
 
 func (s *UsersService) GetUsers(ctx context.Context, req *v1.GetUsersRequest) (*v1.UsersReply, error) {
-	actorId := auth.GetActorIdFromContext(ctx) // TODO: remove deprecated
+	actorID := auth.GetActorIdFromContext(ctx) // TODO: remove deprecated
 
 	filter := data.GetUsersFilterDto{
-		UsersIds:      req.GetIds(),
+		UsersIDs:      req.GetIds(),
 		Phones:        req.GetPhones(),
 		Emails:        req.GetEmails(),
-		WithPrivacies: req.WithPrivacies,
-		WithVerified:  req.WithVerified,
+		WithPrivacies: req.GetWithPrivacies(),
+		WithVerified:  req.GetWithVerified(),
 	}
 
-	users, err := s.uc.GetUsers(ctx, actorId, filter)
+	users, err := s.uc.GetUsers(ctx, actorID, filter)
 	if err != nil {
 		return nil, err
 	}
@@ -212,7 +246,9 @@ func (s *UsersService) GetUserByFilter(ctx context.Context, req *v1.GetUserByFil
 	return &v1.UserReply{User: userItemToV1ShortUser(user)}, nil
 }
 
-func (s *UsersService) GetUserByFilterFull(ctx context.Context, req *v1.GetUserByFilterRequest) (*v1.UserFullReply, error) {
+func (s *UsersService) GetUserByFilterFull(ctx context.Context, req *v1.GetUserByFilterRequest) (
+	*v1.UserFullReply, error,
+) {
 	filter := data.GetUserFilterDto{
 		Phone: req.GetSearch().GetPhone(),
 		Email: req.GetSearch().GetEmail(),
