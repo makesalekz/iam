@@ -18,7 +18,7 @@ require (
 	gitlab.calendaria.team/services/contacts v1.6.1
 	gitlab.calendaria.team/services/notifications v1.3.9
 	gitlab.calendaria.team/services/tenants v0.3.0
-	gitlab.calendaria.team/services/utils v0.3.11-dev.4
+	gitlab.calendaria.team/services/utils v0.3.11
 	go.uber.org/automaxprocs v1.5.3
 	golang.org/x/exp v0.0.0-20240110193028-0dcbfd608b1e
 	golang.org/x/oauth2 v0.20.0
