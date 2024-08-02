@@ -17,7 +17,7 @@ func NewNotificationsRemote(
 	conf *conf.Bootstrap,
 	dm dialer.IDialerManager,
 ) (INotificationsRemote, error) {
-	dialer, err := dm.NewServiceDialer("notifications", conf.Discovery.Notifications)
+	dialer, err := dm.NewServiceDialer("notifications", conf.GetDiscovery().GetNotifications())
 	if err != nil {
 		return nil, err
 	}

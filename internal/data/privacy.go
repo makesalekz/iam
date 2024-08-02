@@ -12,11 +12,11 @@ import (
 
 type PrivacySettingsData map[string]string
 
-// PrivacyRepo
+// PrivacyRepo.
 type PrivacyRepo interface {
-	GetPrivacy(ctx context.Context, userId int64) (PrivacySettingsData, error)
-	GetPrivacies(ctx context.Context, userId []int64) ([]*ent.UserPrivacy, error)
-	UpdatePrivacy(ctx context.Context, userId int64, dto PrivacySettingsData) (PrivacySettingsData, error)
+	GetPrivacy(ctx context.Context, userID int64) (PrivacySettingsData, error)
+	GetPrivacies(ctx context.Context, userID []int64) ([]*ent.UserPrivacy, error)
+	UpdatePrivacy(ctx context.Context, userID int64, dto PrivacySettingsData) (PrivacySettingsData, error)
 }
 
 type privacyRepo struct {
@@ -42,8 +42,8 @@ func DefaultPrivacies() map[string]string {
 	}
 }
 
-func (r *privacyRepo) GetPrivacy(ctx context.Context, userId int64) (PrivacySettingsData, error) {
-	settings, err := r.db.UserPrivacy.Query().Where(userprivacy.UserID(userId)).All(ctx)
+func (r *privacyRepo) GetPrivacy(ctx context.Context, userID int64) (PrivacySettingsData, error) {
+	settings, err := r.db.UserPrivacy.Query().Where(userprivacy.UserID(userID)).All(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -56,10 +56,10 @@ func (r *privacyRepo) GetPrivacy(ctx context.Context, userId int64) (PrivacySett
 	return result, nil
 }
 
-func (r *privacyRepo) GetPrivacies(ctx context.Context, userIds []int64) ([]*ent.UserPrivacy, error) {
+func (r *privacyRepo) GetPrivacies(ctx context.Context, userIDs []int64) ([]*ent.UserPrivacy, error) {
 	usersPrivacies, err := r.db.UserPrivacy.Query().
 		Where(
-			userprivacy.UserIDIn(userIds...),
+			userprivacy.UserIDIn(userIDs...),
 		).
 		All(ctx)
 	if err != nil {
@@ -69,7 +69,9 @@ func (r *privacyRepo) GetPrivacies(ctx context.Context, userIds []int64) ([]*ent
 	return usersPrivacies, nil
 }
 
-func (r *privacyRepo) UpdatePrivacy(ctx context.Context, userId int64, dto PrivacySettingsData) (PrivacySettingsData, error) {
+func (r *privacyRepo) UpdatePrivacy(ctx context.Context, userID int64, dto PrivacySettingsData) (
+	PrivacySettingsData, error,
+) {
 	var privacySettings enum.PrivacySettings
 	settingsAvailable := privacySettings.Values()
 
@@ -80,7 +82,7 @@ func (r *privacyRepo) UpdatePrivacy(ctx context.Context, userId int64, dto Priva
 			return nil, ent.CustomValidationError("SettingsUnavailable", "Unavailable setting: %s", setting)
 		}
 		builder := r.db.UserPrivacy.Create().
-			SetUserID(userId).
+			SetUserID(userID).
 			SetSetting(enum.PrivacySettings(setting)).
 			SetOption(enum.PrivacyOptions(option))
 
@@ -94,5 +96,5 @@ func (r *privacyRepo) UpdatePrivacy(ctx context.Context, userId int64, dto Priva
 		return nil, err
 	}
 
-	return r.GetPrivacy(ctx, userId)
+	return r.GetPrivacy(ctx, userID)
 }

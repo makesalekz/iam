@@ -18,7 +18,7 @@ func NewTenantsRemote(
 	conf *conf.Bootstrap,
 	dm dialer.IDialerManager,
 ) (ITenantRemote, error) {
-	dialer, err := dm.NewServiceDialer("tenants", conf.Discovery.Tenants)
+	dialer, err := dm.NewServiceDialer("tenants", conf.GetDiscovery().GetTenants())
 	if err != nil {
 		return nil, err
 	}
@@ -75,7 +75,7 @@ func (r *TenantsRemote) GetUserTenants(ctx context.Context) ([]*tenants_v1.Tenan
 }
 
 func (r *TenantsRemote) GetMemberIdentities(
-	ctx context.Context, tenantId, userId int64,
+	ctx context.Context, tenantID, userID int64,
 ) (*tenants_v1.GetMemberIdentitiesReply, error) {
 	client, err := r.getMembersClient(ctx)
 	if err != nil {
@@ -84,8 +84,8 @@ func (r *TenantsRemote) GetMemberIdentities(
 
 	reply, err := client.GetMemberIdentities(
 		ctx, &tenants_v1.GetMemberIdentitiesRequest{
-			TenantId: tenantId,
-			UserId:   userId,
+			TenantId: tenantID,
+			UserId:   userID,
 		},
 	)
 	if err != nil {
