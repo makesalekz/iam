@@ -7,19 +7,19 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/nyaruka/phonenumbers"
 	v1 "gitlab.calendaria.team/services/iam/api/iam/v1"
 	"gitlab.calendaria.team/services/iam/ent"
 	"gitlab.calendaria.team/services/iam/ent/enum"
 	"gitlab.calendaria.team/services/iam/internal/data"
 	tenants_v1 "gitlab.calendaria.team/services/tenants/api/tenants/v1"
-	u_jwt "gitlab.calendaria.team/services/utils/v1/jwt"
 	u_nats "gitlab.calendaria.team/services/utils/v1/nats"
 	u_auth "gitlab.calendaria.team/services/utils/v2/auth"
+	u_jwt "gitlab.calendaria.team/services/utils/v2/jwt"
 	u_struc "gitlab.calendaria.team/services/utils/v2/struc"
 
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/golang-jwt/jwt/v5"
-	"github.com/nyaruka/phonenumbers"
 	"golang.org/x/exp/rand"
 )
 
@@ -39,12 +39,12 @@ const personalWorkspace = "My Workspace"
 // GreeterUsecase is a Greeter usecase.
 type AuthUsecase struct {
 	log                  *log.Helper
-	queue                *u_nats.QueueManager
-	jwt                  *u_jwt.JwtProcessor
+	queue                u_nats.IQueueManager
+	jwt                  u_jwt.IJwtProcessor
 	usersRepo            data.UsersRepo
 	otpRepo              data.OtpRepo
-	tenants              *data.TenantsRemote
-	notifications        *data.NotificationsRemote
+	tenants              data.ITenantRemote
+	notifications        data.INotificationsRemote
 	accessTokenDuration  time.Duration
 	refreshTokenDuration time.Duration
 }
@@ -52,12 +52,12 @@ type AuthUsecase struct {
 // NewAuthUsecase new a Greeter usecase.
 func NewAuthUsecase(
 	logger log.Logger,
-	jwt *u_jwt.JwtProcessor,
+	jwt u_jwt.IJwtProcessor,
 	usersRepo data.UsersRepo,
 	otpRepo data.OtpRepo,
-	queue *u_nats.QueueManager,
-	tenants *data.TenantsRemote,
-	notifications *data.NotificationsRemote,
+	queue u_nats.IQueueManager,
+	tenants data.ITenantRemote,
+	notifications data.INotificationsRemote,
 ) (*AuthUsecase, error) {
 	uc := &AuthUsecase{
 		log:           log.NewHelper(logger),
@@ -162,9 +162,7 @@ func (uc *AuthUsecase) AuthUserByPhone(ctx context.Context, phone string, isRegi
 
 func (uc *AuthUsecase) AuthUserByEmail(
 	ctx context.Context, email, lang string, isRegistrationNeeded, isRegistration bool,
-) (
-	int64, error,
-) {
+) (int64, error) {
 	user, err := uc.usersRepo.GetUserByEmail(ctx, email)
 	if err == nil && isRegistration {
 		return 0, v1.ErrorUserAlreadyExist("phone already registered")

@@ -17,7 +17,7 @@ type TenantsRemote struct {
 func NewTenantsRemote(
 	conf *conf.Bootstrap,
 	dm dialer.IDialerManager,
-) (*TenantsRemote, error) {
+) (ITenantRemote, error) {
 	dialer, err := dm.NewServiceDialer("tenants", conf.Discovery.Tenants)
 	if err != nil {
 		return nil, err
@@ -74,16 +74,20 @@ func (r *TenantsRemote) GetUserTenants(ctx context.Context) ([]*tenants_v1.Tenan
 	return reply.GetTenants(), nil
 }
 
-func (r *TenantsRemote) GetMemberIdentities(ctx context.Context, tenantId, userId int64) (*tenants_v1.GetMemberIdentitiesReply, error) {
+func (r *TenantsRemote) GetMemberIdentities(
+	ctx context.Context, tenantId, userId int64,
+) (*tenants_v1.GetMemberIdentitiesReply, error) {
 	client, err := r.getMembersClient(ctx)
 	if err != nil {
 		return nil, err
 	}
 
-	reply, err := client.GetMemberIdentities(ctx, &tenants_v1.GetMemberIdentitiesRequest{
-		TenantId: tenantId,
-		UserId:   userId,
-	})
+	reply, err := client.GetMemberIdentities(
+		ctx, &tenants_v1.GetMemberIdentitiesRequest{
+			TenantId: tenantId,
+			UserId:   userId,
+		},
+	)
 	if err != nil {
 		return nil, err
 	}

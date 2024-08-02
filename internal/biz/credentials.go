@@ -2,12 +2,13 @@ package biz
 
 import (
 	"context"
+
 	iam_v1 "gitlab.calendaria.team/services/iam/api/iam/v1"
 	"gitlab.calendaria.team/services/iam/ent"
 	"gitlab.calendaria.team/services/iam/internal/data"
 	"gitlab.calendaria.team/services/utils/v1/config"
-	u_jwt "gitlab.calendaria.team/services/utils/v1/jwt"
 	u_nats "gitlab.calendaria.team/services/utils/v1/nats"
+	u_jwt "gitlab.calendaria.team/services/utils/v2/jwt"
 	u_struc "gitlab.calendaria.team/services/utils/v2/struc"
 
 	"github.com/go-kratos/kratos/v2/log"
@@ -18,16 +19,16 @@ import (
 type CredentialsUsecase struct {
 	config          *config.Config
 	log             *log.Helper
-	queue           *u_nats.QueueManager
-	jwt             *u_jwt.JwtProcessor
+	queue           u_nats.IQueueManager
+	jwt             u_jwt.IJwtProcessor
 	credentialsRepo data.CredentialsRepo
 }
 
 func NewCredentialsUsecase(
 	config *config.Config,
 	logger log.Logger,
-	queue *u_nats.QueueManager,
-	jwt *u_jwt.JwtProcessor,
+	queue u_nats.IQueueManager,
+	jwt u_jwt.IJwtProcessor,
 	credentialsRepo data.CredentialsRepo,
 ) (*CredentialsUsecase, error) {
 	return &CredentialsUsecase{
@@ -74,7 +75,9 @@ func (uc *CredentialsUsecase) AuthByGoogle(ctx context.Context, actorId int64, a
 	return nil
 }
 
-func (uc *CredentialsUsecase) GetCredential(ctx context.Context, actorId int64, provider u_struc.Provider) (*ent.UserCredentials, error) {
+func (uc *CredentialsUsecase) GetCredential(
+	ctx context.Context, actorId int64, provider u_struc.Provider,
+) (*ent.UserCredentials, error) {
 	return uc.credentialsRepo.GetCredential(ctx, actorId, provider)
 }
 

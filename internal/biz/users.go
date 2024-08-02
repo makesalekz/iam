@@ -10,7 +10,7 @@ import (
 	tenants_v1 "gitlab.calendaria.team/services/tenants/api/tenants/v1"
 	utils_v1 "gitlab.calendaria.team/services/utils/api/utils/v1"
 	u_error "gitlab.calendaria.team/services/utils/v1/error"
-	"gitlab.calendaria.team/services/utils/v1/jwt"
+	u_jwt "gitlab.calendaria.team/services/utils/v2/jwt"
 
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/lib/pq"
@@ -25,11 +25,11 @@ type UserItem struct {
 
 // UsersUsecase .
 type UsersUsecase struct {
-	jwt           *jwt.JwtProcessor
+	jwt           u_jwt.IJwtProcessor
 	usersRepo     data.UsersRepo
 	otpRepo       data.OtpRepo
 	privaciesRepo data.PrivacyRepo
-	tenants       *data.TenantsRemote
+	tenants       data.ITenantRemote
 }
 
 type ConstraintKey string
@@ -47,11 +47,11 @@ const (
 // NewUsersUsecase .
 func NewUsersUsecase(
 	logger log.Logger,
-	jwt *jwt.JwtProcessor,
+	jwt u_jwt.IJwtProcessor,
 	usersRepo data.UsersRepo,
 	otpRepo data.OtpRepo,
 	privaciesRepo data.PrivacyRepo,
-	tenants *data.TenantsRemote,
+	tenants data.ITenantRemote,
 ) (*UsersUsecase, error) {
 	return &UsersUsecase{
 		jwt:           jwt,
