@@ -240,3 +240,15 @@ func IsCredentialNotFound(err error) bool {
 func ErrorCredentialNotFound(format string, args ...interface{}) *errors.Error {
 	return errors.New(404, ErrorReason_CREDENTIAL_NOT_FOUND.String(), fmt.Sprintf(format, args...))
 }
+
+func IsUserAlreadyExist(err error) bool {
+	if err == nil {
+		return false
+	}
+	e := errors.FromError(err)
+	return e.Reason == ErrorReason_USER_ALREADY_EXIST.String() && e.Code == 409
+}
+
+func ErrorUserAlreadyExist(format string, args ...interface{}) *errors.Error {
+	return errors.New(409, ErrorReason_USER_ALREADY_EXIST.String(), fmt.Sprintf(format, args...))
+}

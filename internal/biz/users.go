@@ -4,14 +4,13 @@ import (
 	"context"
 	"errors"
 
-	iam_v1 "gitlab.calendaria.team/services/iam/api/iam/v1"
 	v1 "gitlab.calendaria.team/services/iam/api/iam/v1"
 	"gitlab.calendaria.team/services/iam/ent"
 	"gitlab.calendaria.team/services/iam/internal/data"
 	tenants_v1 "gitlab.calendaria.team/services/tenants/api/tenants/v1"
 	utils_v1 "gitlab.calendaria.team/services/utils/api/utils/v1"
 	u_error "gitlab.calendaria.team/services/utils/v1/error"
-	"gitlab.calendaria.team/services/utils/v1/jwt"
+	u_jwt "gitlab.calendaria.team/services/utils/v2/jwt"
 
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/lib/pq"
@@ -26,11 +25,11 @@ type UserItem struct {
 
 // UsersUsecase .
 type UsersUsecase struct {
-	jwt           *jwt.JwtProcessor
+	jwt           u_jwt.IJwtProcessor
 	usersRepo     data.UsersRepo
 	otpRepo       data.OtpRepo
 	privaciesRepo data.PrivacyRepo
-	tenants       *data.TenantsRemote
+	tenants       data.ITenantRemote
 }
 
 type ConstraintKey string
@@ -39,15 +38,20 @@ const (
 	USERNAME ConstraintKey = "users_username_key"
 	EMAIL    ConstraintKey = "users_email_key"
 	PHONE    ConstraintKey = "users_phone_key"
+
+	phoneMask  = 0b001
+	emailMask  = 0b010
+	userIDMask = 0b100
 )
 
 // NewUsersUsecase .
-func NewUsersUsecase(logger log.Logger,
-	jwt *jwt.JwtProcessor,
+func NewUsersUsecase(
+	logger log.Logger,
+	jwt u_jwt.IJwtProcessor,
 	usersRepo data.UsersRepo,
 	otpRepo data.OtpRepo,
 	privaciesRepo data.PrivacyRepo,
-	tenants *data.TenantsRemote,
+	tenants data.ITenantRemote,
 ) (*UsersUsecase, error) {
 	return &UsersUsecase{
 		jwt:           jwt,
@@ -58,15 +62,23 @@ func NewUsersUsecase(logger log.Logger,
 	}, nil
 }
 
-func (uc *UsersUsecase) includePrivacies(ctx context.Context, users ...*UserItem) error {
-	userIds := make([]int64, len(users))
-	for i, user := range users {
-		userIds[i] = user.ID
+func btoi(b bool) int64 {
+	if b {
+		return 1
 	}
 
-	usersPrivacies, err := uc.privaciesRepo.GetPrivacies(ctx, userIds)
+	return 0
+}
+
+func (uc *UsersUsecase) includePrivacies(ctx context.Context, users ...*UserItem) error {
+	userIDs := make([]int64, len(users))
+	for i, user := range users {
+		userIDs[i] = user.ID
+	}
+
+	usersPrivacies, err := uc.privaciesRepo.GetPrivacies(ctx, userIDs)
 	if err != nil {
-		return iam_v1.ErrorServiceFailed("privacy: %s", err.Error())
+		return v1.ErrorServiceFailed("privacy: %s", err.Error())
 	}
 
 	privaciesMap := make(map[int64]map[string]string)
@@ -95,13 +107,16 @@ func (uc *UsersUsecase) GetUserProfile(ctx context.Context, filter data.GetUserF
 	var user *ent.User
 	var err error
 
-	if filter.Phone != "" && filter.Email == "" && filter.UserId == 0 {
+	switch btoi(filter.Phone != "") |
+		btoi(filter.Email != "")<<1 |
+		btoi(filter.UserID != 0)<<2 {
+	case phoneMask:
 		user, err = uc.usersRepo.GetUserByPhone(ctx, filter.Phone)
-	} else if filter.Email != "" && filter.Phone == "" && filter.UserId == 0 {
+	case emailMask:
 		user, err = uc.usersRepo.GetUserByEmail(ctx, filter.Email)
-	} else if filter.UserId != 0 && filter.Email == "" && filter.Phone == "" {
-		user, err = uc.usersRepo.GetUserById(ctx, filter.UserId)
-	} else {
+	case userIDMask:
+		user, err = uc.usersRepo.GetUserByID(ctx, filter.UserID)
+	default:
 		return nil, v1.ErrorInvalidRequest("invalid request")
 	}
 
@@ -118,32 +133,12 @@ func (uc *UsersUsecase) GetUserProfile(ctx context.Context, filter data.GetUserF
 	return replyUser, nil
 }
 
-func (uc *UsersUsecase) UpdateUserProfile(ctx context.Context, userId int64, dto data.UpdateUserDto) (*UserItem, error) {
+func (uc *UsersUsecase) UpdateUserProfile(ctx context.Context, userID int64, dto data.UpdateUserDto) (
+	*UserItem, error,
+) {
 	var err error
 
-	if dto.Phone != "" {
-		dto.Phone, err = ParsePhone(dto.Phone)
-		if err != nil {
-			return nil, err
-		}
-	}
-
-	if dto.Email != "" {
-		email, err := ParseEmail(dto.Email)
-		if err != nil {
-			return nil, err
-		}
-		dto.Email = email.Address
-	}
-
-	if dto.Timezone != "" {
-		err = CheckTimezone(dto.Timezone)
-		if err != nil {
-			return nil, err
-		}
-	}
-
-	user, err := uc.usersRepo.GetUserById(ctx, userId)
+	user, err := uc.usersRepo.GetUserByID(ctx, userID)
 	if err != nil {
 		if ent.IsNotFound(err) {
 			return nil, v1.ErrorUserNotFound("user not found")
@@ -179,11 +174,10 @@ func (uc *UsersUsecase) UpdateUserProfile(ctx context.Context, userId int64, dto
 	}, nil
 }
 
-func (uc *UsersUsecase) DeleteUser(ctx context.Context, userId int64) error {
-	err := uc.usersRepo.DeleteUser(ctx, userId)
+func (uc *UsersUsecase) DeleteUser(ctx context.Context, userID int64) error {
+	err := uc.usersRepo.DeleteUser(ctx, userID)
 	if err != nil {
-		_, notFound := err.(*ent.NotFoundError)
-		if notFound {
+		if ent.IsNotFound(err) {
 			return v1.ErrorUserNotFound("user not found")
 		}
 		return v1.ErrorDatabaseQuery("database error: %s", err.Error())
@@ -191,7 +185,9 @@ func (uc *UsersUsecase) DeleteUser(ctx context.Context, userId int64) error {
 	return nil
 }
 
-func (uc *UsersUsecase) ListUsers(ctx context.Context, filter data.GetUsersFilterDto, sort *utils_v1.SortRequest, paginate *utils_v1.PaginateRequest) ([]*UserItem, error) {
+func (uc *UsersUsecase) ListUsers(
+	ctx context.Context, filter data.GetUsersFilterDto, sort *utils_v1.SortRequest, paginate *utils_v1.PaginateRequest,
+) ([]*UserItem, error) {
 	if paginate == nil {
 		paginate = &utils_v1.PaginateRequest{}
 	}
@@ -209,7 +205,9 @@ func (uc *UsersUsecase) ListUsers(ctx context.Context, filter data.GetUsersFilte
 	return replyUsers, nil
 }
 
-func (uc *UsersUsecase) GetUsers(ctx context.Context, actorId int64, filter data.GetUsersFilterDto) ([]*UserItem, error) {
+func (uc *UsersUsecase) GetUsers(ctx context.Context, actorID int64, filter data.GetUsersFilterDto) (
+	[]*UserItem, error,
+) {
 	users, err := uc.usersRepo.GetUsers(ctx, filter)
 	if err != nil {
 		return nil, v1.ErrorDatabaseQuery("database error: %s", err.Error())
