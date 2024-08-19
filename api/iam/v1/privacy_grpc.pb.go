@@ -16,8 +16,8 @@ import (
 
 // This is a compile-time assertion to ensure that this generated file
 // is compatible with the grpc package it is being compiled against.
-// Requires gRPC-Go v1.62.0 or later.
-const _ = grpc.SupportPackageIsVersion8
+// Requires gRPC-Go v1.32.0 or later.
+const _ = grpc.SupportPackageIsVersion7
 
 const (
 	Privacy_GetPrivacy_FullMethodName        = "/iam.v1.Privacy/GetPrivacy"
@@ -51,9 +51,8 @@ func NewPrivacyClient(cc grpc.ClientConnInterface) PrivacyClient {
 }
 
 func (c *privacyClient) GetPrivacy(ctx context.Context, in *v1.EmptyRequest, opts ...grpc.CallOption) (*PrivacyReply, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(PrivacyReply)
-	err := c.cc.Invoke(ctx, Privacy_GetPrivacy_FullMethodName, in, out, cOpts...)
+	err := c.cc.Invoke(ctx, Privacy_GetPrivacy_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -61,9 +60,8 @@ func (c *privacyClient) GetPrivacy(ctx context.Context, in *v1.EmptyRequest, opt
 }
 
 func (c *privacyClient) GetUsersPrivacies(ctx context.Context, in *UsersPrivaciesRequest, opts ...grpc.CallOption) (*UsersPrivaciesReply, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(UsersPrivaciesReply)
-	err := c.cc.Invoke(ctx, Privacy_GetUsersPrivacies_FullMethodName, in, out, cOpts...)
+	err := c.cc.Invoke(ctx, Privacy_GetUsersPrivacies_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -71,9 +69,8 @@ func (c *privacyClient) GetUsersPrivacies(ctx context.Context, in *UsersPrivacie
 }
 
 func (c *privacyClient) UpdatePrivacy(ctx context.Context, in *PrivacyRequest, opts ...grpc.CallOption) (*PrivacyReply, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(PrivacyReply)
-	err := c.cc.Invoke(ctx, Privacy_UpdatePrivacy_FullMethodName, in, out, cOpts...)
+	err := c.cc.Invoke(ctx, Privacy_UpdatePrivacy_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}

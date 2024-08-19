@@ -16,8 +16,8 @@ import (
 
 // This is a compile-time assertion to ensure that this generated file
 // is compatible with the grpc package it is being compiled against.
-// Requires gRPC-Go v1.62.0 or later.
-const _ = grpc.SupportPackageIsVersion8
+// Requires gRPC-Go v1.32.0 or later.
+const _ = grpc.SupportPackageIsVersion7
 
 const (
 	Settings_GetSettings_FullMethodName    = "/iam.v1.Settings/GetSettings"
@@ -46,9 +46,8 @@ func NewSettingsClient(cc grpc.ClientConnInterface) SettingsClient {
 }
 
 func (c *settingsClient) GetSettings(ctx context.Context, in *v1.EmptyRequest, opts ...grpc.CallOption) (*SettingsReply, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(SettingsReply)
-	err := c.cc.Invoke(ctx, Settings_GetSettings_FullMethodName, in, out, cOpts...)
+	err := c.cc.Invoke(ctx, Settings_GetSettings_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -56,9 +55,8 @@ func (c *settingsClient) GetSettings(ctx context.Context, in *v1.EmptyRequest, o
 }
 
 func (c *settingsClient) UpdateSettings(ctx context.Context, in *SettingsRequest, opts ...grpc.CallOption) (*SettingsReply, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(SettingsReply)
-	err := c.cc.Invoke(ctx, Settings_UpdateSettings_FullMethodName, in, out, cOpts...)
+	err := c.cc.Invoke(ctx, Settings_UpdateSettings_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}

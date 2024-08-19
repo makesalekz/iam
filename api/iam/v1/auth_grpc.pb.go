@@ -15,8 +15,8 @@ import (
 
 // This is a compile-time assertion to ensure that this generated file
 // is compatible with the grpc package it is being compiled against.
-// Requires gRPC-Go v1.62.0 or later.
-const _ = grpc.SupportPackageIsVersion8
+// Requires gRPC-Go v1.32.0 or later.
+const _ = grpc.SupportPackageIsVersion7
 
 const (
 	Auth_AuthByPhone_FullMethodName  = "/iam.v1.Auth/AuthByPhone"
@@ -57,9 +57,8 @@ func NewAuthClient(cc grpc.ClientConnInterface) AuthClient {
 }
 
 func (c *authClient) AuthByPhone(ctx context.Context, in *AuthByPhoneRequest, opts ...grpc.CallOption) (*AuthByPhoneReply, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(AuthByPhoneReply)
-	err := c.cc.Invoke(ctx, Auth_AuthByPhone_FullMethodName, in, out, cOpts...)
+	err := c.cc.Invoke(ctx, Auth_AuthByPhone_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -67,9 +66,8 @@ func (c *authClient) AuthByPhone(ctx context.Context, in *AuthByPhoneRequest, op
 }
 
 func (c *authClient) AuthByEmail(ctx context.Context, in *AuthByEmailRequest, opts ...grpc.CallOption) (*AuthByPhoneReply, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(AuthByPhoneReply)
-	err := c.cc.Invoke(ctx, Auth_AuthByEmail_FullMethodName, in, out, cOpts...)
+	err := c.cc.Invoke(ctx, Auth_AuthByEmail_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -77,9 +75,8 @@ func (c *authClient) AuthByEmail(ctx context.Context, in *AuthByEmailRequest, op
 }
 
 func (c *authClient) AuthByCode(ctx context.Context, in *AuthByCodeRequest, opts ...grpc.CallOption) (*TokenReply, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(TokenReply)
-	err := c.cc.Invoke(ctx, Auth_AuthByCode_FullMethodName, in, out, cOpts...)
+	err := c.cc.Invoke(ctx, Auth_AuthByCode_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -87,9 +84,8 @@ func (c *authClient) AuthByCode(ctx context.Context, in *AuthByCodeRequest, opts
 }
 
 func (c *authClient) RefreshToken(ctx context.Context, in *TenantRequest, opts ...grpc.CallOption) (*TokenReply, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(TokenReply)
-	err := c.cc.Invoke(ctx, Auth_RefreshToken_FullMethodName, in, out, cOpts...)
+	err := c.cc.Invoke(ctx, Auth_RefreshToken_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}

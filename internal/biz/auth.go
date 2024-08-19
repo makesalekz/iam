@@ -12,7 +12,6 @@ import (
 	"gitlab.calendaria.team/services/iam/ent"
 	"gitlab.calendaria.team/services/iam/ent/enum"
 	"gitlab.calendaria.team/services/iam/internal/data"
-	u_jwt "gitlab.calendaria.team/services/utils/v1/jwt"
 	u_nats "gitlab.calendaria.team/services/utils/v1/nats"
 	u_auth "gitlab.calendaria.team/services/utils/v2/auth"
 	u_jwt "gitlab.calendaria.team/services/utils/v2/jwt"
@@ -31,7 +30,7 @@ const (
 	verifiablePhone   = "+77710012030"
 	verifiableOtpCode = "667423"
 
-	defaultRegion               = "KZ"
+	DefaultRegion               = "KZ"
 	authOtpDuration             = time.Duration(5) * time.Minute
 	defaultAccessTokenDuration  = time.Duration(10) * time.Minute
 	defaultRefreshTokenDuration = time.Duration(30*24) * time.Hour
@@ -45,7 +44,7 @@ type AuthUsecase struct {
 	jwt                  u_jwt.IJwtProcessor
 	usersRepo            data.UsersRepo
 	otpRepo              data.OtpRepo
-	tenants              data.ITenantRemote
+	tenants              data.ITenantsRemote
 	notifications        data.INotificationsRemote
 	accessTokenDuration  time.Duration
 	refreshTokenDuration time.Duration
@@ -58,7 +57,7 @@ func NewAuthUsecase(
 	usersRepo data.UsersRepo,
 	otpRepo data.OtpRepo,
 	queue u_nats.IQueueManager,
-	tenants data.ITenantRemote,
+	tenants data.ITenantsRemote,
 	notifications data.INotificationsRemote,
 ) (*AuthUsecase, error) {
 	uc := &AuthUsecase{

@@ -1,4 +1,3 @@
-// nolint: nestif, gocognit // TODO: refactor code
 package data
 
 import (

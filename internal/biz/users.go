@@ -1,4 +1,3 @@
-// nolint: gocognit // TODO: refactor code
 package biz
 
 import (
