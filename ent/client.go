@@ -363,7 +363,8 @@ func (c *OneTimePasswordClient) QueryUser(otp *OneTimePassword) *UserQuery {
 
 // Hooks returns the client hooks.
 func (c *OneTimePasswordClient) Hooks() []Hook {
-	return c.hooks.OneTimePassword
+	hooks := c.hooks.OneTimePassword
+	return append(hooks[:len(hooks):len(hooks)], onetimepassword.Hooks[:]...)
 }
 
 // Interceptors returns the client interceptors.

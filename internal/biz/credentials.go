@@ -2,6 +2,7 @@ package biz
 
 import (
 	"context"
+
 	iam_v1 "gitlab.calendaria.team/services/iam/api/iam/v1"
 	"gitlab.calendaria.team/services/iam/ent"
 	"gitlab.calendaria.team/services/iam/internal/data"
@@ -18,28 +19,28 @@ import (
 type CredentialsUsecase struct {
 	config          *config.Config
 	log             *log.Helper
-	queue           *u_nats.QueueManager
 	jwt             *u_jwt.JwtProcessor
+	queue           u_nats.IQueueManager
 	credentialsRepo data.CredentialsRepo
 }
 
 func NewCredentialsUsecase(
 	config *config.Config,
 	logger log.Logger,
-	queue *u_nats.QueueManager,
 	jwt *u_jwt.JwtProcessor,
+	queue u_nats.IQueueManager,
 	credentialsRepo data.CredentialsRepo,
 ) (*CredentialsUsecase, error) {
 	return &CredentialsUsecase{
 		config:          config,
 		log:             log.NewHelper(logger),
-		queue:           queue,
 		jwt:             jwt,
+		queue:           queue,
 		credentialsRepo: credentialsRepo,
 	}, nil
 }
 
-func (uc *CredentialsUsecase) AuthByGoogle(ctx context.Context, actorId int64, authCode string) error {
+func (uc *CredentialsUsecase) AuthByGoogle(ctx context.Context, actorID int64, authCode string) error {
 	// get google credentials
 	mapGoogleCredentials, err := uc.config.ReadGlobalSecretsFor(ctx, "gwebcredentials")
 	if err != nil {
@@ -66,7 +67,7 @@ func (uc *CredentialsUsecase) AuthByGoogle(ctx context.Context, actorId int64, a
 	}
 
 	// save tokens to database
-	_, err = uc.credentialsRepo.CreateCredential(ctx, actorId, tok)
+	_, err = uc.credentialsRepo.CreateCredential(ctx, actorID, tok)
 	if err != nil {
 		return iam_v1.ErrorDatabaseQuery("database error: %s", err.Error())
 	}
@@ -74,16 +75,20 @@ func (uc *CredentialsUsecase) AuthByGoogle(ctx context.Context, actorId int64, a
 	return nil
 }
 
-func (uc *CredentialsUsecase) GetCredential(ctx context.Context, actorId int64, provider u_struc.Provider) (*ent.UserCredentials, error) {
-	return uc.credentialsRepo.GetCredential(ctx, actorId, provider)
+func (uc *CredentialsUsecase) GetCredential(
+	ctx context.Context,
+	actorID int64,
+	provider u_struc.Provider,
+) (*ent.UserCredentials, error) {
+	return uc.credentialsRepo.GetCredential(ctx, actorID, provider)
 }
 
-func (uc *CredentialsUsecase) ListCredentials(ctx context.Context, actorId int64) ([]*ent.UserCredentials, error) {
-	return uc.credentialsRepo.ListCredentials(ctx, actorId)
+func (uc *CredentialsUsecase) ListCredentials(ctx context.Context, actorID int64) ([]*ent.UserCredentials, error) {
+	return uc.credentialsRepo.ListCredentials(ctx, actorID)
 }
 
-func (uc *CredentialsUsecase) DeleteCredential(ctx context.Context, actorId, credentialId int64) error {
-	deletedCount, err := uc.credentialsRepo.DeleteCredential(ctx, actorId, credentialId)
+func (uc *CredentialsUsecase) DeleteCredential(ctx context.Context, actorID, credentialID int64) error {
+	deletedCount, err := uc.credentialsRepo.DeleteCredential(ctx, actorID, credentialID)
 	if err != nil {
 		return iam_v1.ErrorDatabaseQuery("database error: %s", err.Error())
 	} else if deletedCount == 0 {

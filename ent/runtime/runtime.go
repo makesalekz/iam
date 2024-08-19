@@ -17,6 +17,8 @@ import (
 // (default values, validators, hooks and policies) and stitches it
 // to their package variables.
 func init() {
+	onetimepasswordHooks := schema.OneTimePassword{}.Hooks()
+	onetimepassword.Hooks[0] = onetimepasswordHooks[0]
 	onetimepasswordFields := schema.OneTimePassword{}.Fields()
 	_ = onetimepasswordFields
 	// onetimepasswordDescCode is the schema descriptor for code field.
@@ -35,7 +37,9 @@ func init() {
 	userMixinHooks0 := userMixin[0].Hooks()
 	user.Hooks[0] = userMixinHooks0[0]
 	userMixinInters0 := userMixin[0].Interceptors()
+	userMixinInters1 := userMixin[1].Interceptors()
 	user.Interceptors[0] = userMixinInters0[0]
+	user.Interceptors[1] = userMixinInters1[0]
 	userFields := schema.User{}.Fields()
 	_ = userFields
 	// userDescUsername is the schema descriptor for username field.

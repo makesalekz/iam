@@ -36,6 +36,20 @@ func (uc *UserCreate) SetNillableDeletedAt(t *time.Time) *UserCreate {
 	return uc
 }
 
+// SetRemoveAt sets the "remove_at" field.
+func (uc *UserCreate) SetRemoveAt(t time.Time) *UserCreate {
+	uc.mutation.SetRemoveAt(t)
+	return uc
+}
+
+// SetNillableRemoveAt sets the "remove_at" field if the given value is not nil.
+func (uc *UserCreate) SetNillableRemoveAt(t *time.Time) *UserCreate {
+	if t != nil {
+		uc.SetRemoveAt(*t)
+	}
+	return uc
+}
+
 // SetPhone sets the "phone" field.
 func (uc *UserCreate) SetPhone(s string) *UserCreate {
 	uc.mutation.SetPhone(s)
@@ -408,6 +422,10 @@ func (uc *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 		_spec.SetField(user.FieldDeletedAt, field.TypeTime, value)
 		_node.DeletedAt = &value
 	}
+	if value, ok := uc.mutation.RemoveAt(); ok {
+		_spec.SetField(user.FieldRemoveAt, field.TypeTime, value)
+		_node.RemoveAt = &value
+	}
 	if value, ok := uc.mutation.Phone(); ok {
 		_spec.SetField(user.FieldPhone, field.TypeString, value)
 		_node.Phone = &value
@@ -535,6 +553,24 @@ func (u *UserUpsert) UpdateDeletedAt() *UserUpsert {
 // ClearDeletedAt clears the value of the "deleted_at" field.
 func (u *UserUpsert) ClearDeletedAt() *UserUpsert {
 	u.SetNull(user.FieldDeletedAt)
+	return u
+}
+
+// SetRemoveAt sets the "remove_at" field.
+func (u *UserUpsert) SetRemoveAt(v time.Time) *UserUpsert {
+	u.Set(user.FieldRemoveAt, v)
+	return u
+}
+
+// UpdateRemoveAt sets the "remove_at" field to the value that was provided on create.
+func (u *UserUpsert) UpdateRemoveAt() *UserUpsert {
+	u.SetExcluded(user.FieldRemoveAt)
+	return u
+}
+
+// ClearRemoveAt clears the value of the "remove_at" field.
+func (u *UserUpsert) ClearRemoveAt() *UserUpsert {
+	u.SetNull(user.FieldRemoveAt)
 	return u
 }
 
@@ -826,6 +862,27 @@ func (u *UserUpsertOne) UpdateDeletedAt() *UserUpsertOne {
 func (u *UserUpsertOne) ClearDeletedAt() *UserUpsertOne {
 	return u.Update(func(s *UserUpsert) {
 		s.ClearDeletedAt()
+	})
+}
+
+// SetRemoveAt sets the "remove_at" field.
+func (u *UserUpsertOne) SetRemoveAt(v time.Time) *UserUpsertOne {
+	return u.Update(func(s *UserUpsert) {
+		s.SetRemoveAt(v)
+	})
+}
+
+// UpdateRemoveAt sets the "remove_at" field to the value that was provided on create.
+func (u *UserUpsertOne) UpdateRemoveAt() *UserUpsertOne {
+	return u.Update(func(s *UserUpsert) {
+		s.UpdateRemoveAt()
+	})
+}
+
+// ClearRemoveAt clears the value of the "remove_at" field.
+func (u *UserUpsertOne) ClearRemoveAt() *UserUpsertOne {
+	return u.Update(func(s *UserUpsert) {
+		s.ClearRemoveAt()
 	})
 }
 
@@ -1320,6 +1377,27 @@ func (u *UserUpsertBulk) UpdateDeletedAt() *UserUpsertBulk {
 func (u *UserUpsertBulk) ClearDeletedAt() *UserUpsertBulk {
 	return u.Update(func(s *UserUpsert) {
 		s.ClearDeletedAt()
+	})
+}
+
+// SetRemoveAt sets the "remove_at" field.
+func (u *UserUpsertBulk) SetRemoveAt(v time.Time) *UserUpsertBulk {
+	return u.Update(func(s *UserUpsert) {
+		s.SetRemoveAt(v)
+	})
+}
+
+// UpdateRemoveAt sets the "remove_at" field to the value that was provided on create.
+func (u *UserUpsertBulk) UpdateRemoveAt() *UserUpsertBulk {
+	return u.Update(func(s *UserUpsert) {
+		s.UpdateRemoveAt()
+	})
+}
+
+// ClearRemoveAt clears the value of the "remove_at" field.
+func (u *UserUpsertBulk) ClearRemoveAt() *UserUpsertBulk {
+	return u.Update(func(s *UserUpsert) {
+		s.ClearRemoveAt()
 	})
 }
 

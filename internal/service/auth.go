@@ -41,7 +41,7 @@ func (s *AuthService) AuthByEmail(ctx context.Context, req *v1.AuthByEmailReques
 }
 
 func (s *AuthService) AuthByCode(ctx context.Context, req *v1.AuthByCodeRequest) (*v1.TokenReply, error) {
-	user, err := s.au.GetUserByID(ctx, req.GetUserId())
+	user, err := s.au.GetUserByID(ctx, req.GetUserId(), true)
 	if err != nil {
 		return nil, err
 	}
@@ -78,7 +78,7 @@ func (s *AuthService) RefreshToken(ctx context.Context, req *v1.TenantRequest) (
 	if req.GetTenantId() != 0 {
 		accessToken, err = s.au.GenerateTenantToken(ctx, req.GetTenantId(), actorID)
 	} else {
-		user, err2 := s.au.GetUserByID(ctx, actorID)
+		user, err2 := s.au.GetUserByID(ctx, actorID, false)
 		if err2 != nil {
 			return nil, err2
 		}
