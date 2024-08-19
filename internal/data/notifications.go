@@ -16,8 +16,8 @@ type NotificationsRemote struct {
 func NewNotificationsRemote(
 	conf *conf.Bootstrap,
 	dm dialer.IDialerManager,
-) (*NotificationsRemote, error) {
-	dialer, err := dm.NewServiceDialer("notifications", conf.Discovery.Notifications)
+) (INotificationsRemote, error) {
+	dialer, err := dm.NewServiceDialer("notifications", conf.GetDiscovery().GetNotifications())
 	if err != nil {
 		return nil, err
 	}
@@ -42,10 +42,12 @@ func (r *NotificationsRemote) PersonalSmsSender(ctx context.Context, phone, mess
 		return err
 	}
 
-	_, err = client.PersonalSmsSender(ctx, &notifications_v1.PersonalSmsSenderRequest{
-		Phone:   phone,
-		Message: message,
-	})
+	_, err = client.PersonalSmsSender(
+		ctx, &notifications_v1.PersonalSmsSenderRequest{
+			Phone:   phone,
+			Message: message,
+		},
+	)
 	if err != nil {
 		return err
 	}
@@ -53,17 +55,21 @@ func (r *NotificationsRemote) PersonalSmsSender(ctx context.Context, phone, mess
 	return nil
 }
 
-func (r *NotificationsRemote) PersonalEmailSender(ctx context.Context, email, emailType, language string, data map[string]string) error {
+func (r *NotificationsRemote) PersonalEmailSender(
+	ctx context.Context, email, emailType, language string, data map[string]string,
+) error {
 	client, err := r.GetSenderClient(ctx)
 	if err != nil {
 		return err
 	}
-	_, err = client.EmailSender(ctx, &notifications_v1.EmailSenderRequest{
-		Language: &language,
-		Emails:   []string{email},
-		Type:     emailType,
-		Data:     data,
-	})
+	_, err = client.EmailSender(
+		ctx, &notifications_v1.EmailSenderRequest{
+			Language: &language,
+			Emails:   []string{email},
+			Type:     emailType,
+			Data:     data,
+		},
+	)
 	if err != nil {
 		return err
 	}

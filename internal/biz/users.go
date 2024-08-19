@@ -7,14 +7,14 @@ import (
 	"sync"
 	"time"
 
-	iam_v1 "gitlab.calendaria.team/services/iam/api/iam/v1"
+	v1 "gitlab.calendaria.team/services/iam/api/iam/v1"
 	"gitlab.calendaria.team/services/iam/ent"
 	"gitlab.calendaria.team/services/iam/internal/data"
 	tenants_v1 "gitlab.calendaria.team/services/tenants/api/tenants/v1"
 	utils_v1 "gitlab.calendaria.team/services/utils/api/utils/v1"
 	u_error "gitlab.calendaria.team/services/utils/v1/error"
-	"gitlab.calendaria.team/services/utils/v1/jwt"
 	u_nats "gitlab.calendaria.team/services/utils/v1/nats"
+	u_jwt "gitlab.calendaria.team/services/utils/v2/jwt"
 
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/lib/pq"
@@ -30,7 +30,7 @@ type UserItem struct {
 // UsersUsecase .
 type UsersUsecase struct {
 	log           *log.Helper
-	jwt           *jwt.JwtProcessor
+	jwt           u_jwt.IJwtProcessor
 	queue         u_nats.IQueueManager
 	tenants       data.ITenantsRemote
 	contacts      data.IContactsRemote
@@ -50,12 +50,16 @@ const (
 	PHONE    ConstraintKey = "users_phone_key"
 
 	DeleteDuration = time.Duration(30*24) * time.Hour
+
+	phoneMask  = 0b001
+	emailMask  = 0b010
+	userIDMask = 0b100
 )
 
 // NewUsersUsecase .
 func NewUsersUsecase(
 	logger log.Logger,
-	jwt *jwt.JwtProcessor,
+	jwt u_jwt.IJwtProcessor,
 	queue u_nats.IQueueManager,
 	tenants data.ITenantsRemote,
 	contacts data.IContactsRemote,
@@ -81,6 +85,14 @@ func NewUsersUsecase(
 	}, nil
 }
 
+func btoi(b bool) int64 {
+	if b {
+		return 1
+	}
+
+	return 0
+}
+
 func (uc *UsersUsecase) includePrivacies(ctx context.Context, users ...*UserItem) error {
 	userIDs := make([]int64, len(users))
 	for i, user := range users {
@@ -89,7 +101,7 @@ func (uc *UsersUsecase) includePrivacies(ctx context.Context, users ...*UserItem
 
 	usersPrivacies, err := uc.privaciesRepo.GetPrivacies(ctx, userIDs)
 	if err != nil {
-		return iam_v1.ErrorServiceFailed("privacy: %s", err.Error())
+		return v1.ErrorServiceFailed("privacy: %s", err.Error())
 	}
 
 	privaciesMap := make(map[int64]map[string]string)
@@ -196,22 +208,24 @@ func (uc *UsersUsecase) GetUserProfile(ctx context.Context, filter data.GetUserF
 	var user *ent.User
 	var err error
 
-	switch {
-	case filter.Phone != "" && filter.Email == "" && filter.UserID == 0:
+	switch btoi(filter.Phone != "") |
+		btoi(filter.Email != "")<<1 |
+		btoi(filter.UserID != 0)<<2 {
+	case phoneMask:
 		user, err = uc.usersRepo.GetUserByPhone(ctx, filter.Phone, false)
-	case filter.Email != "" && filter.Phone == "" && filter.UserID == 0:
+	case emailMask:
 		user, err = uc.usersRepo.GetUserByEmail(ctx, filter.Email, false)
-	case filter.UserID != 0 && filter.Email == "" && filter.Phone == "":
+	case userIDMask:
 		user, err = uc.usersRepo.GetUserByID(ctx, filter.UserID, false)
 	default:
-		return nil, iam_v1.ErrorInvalidRequest("invalid request")
+		return nil, v1.ErrorInvalidRequest("invalid request")
 	}
 
 	if err != nil {
 		if ent.IsNotFound(err) {
-			return nil, iam_v1.ErrorUserNotFound("user not found")
+			return nil, v1.ErrorUserNotFound("user not found")
 		}
-		return nil, iam_v1.ErrorDatabaseQuery("database error: %s", err.Error())
+		return nil, v1.ErrorDatabaseQuery("database error: %s", err.Error())
 	}
 	replyUser := &UserItem{
 		User: user,
@@ -227,34 +241,12 @@ func (uc *UsersUsecase) UpdateUserProfile(
 ) (*UserItem, error) {
 	var err error
 
-	if dto.Phone != "" {
-		dto.Phone, err = ParsePhone(dto.Phone)
-		if err != nil {
-			return nil, err
-		}
-	}
-
-	if dto.Email != "" {
-		email, err2 := ParseEmail(dto.Email)
-		if err2 != nil {
-			return nil, err2
-		}
-		dto.Email = email.Address
-	}
-
-	if dto.Timezone != "" {
-		err = CheckTimezone(dto.Timezone)
-		if err != nil {
-			return nil, err
-		}
-	}
-
 	user, err := uc.usersRepo.GetUserByID(ctx, userID, false)
 	if err != nil {
 		if ent.IsNotFound(err) {
-			return nil, iam_v1.ErrorUserNotFound("user not found")
+			return nil, v1.ErrorUserNotFound("user not found")
 		}
-		return nil, iam_v1.ErrorDatabaseQuery("database error: %s", err.Error())
+		return nil, v1.ErrorDatabaseQuery("database error: %s", err.Error())
 	}
 
 	updatedUser, err := uc.usersRepo.UpdateUserData(ctx, user, dto)
@@ -263,21 +255,21 @@ func (uc *UsersUsecase) UpdateUserProfile(
 			var pqError *pq.Error
 			ok := errors.As(err, &pqError)
 			if !ok {
-				return nil, iam_v1.ErrorDatabaseQuery("database error: %s", err.Error())
+				return nil, v1.ErrorDatabaseQuery("database error: %s", err.Error())
 			}
 
 			switch pqError.Constraint {
 			case string(USERNAME):
-				return nil, iam_v1.ErrorInvalidUsername("user with such username already exists")
+				return nil, v1.ErrorInvalidUsername("user with such username already exists")
 			case string(EMAIL):
-				return nil, iam_v1.ErrorInvalidEmail("user with such email already exists")
+				return nil, v1.ErrorInvalidEmail("user with such email already exists")
 			case string(PHONE):
-				return nil, iam_v1.ErrorInvalidPhoneNumber("user with such phone number already exists")
+				return nil, v1.ErrorInvalidPhoneNumber("user with such phone number already exists")
 			default:
-				return nil, iam_v1.ErrorInvalidRequest("some user details are already exists")
+				return nil, v1.ErrorInvalidRequest("some user details are already exists")
 			}
 		}
-		return nil, iam_v1.ErrorDatabaseQuery("database error: %s", err.Error())
+		return nil, v1.ErrorDatabaseQuery("database error: %s", err.Error())
 	}
 
 	return &UserItem{
@@ -288,7 +280,7 @@ func (uc *UsersUsecase) UpdateUserProfile(
 func (uc *UsersUsecase) ScheduleUserDeletion(ctx context.Context, actorID int64) error {
 	err := uc.usersRepo.ScheduleUserDeletion(ctx, actorID, DeleteDuration)
 	if err != nil {
-		return iam_v1.ErrorDatabaseQuery("database error: %s", err.Error())
+		return v1.ErrorDatabaseQuery("database error: %s", err.Error())
 	}
 	return nil
 }
@@ -305,7 +297,7 @@ func (uc *UsersUsecase) ListUsers(
 
 	users, err := uc.usersRepo.ListUsers(ctx, filter, sort, paginate)
 	if err != nil {
-		return nil, iam_v1.ErrorDatabaseQuery("database error: %s", err.Error())
+		return nil, v1.ErrorDatabaseQuery("database error: %s", err.Error())
 	}
 
 	replyUsers := make([]*UserItem, len(users))
@@ -319,7 +311,7 @@ func (uc *UsersUsecase) ListUsers(
 func (uc *UsersUsecase) GetUsers(ctx context.Context, filter data.GetUsersFilterDto) ([]*UserItem, error) {
 	users, err := uc.usersRepo.GetUsers(ctx, filter)
 	if err != nil {
-		return nil, iam_v1.ErrorDatabaseQuery("database error: %s", err.Error())
+		return nil, v1.ErrorDatabaseQuery("database error: %s", err.Error())
 	}
 
 	replyUsers := make([]*UserItem, len(users))

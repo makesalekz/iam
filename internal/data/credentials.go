@@ -11,10 +11,10 @@ import (
 )
 
 type CredentialsRepo interface {
-	CreateCredential(ctx context.Context, actorId int64, token *oauth2.Token) (*ent.UserCredentials, error)
-	GetCredential(ctx context.Context, userId int64, provider u_struc.Provider) (*ent.UserCredentials, error)
-	ListCredentials(ctx context.Context, userId int64) ([]*ent.UserCredentials, error)
-	DeleteCredential(ctx context.Context, userId, credentialId int64) (int, error)
+	CreateCredential(ctx context.Context, actorID int64, token *oauth2.Token) (*ent.UserCredentials, error)
+	GetCredential(ctx context.Context, userID int64, provider u_struc.Provider) (*ent.UserCredentials, error)
+	ListCredentials(ctx context.Context, userID int64) ([]*ent.UserCredentials, error)
+	DeleteCredential(ctx context.Context, userID, credentialID int64) (int, error)
 }
 
 type credentialsRepo struct {
@@ -27,9 +27,11 @@ func NewCredentialsRepo(d *Data) CredentialsRepo {
 	}
 }
 
-func (r *credentialsRepo) CreateCredential(ctx context.Context, actorId int64, token *oauth2.Token) (*ent.UserCredentials, error) {
+func (r *credentialsRepo) CreateCredential(
+	ctx context.Context, actorID int64, token *oauth2.Token,
+) (*ent.UserCredentials, error) {
 	return r.db.UserCredentials.Create().
-		SetUserID(actorId).
+		SetUserID(actorID).
 		SetProvider(u_struc.Google).
 		SetAccessToken(token.AccessToken).
 		SetTokenType(token.TokenType).
@@ -38,29 +40,31 @@ func (r *credentialsRepo) CreateCredential(ctx context.Context, actorId int64, t
 		Save(ctx)
 }
 
-func (r *credentialsRepo) GetCredential(ctx context.Context, userId int64, provider u_struc.Provider) (*ent.UserCredentials, error) {
+func (r *credentialsRepo) GetCredential(
+	ctx context.Context, userID int64, provider u_struc.Provider,
+) (*ent.UserCredentials, error) {
 	return r.db.UserCredentials.Query().
 		Where(
-			usercredentials.UserID(userId),
+			usercredentials.UserID(userID),
 			usercredentials.ProviderEQ(provider),
 		).
 		Order(ent.Desc(usercredentials.FieldID)).
 		First(ctx)
 }
 
-func (r *credentialsRepo) ListCredentials(ctx context.Context, userId int64) ([]*ent.UserCredentials, error) {
+func (r *credentialsRepo) ListCredentials(ctx context.Context, userID int64) ([]*ent.UserCredentials, error) {
 	return r.db.UserCredentials.Query().
 		Where(
-			usercredentials.UserID(userId),
+			usercredentials.UserID(userID),
 		).
 		All(ctx)
 }
 
-func (r *credentialsRepo) DeleteCredential(ctx context.Context, userId, credentialId int64) (int, error) {
+func (r *credentialsRepo) DeleteCredential(ctx context.Context, userID, credentialID int64) (int, error) {
 	return r.db.UserCredentials.Delete().
 		Where(
-			usercredentials.ID(credentialId),
-			usercredentials.UserID(userId),
+			usercredentials.ID(credentialID),
+			usercredentials.UserID(userID),
 		).
 		Exec(ctx)
 }

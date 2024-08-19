@@ -7,8 +7,8 @@ import (
 	"gitlab.calendaria.team/services/iam/ent"
 	"gitlab.calendaria.team/services/iam/internal/conf"
 	u_config "gitlab.calendaria.team/services/utils/v1/config"
-	u_jwt "gitlab.calendaria.team/services/utils/v1/jwt"
 	u_dialer "gitlab.calendaria.team/services/utils/v2/dialer"
+	u_jwt "gitlab.calendaria.team/services/utils/v2/jwt"
 	u_tracing "gitlab.calendaria.team/services/utils/v2/tracing"
 
 	"github.com/go-kratos/kratos/v2/errors"
@@ -74,7 +74,7 @@ func NewData(bc *conf.Bootstrap, c *u_config.Config, logger log.Logger) (*Data, 
 	entLogging := os.Getenv("ENT_LOGGING")
 	var options []ent.Option
 	if entLogging == "true" {
-		options = append(options, ent.Debug(), ent.Log(l.Debug))
+		options = append(options, ent.Debug(), ent.Log(l.Info))
 	}
 
 	client, err := ent.Open("postgres", dbDsn, options...)

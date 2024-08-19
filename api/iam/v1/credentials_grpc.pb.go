@@ -16,8 +16,8 @@ import (
 
 // This is a compile-time assertion to ensure that this generated file
 // is compatible with the grpc package it is being compiled against.
-// Requires gRPC-Go v1.32.0 or later.
-const _ = grpc.SupportPackageIsVersion7
+// Requires gRPC-Go v1.62.0 or later.
+const _ = grpc.SupportPackageIsVersion8
 
 const (
 	Credentials_AuthByGoogle_FullMethodName     = "/iam.v1.Credentials/AuthByGoogle"
@@ -54,8 +54,9 @@ func NewCredentialsClient(cc grpc.ClientConnInterface) CredentialsClient {
 }
 
 func (c *credentialsClient) AuthByGoogle(ctx context.Context, in *AuthByGoogleRequest, opts ...grpc.CallOption) (*v1.EmptyReply, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(v1.EmptyReply)
-	err := c.cc.Invoke(ctx, Credentials_AuthByGoogle_FullMethodName, in, out, opts...)
+	err := c.cc.Invoke(ctx, Credentials_AuthByGoogle_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -63,8 +64,9 @@ func (c *credentialsClient) AuthByGoogle(ctx context.Context, in *AuthByGoogleRe
 }
 
 func (c *credentialsClient) GetCredential(ctx context.Context, in *GetCredentialRequest, opts ...grpc.CallOption) (*CredentialReply, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(CredentialReply)
-	err := c.cc.Invoke(ctx, Credentials_GetCredential_FullMethodName, in, out, opts...)
+	err := c.cc.Invoke(ctx, Credentials_GetCredential_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -72,8 +74,9 @@ func (c *credentialsClient) GetCredential(ctx context.Context, in *GetCredential
 }
 
 func (c *credentialsClient) ListCredentials(ctx context.Context, in *v1.EmptyRequest, opts ...grpc.CallOption) (*ListCredentialsReply, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(ListCredentialsReply)
-	err := c.cc.Invoke(ctx, Credentials_ListCredentials_FullMethodName, in, out, opts...)
+	err := c.cc.Invoke(ctx, Credentials_ListCredentials_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -81,8 +84,9 @@ func (c *credentialsClient) ListCredentials(ctx context.Context, in *v1.EmptyReq
 }
 
 func (c *credentialsClient) DeleteCredential(ctx context.Context, in *CredentialsRequest, opts ...grpc.CallOption) (*v1.EmptyReply, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(v1.EmptyReply)
-	err := c.cc.Invoke(ctx, Credentials_DeleteCredential_FullMethodName, in, out, opts...)
+	err := c.cc.Invoke(ctx, Credentials_DeleteCredential_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}

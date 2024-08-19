@@ -7,6 +7,7 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/nyaruka/phonenumbers"
 	v1 "gitlab.calendaria.team/services/iam/api/iam/v1"
 	"gitlab.calendaria.team/services/iam/ent"
 	"gitlab.calendaria.team/services/iam/ent/enum"
@@ -14,11 +15,11 @@ import (
 	u_jwt "gitlab.calendaria.team/services/utils/v1/jwt"
 	u_nats "gitlab.calendaria.team/services/utils/v1/nats"
 	u_auth "gitlab.calendaria.team/services/utils/v2/auth"
+	u_jwt "gitlab.calendaria.team/services/utils/v2/jwt"
 	u_struc "gitlab.calendaria.team/services/utils/v2/struc"
 
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/golang-jwt/jwt/v5"
-	"github.com/nyaruka/phonenumbers"
 	"golang.org/x/exp/rand"
 )
 
@@ -40,12 +41,12 @@ const (
 // GreeterUsecase is a Greeter usecase.
 type AuthUsecase struct {
 	log                  *log.Helper
-	jwt                  *u_jwt.JwtProcessor
 	queue                u_nats.IQueueManager
+	jwt                  u_jwt.IJwtProcessor
 	usersRepo            data.UsersRepo
 	otpRepo              data.OtpRepo
-	tenants              data.ITenantsRemote
-	notifications        *data.NotificationsRemote
+	tenants              data.ITenantRemote
+	notifications        data.INotificationsRemote
 	accessTokenDuration  time.Duration
 	refreshTokenDuration time.Duration
 }
@@ -53,12 +54,12 @@ type AuthUsecase struct {
 // NewAuthUsecase new a Greeter usecase.
 func NewAuthUsecase(
 	logger log.Logger,
-	jwt *u_jwt.JwtProcessor,
-	queue u_nats.IQueueManager,
+	jwt u_jwt.IJwtProcessor,
 	usersRepo data.UsersRepo,
 	otpRepo data.OtpRepo,
-	tenants data.ITenantsRemote,
-	notifications *data.NotificationsRemote,
+	queue u_nats.IQueueManager,
+	tenants data.ITenantRemote,
+	notifications data.INotificationsRemote,
 ) (*AuthUsecase, error) {
 	uc := &AuthUsecase{
 		log:           log.NewHelper(logger),
@@ -103,8 +104,10 @@ func NewAuthUsecase(
 	return uc, nil
 }
 
-func (uc *AuthUsecase) AuthUserByPhone(ctx context.Context, phone string) (int64, error) {
-	phoneNumber, err := phonenumbers.Parse(phone, defaultRegion)
+func (uc *AuthUsecase) AuthUserByPhone(ctx context.Context, phone string, isRegistrationNeeded, isRegistration bool) (
+	int64, error,
+) {
+	phoneNumber, err := phonenumbers.Parse(phone, DefaultRegion)
 	if err != nil {
 		return 0, v1.ErrorInvalidPhoneNumber("parse error: %s", err.Error())
 	}
@@ -115,8 +118,16 @@ func (uc *AuthUsecase) AuthUserByPhone(ctx context.Context, phone string) (int64
 	phone = phonenumbers.Format(phoneNumber, phonenumbers.E164)
 
 	user, err := uc.usersRepo.GetUserByPhone(ctx, phone, true)
+	if err == nil && isRegistration {
+		return 0, v1.ErrorUserAlreadyExist("phone already registered")
+	}
+
 	if err != nil {
 		if ent.IsNotFound(err) {
+			if isRegistrationNeeded {
+				return 0, v1.ErrorUnauthorized("phone not registered")
+			}
+
 			user, err = uc.usersRepo.CreateUserWithPhone(ctx, phone)
 		}
 		if err != nil {
@@ -151,10 +162,20 @@ func (uc *AuthUsecase) AuthUserByPhone(ctx context.Context, phone string) (int64
 	return user.ID, nil
 }
 
-func (uc *AuthUsecase) AuthUserByEmail(ctx context.Context, email, lang string) (int64, error) {
+func (uc *AuthUsecase) AuthUserByEmail(
+	ctx context.Context, email, lang string, isRegistrationNeeded, isRegistration bool,
+) (int64, error) {
 	user, err := uc.usersRepo.GetUserByEmail(ctx, email, true)
+	if err == nil && isRegistration {
+		return 0, v1.ErrorUserAlreadyExist("phone already registered")
+	}
+
 	if err != nil {
 		if ent.IsNotFound(err) {
+			if isRegistrationNeeded {
+				return 0, v1.ErrorInvalidRequest("email not registered")
+			}
+
 			user, err = uc.usersRepo.CreateUserWithEmail(ctx, email)
 		}
 		if err != nil {
@@ -226,10 +247,15 @@ func (uc *AuthUsecase) handleUserVerification(ctx context.Context, user *ent.Use
 			return v1.ErrorDatabaseQuery("UpdateUserData gone wrong: %s", err.Error())
 		}
 
-		uc.queue.GetRemote(QueueEventsDefaultCalendars).Pub(&u_struc.AuthIds{
-			ActorId:  user.ID,
-			TenantId: personalTenant.GetId(),
-		})
+		tenantID := personalTenant.GetId()
+		user.DefaultTenantID = &tenantID
+
+		uc.queue.GetRemote(QueueEventsDefaultCalendars).Pub(
+			&u_struc.AuthIds{
+				ActorId:  user.ID,
+				TenantId: personalTenant.GetId(),
+			},
+		)
 	}
 
 	switch otp.Type {

@@ -13,16 +13,6 @@ import (
 	utils_v1 "gitlab.calendaria.team/services/utils/api/utils/v1"
 )
 
-type UpdateUserDto struct {
-	Phone    string
-	Email    string
-	Name     string
-	Username string
-	Bio      string
-	Avatar   string
-	Timezone string
-	TenantID int64
-}
 type GetUserFilterDto struct {
 	UserID int64
 	Phone  string
@@ -83,53 +73,21 @@ func (r *usersRepo) CreateUserWithEmail(ctx context.Context, email string) (*ent
 }
 
 func (r *usersRepo) UpdateUserData(ctx context.Context, user *ent.User, dto UpdateUserDto) (*ent.User, error) {
-	shouldUpdate := false
 	now := time.Now()
 	query := r.db.User.UpdateOne(user).SetLastLoginAt(now).SetUpdatedAt(now)
 
-	// TODO: allow to update verified phone and email, using additional tables
-	if dto.Phone != "" && !user.PhoneVerified { // update only if phone is not verified
-		if user.Phone == nil || *user.Phone != dto.Phone { // check if new phone is different from the old one
-			shouldUpdate = true
-			query.SetPhone(dto.Phone)
-		}
-	}
-	if dto.Email != "" && !user.EmailVerified { // update only if email is not verified
-		if user.Email == nil || *user.Email != dto.Email { // check if new phone is different from the old one
-			shouldUpdate = true
-			query.SetEmail(dto.Email)
-		}
-	}
-	if dto.Name != "" && dto.Name != user.Name { // unnecessary to finish the registration
-		shouldUpdate = true
-		query.SetName(dto.Name)
-	}
-	// unnecessary to finish the registration
-	if dto.Username != "" && (user.Username == nil || dto.Username != *user.Username) {
-		shouldUpdate = true
-		query.SetUsername(dto.Username)
-	}
-	if dto.Bio != "" && dto.Bio != user.Bio { // unnecessary to finish the registration
-		shouldUpdate = true
-		query.SetBio(dto.Bio).SetBioUpdatedAt(now)
-	}
-	if dto.Avatar != "" { // unnecessary to finish the registration
-		if user.Avatar == nil || *user.Avatar != dto.Avatar { // check if new phone is different from the old one
-			shouldUpdate = true
-			query.SetAvatar(dto.Avatar)
-		}
-	}
-	if dto.Timezone != "" { // !required to finish the registration
-		shouldUpdate = true
-		query.SetTimezone(dto.Timezone).SetIsActive(true)
-	}
+	query = dto.ForUser(user).
+		ForQuery(query).
+		ApplyEmail().
+		ApplyAvatar().
+		ApplyBio().
+		ApplyName().
+		ApplyTenantID().
+		ApplyTimezone().
+		ApplyUsername().
+		GetQuery()
 
-	if dto.TenantID != 0 {
-		shouldUpdate = true
-		query.SetDefaultTenantID(dto.TenantID)
-	}
-
-	if !shouldUpdate {
+	if !dto.ShouldUpdate() {
 		return user, nil
 	}
 
@@ -205,7 +163,8 @@ func (r *usersRepo) ListUsers(
 			user.IDIn(filter.UsersIDs...),
 			user.PhoneIn(filter.Phones...),
 			user.EmailIn(filter.Emails...),
-		))
+		),
+	)
 
 	if filter.Search != "" {
 		query = query.Where(
@@ -218,31 +177,20 @@ func (r *usersRepo) ListUsers(
 	}
 
 	if sort != nil {
+		orderFunc := ent.Asc
+		if sort.GetDescending() {
+			orderFunc = ent.Desc
+		}
+
 		switch sort.GetField() {
 		case "email":
-			if sort.GetDescending() {
-				query.Order(ent.Desc(user.FieldEmail))
-			} else {
-				query.Order(ent.Asc(user.FieldEmail))
-			}
+			query.Order(orderFunc(user.FieldEmail))
 		case "phone":
-			if sort.GetDescending() {
-				query.Order(ent.Desc(user.FieldPhone))
-			} else {
-				query.Order(ent.Asc(user.FieldPhone))
-			}
+			query.Order(orderFunc(user.FieldPhone))
 		case "name":
-			if sort.GetDescending() {
-				query.Order(ent.Desc(user.FieldName))
-			} else {
-				query.Order(ent.Asc(user.FieldName))
-			}
+			query.Order(orderFunc(user.FieldName))
 		default: // case "id"
-			if sort.GetDescending() {
-				query.Order(ent.Desc(user.FieldID))
-			} else {
-				query.Order(ent.Asc(user.FieldID))
-			}
+			query.Order(orderFunc(user.FieldID))
 		}
 	} else {
 		if paginate.GetFromId() != 0 {
@@ -273,7 +221,8 @@ func (r *usersRepo) GetUsers(ctx context.Context, filter GetUsersFilterDto) ([]*
 			user.IDIn(filter.UsersIDs...),
 			user.PhoneIn(filter.Phones...),
 			user.EmailIn(filter.Emails...),
-		))
+		),
+	)
 
 	if filter.Search != "" {
 		query = query.Where(

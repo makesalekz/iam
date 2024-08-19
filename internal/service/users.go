@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"net/mail"
 	"regexp"
 	"strconv"
 	"strings"
@@ -11,6 +12,7 @@ import (
 	v1 "gitlab.calendaria.team/services/iam/api/iam/v1"
 	"gitlab.calendaria.team/services/iam/internal/biz"
 	"gitlab.calendaria.team/services/iam/internal/data"
+	tenants_v1 "gitlab.calendaria.team/services/tenants/api/tenants/v1"
 	utils_v1 "gitlab.calendaria.team/services/utils/api/utils/v1"
 	"gitlab.calendaria.team/services/utils/v2/auth"
 )
@@ -93,15 +95,43 @@ func (s *UsersService) UpdateOwnProfile(
 		return nil, v1.ErrorInvalidUsername("forbidden username format")
 	}
 
-	user, err := s.uc.UpdateUserProfile(ctx, actorID, data.UpdateUserDto{
+	var email *mail.Address
+
+	var err error
+
+	dto := data.UpdateUserDto{
 		Phone:    req.GetPhone(),
 		Email:    req.GetEmail(),
 		Name:     req.GetName(),
 		Username: req.GetUsername(),
-		Bio:      req.GetBio(),
+		Bio:      req.Bio, //nolint:protogetter // optional field, acquired by ref
 		Avatar:   req.GetAvatar(),
 		Timezone: req.GetTimezone(),
-	})
+	}
+
+	if dto.Phone != "" {
+		dto.Phone, err = ParsePhone(dto.Phone)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	if dto.Email != "" {
+		email, err = ParseEmail(dto.Email)
+		if err != nil {
+			return nil, err
+		}
+		dto.Email = email.Address
+	}
+
+	if dto.Timezone != "" {
+		err = CheckTimezone(dto.Timezone)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	user, err := s.uc.UpdateUserProfile(ctx, actorID, dto)
 	if err != nil {
 		return nil, err
 	}

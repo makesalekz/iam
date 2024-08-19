@@ -16,8 +16,8 @@ import (
 
 // This is a compile-time assertion to ensure that this generated file
 // is compatible with the grpc package it is being compiled against.
-// Requires gRPC-Go v1.32.0 or later.
-const _ = grpc.SupportPackageIsVersion7
+// Requires gRPC-Go v1.62.0 or later.
+const _ = grpc.SupportPackageIsVersion8
 
 const (
 	Users_GetOwnProfile_FullMethodName       = "/iam.v1.Users/GetOwnProfile"
@@ -78,8 +78,9 @@ func NewUsersClient(cc grpc.ClientConnInterface) UsersClient {
 }
 
 func (c *usersClient) GetOwnProfile(ctx context.Context, in *v1.EmptyRequest, opts ...grpc.CallOption) (*UserFullReply, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(UserFullReply)
-	err := c.cc.Invoke(ctx, Users_GetOwnProfile_FullMethodName, in, out, opts...)
+	err := c.cc.Invoke(ctx, Users_GetOwnProfile_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -87,8 +88,9 @@ func (c *usersClient) GetOwnProfile(ctx context.Context, in *v1.EmptyRequest, op
 }
 
 func (c *usersClient) UpdateOwnProfile(ctx context.Context, in *UpdateOwnProfileRequest, opts ...grpc.CallOption) (*UserFullReply, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(UserFullReply)
-	err := c.cc.Invoke(ctx, Users_UpdateOwnProfile_FullMethodName, in, out, opts...)
+	err := c.cc.Invoke(ctx, Users_UpdateOwnProfile_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -96,8 +98,9 @@ func (c *usersClient) UpdateOwnProfile(ctx context.Context, in *UpdateOwnProfile
 }
 
 func (c *usersClient) DeleteOwnProfile(ctx context.Context, in *v1.EmptyRequest, opts ...grpc.CallOption) (*v1.EmptyReply, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(v1.EmptyReply)
-	err := c.cc.Invoke(ctx, Users_DeleteOwnProfile_FullMethodName, in, out, opts...)
+	err := c.cc.Invoke(ctx, Users_DeleteOwnProfile_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -105,8 +108,9 @@ func (c *usersClient) DeleteOwnProfile(ctx context.Context, in *v1.EmptyRequest,
 }
 
 func (c *usersClient) GetUserFull(ctx context.Context, in *GetUserRequest, opts ...grpc.CallOption) (*UserFullReply, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(UserFullReply)
-	err := c.cc.Invoke(ctx, Users_GetUserFull_FullMethodName, in, out, opts...)
+	err := c.cc.Invoke(ctx, Users_GetUserFull_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -114,8 +118,9 @@ func (c *usersClient) GetUserFull(ctx context.Context, in *GetUserRequest, opts 
 }
 
 func (c *usersClient) GetUserByFilterFull(ctx context.Context, in *GetUserByFilterRequest, opts ...grpc.CallOption) (*UserFullReply, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(UserFullReply)
-	err := c.cc.Invoke(ctx, Users_GetUserByFilterFull_FullMethodName, in, out, opts...)
+	err := c.cc.Invoke(ctx, Users_GetUserByFilterFull_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -123,8 +128,9 @@ func (c *usersClient) GetUserByFilterFull(ctx context.Context, in *GetUserByFilt
 }
 
 func (c *usersClient) GetUser(ctx context.Context, in *GetUserRequest, opts ...grpc.CallOption) (*UserReply, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(UserReply)
-	err := c.cc.Invoke(ctx, Users_GetUser_FullMethodName, in, out, opts...)
+	err := c.cc.Invoke(ctx, Users_GetUser_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -132,8 +138,9 @@ func (c *usersClient) GetUser(ctx context.Context, in *GetUserRequest, opts ...g
 }
 
 func (c *usersClient) GetUserByFilter(ctx context.Context, in *GetUserByFilterRequest, opts ...grpc.CallOption) (*UserReply, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(UserReply)
-	err := c.cc.Invoke(ctx, Users_GetUserByFilter_FullMethodName, in, out, opts...)
+	err := c.cc.Invoke(ctx, Users_GetUserByFilter_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -141,8 +148,9 @@ func (c *usersClient) GetUserByFilter(ctx context.Context, in *GetUserByFilterRe
 }
 
 func (c *usersClient) GetUsers(ctx context.Context, in *GetUsersRequest, opts ...grpc.CallOption) (*UsersReply, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(UsersReply)
-	err := c.cc.Invoke(ctx, Users_GetUsers_FullMethodName, in, out, opts...)
+	err := c.cc.Invoke(ctx, Users_GetUsers_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -150,8 +158,9 @@ func (c *usersClient) GetUsers(ctx context.Context, in *GetUsersRequest, opts ..
 }
 
 func (c *usersClient) ListUsers(ctx context.Context, in *ListUsersRequest, opts ...grpc.CallOption) (*UsersReply, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(UsersReply)
-	err := c.cc.Invoke(ctx, Users_ListUsers_FullMethodName, in, out, opts...)
+	err := c.cc.Invoke(ctx, Users_ListUsers_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}

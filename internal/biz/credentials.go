@@ -7,8 +7,8 @@ import (
 	"gitlab.calendaria.team/services/iam/ent"
 	"gitlab.calendaria.team/services/iam/internal/data"
 	"gitlab.calendaria.team/services/utils/v1/config"
-	u_jwt "gitlab.calendaria.team/services/utils/v1/jwt"
 	u_nats "gitlab.calendaria.team/services/utils/v1/nats"
+	u_jwt "gitlab.calendaria.team/services/utils/v2/jwt"
 	u_struc "gitlab.calendaria.team/services/utils/v2/struc"
 
 	"github.com/go-kratos/kratos/v2/log"
@@ -19,16 +19,16 @@ import (
 type CredentialsUsecase struct {
 	config          *config.Config
 	log             *log.Helper
-	jwt             *u_jwt.JwtProcessor
 	queue           u_nats.IQueueManager
+	jwt             u_jwt.IJwtProcessor
 	credentialsRepo data.CredentialsRepo
 }
 
 func NewCredentialsUsecase(
 	config *config.Config,
 	logger log.Logger,
-	jwt *u_jwt.JwtProcessor,
 	queue u_nats.IQueueManager,
+	jwt u_jwt.IJwtProcessor,
 	credentialsRepo data.CredentialsRepo,
 ) (*CredentialsUsecase, error) {
 	return &CredentialsUsecase{

@@ -94,10 +94,12 @@ func (r *TenantsRemote) GetMemberIdentities(
 		return nil, err
 	}
 
-	reply, err := client.GetMemberIdentities(ctx, &tenants_v1.GetMemberIdentitiesRequest{
-		TenantId: tenantID,
-		UserId:   userID,
-	})
+	reply, err := client.GetMemberIdentities(
+		ctx, &tenants_v1.GetMemberIdentitiesRequest{
+			TenantId: tenantID,
+			UserId:   userID,
+		},
+	)
 	if err != nil {
 		return nil, err
 	}
