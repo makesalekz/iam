@@ -88,9 +88,7 @@ func (otpc *OneTimePasswordCreate) Mutation() *OneTimePasswordMutation {
 
 // Save creates the OneTimePassword in the database.
 func (otpc *OneTimePasswordCreate) Save(ctx context.Context) (*OneTimePassword, error) {
-	if err := otpc.defaults(); err != nil {
-		return nil, err
-	}
+	otpc.defaults()
 	return withHooks(ctx, otpc.sqlSave, otpc.mutation, otpc.hooks)
 }
 
@@ -117,19 +115,15 @@ func (otpc *OneTimePasswordCreate) ExecX(ctx context.Context) {
 }
 
 // defaults sets the default values of the builder before save.
-func (otpc *OneTimePasswordCreate) defaults() error {
+func (otpc *OneTimePasswordCreate) defaults() {
 	if _, ok := otpc.mutation.IsUsed(); !ok {
 		v := onetimepassword.DefaultIsUsed
 		otpc.mutation.SetIsUsed(v)
 	}
 	if _, ok := otpc.mutation.CreatedAt(); !ok {
-		if onetimepassword.DefaultCreatedAt == nil {
-			return fmt.Errorf("ent: uninitialized onetimepassword.DefaultCreatedAt (forgotten import ent/runtime?)")
-		}
 		v := onetimepassword.DefaultCreatedAt()
 		otpc.mutation.SetCreatedAt(v)
 	}
-	return nil
 }
 
 // check runs all checks and user-defined validators on the builder.

@@ -173,7 +173,7 @@ func (uc *UsersUsecase) DeleteUserData(ctx context.Context) {
 		}
 	}()
 
-	// Delete members of users in chats service
+	// Delete members of users in events service
 	wg.Add(1)
 	go func() {
 		defer wg.Done()

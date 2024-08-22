@@ -1,4 +1,4 @@
-// nolint: dupl // different services
+//nolint: dupl // different services
 package data
 
 import (
