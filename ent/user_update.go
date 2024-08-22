@@ -49,6 +49,26 @@ func (uu *UserUpdate) ClearDeletedAt() *UserUpdate {
 	return uu
 }
 
+// SetRemoveAt sets the "remove_at" field.
+func (uu *UserUpdate) SetRemoveAt(t time.Time) *UserUpdate {
+	uu.mutation.SetRemoveAt(t)
+	return uu
+}
+
+// SetNillableRemoveAt sets the "remove_at" field if the given value is not nil.
+func (uu *UserUpdate) SetNillableRemoveAt(t *time.Time) *UserUpdate {
+	if t != nil {
+		uu.SetRemoveAt(*t)
+	}
+	return uu
+}
+
+// ClearRemoveAt clears the value of the "remove_at" field.
+func (uu *UserUpdate) ClearRemoveAt() *UserUpdate {
+	uu.mutation.ClearRemoveAt()
+	return uu
+}
+
 // SetPhone sets the "phone" field.
 func (uu *UserUpdate) SetPhone(s string) *UserUpdate {
 	uu.mutation.SetPhone(s)
@@ -368,6 +388,12 @@ func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if uu.mutation.DeletedAtCleared() {
 		_spec.ClearField(user.FieldDeletedAt, field.TypeTime)
 	}
+	if value, ok := uu.mutation.RemoveAt(); ok {
+		_spec.SetField(user.FieldRemoveAt, field.TypeTime, value)
+	}
+	if uu.mutation.RemoveAtCleared() {
+		_spec.ClearField(user.FieldRemoveAt, field.TypeTime)
+	}
 	if value, ok := uu.mutation.Phone(); ok {
 		_spec.SetField(user.FieldPhone, field.TypeString, value)
 	}
@@ -473,6 +499,26 @@ func (uuo *UserUpdateOne) SetNillableDeletedAt(t *time.Time) *UserUpdateOne {
 // ClearDeletedAt clears the value of the "deleted_at" field.
 func (uuo *UserUpdateOne) ClearDeletedAt() *UserUpdateOne {
 	uuo.mutation.ClearDeletedAt()
+	return uuo
+}
+
+// SetRemoveAt sets the "remove_at" field.
+func (uuo *UserUpdateOne) SetRemoveAt(t time.Time) *UserUpdateOne {
+	uuo.mutation.SetRemoveAt(t)
+	return uuo
+}
+
+// SetNillableRemoveAt sets the "remove_at" field if the given value is not nil.
+func (uuo *UserUpdateOne) SetNillableRemoveAt(t *time.Time) *UserUpdateOne {
+	if t != nil {
+		uuo.SetRemoveAt(*t)
+	}
+	return uuo
+}
+
+// ClearRemoveAt clears the value of the "remove_at" field.
+func (uuo *UserUpdateOne) ClearRemoveAt() *UserUpdateOne {
+	uuo.mutation.ClearRemoveAt()
 	return uuo
 }
 
@@ -824,6 +870,12 @@ func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) 
 	}
 	if uuo.mutation.DeletedAtCleared() {
 		_spec.ClearField(user.FieldDeletedAt, field.TypeTime)
+	}
+	if value, ok := uuo.mutation.RemoveAt(); ok {
+		_spec.SetField(user.FieldRemoveAt, field.TypeTime, value)
+	}
+	if uuo.mutation.RemoveAtCleared() {
+		_spec.ClearField(user.FieldRemoveAt, field.TypeTime)
 	}
 	if value, ok := uuo.mutation.Phone(); ok {
 		_spec.SetField(user.FieldPhone, field.TypeString, value)

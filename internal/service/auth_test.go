@@ -24,7 +24,7 @@ func TestAuthSuccess(t *testing.T) {
 
 	usersRepo := mock.NewMockUsersRepo(ctrl)
 	otpRepo := mock.NewMockOtpRepo(ctrl)
-	tenantRemote := mock.NewMockITenantRemote(ctrl)
+	tenantRemote := mock.NewMockITenantsRemote(ctrl)
 	notificationsRemote := mock.NewMockINotificationsRemote(ctrl)
 	jwt := jwt_mock.NewMockIJwtProcessor(ctrl)
 	queue := nats_mock.NewMockIQueueManager(ctrl)
@@ -44,7 +44,7 @@ func TestAuthSuccess(t *testing.T) {
 		ID: userID,
 	}
 
-	usersRepo.EXPECT().GetUserByPhone(gomock.Any(), phone).Return(expectedUser, nil)
+	usersRepo.EXPECT().GetUserByPhone(gomock.Any(), phone, true).Return(expectedUser, nil)
 	otpRepo.EXPECT().CreateOneTimePassword(gomock.Any(), userID, enum.Phone, "777333", 5*time.Minute).Return(otp, nil)
 	notificationsRemote.EXPECT().PersonalSmsSender(gomock.Any(), phone, "Calendaria: 777333").Return(nil)
 
@@ -60,7 +60,7 @@ func TestUserNotExist(t *testing.T) {
 
 	usersRepo := mock.NewMockUsersRepo(ctrl)
 	otpRepo := mock.NewMockOtpRepo(ctrl)
-	tenantRemote := mock.NewMockITenantRemote(ctrl)
+	tenantRemote := mock.NewMockITenantsRemote(ctrl)
 	notificationsRemote := mock.NewMockINotificationsRemote(ctrl)
 	jwt := jwt_mock.NewMockIJwtProcessor(ctrl)
 	queue := nats_mock.NewMockIQueueManager(ctrl)
@@ -80,7 +80,7 @@ func TestUserNotExist(t *testing.T) {
 		ID: userID,
 	}
 
-	usersRepo.EXPECT().GetUserByPhone(gomock.Any(), phone).Return(nil, &ent.NotFoundError{})
+	usersRepo.EXPECT().GetUserByPhone(gomock.Any(), phone, true).Return(nil, &ent.NotFoundError{})
 	usersRepo.EXPECT().CreateUserWithPhone(gomock.Any(), phone).Return(expectedUser, nil)
 	otpRepo.EXPECT().CreateOneTimePassword(gomock.Any(), userID, enum.Phone, "777333", 5*time.Minute).Return(otp, nil)
 	notificationsRemote.EXPECT().PersonalSmsSender(gomock.Any(), phone, "Calendaria: 777333").Return(nil)
@@ -97,7 +97,7 @@ func TestUserRegistrationRequired(t *testing.T) {
 
 	usersRepo := mock.NewMockUsersRepo(ctrl)
 	otpRepo := mock.NewMockOtpRepo(ctrl)
-	tenantRemote := mock.NewMockITenantRemote(ctrl)
+	tenantRemote := mock.NewMockITenantsRemote(ctrl)
 	notificationsRemote := mock.NewMockINotificationsRemote(ctrl)
 	jwt := jwt_mock.NewMockIJwtProcessor(ctrl)
 	queue := nats_mock.NewMockIQueueManager(ctrl)
@@ -109,7 +109,7 @@ func TestUserRegistrationRequired(t *testing.T) {
 
 	phone := "+77777777777"
 
-	usersRepo.EXPECT().GetUserByPhone(gomock.Any(), phone).Return(nil, &ent.NotFoundError{})
+	usersRepo.EXPECT().GetUserByPhone(gomock.Any(), phone, true).Return(nil, &ent.NotFoundError{})
 	_, err = authUseCase.AuthUserByPhone(ctx, phone, true, false)
 	require.Error(t, err)
 }
@@ -122,7 +122,7 @@ func TestUserRegistration(t *testing.T) {
 
 	usersRepo := mock.NewMockUsersRepo(ctrl)
 	otpRepo := mock.NewMockOtpRepo(ctrl)
-	tenantRemote := mock.NewMockITenantRemote(ctrl)
+	tenantRemote := mock.NewMockITenantsRemote(ctrl)
 	notificationsRemote := mock.NewMockINotificationsRemote(ctrl)
 	jwt := jwt_mock.NewMockIJwtProcessor(ctrl)
 	queue := nats_mock.NewMockIQueueManager(ctrl)
@@ -143,7 +143,7 @@ func TestUserRegistration(t *testing.T) {
 		ID: userID,
 	}
 
-	usersRepo.EXPECT().GetUserByPhone(gomock.Any(), phone).Return(nil, &ent.NotFoundError{})
+	usersRepo.EXPECT().GetUserByPhone(gomock.Any(), phone, true).Return(nil, &ent.NotFoundError{})
 	usersRepo.EXPECT().CreateUserWithPhone(gomock.Any(), phone).Return(expectedUser, nil)
 	otpRepo.EXPECT().CreateOneTimePassword(gomock.Any(), userID, enum.Phone, "777333", 5*time.Minute).Return(otp, nil)
 	notificationsRemote.EXPECT().PersonalSmsSender(gomock.Any(), phone, "Calendaria: 777333").Return(nil)

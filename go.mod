@@ -14,10 +14,14 @@ require (
 	github.com/nats-io/nats.go v1.32.0
 	github.com/nyaruka/phonenumbers v1.3.1
 	github.com/prometheus/client_golang v1.18.0
+	github.com/robfig/cron/v3 v3.0.1
 	github.com/stretchr/testify v1.8.4
-	gitlab.calendaria.team/services/contacts v1.6.1
+	gitlab.calendaria.team/services/chats v1.1.0-pre
+	gitlab.calendaria.team/services/contacts v1.8.0-pre
+	gitlab.calendaria.team/services/events v1.7.0-pre1
+	gitlab.calendaria.team/services/media v1.5.0-pre
 	gitlab.calendaria.team/services/notifications v1.3.9
-	gitlab.calendaria.team/services/tenants v1.0.0
+	gitlab.calendaria.team/services/tenants v1.2.0-pre
 	gitlab.calendaria.team/services/utils v0.3.11
 	go.uber.org/automaxprocs v1.5.3
 	golang.org/x/exp v0.0.0-20240110193028-0dcbfd608b1e

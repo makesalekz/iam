@@ -16,3 +16,7 @@ discovery:
   contacts_timeout: 30s
   chats: localhost:9002
   chats_timeout: 30s
+  events: localhost:9005
+  events_timeout: 30s
+  media: localhost:9004
+  media_timeout: 30s

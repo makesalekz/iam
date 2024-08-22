@@ -12,6 +12,8 @@ const (
 )
 
 // ProviderSet is biz providers.
+//
+//nolint:gochecknoglobals // this global variable is required for wire
 var ProviderSet = wire.NewSet(
 	nats.NewQueueManager,
 	NewAuthUsecase,

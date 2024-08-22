@@ -37,6 +37,7 @@ var (
 	UsersColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt64, Increment: true},
 		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
+		{Name: "remove_at", Type: field.TypeTime, Nullable: true},
 		{Name: "phone", Type: field.TypeString, Unique: true, Nullable: true},
 		{Name: "email", Type: field.TypeString, Unique: true, Nullable: true},
 		{Name: "username", Type: field.TypeString, Unique: true, Nullable: true, Size: 25},
@@ -62,7 +63,7 @@ var (
 			{
 				Name:    "user_username",
 				Unique:  true,
-				Columns: []*schema.Column{UsersColumns[4]},
+				Columns: []*schema.Column{UsersColumns[5]},
 				Annotation: &entsql.IndexAnnotation{
 					Where: "username is not null",
 				},

@@ -57,10 +57,30 @@ func (r *otpRepo) CheckOneTimePassword(ctx context.Context, userID int64, code s
 		return nil, err
 	}
 
-	otp, err = otp.Update().SetIsUsed(true).Save(ctx)
+	// creating a transaction and rollback method
+	tx, err := r.db.Tx(ctx)
+	if err != nil {
+		return nil, err
+	}
+	defer func() {
+		if err != nil {
+			_ = tx.Rollback()
+		}
+	}()
+
+	otp, err = tx.OneTimePassword.UpdateOne(otp).SetIsUsed(true).Save(ctx)
 	if err != nil {
 		return nil, err
 	}
 
+	_, err = tx.User.UpdateOneID(userID).ClearRemoveAt().Save(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	err = tx.Commit()
+	if err != nil {
+		return nil, err
+	}
 	return otp, nil
 }

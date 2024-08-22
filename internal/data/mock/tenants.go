@@ -3,3 +3,93 @@
 
 // Package mock is a generated GoMock package.
 package mock
+
+import (
+	context "context"
+	reflect "reflect"
+
+	gomock "github.com/golang/mock/gomock"
+	tenants_v1 "gitlab.calendaria.team/services/tenants/api/tenants/v1"
+)
+
+// MockITenantsRemote is a mock of ITenantsRemote interface.
+type MockITenantsRemote struct {
+	ctrl     *gomock.Controller
+	recorder *MockITenantsRemoteMockRecorder
+}
+
+// MockITenantsRemoteMockRecorder is the mock recorder for MockITenantsRemote.
+type MockITenantsRemoteMockRecorder struct {
+	mock *MockITenantsRemote
+}
+
+// NewMockITenantsRemote creates a new mock instance.
+func NewMockITenantsRemote(ctrl *gomock.Controller) *MockITenantsRemote {
+	mock := &MockITenantsRemote{ctrl: ctrl}
+	mock.recorder = &MockITenantsRemoteMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockITenantsRemote) EXPECT() *MockITenantsRemoteMockRecorder {
+	return m.recorder
+}
+
+// CreateTenants mocks base method.
+func (m *MockITenantsRemote) CreateTenants(ctx context.Context, name string) (*tenants_v1.Tenant, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "CreateTenants", ctx, name)
+	ret0, _ := ret[0].(*tenants_v1.Tenant)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// CreateTenants indicates an expected call of CreateTenants.
+func (mr *MockITenantsRemoteMockRecorder) CreateTenants(ctx, name interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateTenants", reflect.TypeOf((*MockITenantsRemote)(nil).CreateTenants), ctx, name)
+}
+
+// DeleteUsersTenants mocks base method.
+func (m *MockITenantsRemote) DeleteUsersTenants(ctx context.Context, usersIDs []int64) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "DeleteUsersTenants", ctx, usersIDs)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// DeleteUsersTenants indicates an expected call of DeleteUsersTenants.
+func (mr *MockITenantsRemoteMockRecorder) DeleteUsersTenants(ctx, usersIDs interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteUsersTenants", reflect.TypeOf((*MockITenantsRemote)(nil).DeleteUsersTenants), ctx, usersIDs)
+}
+
+// GetMemberIdentities mocks base method.
+func (m *MockITenantsRemote) GetMemberIdentities(ctx context.Context, tenantID, userID int64) (*tenants_v1.GetMemberIdentitiesReply, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetMemberIdentities", ctx, tenantID, userID)
+	ret0, _ := ret[0].(*tenants_v1.GetMemberIdentitiesReply)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetMemberIdentities indicates an expected call of GetMemberIdentities.
+func (mr *MockITenantsRemoteMockRecorder) GetMemberIdentities(ctx, tenantID, userID interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetMemberIdentities", reflect.TypeOf((*MockITenantsRemote)(nil).GetMemberIdentities), ctx, tenantID, userID)
+}
+
+// GetUserTenants mocks base method.
+func (m *MockITenantsRemote) GetUserTenants(ctx context.Context) ([]*tenants_v1.Tenant, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetUserTenants", ctx)
+	ret0, _ := ret[0].([]*tenants_v1.Tenant)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetUserTenants indicates an expected call of GetUserTenants.
+func (mr *MockITenantsRemoteMockRecorder) GetUserTenants(ctx interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetUserTenants", reflect.TypeOf((*MockITenantsRemote)(nil).GetUserTenants), ctx)
+}

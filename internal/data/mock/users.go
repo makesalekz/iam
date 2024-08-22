@@ -7,6 +7,7 @@ package mock
 import (
 	context "context"
 	reflect "reflect"
+	time "time"
 
 	gomock "github.com/golang/mock/gomock"
 	ent "gitlab.calendaria.team/services/iam/ent"
@@ -67,18 +68,18 @@ func (mr *MockUsersRepoMockRecorder) CreateUserWithPhone(ctx, phone interface{})
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateUserWithPhone", reflect.TypeOf((*MockUsersRepo)(nil).CreateUserWithPhone), ctx, phone)
 }
 
-// DeleteUser mocks base method.
-func (m *MockUsersRepo) DeleteUser(ctx context.Context, id int64) error {
+// DeleteUsers mocks base method.
+func (m *MockUsersRepo) DeleteUsers(ctx context.Context, usersIDs []int64) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "DeleteUser", ctx, id)
+	ret := m.ctrl.Call(m, "DeleteUsers", ctx, usersIDs)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
-// DeleteUser indicates an expected call of DeleteUser.
-func (mr *MockUsersRepoMockRecorder) DeleteUser(ctx, id interface{}) *gomock.Call {
+// DeleteUsers indicates an expected call of DeleteUsers.
+func (mr *MockUsersRepoMockRecorder) DeleteUsers(ctx, usersIDs interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteUser", reflect.TypeOf((*MockUsersRepo)(nil).DeleteUser), ctx, id)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteUsers", reflect.TypeOf((*MockUsersRepo)(nil).DeleteUsers), ctx, usersIDs)
 }
 
 // EmailVerified mocks base method.
@@ -96,48 +97,48 @@ func (mr *MockUsersRepoMockRecorder) EmailVerified(ctx, userID interface{}) *gom
 }
 
 // GetUserByEmail mocks base method.
-func (m *MockUsersRepo) GetUserByEmail(ctx context.Context, email string) (*ent.User, error) {
+func (m *MockUsersRepo) GetUserByEmail(ctx context.Context, email string, skipRemoveAt bool) (*ent.User, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetUserByEmail", ctx, email)
+	ret := m.ctrl.Call(m, "GetUserByEmail", ctx, email, skipRemoveAt)
 	ret0, _ := ret[0].(*ent.User)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // GetUserByEmail indicates an expected call of GetUserByEmail.
-func (mr *MockUsersRepoMockRecorder) GetUserByEmail(ctx, email interface{}) *gomock.Call {
+func (mr *MockUsersRepoMockRecorder) GetUserByEmail(ctx, email, skipRemoveAt interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetUserByEmail", reflect.TypeOf((*MockUsersRepo)(nil).GetUserByEmail), ctx, email)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetUserByEmail", reflect.TypeOf((*MockUsersRepo)(nil).GetUserByEmail), ctx, email, skipRemoveAt)
 }
 
 // GetUserByID mocks base method.
-func (m *MockUsersRepo) GetUserByID(ctx context.Context, id int64) (*ent.User, error) {
+func (m *MockUsersRepo) GetUserByID(ctx context.Context, id int64, skipRemoveAt bool) (*ent.User, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetUserByID", ctx, id)
+	ret := m.ctrl.Call(m, "GetUserByID", ctx, id, skipRemoveAt)
 	ret0, _ := ret[0].(*ent.User)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // GetUserByID indicates an expected call of GetUserByID.
-func (mr *MockUsersRepoMockRecorder) GetUserByID(ctx, id interface{}) *gomock.Call {
+func (mr *MockUsersRepoMockRecorder) GetUserByID(ctx, id, skipRemoveAt interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetUserByID", reflect.TypeOf((*MockUsersRepo)(nil).GetUserByID), ctx, id)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetUserByID", reflect.TypeOf((*MockUsersRepo)(nil).GetUserByID), ctx, id, skipRemoveAt)
 }
 
 // GetUserByPhone mocks base method.
-func (m *MockUsersRepo) GetUserByPhone(ctx context.Context, phone string) (*ent.User, error) {
+func (m *MockUsersRepo) GetUserByPhone(ctx context.Context, phone string, skipRemoveAt bool) (*ent.User, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetUserByPhone", ctx, phone)
+	ret := m.ctrl.Call(m, "GetUserByPhone", ctx, phone, skipRemoveAt)
 	ret0, _ := ret[0].(*ent.User)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // GetUserByPhone indicates an expected call of GetUserByPhone.
-func (mr *MockUsersRepoMockRecorder) GetUserByPhone(ctx, phone interface{}) *gomock.Call {
+func (mr *MockUsersRepoMockRecorder) GetUserByPhone(ctx, phone, skipRemoveAt interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetUserByPhone", reflect.TypeOf((*MockUsersRepo)(nil).GetUserByPhone), ctx, phone)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetUserByPhone", reflect.TypeOf((*MockUsersRepo)(nil).GetUserByPhone), ctx, phone, skipRemoveAt)
 }
 
 // GetUsers mocks base method.
@@ -153,6 +154,21 @@ func (m *MockUsersRepo) GetUsers(ctx context.Context, filter data.GetUsersFilter
 func (mr *MockUsersRepoMockRecorder) GetUsers(ctx, filter interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetUsers", reflect.TypeOf((*MockUsersRepo)(nil).GetUsers), ctx, filter)
+}
+
+// GetUsersToDelete mocks base method.
+func (m *MockUsersRepo) GetUsersToDelete(ctx context.Context) ([]*ent.User, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetUsersToDelete", ctx)
+	ret0, _ := ret[0].([]*ent.User)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetUsersToDelete indicates an expected call of GetUsersToDelete.
+func (mr *MockUsersRepoMockRecorder) GetUsersToDelete(ctx interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetUsersToDelete", reflect.TypeOf((*MockUsersRepo)(nil).GetUsersToDelete), ctx)
 }
 
 // ListUsers mocks base method.
@@ -182,6 +198,20 @@ func (m *MockUsersRepo) PhoneVerified(ctx context.Context, userID int64) error {
 func (mr *MockUsersRepoMockRecorder) PhoneVerified(ctx, userID interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "PhoneVerified", reflect.TypeOf((*MockUsersRepo)(nil).PhoneVerified), ctx, userID)
+}
+
+// ScheduleUserDeletion mocks base method.
+func (m *MockUsersRepo) ScheduleUserDeletion(ctx context.Context, id int64, deleteDuration time.Duration) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ScheduleUserDeletion", ctx, id, deleteDuration)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// ScheduleUserDeletion indicates an expected call of ScheduleUserDeletion.
+func (mr *MockUsersRepoMockRecorder) ScheduleUserDeletion(ctx, id, deleteDuration interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ScheduleUserDeletion", reflect.TypeOf((*MockUsersRepo)(nil).ScheduleUserDeletion), ctx, id, deleteDuration)
 }
 
 // TempGetUsersWithoutDefaultTenant mocks base method.

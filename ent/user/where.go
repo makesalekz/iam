@@ -59,6 +59,11 @@ func DeletedAt(v time.Time) predicate.User {
 	return predicate.User(sql.FieldEQ(FieldDeletedAt, v))
 }
 
+// RemoveAt applies equality check predicate on the "remove_at" field. It's identical to RemoveAtEQ.
+func RemoveAt(v time.Time) predicate.User {
+	return predicate.User(sql.FieldEQ(FieldRemoveAt, v))
+}
+
 // Phone applies equality check predicate on the "phone" field. It's identical to PhoneEQ.
 func Phone(v string) predicate.User {
 	return predicate.User(sql.FieldEQ(FieldPhone, v))
@@ -182,6 +187,56 @@ func DeletedAtIsNil() predicate.User {
 // DeletedAtNotNil applies the NotNil predicate on the "deleted_at" field.
 func DeletedAtNotNil() predicate.User {
 	return predicate.User(sql.FieldNotNull(FieldDeletedAt))
+}
+
+// RemoveAtEQ applies the EQ predicate on the "remove_at" field.
+func RemoveAtEQ(v time.Time) predicate.User {
+	return predicate.User(sql.FieldEQ(FieldRemoveAt, v))
+}
+
+// RemoveAtNEQ applies the NEQ predicate on the "remove_at" field.
+func RemoveAtNEQ(v time.Time) predicate.User {
+	return predicate.User(sql.FieldNEQ(FieldRemoveAt, v))
+}
+
+// RemoveAtIn applies the In predicate on the "remove_at" field.
+func RemoveAtIn(vs ...time.Time) predicate.User {
+	return predicate.User(sql.FieldIn(FieldRemoveAt, vs...))
+}
+
+// RemoveAtNotIn applies the NotIn predicate on the "remove_at" field.
+func RemoveAtNotIn(vs ...time.Time) predicate.User {
+	return predicate.User(sql.FieldNotIn(FieldRemoveAt, vs...))
+}
+
+// RemoveAtGT applies the GT predicate on the "remove_at" field.
+func RemoveAtGT(v time.Time) predicate.User {
+	return predicate.User(sql.FieldGT(FieldRemoveAt, v))
+}
+
+// RemoveAtGTE applies the GTE predicate on the "remove_at" field.
+func RemoveAtGTE(v time.Time) predicate.User {
+	return predicate.User(sql.FieldGTE(FieldRemoveAt, v))
+}
+
+// RemoveAtLT applies the LT predicate on the "remove_at" field.
+func RemoveAtLT(v time.Time) predicate.User {
+	return predicate.User(sql.FieldLT(FieldRemoveAt, v))
+}
+
+// RemoveAtLTE applies the LTE predicate on the "remove_at" field.
+func RemoveAtLTE(v time.Time) predicate.User {
+	return predicate.User(sql.FieldLTE(FieldRemoveAt, v))
+}
+
+// RemoveAtIsNil applies the IsNil predicate on the "remove_at" field.
+func RemoveAtIsNil() predicate.User {
+	return predicate.User(sql.FieldIsNull(FieldRemoveAt))
+}
+
+// RemoveAtNotNil applies the NotNil predicate on the "remove_at" field.
+func RemoveAtNotNil() predicate.User {
+	return predicate.User(sql.FieldNotNull(FieldRemoveAt))
 }
 
 // PhoneEQ applies the EQ predicate on the "phone" field.

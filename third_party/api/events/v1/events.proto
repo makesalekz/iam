@@ -1,0 +1,91 @@
+syntax = "proto3";
+
+package events.v1;
+
+import "api/events/v1/models.proto";
+import "api/utils/v1/models.proto";
+
+option go_package = "gitlab.calendaria.team/services/events/api/events/v1;events_v1";
+option java_multiple_files = true;
+option java_package = "events.v1";
+
+service Events {
+  rpc GetEvent(EventRequest) returns (EventReply);
+  rpc CreateEvent(CreateEventRequest) returns (EventReply);
+  rpc UpdateEvent(UpdateEventRequest) returns (EventReply);
+  rpc DeleteEvent(EventRequest) returns (utils.v1.EmptyReply);
+  rpc DeleteEventCover(EventRequest) returns (utils.v1.EmptyReply);
+  rpc DeleteEventLocation(EventRequest) returns (utils.v1.EmptyReply);
+  rpc ListEvents(ListEventsRequest) returns (ListEventsReply);
+  rpc CommonEvents(CommonEventsRequest) returns (ListEventsReply);
+  rpc GetEvents(GetEventsRequest) returns (GetEventsReply);
+  rpc ListSlots(ListSlotsRequest) returns (ListSlotsReply);
+  rpc NotifyPendingMembers(EventRequest) returns (utils.v1.EmptyReply);
+  rpc DeleteUsersData(DeleteUsersDataRequest) returns (utils.v1.EmptyReply);
+}
+
+message CreateEventRequest {
+  EventDto event = 1;
+}
+
+message UpdateEventRequest {
+  int64 eventId = 1;
+  string updStartDateTime = 3;
+  string eventUpdateType = 4;
+  EventDto event = 2;
+}
+
+message ListEventsRequest {
+  optional bool isAllDay = 3;
+  bool isSetRemind = 4;
+  bool isPublished = 13;
+  bool withRecurrence = 12;
+  bool withSchedule = 14;
+  bool byMemberId = 7;
+  optional string fromDateTime = 5;
+  optional string toDateTime = 6;
+  string search = 8;
+  repeated string memberStatuses = 9;
+  repeated string eventTypes = 10;
+
+  utils.v1.PaginateRequest paginate = 11;
+}
+
+message ListSlotsRequest {
+  int64 userId = 1;
+  SlotType slotType = 2;
+  bool withSchedule = 14;
+  string fromDateTime = 5;
+  string toDateTime = 6;
+}
+
+message ListSlotsReply {
+  repeated EventSlot slots = 1;
+  repeated EventRecurrence recurrences = 3;
+  repeated EventSchedule schedules = 4;
+}
+
+message CommonEventsRequest {
+  int64 userId = 1;
+  string search = 2;
+  utils.v1.PaginateRequest paginate = 3;
+}
+
+message ListEventsReply {
+  repeated Event events = 1;
+  repeated EventRecurrence recurrences = 3;
+  repeated EventSchedule schedules = 4;
+}
+
+message GetEventsRequest {
+  repeated int64 eventsIds = 1;
+  string search = 2;
+}
+
+message GetEventsReply {
+  repeated Event events = 1;
+}
+
+message DeleteUsersDataRequest {
+  repeated int64 usersIds = 1;
+}

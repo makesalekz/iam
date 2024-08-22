@@ -12,7 +12,6 @@ import (
 	"gitlab.calendaria.team/services/iam/ent"
 	"gitlab.calendaria.team/services/iam/ent/enum"
 	"gitlab.calendaria.team/services/iam/internal/data"
-	tenants_v1 "gitlab.calendaria.team/services/tenants/api/tenants/v1"
 	u_nats "gitlab.calendaria.team/services/utils/v1/nats"
 	u_auth "gitlab.calendaria.team/services/utils/v2/auth"
 	u_jwt "gitlab.calendaria.team/services/utils/v2/jwt"
@@ -23,18 +22,20 @@ import (
 	"golang.org/x/exp/rand"
 )
 
-const otpLength = 6
-const digits = "0123456789"
-const debugOtpCode = "777333"
+const (
+	otpLength    = 6
+	digits       = "0123456789"
+	debugOtpCode = "777333"
 
-const verifiablePhone = "+77710012030"
-const verifiableOtpCode = "667423"
+	verifiablePhone   = "+77710012030"
+	verifiableOtpCode = "667423"
 
-const DefaultRegion = "KZ"
-const authOtpDuration = time.Duration(5) * time.Minute
-const defaultAccessTokenDuration = time.Duration(10) * time.Minute
-const defaultRefreshTokenDuration = time.Duration(30*24) * time.Hour
-const personalWorkspace = "My Workspace"
+	DefaultRegion               = "KZ"
+	authOtpDuration             = time.Duration(5) * time.Minute
+	defaultAccessTokenDuration  = time.Duration(10) * time.Minute
+	defaultRefreshTokenDuration = time.Duration(30*24) * time.Hour
+	personalWorkspace           = "My Workspace"
+)
 
 // GreeterUsecase is a Greeter usecase.
 type AuthUsecase struct {
@@ -43,7 +44,7 @@ type AuthUsecase struct {
 	jwt                  u_jwt.IJwtProcessor
 	usersRepo            data.UsersRepo
 	otpRepo              data.OtpRepo
-	tenants              data.ITenantRemote
+	tenants              data.ITenantsRemote
 	notifications        data.INotificationsRemote
 	accessTokenDuration  time.Duration
 	refreshTokenDuration time.Duration
@@ -56,7 +57,7 @@ func NewAuthUsecase(
 	usersRepo data.UsersRepo,
 	otpRepo data.OtpRepo,
 	queue u_nats.IQueueManager,
-	tenants data.ITenantRemote,
+	tenants data.ITenantsRemote,
 	notifications data.INotificationsRemote,
 ) (*AuthUsecase, error) {
 	uc := &AuthUsecase{
@@ -115,7 +116,7 @@ func (uc *AuthUsecase) AuthUserByPhone(ctx context.Context, phone string, isRegi
 
 	phone = phonenumbers.Format(phoneNumber, phonenumbers.E164)
 
-	user, err := uc.usersRepo.GetUserByPhone(ctx, phone)
+	user, err := uc.usersRepo.GetUserByPhone(ctx, phone, true)
 	if err == nil && isRegistration {
 		return 0, v1.ErrorUserAlreadyExist("phone already registered")
 	}
@@ -163,7 +164,7 @@ func (uc *AuthUsecase) AuthUserByPhone(ctx context.Context, phone string, isRegi
 func (uc *AuthUsecase) AuthUserByEmail(
 	ctx context.Context, email, lang string, isRegistrationNeeded, isRegistration bool,
 ) (int64, error) {
-	user, err := uc.usersRepo.GetUserByEmail(ctx, email)
+	user, err := uc.usersRepo.GetUserByEmail(ctx, email, true)
 	if err == nil && isRegistration {
 		return 0, v1.ErrorUserAlreadyExist("phone already registered")
 	}
@@ -206,8 +207,8 @@ func (uc *AuthUsecase) AuthUserByEmail(
 	return user.ID, nil
 }
 
-func (uc *AuthUsecase) GetUserByID(ctx context.Context, userID int64) (*ent.User, error) {
-	user, err := uc.usersRepo.GetUserByID(ctx, userID)
+func (uc *AuthUsecase) GetUserByID(ctx context.Context, userID int64, skipRemoveAt bool) (*ent.User, error) {
+	user, err := uc.usersRepo.GetUserByID(ctx, userID, skipRemoveAt)
 	if err != nil {
 		if ent.IsNotFound(err) {
 			return nil, v1.ErrorUserNotFound("user not found")
@@ -240,9 +241,7 @@ func (uc *AuthUsecase) handleUserVerification(ctx context.Context, user *ent.Use
 			return v1.ErrorGrpcConnection("CreateTenants error: %s", err.Error())
 		}
 
-		_, err = uc.usersRepo.UpdateUserData(
-			tenantContext, user, data.UpdateUserDto{TenantID: personalTenant.GetId()},
-		)
+		_, err = uc.usersRepo.UpdateUserData(tenantContext, user, data.UpdateUserDto{TenantID: personalTenant.GetId()})
 		if err != nil {
 			return v1.ErrorDatabaseQuery("UpdateUserData gone wrong: %s", err.Error())
 		}
@@ -319,7 +318,7 @@ func (uc *AuthUsecase) GenerateTenantToken(ctx context.Context, tenantID, userID
 
 	reply, err := uc.tenants.GetMemberIdentities(ctx, tenantID, userID)
 	if err != nil {
-		return "", tenants_v1.ErrorServiceFailed("tenants: %s", err.Error())
+		return "", v1.ErrorServiceFailed("tenants: %s", err.Error())
 	}
 
 	claims.MemberId = reply.GetMember()

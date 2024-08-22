@@ -697,6 +697,7 @@ type UserMutation struct {
 	typ                  string
 	id                   *int64
 	deleted_at           *time.Time
+	remove_at            *time.Time
 	phone                *string
 	email                *string
 	username             *string
@@ -870,6 +871,55 @@ func (m *UserMutation) DeletedAtCleared() bool {
 func (m *UserMutation) ResetDeletedAt() {
 	m.deleted_at = nil
 	delete(m.clearedFields, user.FieldDeletedAt)
+}
+
+// SetRemoveAt sets the "remove_at" field.
+func (m *UserMutation) SetRemoveAt(t time.Time) {
+	m.remove_at = &t
+}
+
+// RemoveAt returns the value of the "remove_at" field in the mutation.
+func (m *UserMutation) RemoveAt() (r time.Time, exists bool) {
+	v := m.remove_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldRemoveAt returns the old "remove_at" field's value of the User entity.
+// If the User object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *UserMutation) OldRemoveAt(ctx context.Context) (v *time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldRemoveAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldRemoveAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldRemoveAt: %w", err)
+	}
+	return oldValue.RemoveAt, nil
+}
+
+// ClearRemoveAt clears the value of the "remove_at" field.
+func (m *UserMutation) ClearRemoveAt() {
+	m.remove_at = nil
+	m.clearedFields[user.FieldRemoveAt] = struct{}{}
+}
+
+// RemoveAtCleared returns if the "remove_at" field was cleared in this mutation.
+func (m *UserMutation) RemoveAtCleared() bool {
+	_, ok := m.clearedFields[user.FieldRemoveAt]
+	return ok
+}
+
+// ResetRemoveAt resets all changes to the "remove_at" field.
+func (m *UserMutation) ResetRemoveAt() {
+	m.remove_at = nil
+	delete(m.clearedFields, user.FieldRemoveAt)
 }
 
 // SetPhone sets the "phone" field.
@@ -1545,9 +1595,12 @@ func (m *UserMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *UserMutation) Fields() []string {
-	fields := make([]string, 0, 16)
+	fields := make([]string, 0, 17)
 	if m.deleted_at != nil {
 		fields = append(fields, user.FieldDeletedAt)
+	}
+	if m.remove_at != nil {
+		fields = append(fields, user.FieldRemoveAt)
 	}
 	if m.phone != nil {
 		fields = append(fields, user.FieldPhone)
@@ -1604,6 +1657,8 @@ func (m *UserMutation) Field(name string) (ent.Value, bool) {
 	switch name {
 	case user.FieldDeletedAt:
 		return m.DeletedAt()
+	case user.FieldRemoveAt:
+		return m.RemoveAt()
 	case user.FieldPhone:
 		return m.Phone()
 	case user.FieldEmail:
@@ -1645,6 +1700,8 @@ func (m *UserMutation) OldField(ctx context.Context, name string) (ent.Value, er
 	switch name {
 	case user.FieldDeletedAt:
 		return m.OldDeletedAt(ctx)
+	case user.FieldRemoveAt:
+		return m.OldRemoveAt(ctx)
 	case user.FieldPhone:
 		return m.OldPhone(ctx)
 	case user.FieldEmail:
@@ -1690,6 +1747,13 @@ func (m *UserMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetDeletedAt(v)
+		return nil
+	case user.FieldRemoveAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetRemoveAt(v)
 		return nil
 	case user.FieldPhone:
 		v, ok := value.(string)
@@ -1844,6 +1908,9 @@ func (m *UserMutation) ClearedFields() []string {
 	if m.FieldCleared(user.FieldDeletedAt) {
 		fields = append(fields, user.FieldDeletedAt)
 	}
+	if m.FieldCleared(user.FieldRemoveAt) {
+		fields = append(fields, user.FieldRemoveAt)
+	}
 	if m.FieldCleared(user.FieldPhone) {
 		fields = append(fields, user.FieldPhone)
 	}
@@ -1879,6 +1946,9 @@ func (m *UserMutation) ClearField(name string) error {
 	case user.FieldDeletedAt:
 		m.ClearDeletedAt()
 		return nil
+	case user.FieldRemoveAt:
+		m.ClearRemoveAt()
+		return nil
 	case user.FieldPhone:
 		m.ClearPhone()
 		return nil
@@ -1907,6 +1977,9 @@ func (m *UserMutation) ResetField(name string) error {
 	switch name {
 	case user.FieldDeletedAt:
 		m.ResetDeletedAt()
+		return nil
+	case user.FieldRemoveAt:
+		m.ResetRemoveAt()
 		return nil
 	case user.FieldPhone:
 		m.ResetPhone()

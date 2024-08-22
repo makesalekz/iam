@@ -42,6 +42,7 @@ func (User) Fields() []ent.Field {
 func (User) Mixin() []ent.Mixin {
 	return []ent.Mixin{
 		mixins.SoftDeleteMixin{},
+		mixins.SoftRemoveMixin{},
 	}
 }
 

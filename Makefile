@@ -40,7 +40,7 @@ doc:
 .PHONY: run
 # run locally
 run:	
-	GOFLAGS='-mod=readonly' kratos run -w ./configs
+	GOFLAGS='-mod=readonly' kratos run -w ./configs $(DIR)
 
 .PHONY: db
 # run docker db container
@@ -89,6 +89,7 @@ hash:
 proto:
 	go mod vendor;
 	find vendor/gitlab.calendaria.team -name '*.proto' -exec sh -c 'f="{}"; d="third_party/api/$$(dirname "$$f" | awk -F/ "{print \$$(NF-1)\"/\"\$$NF}")"; mkdir -p "$$d"; rsync -a "$$f" "$$d"' \;
+	go mod tidy;
 
 .PHONY: api
 # generate api proto files
@@ -120,6 +121,15 @@ all:
 	make api;
 	make config;
 	make generate;
+	go mod tidy;
+
+.PHONY: total
+# generate and check all
+total:
+	make all;
+	make lint;
+	make test;
+	make run DIR=../cmd/app;
 
 .PHONY: hooks
 # install hooks
@@ -157,7 +167,6 @@ mock:
 	mockgen -source internal/data/tenants.go -destination internal/data/mock/tenants.go -package mock
 	mockgen -source internal/data/credentials.go -destination internal/data/mock/credentials.go -package mock
 	mockgen -source internal/data/otp.go -destination internal/data/mock/otp.go -package mock
-	mockgen -source internal/data/tenant_interface.go -destination internal/data/mock/tenant.go -package mock
 	mockgen -source internal/data/notifications_interface.go -destination internal/data/mock/notifications.go -package mock
 
 interfaces:
