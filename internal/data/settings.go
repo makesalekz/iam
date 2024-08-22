@@ -12,10 +12,10 @@ import (
 
 type SettingsData map[string]string
 
-// SettingsRepo
+// SettingsRepo.
 type SettingsRepo interface {
-	GetSettings(ctx context.Context, userId int64) (SettingsData, error)
-	UpdateSettings(ctx context.Context, userId int64, dto SettingsData) (SettingsData, error)
+	GetSettings(ctx context.Context, userID int64) (SettingsData, error)
+	UpdateSettings(ctx context.Context, userID int64, dto SettingsData) (SettingsData, error)
 }
 
 type settingsRepo struct {
@@ -29,8 +29,8 @@ func NewSettingsRepo(d *Data) SettingsRepo {
 	}
 }
 
-func (r *settingsRepo) GetSettings(ctx context.Context, userId int64) (SettingsData, error) {
-	settings, err := r.db.UserSettings.Query().Where(usersettings.UserID(userId)).All(ctx)
+func (r *settingsRepo) GetSettings(ctx context.Context, userID int64) (SettingsData, error) {
+	settings, err := r.db.UserSettings.Query().Where(usersettings.UserID(userID)).All(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -43,7 +43,7 @@ func (r *settingsRepo) GetSettings(ctx context.Context, userId int64) (SettingsD
 	return result, nil
 }
 
-func (r *settingsRepo) UpdateSettings(ctx context.Context, userId int64, dto SettingsData) (SettingsData, error) {
+func (r *settingsRepo) UpdateSettings(ctx context.Context, userID int64, dto SettingsData) (SettingsData, error) {
 	var settingsSettings enum.Settings
 	settingsAvailable := settingsSettings.Values()
 
@@ -54,7 +54,7 @@ func (r *settingsRepo) UpdateSettings(ctx context.Context, userId int64, dto Set
 			return nil, ent.CustomValidationError("SettingsUnavailable", "Unavailable setting: %s", setting)
 		}
 		builder := r.db.UserSettings.Create().
-			SetUserID(userId).
+			SetUserID(userID).
 			SetSetting(enum.Settings(setting)).
 			SetValue(value)
 
@@ -68,5 +68,5 @@ func (r *settingsRepo) UpdateSettings(ctx context.Context, userId int64, dto Set
 		return nil, err
 	}
 
-	return r.GetSettings(ctx, userId)
+	return r.GetSettings(ctx, userID)
 }
