@@ -2,12 +2,10 @@ package biz
 
 import (
 	"context"
-	"fmt"
 	"os"
 	"strconv"
 	"time"
 
-	"github.com/nyaruka/phonenumbers"
 	v1 "gitlab.calendaria.team/services/iam/api/iam/v1"
 	"gitlab.calendaria.team/services/iam/ent"
 	"gitlab.calendaria.team/services/iam/ent/enum"
@@ -19,7 +17,6 @@ import (
 
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/golang-jwt/jwt/v5"
-	"golang.org/x/exp/rand"
 )
 
 const (
@@ -27,10 +24,6 @@ const (
 	digits       = "0123456789"
 	debugOtpCode = "777333"
 
-	verifiablePhone   = "+77710012030"
-	verifiableOtpCode = "667423"
-
-	DefaultRegion               = "KZ"
 	authOtpDuration             = time.Duration(5) * time.Minute
 	defaultAccessTokenDuration  = time.Duration(10) * time.Minute
 	defaultRefreshTokenDuration = time.Duration(30*24) * time.Hour
@@ -103,57 +96,35 @@ func NewAuthUsecase(
 	return uc, nil
 }
 
-func (uc *AuthUsecase) AuthUserByPhone(ctx context.Context, phone string, isRegistrationNeeded, isRegistration bool) (
+func (uc *AuthUsecase) AuthUserByPhone(ctx context.Context, dto *AuthPhoneDto) (
 	int64, error,
 ) {
-	phoneNumber, err := phonenumbers.Parse(phone, DefaultRegion)
-	if err != nil {
-		return 0, v1.ErrorInvalidPhoneNumber("parse error: %s", err.Error())
-	}
-	if !phonenumbers.IsValidNumber(phoneNumber) {
-		return 0, v1.ErrorInvalidPhoneNumber("invalid phone number: %s", phone)
-	}
-
-	phone = phonenumbers.Format(phoneNumber, phonenumbers.E164)
-
-	user, err := uc.usersRepo.GetUserByPhone(ctx, phone, true)
-	if err == nil && isRegistration {
+	user, err := uc.usersRepo.GetUserByPhone(ctx, dto.Phone, true)
+	if err == nil && dto.IsRegistration {
 		return 0, v1.ErrorUserAlreadyExist("phone already registered")
 	}
 
 	if err != nil {
 		if ent.IsNotFound(err) {
-			if isRegistrationNeeded {
+			if dto.IsRegistrationNeeded {
 				return 0, v1.ErrorUnauthorized("phone not registered")
 			}
 
-			user, err = uc.usersRepo.CreateUserWithPhone(ctx, phone)
+			user, err = uc.usersRepo.CreateUserWithPhone(ctx, dto.Phone)
 		}
 		if err != nil {
 			return 0, v1.ErrorDatabaseQuery("database error: %s", err.Error())
 		}
 	}
 
-	var code string
-	switch {
-	case phone == verifiablePhone:
-		// use fixed code for verifiable phone
-		code = verifiableOtpCode
-
-	case os.Getenv("DEBUG") != "":
-		// use fixed code in debug mode
-		code = debugOtpCode
-
-	default:
-		code = generateRandomNumber(otpLength)
-	}
-
-	otp, err := uc.otpRepo.CreateOneTimePassword(ctx, user.ID, enum.Phone, code, authOtpDuration)
+	code := dto.GenerateCode()
+	_, err = uc.otpRepo.CreateOneTimePassword(ctx, user.ID, enum.Phone, code, authOtpDuration)
 	if err != nil {
 		return 0, v1.ErrorDatabaseQuery("database error: %s", err.Error())
 	}
 
-	err = uc.notifications.PersonalSmsSender(ctx, phone, fmt.Sprintf("Calendaria: %s", otp.Code))
+	sms := dto.GetOtpMessage(code)
+	err = uc.notifications.PersonalSmsSender(ctx, dto.Phone, sms)
 	if err != nil {
 		uc.log.Errorf("notifications.PersonalSmsSender: %s", err.Error())
 	}
@@ -353,12 +324,4 @@ func userShortFromDto(user *ent.User) *v1.UserShort {
 	}
 
 	return replyUser
-}
-
-func generateRandomNumber(n int) string {
-	result := make([]byte, n)
-	for i := range result {
-		result[i] = digits[rand.Int63()%int64(len(digits))]
-	}
-	return string(result)
 }

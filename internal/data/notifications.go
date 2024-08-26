@@ -9,6 +9,13 @@ import (
 	"gitlab.calendaria.team/services/utils/v2/dialer"
 )
 
+// INotificationsRemote ...
+type INotificationsRemote interface {
+	GetSenderClient(ctx context.Context) (notifications_v1.SenderClient, error)
+	PersonalSmsSender(ctx context.Context, phone, message string) error
+	PersonalEmailSender(ctx context.Context, email, emailType, language string, data map[string]string) error
+}
+
 type NotificationsRemote struct {
 	dialer dialer.IDialer
 }

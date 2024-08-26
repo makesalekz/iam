@@ -16,6 +16,12 @@ import (
 	"gitlab.calendaria.team/services/utils/v2/zap"
 )
 
+const (
+	calendariaAppID = "calendaria"
+	smsCode         = "777333"
+	smsText         = "AIgenda Kod: 777333"
+)
+
 func TestAuthSuccess(t *testing.T) {
 	logger := zap.NewZapLogger(true)
 	ctrl := gomock.NewController(t)
@@ -37,7 +43,7 @@ func TestAuthSuccess(t *testing.T) {
 	phone := "+77777777777"
 	var userID int64 = 123
 	otp := &ent.OneTimePassword{
-		Code: "777333",
+		Code: smsCode,
 	}
 
 	expectedUser := &ent.User{
@@ -45,10 +51,13 @@ func TestAuthSuccess(t *testing.T) {
 	}
 
 	usersRepo.EXPECT().GetUserByPhone(gomock.Any(), phone, true).Return(expectedUser, nil)
-	otpRepo.EXPECT().CreateOneTimePassword(gomock.Any(), userID, enum.Phone, "777333", 5*time.Minute).Return(otp, nil)
-	notificationsRemote.EXPECT().PersonalSmsSender(gomock.Any(), phone, "Calendaria: 777333").Return(nil)
+	otpRepo.EXPECT().CreateOneTimePassword(gomock.Any(), userID, enum.Phone, smsCode, 5*time.Minute).Return(otp, nil)
+	notificationsRemote.EXPECT().PersonalSmsSender(gomock.Any(), phone, smsText).Return(nil)
 
-	_, err = authUseCase.AuthUserByPhone(ctx, phone, false, false)
+	_, err = authUseCase.AuthUserByPhone(ctx, &biz.AuthPhoneDto{
+		AppID: calendariaAppID,
+		Phone: phone,
+	})
 	require.NoError(t, err)
 }
 
@@ -73,7 +82,7 @@ func TestUserNotExist(t *testing.T) {
 	phone := "+77777777777"
 	var userID int64 = 123
 	otp := &ent.OneTimePassword{
-		Code: "777333",
+		Code: smsCode,
 	}
 
 	expectedUser := &ent.User{
@@ -82,10 +91,13 @@ func TestUserNotExist(t *testing.T) {
 
 	usersRepo.EXPECT().GetUserByPhone(gomock.Any(), phone, true).Return(nil, &ent.NotFoundError{})
 	usersRepo.EXPECT().CreateUserWithPhone(gomock.Any(), phone).Return(expectedUser, nil)
-	otpRepo.EXPECT().CreateOneTimePassword(gomock.Any(), userID, enum.Phone, "777333", 5*time.Minute).Return(otp, nil)
-	notificationsRemote.EXPECT().PersonalSmsSender(gomock.Any(), phone, "Calendaria: 777333").Return(nil)
+	otpRepo.EXPECT().CreateOneTimePassword(gomock.Any(), userID, enum.Phone, smsCode, 5*time.Minute).Return(otp, nil)
+	notificationsRemote.EXPECT().PersonalSmsSender(gomock.Any(), phone, smsText).Return(nil)
 
-	_, err = authUseCase.AuthUserByPhone(ctx, phone, false, false)
+	_, err = authUseCase.AuthUserByPhone(ctx, &biz.AuthPhoneDto{
+		AppID: calendariaAppID,
+		Phone: phone,
+	})
 	require.NoError(t, err)
 }
 
@@ -110,7 +122,11 @@ func TestUserRegistrationRequired(t *testing.T) {
 	phone := "+77777777777"
 
 	usersRepo.EXPECT().GetUserByPhone(gomock.Any(), phone, true).Return(nil, &ent.NotFoundError{})
-	_, err = authUseCase.AuthUserByPhone(ctx, phone, true, false)
+	_, err = authUseCase.AuthUserByPhone(ctx, &biz.AuthPhoneDto{
+		AppID:                calendariaAppID,
+		Phone:                phone,
+		IsRegistrationNeeded: true,
+	})
 	require.Error(t, err)
 }
 
@@ -136,7 +152,7 @@ func TestUserRegistration(t *testing.T) {
 
 	var userID int64 = 123
 	otp := &ent.OneTimePassword{
-		Code: "777333",
+		Code: smsCode,
 	}
 
 	expectedUser := &ent.User{
@@ -145,9 +161,13 @@ func TestUserRegistration(t *testing.T) {
 
 	usersRepo.EXPECT().GetUserByPhone(gomock.Any(), phone, true).Return(nil, &ent.NotFoundError{})
 	usersRepo.EXPECT().CreateUserWithPhone(gomock.Any(), phone).Return(expectedUser, nil)
-	otpRepo.EXPECT().CreateOneTimePassword(gomock.Any(), userID, enum.Phone, "777333", 5*time.Minute).Return(otp, nil)
-	notificationsRemote.EXPECT().PersonalSmsSender(gomock.Any(), phone, "Calendaria: 777333").Return(nil)
+	otpRepo.EXPECT().CreateOneTimePassword(gomock.Any(), userID, enum.Phone, smsCode, 5*time.Minute).Return(otp, nil)
+	notificationsRemote.EXPECT().PersonalSmsSender(gomock.Any(), phone, smsText).Return(nil)
 
-	_, err = authUseCase.AuthUserByPhone(ctx, phone, false, true)
+	_, err = authUseCase.AuthUserByPhone(ctx, &biz.AuthPhoneDto{
+		AppID:          calendariaAppID,
+		Phone:          phone,
+		IsRegistration: true,
+	})
 	require.NoError(t, err)
 }

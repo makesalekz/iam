@@ -26,6 +26,7 @@ services:
     depends_on:
       - db
     environment:
+      - BRAND_NAME="Calendaria"
       - DEBUG=1
       - TOKEN_DURATION=2h
       - REFRESH_TOKEN_DURATION=30d
