@@ -6,6 +6,9 @@ include:
 lint dev:
   extends: .lint-dev
 
+test dev:
+  extends: .test-dev
+
 build dev:
   extends: .build-dev
 
