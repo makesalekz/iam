@@ -123,7 +123,7 @@ func (uc *AuthUsecase) AuthUserByPhone(ctx context.Context, dto *AuthPhoneDto) (
 		return 0, v1.ErrorDatabaseQuery("database error: %s", err.Error())
 	}
 
-	sms := dto.GetOtpMessage(code)
+	sms := dto.GetOtpMessage()
 	err = uc.notifications.PersonalSmsSender(ctx, dto.Phone, sms)
 	if err != nil {
 		uc.log.Errorf("notifications.PersonalSmsSender: %s", err.Error())

@@ -62,7 +62,7 @@ func (dto *AuthPhoneDto) GenerateCode() string {
 	return dto.code
 }
 
-func (dto *AuthPhoneDto) GetOtpMessage(code string) string {
+func (dto *AuthPhoneDto) GetOtpMessage() string {
 	sms := fmt.Sprintf("%s Kod: %s", dto.AppID.BrandName(), dto.code)
 
 	if dto.AppSignature != "" {
@@ -75,6 +75,7 @@ func (dto *AuthPhoneDto) GetOtpMessage(code string) string {
 func generateRandomNumber(n int) string {
 	result := make([]byte, n)
 	for i := range result {
+		//nolint:gosec // we don't need cryptographically secure random numbers here
 		result[i] = digits[rand.Int63()%int64(len(digits))]
 	}
 	return string(result)
