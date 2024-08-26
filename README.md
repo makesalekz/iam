@@ -103,7 +103,3 @@ secret/data/app/global/gwebcredentials = {{
   }
 }}
 ```
-
-## JWT token for your services
-
-To get JWT token for any services, use API `/v1/auth/supercode` with code `sup3rcaL2033`
