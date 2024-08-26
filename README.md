@@ -1,4 +1,4 @@
-# iam
+# IAM
 
 ## Proto files
 
