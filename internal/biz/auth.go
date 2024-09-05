@@ -33,12 +33,12 @@ const (
 // GreeterUsecase is a Greeter usecase.
 type AuthUsecase struct {
 	log                  *log.Helper
-	queue                u_nats.IQueueManager
 	jwt                  u_jwt.IJwtProcessor
-	usersRepo            data.UsersRepo
-	otpRepo              data.OtpRepo
+	queue                u_nats.IQueueManager
 	tenants              data.ITenantsRemote
 	notifications        data.INotificationsRemote
+	usersRepo            data.UsersRepo
+	otpRepo              data.OtpRepo
 	accessTokenDuration  time.Duration
 	refreshTokenDuration time.Duration
 }
@@ -47,20 +47,20 @@ type AuthUsecase struct {
 func NewAuthUsecase(
 	logger log.Logger,
 	jwt u_jwt.IJwtProcessor,
-	usersRepo data.UsersRepo,
-	otpRepo data.OtpRepo,
 	queue u_nats.IQueueManager,
 	tenants data.ITenantsRemote,
 	notifications data.INotificationsRemote,
+	usersRepo data.UsersRepo,
+	otpRepo data.OtpRepo,
 ) (*AuthUsecase, error) {
 	uc := &AuthUsecase{
 		log:           log.NewHelper(logger),
 		jwt:           jwt,
-		usersRepo:     usersRepo,
-		otpRepo:       otpRepo,
 		queue:         queue,
 		tenants:       tenants,
 		notifications: notifications,
+		usersRepo:     usersRepo,
+		otpRepo:       otpRepo,
 	}
 
 	// set default access token duration

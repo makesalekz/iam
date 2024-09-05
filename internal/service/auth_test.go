@@ -5,6 +5,9 @@ import (
 	"testing"
 	"time"
 
+	v1 "gitlab.calendaria.team/services/iam/api/iam/v1"
+	tenants_v1 "gitlab.calendaria.team/services/tenants/api/tenants/v1"
+
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/require"
 	"gitlab.calendaria.team/services/iam/ent"
@@ -35,7 +38,7 @@ func TestAuthSuccess(t *testing.T) {
 	jwt := jwt_mock.NewMockIJwtProcessor(ctrl)
 	queue := nats_mock.NewMockIQueueManager(ctrl)
 
-	authUseCase, err := biz.NewAuthUsecase(logger, jwt, usersRepo, otpRepo, queue, tenantRemote, notificationsRemote)
+	authUseCase, err := biz.NewAuthUsecase(logger, jwt, queue, tenantRemote, notificationsRemote, usersRepo, otpRepo)
 	require.NoError(t, err)
 
 	ctx := context.Background()
@@ -74,7 +77,7 @@ func TestUserNotExist(t *testing.T) {
 	jwt := jwt_mock.NewMockIJwtProcessor(ctrl)
 	queue := nats_mock.NewMockIQueueManager(ctrl)
 
-	authUseCase, err := biz.NewAuthUsecase(logger, jwt, usersRepo, otpRepo, queue, tenantRemote, notificationsRemote)
+	authUseCase, err := biz.NewAuthUsecase(logger, jwt, queue, tenantRemote, notificationsRemote, usersRepo, otpRepo)
 	require.NoError(t, err)
 
 	ctx := context.Background()
@@ -114,7 +117,7 @@ func TestUserRegistrationRequired(t *testing.T) {
 	jwt := jwt_mock.NewMockIJwtProcessor(ctrl)
 	queue := nats_mock.NewMockIQueueManager(ctrl)
 
-	authUseCase, err := biz.NewAuthUsecase(logger, jwt, usersRepo, otpRepo, queue, tenantRemote, notificationsRemote)
+	authUseCase, err := biz.NewAuthUsecase(logger, jwt, queue, tenantRemote, notificationsRemote, usersRepo, otpRepo)
 	require.NoError(t, err)
 
 	ctx := context.Background()
@@ -143,7 +146,7 @@ func TestUserRegistration(t *testing.T) {
 	jwt := jwt_mock.NewMockIJwtProcessor(ctrl)
 	queue := nats_mock.NewMockIQueueManager(ctrl)
 
-	authUseCase, err := biz.NewAuthUsecase(logger, jwt, usersRepo, otpRepo, queue, tenantRemote, notificationsRemote)
+	authUseCase, err := biz.NewAuthUsecase(logger, jwt, queue, tenantRemote, notificationsRemote, usersRepo, otpRepo)
 	require.NoError(t, err)
 
 	ctx := context.Background()
@@ -170,4 +173,49 @@ func TestUserRegistration(t *testing.T) {
 		IsRegistration: true,
 	})
 	require.NoError(t, err)
+}
+
+func TestAuthService_RefreshToken(t *testing.T) {
+	ctx, repo, authUseCase := createAuthService(t)
+	ids := getIDs()
+
+	// create request
+	req := &v1.TenantRequest{
+		TenantId: ids.tenantID,
+	}
+
+	// Success Case 1: Refresh token for active user
+	{
+		// create user
+		user := &ent.User{
+			ID:   ids.actorID,
+			Name: "tester",
+		}
+		repo.usersRepo.EXPECT().GetUserByID(ctx, user.ID, false).Return(user, nil)
+
+		// tenant identities reply
+		tenantIdentities := &tenants_v1.GetMemberIdentitiesReply{
+			Member: "member1",
+			Groups: []string{"group1", "group2"},
+		}
+		repo.tenantsRemote.EXPECT().GetMemberIdentities(ctx, req.GetTenantId(), user.ID).Return(tenantIdentities, nil)
+
+		// jwt secret
+		secret := []byte{1}
+		repo.jwt.EXPECT().GetSecret().Return(secret).AnyTimes()
+
+		result, err := authUseCase.RefreshToken(ctx, req)
+		require.NoError(t, err)
+		require.NotNil(t, result)
+	}
+
+	// Error Case 1: Refresh token for inactive or non-existing user
+	{
+		repo.usersRepo.EXPECT().GetUserByID(ctx, ids.actorID, false).Return(nil, &ent.NotFoundError{})
+
+		result, err := authUseCase.RefreshToken(ctx, req)
+		require.Error(t, err)
+		require.Nil(t, result)
+		require.Equal(t, v1.ErrorUserNotFound("user not found"), err)
+	}
 }

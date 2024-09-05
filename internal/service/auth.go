@@ -92,16 +92,16 @@ func (s *AuthService) RefreshToken(ctx context.Context, req *v1.TenantRequest) (
 		return nil, v1.ErrorEmptyActorId("empty actor id")
 	}
 
-	var err error
+	// get/check user
+	user, err := s.au.GetUserByID(ctx, actorID, false)
+	if err != nil {
+		return nil, err
+	}
+
 	var accessToken string
 	if req.GetTenantId() != 0 {
 		accessToken, err = s.au.GenerateTenantToken(ctx, req.GetTenantId(), actorID)
 	} else {
-		user, err2 := s.au.GetUserByID(ctx, actorID, false)
-		if err2 != nil {
-			return nil, err2
-		}
-
 		accessToken, err = s.au.GenerateAccessToken(ctx, user)
 	}
 	if err != nil {
