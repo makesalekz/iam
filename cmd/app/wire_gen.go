@@ -37,39 +37,37 @@ func wireApp(bootstrap *conf.Bootstrap, logger log.Logger) (*kratos.App, func(),
 	if err != nil {
 		return nil, nil, err
 	}
-	dataData, cleanup, err := data.NewData(bootstrap, configConfig, logger)
+	encodedConn, cleanup, err := data.NewNatsClient(bootstrap)
 	if err != nil {
-		return nil, nil, err
-	}
-	usersRepo := data.NewUsersRepo(dataData)
-	otpRepo := data.NewOtpRepo(dataData)
-	encodedConn, cleanup2, err := data.NewNatsClient(bootstrap)
-	if err != nil {
-		cleanup()
 		return nil, nil, err
 	}
 	iQueueManager := nats.NewQueueManager(configConfig, encodedConn, logger)
 	tracer := tracing.NewTracer(configConfig)
 	iDialerManager, err := dialer.NewServiceDialerManager(configConfig, tracer, iJwtProcessor)
 	if err != nil {
-		cleanup2()
 		cleanup()
 		return nil, nil, err
 	}
-	iTenantsRemote, cleanup3, err := data.NewTenantsRemote(bootstrap, iDialerManager)
+	iTenantsRemote, cleanup2, err := data.NewTenantsRemote(bootstrap, iDialerManager)
+	if err != nil {
+		cleanup()
+		return nil, nil, err
+	}
+			iNotificationsRemote, err := data.NewNotificationsRemote(bootstrap, iDialerManager)
 	if err != nil {
 		cleanup2()
 		cleanup()
 		return nil, nil, err
 	}
-	iNotificationsRemote, err := data.NewNotificationsRemote(bootstrap, iDialerManager)
+	dataData, cleanup3, err := data.NewData(bootstrap, configConfig, logger)
 	if err != nil {
-		cleanup3()
 		cleanup2()
 		cleanup()
 		return nil, nil, err
 	}
-	authUsecase, err := biz.NewAuthUsecase(logger, iJwtProcessor, usersRepo, otpRepo, iQueueManager, iTenantsRemote, iNotificationsRemote)
+	usersRepo := data.NewUsersRepo(dataData)
+	otpRepo := data.NewOtpRepo(dataData)
+	authUsecase, err := biz.NewAuthUsecase(logger, iJwtProcessor, iQueueManager, iTenantsRemote, iNotificationsRemote, usersRepo, otpRepo)
 	if err != nil {
 		cleanup3()
 		cleanup2()
