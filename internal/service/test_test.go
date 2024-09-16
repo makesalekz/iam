@@ -1,4 +1,3 @@
-
 package service_test
 
 import (

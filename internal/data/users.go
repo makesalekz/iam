@@ -242,7 +242,7 @@ func (r *usersRepo) PhoneVerified(ctx context.Context, userID int64) error {
 			user.PhoneVerified(false),
 		).
 		SetPhoneVerified(true).
-		SetUsername(fmt.Sprintf("user%v", userID)).
+		SetUsername(fmt.Sprintf("user%d", userID)).
 		Exec(ctx)
 }
 
@@ -252,7 +252,7 @@ func (r *usersRepo) EmailVerified(ctx context.Context, userID int64) error {
 			user.EmailVerified(false),
 		).
 		SetEmailVerified(true).
-		SetUsername(fmt.Sprintf("user%v", userID)).
+		SetUsername(fmt.Sprintf("user%d", userID)).
 		Exec(ctx)
 }
 
