@@ -98,7 +98,7 @@ func (r *usersRepo) ScheduleUserDeletion(ctx context.Context, id int64, deleteDu
 }
 
 func (r *usersRepo) GetUsersToDelete(ctx context.Context) ([]*ent.User, error) {
-	return r.db.User.Query().Where(user.RemoveAtLTE(time.Now())).All(ctx)
+	return r.db.User.Query().Where(user.RemoveAtLTE(time.Now())).All(mixins.SkipSoftRemove(ctx))
 }
 
 func (r *usersRepo) DeleteUsers(ctx context.Context, usersIDs []int64) error {
