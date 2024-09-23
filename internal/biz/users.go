@@ -3,6 +3,7 @@ package biz
 import (
 	"context"
 	"errors"
+	"os"
 	"sync"
 	"time"
 
@@ -48,7 +49,8 @@ const (
 	EMAIL    ConstraintKey = "users_email_key"
 	PHONE    ConstraintKey = "users_phone_key"
 
-	DeleteDuration = time.Duration(30*24) * time.Hour
+	DeleteDuration        = time.Duration(30*24) * time.Hour
+	DeleteDurationInDebug = time.Duration(5) * time.Minute
 
 	phoneMask  = 0b001
 	emailMask  = 0b010
@@ -132,7 +134,11 @@ func (uc *UsersUsecase) DeleteUserData(ctx context.Context) {
 		return
 	}
 
-	usersIDs := make([]int64, 0, len(users))
+	if len(users) == 0 {
+		return
+	}
+
+	usersIDs := make([]int64, len(users))
 	avatars := make([]string, 0, len(users))
 	for i, user := range users {
 		usersIDs[i] = user.ID
@@ -277,7 +283,12 @@ func (uc *UsersUsecase) UpdateUserProfile(
 }
 
 func (uc *UsersUsecase) ScheduleUserDeletion(ctx context.Context, actorID int64) error {
-	err := uc.usersRepo.ScheduleUserDeletion(ctx, actorID, DeleteDuration)
+	deleteDuration := DeleteDuration
+	if os.Getenv("DEBUG") != "" {
+		deleteDuration = DeleteDurationInDebug
+	}
+
+	err := uc.usersRepo.ScheduleUserDeletion(ctx, actorID, deleteDuration)
 	if err != nil {
 		return v1.ErrorDatabaseQuery("database error: %s", err.Error())
 	}

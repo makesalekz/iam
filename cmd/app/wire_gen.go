@@ -53,7 +53,7 @@ func wireApp(bootstrap *conf.Bootstrap, logger log.Logger) (*kratos.App, func(),
 		cleanup()
 		return nil, nil, err
 	}
-			iNotificationsRemote, err := data.NewNotificationsRemote(bootstrap, iDialerManager)
+	iNotificationsRemote, err := data.NewNotificationsRemote(bootstrap, iDialerManager)
 	if err != nil {
 		cleanup2()
 		cleanup()
@@ -162,7 +162,8 @@ func wireApp(bootstrap *conf.Bootstrap, logger log.Logger) (*kratos.App, func(),
 	credentialsService := service.NewCredentialsService(logger, credentialsUsecase)
 	grpcServer := server.NewGRPCServer(bootstrap, iJwtProcessor, authService, usersService, privacyService, settingsService, credentialsService, tracer)
 	httpServer := server.NewHTTPServer(bootstrap)
-	app := newApp(logger, configConfig, grpcServer, httpServer)
+	cronServer := server.NewCronServer(logger, usersUsecase)
+	app := newApp(logger, configConfig, grpcServer, httpServer, cronServer)
 	return app, func() {
 		cleanup7()
 		cleanup6()

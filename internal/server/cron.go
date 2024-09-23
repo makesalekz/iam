@@ -40,7 +40,7 @@ func (cs *CronServer) deleteUserData(usersUsecase *biz.UsersUsecase) {
 	frequency := "@midnight"
 
 	if os.Getenv("DEBUG") != "" {
-		frequency = "@every 30m"
+		frequency = "@every 3m"
 	}
 
 	entryID, err := cs.cron.AddFunc(frequency, func() {
