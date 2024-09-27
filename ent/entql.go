@@ -50,6 +50,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 		Type: "User",
 		Fields: map[string]*sqlgraph.FieldSpec{
 			user.FieldDeletedAt:       {Type: field.TypeTime, Column: user.FieldDeletedAt},
+			user.FieldRemoveAt:        {Type: field.TypeTime, Column: user.FieldRemoveAt},
 			user.FieldPhone:           {Type: field.TypeString, Column: user.FieldPhone},
 			user.FieldEmail:           {Type: field.TypeString, Column: user.FieldEmail},
 			user.FieldUsername:        {Type: field.TypeString, Column: user.FieldUsername},
@@ -309,6 +310,11 @@ func (f *UserFilter) WhereID(p entql.Int64P) {
 // WhereDeletedAt applies the entql time.Time predicate on the deleted_at field.
 func (f *UserFilter) WhereDeletedAt(p entql.TimeP) {
 	f.Where(p.Field(user.FieldDeletedAt))
+}
+
+// WhereRemoveAt applies the entql time.Time predicate on the remove_at field.
+func (f *UserFilter) WhereRemoveAt(p entql.TimeP) {
+	f.Where(p.Field(user.FieldRemoveAt))
 }
 
 // WherePhone applies the entql string predicate on the phone field.

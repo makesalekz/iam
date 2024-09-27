@@ -3,8 +3,14 @@
 UPDATED_FILES=$(git diff --name-only origin/main . | grep "internal/.*\.go$")
 UPDATED_DIRS=$(git diff --dirstat=files,0 origin/main . | grep internal | sed -En "s/^[ 0-9.]+\% //p")
 
+DIRS_TO_IGNORE="(.*mock.*)|(.*ent.*)"
+
 for dir in $UPDATED_DIRS
 do
+  if [[ $dir =~ $DIRS_TO_IGNORE ]]; then
+    continue
+  fi
+
   FILES_TO_LINT=$(grep "$dir" <<< "$UPDATED_FILES"  | tr '\n' ' ')
   FILES_IN_DIR=$(ls $dir)
   FILES_TO_EXCLUDE=""

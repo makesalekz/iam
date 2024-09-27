@@ -38,61 +38,61 @@ func (m *MockCredentialsRepo) EXPECT() *MockCredentialsRepoMockRecorder {
 }
 
 // CreateCredential mocks base method.
-func (m *MockCredentialsRepo) CreateCredential(ctx context.Context, actorId int64, token *oauth2.Token) (*ent.UserCredentials, error) {
+func (m *MockCredentialsRepo) CreateCredential(ctx context.Context, actorID int64, token *oauth2.Token) (*ent.UserCredentials, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "CreateCredential", ctx, actorId, token)
+	ret := m.ctrl.Call(m, "CreateCredential", ctx, actorID, token)
 	ret0, _ := ret[0].(*ent.UserCredentials)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // CreateCredential indicates an expected call of CreateCredential.
-func (mr *MockCredentialsRepoMockRecorder) CreateCredential(ctx, actorId, token interface{}) *gomock.Call {
+func (mr *MockCredentialsRepoMockRecorder) CreateCredential(ctx, actorID, token interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateCredential", reflect.TypeOf((*MockCredentialsRepo)(nil).CreateCredential), ctx, actorId, token)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateCredential", reflect.TypeOf((*MockCredentialsRepo)(nil).CreateCredential), ctx, actorID, token)
 }
 
 // DeleteCredential mocks base method.
-func (m *MockCredentialsRepo) DeleteCredential(ctx context.Context, userId, credentialId int64) (int, error) {
+func (m *MockCredentialsRepo) DeleteCredential(ctx context.Context, userID, credentialID int64) (int, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "DeleteCredential", ctx, userId, credentialId)
+	ret := m.ctrl.Call(m, "DeleteCredential", ctx, userID, credentialID)
 	ret0, _ := ret[0].(int)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // DeleteCredential indicates an expected call of DeleteCredential.
-func (mr *MockCredentialsRepoMockRecorder) DeleteCredential(ctx, userId, credentialId interface{}) *gomock.Call {
+func (mr *MockCredentialsRepoMockRecorder) DeleteCredential(ctx, userID, credentialID interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteCredential", reflect.TypeOf((*MockCredentialsRepo)(nil).DeleteCredential), ctx, userId, credentialId)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteCredential", reflect.TypeOf((*MockCredentialsRepo)(nil).DeleteCredential), ctx, userID, credentialID)
 }
 
 // GetCredential mocks base method.
-func (m *MockCredentialsRepo) GetCredential(ctx context.Context, userId int64, provider struc.Provider) (*ent.UserCredentials, error) {
+func (m *MockCredentialsRepo) GetCredential(ctx context.Context, userID int64, provider struc.Provider) (*ent.UserCredentials, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetCredential", ctx, userId, provider)
+	ret := m.ctrl.Call(m, "GetCredential", ctx, userID, provider)
 	ret0, _ := ret[0].(*ent.UserCredentials)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // GetCredential indicates an expected call of GetCredential.
-func (mr *MockCredentialsRepoMockRecorder) GetCredential(ctx, userId, provider interface{}) *gomock.Call {
+func (mr *MockCredentialsRepoMockRecorder) GetCredential(ctx, userID, provider interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetCredential", reflect.TypeOf((*MockCredentialsRepo)(nil).GetCredential), ctx, userId, provider)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetCredential", reflect.TypeOf((*MockCredentialsRepo)(nil).GetCredential), ctx, userID, provider)
 }
 
 // ListCredentials mocks base method.
-func (m *MockCredentialsRepo) ListCredentials(ctx context.Context, userId int64) ([]*ent.UserCredentials, error) {
+func (m *MockCredentialsRepo) ListCredentials(ctx context.Context, userID int64) ([]*ent.UserCredentials, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "ListCredentials", ctx, userId)
+	ret := m.ctrl.Call(m, "ListCredentials", ctx, userID)
 	ret0, _ := ret[0].([]*ent.UserCredentials)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // ListCredentials indicates an expected call of ListCredentials.
-func (mr *MockCredentialsRepoMockRecorder) ListCredentials(ctx, userId interface{}) *gomock.Call {
+func (mr *MockCredentialsRepoMockRecorder) ListCredentials(ctx, userID interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListCredentials", reflect.TypeOf((*MockCredentialsRepo)(nil).ListCredentials), ctx, userId)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListCredentials", reflect.TypeOf((*MockCredentialsRepo)(nil).ListCredentials), ctx, userID)
 }

@@ -6,6 +6,7 @@ import (
 	v1 "gitlab.calendaria.team/services/iam/api/iam/v1"
 	"gitlab.calendaria.team/services/iam/internal/biz"
 	"gitlab.calendaria.team/services/utils/v2/auth"
+	"gitlab.calendaria.team/services/utils/v2/struc"
 )
 
 type AuthService struct {
@@ -23,7 +24,23 @@ func NewAuthService(
 }
 
 func (s *AuthService) AuthByPhone(ctx context.Context, req *v1.AuthByPhoneRequest) (*v1.AuthByPhoneReply, error) {
-	userID, err := s.au.AuthUserByPhone(ctx, req.GetPhone(), req.GetIsRegistrationNeeded(), req.GetIsRegistration())
+	appID := auth.GetAppIdFromContext(ctx)
+	if appID == "" {
+		return nil, v1.ErrorEmptyAppId("empty app id")
+	}
+
+	dto := &biz.AuthPhoneDto{
+		AppID:                struc.ApplicationID(appID),
+		Phone:                req.GetPhone(),
+		IsRegistrationNeeded: req.GetIsRegistrationNeeded(),
+		IsRegistration:       req.GetIsRegistration(),
+		AppSignature:         req.GetAppSignature(),
+	}
+	if err := dto.Validate(); err != nil {
+		return nil, err
+	}
+
+	userID, err := s.au.AuthUserByPhone(ctx, dto)
 	if err != nil {
 		return nil, err
 	}
@@ -43,7 +60,7 @@ func (s *AuthService) AuthByEmail(ctx context.Context, req *v1.AuthByEmailReques
 }
 
 func (s *AuthService) AuthByCode(ctx context.Context, req *v1.AuthByCodeRequest) (*v1.TokenReply, error) {
-	user, err := s.au.GetUserByID(ctx, req.GetUserId())
+	user, err := s.au.GetUserByID(ctx, req.GetUserId(), true)
 	if err != nil {
 		return nil, err
 	}
@@ -75,16 +92,16 @@ func (s *AuthService) RefreshToken(ctx context.Context, req *v1.TenantRequest) (
 		return nil, v1.ErrorEmptyActorId("empty actor id")
 	}
 
-	var err error
+	// get/check user
+	user, err := s.au.GetUserByID(ctx, actorID, false)
+	if err != nil {
+		return nil, err
+	}
+
 	var accessToken string
 	if req.GetTenantId() != 0 {
 		accessToken, err = s.au.GenerateTenantToken(ctx, req.GetTenantId(), actorID)
 	} else {
-		user, err2 := s.au.GetUserByID(ctx, actorID)
-		if err2 != nil {
-			return nil, err2
-		}
-
 		accessToken, err = s.au.GenerateAccessToken(ctx, user)
 	}
 	if err != nil {

@@ -34,8 +34,8 @@ func NewCredentialsUsecase(
 	return &CredentialsUsecase{
 		config:          config,
 		log:             log.NewHelper(logger),
-		queue:           queue,
 		jwt:             jwt,
+		queue:           queue,
 		credentialsRepo: credentialsRepo,
 	}, nil
 }
@@ -76,7 +76,9 @@ func (uc *CredentialsUsecase) AuthByGoogle(ctx context.Context, actorID int64, a
 }
 
 func (uc *CredentialsUsecase) GetCredential(
-	ctx context.Context, actorID int64, provider u_struc.Provider,
+	ctx context.Context,
+	actorID int64,
+	provider u_struc.Provider,
 ) (*ent.UserCredentials, error) {
 	return uc.credentialsRepo.GetCredential(ctx, actorID, provider)
 }

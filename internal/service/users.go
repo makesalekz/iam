@@ -12,7 +12,6 @@ import (
 	v1 "gitlab.calendaria.team/services/iam/api/iam/v1"
 	"gitlab.calendaria.team/services/iam/internal/biz"
 	"gitlab.calendaria.team/services/iam/internal/data"
-	tenants_v1 "gitlab.calendaria.team/services/tenants/api/tenants/v1"
 	utils_v1 "gitlab.calendaria.team/services/utils/api/utils/v1"
 	"gitlab.calendaria.team/services/utils/v2/auth"
 )
@@ -52,7 +51,7 @@ func validUsername(actorID int64, username string) bool {
 	return re.MatchString(username)
 }
 
-func (s *UsersService) GetOwnProfile(ctx context.Context, req *utils_v1.EmptyRequest) (*v1.UserFullReply, error) {
+func (s *UsersService) GetOwnProfile(ctx context.Context, _ *utils_v1.EmptyRequest) (*v1.UserFullReply, error) {
 	actorID := auth.GetActorIdFromContext(ctx)
 	if actorID == 0 {
 		return nil, v1.ErrorEmptyActorId("empty actor id")
@@ -82,9 +81,10 @@ func (s *UsersService) GetOwnProfile(ctx context.Context, req *utils_v1.EmptyReq
 	return &result, nil
 }
 
-func (s *UsersService) UpdateOwnProfile(ctx context.Context, req *v1.UpdateOwnProfileRequest) (
-	*v1.UserFullReply, error,
-) {
+func (s *UsersService) UpdateOwnProfile(
+	ctx context.Context,
+	req *v1.UpdateOwnProfileRequest,
+) (*v1.UserFullReply, error) {
 	actorID := auth.GetActorIdFromContext(ctx)
 	if actorID == 0 {
 		return nil, v1.ErrorEmptyActorId("empty actor id")
@@ -138,10 +138,8 @@ func (s *UsersService) UpdateOwnProfile(ctx context.Context, req *v1.UpdateOwnPr
 	result := v1.UserFullReply{User: userItemToV1User(user)}
 
 	if req.GetWithTenants() {
-		var tenants []*tenants_v1.Tenant
-
-		tenants, err = s.uc.GetUserTenants(ctx)
-		if err == nil {
+		tenants, err2 := s.uc.GetUserTenants(ctx)
+		if err2 == nil {
 			resultTenants := make([]*v1.TenantShort, len(tenants))
 			for i, tenant := range tenants {
 				resultTenants[i] = &v1.TenantShort{
@@ -151,21 +149,20 @@ func (s *UsersService) UpdateOwnProfile(ctx context.Context, req *v1.UpdateOwnPr
 			}
 			result.Tenants = resultTenants
 		} else {
-			s.log.Error(err.Error())
+			s.log.Error(err2.Error())
 		}
 	}
 
 	return &result, nil
 }
 
-func (s *UsersService) DeleteOwnProfile(ctx context.Context, req *utils_v1.EmptyRequest) (*utils_v1.EmptyReply, error) {
+func (s *UsersService) DeleteOwnProfile(ctx context.Context, _ *utils_v1.EmptyRequest) (*utils_v1.EmptyReply, error) {
 	actorID := auth.GetActorIdFromContext(ctx)
 	if actorID == 0 {
 		return nil, v1.ErrorEmptyActorId("empty actor id")
 	}
 
-	// TODO мягко удалить или "пофиксить" все связанные сущности
-	err := s.uc.DeleteUser(ctx, actorID)
+	err := s.uc.ScheduleUserDeletion(ctx, actorID)
 	if err != nil {
 		return nil, err
 	}
@@ -214,8 +211,6 @@ func (s *UsersService) ListUsers(ctx context.Context, req *v1.ListUsersRequest) 
 }
 
 func (s *UsersService) GetUsers(ctx context.Context, req *v1.GetUsersRequest) (*v1.UsersReply, error) {
-	actorID := auth.GetActorIdFromContext(ctx) // TODO: remove deprecated
-
 	filter := data.GetUsersFilterDto{
 		UsersIDs:      req.GetIds(),
 		Phones:        req.GetPhones(),
@@ -224,7 +219,7 @@ func (s *UsersService) GetUsers(ctx context.Context, req *v1.GetUsersRequest) (*
 		WithVerified:  req.GetWithVerified(),
 	}
 
-	users, err := s.uc.GetUsers(ctx, actorID, filter)
+	users, err := s.uc.GetUsers(ctx, filter)
 	if err != nil {
 		return nil, err
 	}
@@ -246,9 +241,10 @@ func (s *UsersService) GetUserByFilter(ctx context.Context, req *v1.GetUserByFil
 	return &v1.UserReply{User: userItemToV1ShortUser(user)}, nil
 }
 
-func (s *UsersService) GetUserByFilterFull(ctx context.Context, req *v1.GetUserByFilterRequest) (
-	*v1.UserFullReply, error,
-) {
+func (s *UsersService) GetUserByFilterFull(
+	ctx context.Context,
+	req *v1.GetUserByFilterRequest,
+) (*v1.UserFullReply, error) {
 	filter := data.GetUserFilterDto{
 		Phone: req.GetSearch().GetPhone(),
 		Email: req.GetSearch().GetEmail(),

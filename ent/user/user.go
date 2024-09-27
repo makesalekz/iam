@@ -16,6 +16,8 @@ const (
 	FieldID = "id"
 	// FieldDeletedAt holds the string denoting the deleted_at field in the database.
 	FieldDeletedAt = "deleted_at"
+	// FieldRemoveAt holds the string denoting the remove_at field in the database.
+	FieldRemoveAt = "remove_at"
 	// FieldPhone holds the string denoting the phone field in the database.
 	FieldPhone = "phone"
 	// FieldEmail holds the string denoting the email field in the database.
@@ -54,6 +56,7 @@ const (
 var Columns = []string{
 	FieldID,
 	FieldDeletedAt,
+	FieldRemoveAt,
 	FieldPhone,
 	FieldEmail,
 	FieldUsername,
@@ -88,7 +91,7 @@ func ValidColumn(column string) bool {
 //	import _ "gitlab.calendaria.team/services/iam/ent/runtime"
 var (
 	Hooks        [1]ent.Hook
-	Interceptors [1]ent.Interceptor
+	Interceptors [2]ent.Interceptor
 	// UsernameValidator is a validator for the "username" field. It is called by the builders before save.
 	UsernameValidator func(string) error
 	// DefaultName holds the default value on creation for the "name" field.
@@ -122,6 +125,11 @@ func ByID(opts ...sql.OrderTermOption) OrderOption {
 // ByDeletedAt orders the results by the deleted_at field.
 func ByDeletedAt(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldDeletedAt, opts...).ToFunc()
+}
+
+// ByRemoveAt orders the results by the remove_at field.
+func ByRemoveAt(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldRemoveAt, opts...).ToFunc()
 }
 
 // ByPhone orders the results by the phone field.

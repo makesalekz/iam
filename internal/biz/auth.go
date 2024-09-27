@@ -2,17 +2,14 @@ package biz
 
 import (
 	"context"
-	"fmt"
 	"os"
 	"strconv"
 	"time"
 
-	"github.com/nyaruka/phonenumbers"
 	v1 "gitlab.calendaria.team/services/iam/api/iam/v1"
 	"gitlab.calendaria.team/services/iam/ent"
 	"gitlab.calendaria.team/services/iam/ent/enum"
 	"gitlab.calendaria.team/services/iam/internal/data"
-	tenants_v1 "gitlab.calendaria.team/services/tenants/api/tenants/v1"
 	u_nats "gitlab.calendaria.team/services/utils/v1/nats"
 	u_auth "gitlab.calendaria.team/services/utils/v2/auth"
 	u_jwt "gitlab.calendaria.team/services/utils/v2/jwt"
@@ -20,31 +17,28 @@ import (
 
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/golang-jwt/jwt/v5"
-	"golang.org/x/exp/rand"
 )
 
-const otpLength = 6
-const digits = "0123456789"
-const debugOtpCode = "777333"
+const (
+	otpLength    = 6
+	digits       = "0123456789"
+	debugOtpCode = "777333"
 
-const verifiablePhone = "+77710012030"
-const verifiableOtpCode = "667423"
-
-const DefaultRegion = "KZ"
-const authOtpDuration = time.Duration(5) * time.Minute
-const defaultAccessTokenDuration = time.Duration(10) * time.Minute
-const defaultRefreshTokenDuration = time.Duration(30*24) * time.Hour
-const personalWorkspace = "My Workspace"
+	authOtpDuration             = time.Duration(5) * time.Minute
+	defaultAccessTokenDuration  = time.Duration(10) * time.Minute
+	defaultRefreshTokenDuration = time.Duration(30*24) * time.Hour
+	personalWorkspace           = "My Workspace"
+)
 
 // GreeterUsecase is a Greeter usecase.
 type AuthUsecase struct {
 	log                  *log.Helper
-	queue                u_nats.IQueueManager
 	jwt                  u_jwt.IJwtProcessor
+	queue                u_nats.IQueueManager
+	tenants              data.ITenantsRemote
+	notifications        data.INotificationsRemote
 	usersRepo            data.UsersRepo
 	otpRepo              data.OtpRepo
-	tenants              data.ITenantRemote
-	notifications        data.INotificationsRemote
 	accessTokenDuration  time.Duration
 	refreshTokenDuration time.Duration
 }
@@ -53,20 +47,20 @@ type AuthUsecase struct {
 func NewAuthUsecase(
 	logger log.Logger,
 	jwt u_jwt.IJwtProcessor,
+	queue u_nats.IQueueManager,
+	tenants data.ITenantsRemote,
+	notifications data.INotificationsRemote,
 	usersRepo data.UsersRepo,
 	otpRepo data.OtpRepo,
-	queue u_nats.IQueueManager,
-	tenants data.ITenantRemote,
-	notifications data.INotificationsRemote,
 ) (*AuthUsecase, error) {
 	uc := &AuthUsecase{
 		log:           log.NewHelper(logger),
 		jwt:           jwt,
-		usersRepo:     usersRepo,
-		otpRepo:       otpRepo,
 		queue:         queue,
 		tenants:       tenants,
 		notifications: notifications,
+		usersRepo:     usersRepo,
+		otpRepo:       otpRepo,
 	}
 
 	// set default access token duration
@@ -102,57 +96,35 @@ func NewAuthUsecase(
 	return uc, nil
 }
 
-func (uc *AuthUsecase) AuthUserByPhone(ctx context.Context, phone string, isRegistrationNeeded, isRegistration bool) (
+func (uc *AuthUsecase) AuthUserByPhone(ctx context.Context, dto *AuthPhoneDto) (
 	int64, error,
 ) {
-	phoneNumber, err := phonenumbers.Parse(phone, DefaultRegion)
-	if err != nil {
-		return 0, v1.ErrorInvalidPhoneNumber("parse error: %s", err.Error())
-	}
-	if !phonenumbers.IsValidNumber(phoneNumber) {
-		return 0, v1.ErrorInvalidPhoneNumber("invalid phone number: %s", phone)
-	}
-
-	phone = phonenumbers.Format(phoneNumber, phonenumbers.E164)
-
-	user, err := uc.usersRepo.GetUserByPhone(ctx, phone)
-	if err == nil && isRegistration {
+	user, err := uc.usersRepo.GetUserByPhone(ctx, dto.Phone, true)
+	if err == nil && dto.IsRegistration {
 		return 0, v1.ErrorUserAlreadyExist("phone already registered")
 	}
 
 	if err != nil {
 		if ent.IsNotFound(err) {
-			if isRegistrationNeeded {
+			if dto.IsRegistrationNeeded {
 				return 0, v1.ErrorUnauthorized("phone not registered")
 			}
 
-			user, err = uc.usersRepo.CreateUserWithPhone(ctx, phone)
+			user, err = uc.usersRepo.CreateUserWithPhone(ctx, dto.Phone)
 		}
 		if err != nil {
 			return 0, v1.ErrorDatabaseQuery("database error: %s", err.Error())
 		}
 	}
 
-	var code string
-	switch {
-	case phone == verifiablePhone:
-		// use fixed code for verifiable phone
-		code = verifiableOtpCode
-
-	case os.Getenv("DEBUG") != "":
-		// use fixed code in debug mode
-		code = debugOtpCode
-
-	default:
-		code = generateRandomNumber(otpLength)
-	}
-
-	otp, err := uc.otpRepo.CreateOneTimePassword(ctx, user.ID, enum.Phone, code, authOtpDuration)
+	code := dto.GenerateCode()
+	_, err = uc.otpRepo.CreateOneTimePassword(ctx, user.ID, enum.Phone, code, authOtpDuration)
 	if err != nil {
 		return 0, v1.ErrorDatabaseQuery("database error: %s", err.Error())
 	}
 
-	err = uc.notifications.PersonalSmsSender(ctx, phone, fmt.Sprintf("Calendaria: %s", otp.Code))
+	sms := dto.GetOtpMessage()
+	err = uc.notifications.PersonalSmsSender(ctx, dto.Phone, sms)
 	if err != nil {
 		uc.log.Errorf("notifications.PersonalSmsSender: %s", err.Error())
 	}
@@ -163,7 +135,7 @@ func (uc *AuthUsecase) AuthUserByPhone(ctx context.Context, phone string, isRegi
 func (uc *AuthUsecase) AuthUserByEmail(
 	ctx context.Context, email, lang string, isRegistrationNeeded, isRegistration bool,
 ) (int64, error) {
-	user, err := uc.usersRepo.GetUserByEmail(ctx, email)
+	user, err := uc.usersRepo.GetUserByEmail(ctx, email, true)
 	if err == nil && isRegistration {
 		return 0, v1.ErrorUserAlreadyExist("phone already registered")
 	}
@@ -206,8 +178,8 @@ func (uc *AuthUsecase) AuthUserByEmail(
 	return user.ID, nil
 }
 
-func (uc *AuthUsecase) GetUserByID(ctx context.Context, userID int64) (*ent.User, error) {
-	user, err := uc.usersRepo.GetUserByID(ctx, userID)
+func (uc *AuthUsecase) GetUserByID(ctx context.Context, userID int64, skipRemoveAt bool) (*ent.User, error) {
+	user, err := uc.usersRepo.GetUserByID(ctx, userID, skipRemoveAt)
 	if err != nil {
 		if ent.IsNotFound(err) {
 			return nil, v1.ErrorUserNotFound("user not found")
@@ -240,9 +212,7 @@ func (uc *AuthUsecase) handleUserVerification(ctx context.Context, user *ent.Use
 			return v1.ErrorGrpcConnection("CreateTenants error: %s", err.Error())
 		}
 
-		_, err = uc.usersRepo.UpdateUserData(
-			tenantContext, user, data.UpdateUserDto{TenantID: personalTenant.GetId()},
-		)
+		_, err = uc.usersRepo.UpdateUserData(tenantContext, user, data.UpdateUserDto{TenantID: personalTenant.GetId()})
 		if err != nil {
 			return v1.ErrorDatabaseQuery("UpdateUserData gone wrong: %s", err.Error())
 		}
@@ -319,7 +289,7 @@ func (uc *AuthUsecase) GenerateTenantToken(ctx context.Context, tenantID, userID
 
 	reply, err := uc.tenants.GetMemberIdentities(ctx, tenantID, userID)
 	if err != nil {
-		return "", tenants_v1.ErrorServiceFailed("tenants: %s", err.Error())
+		return "", v1.ErrorServiceFailed("tenants: %s", err.Error())
 	}
 
 	claims.MemberId = reply.GetMember()
@@ -354,12 +324,4 @@ func userShortFromDto(user *ent.User) *v1.UserShort {
 	}
 
 	return replyUser
-}
-
-func generateRandomNumber(n int) string {
-	result := make([]byte, n)
-	for i := range result {
-		result[i] = digits[rand.Int63()%int64(len(digits))]
-	}
-	return string(result)
 }

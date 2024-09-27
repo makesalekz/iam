@@ -19,6 +19,8 @@ type User struct {
 	ID int64 `json:"id,omitempty"`
 	// DeletedAt holds the value of the "deleted_at" field.
 	DeletedAt *time.Time `json:"deleted_at,omitempty"`
+	// RemoveAt holds the value of the "remove_at" field.
+	RemoveAt *time.Time `json:"remove_at,omitempty"`
 	// phone of a user
 	Phone *string `json:"phone,omitempty"`
 	// email of a user
@@ -63,7 +65,7 @@ func (*User) scanValues(columns []string) ([]any, error) {
 			values[i] = new(sql.NullInt64)
 		case user.FieldPhone, user.FieldEmail, user.FieldUsername, user.FieldName, user.FieldBio, user.FieldAvatar, user.FieldTimezone:
 			values[i] = new(sql.NullString)
-		case user.FieldDeletedAt, user.FieldLastLoginAt, user.FieldCreatedAt, user.FieldUpdatedAt, user.FieldBioUpdatedAt:
+		case user.FieldDeletedAt, user.FieldRemoveAt, user.FieldLastLoginAt, user.FieldCreatedAt, user.FieldUpdatedAt, user.FieldBioUpdatedAt:
 			values[i] = new(sql.NullTime)
 		default:
 			values[i] = new(sql.UnknownType)
@@ -92,6 +94,13 @@ func (u *User) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				u.DeletedAt = new(time.Time)
 				*u.DeletedAt = value.Time
+			}
+		case user.FieldRemoveAt:
+			if value, ok := values[i].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field remove_at", values[i])
+			} else if value.Valid {
+				u.RemoveAt = new(time.Time)
+				*u.RemoveAt = value.Time
 			}
 		case user.FieldPhone:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -227,6 +236,11 @@ func (u *User) String() string {
 	builder.WriteString(fmt.Sprintf("id=%v, ", u.ID))
 	if v := u.DeletedAt; v != nil {
 		builder.WriteString("deleted_at=")
+		builder.WriteString(v.Format(time.ANSIC))
+	}
+	builder.WriteString(", ")
+	if v := u.RemoveAt; v != nil {
+		builder.WriteString("remove_at=")
 		builder.WriteString(v.Format(time.ANSIC))
 	}
 	builder.WriteString(", ")

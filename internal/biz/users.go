@@ -3,6 +3,9 @@ package biz
 import (
 	"context"
 	"errors"
+	"os"
+	"sync"
+	"time"
 
 	v1 "gitlab.calendaria.team/services/iam/api/iam/v1"
 	"gitlab.calendaria.team/services/iam/ent"
@@ -10,6 +13,7 @@ import (
 	tenants_v1 "gitlab.calendaria.team/services/tenants/api/tenants/v1"
 	utils_v1 "gitlab.calendaria.team/services/utils/api/utils/v1"
 	u_error "gitlab.calendaria.team/services/utils/v1/error"
+	u_nats "gitlab.calendaria.team/services/utils/v1/nats"
 	u_jwt "gitlab.calendaria.team/services/utils/v2/jwt"
 
 	"github.com/go-kratos/kratos/v2/log"
@@ -25,11 +29,17 @@ type UserItem struct {
 
 // UsersUsecase .
 type UsersUsecase struct {
+	log           *log.Helper
 	jwt           u_jwt.IJwtProcessor
+	queue         u_nats.IQueueManager
+	tenants       data.ITenantsRemote
+	contacts      data.IContactsRemote
+	chats         data.IChatsRemote
+	events        data.IEventsRemote
+	media         data.IMediaRemote
 	usersRepo     data.UsersRepo
 	otpRepo       data.OtpRepo
 	privaciesRepo data.PrivacyRepo
-	tenants       data.ITenantRemote
 }
 
 type ConstraintKey string
@@ -38,6 +48,9 @@ const (
 	USERNAME ConstraintKey = "users_username_key"
 	EMAIL    ConstraintKey = "users_email_key"
 	PHONE    ConstraintKey = "users_phone_key"
+
+	DeleteDuration        = time.Duration(30*24) * time.Hour
+	DeleteDurationInDebug = time.Duration(5) * time.Minute
 
 	phoneMask  = 0b001
 	emailMask  = 0b010
@@ -48,17 +61,28 @@ const (
 func NewUsersUsecase(
 	logger log.Logger,
 	jwt u_jwt.IJwtProcessor,
+	queue u_nats.IQueueManager,
+	tenants data.ITenantsRemote,
+	contacts data.IContactsRemote,
+	chats data.IChatsRemote,
+	events data.IEventsRemote,
+	media data.IMediaRemote,
 	usersRepo data.UsersRepo,
 	otpRepo data.OtpRepo,
 	privaciesRepo data.PrivacyRepo,
-	tenants data.ITenantRemote,
 ) (*UsersUsecase, error) {
 	return &UsersUsecase{
+		log:           log.NewHelper(log.With(logger, "module", "usecase/users")),
 		jwt:           jwt,
+		queue:         queue,
+		tenants:       tenants,
+		contacts:      contacts,
+		chats:         chats,
+		events:        events,
+		media:         media,
 		usersRepo:     usersRepo,
 		otpRepo:       otpRepo,
 		privaciesRepo: privaciesRepo,
-		tenants:       tenants,
 	}, nil
 }
 
@@ -103,6 +127,88 @@ func (uc *UsersUsecase) includePrivacies(ctx context.Context, users ...*UserItem
 	return nil
 }
 
+func (uc *UsersUsecase) DeleteUserData(ctx context.Context) {
+	users, err := uc.usersRepo.GetUsersToDelete(ctx)
+	if err != nil {
+		uc.log.Errorf("failed to get users to delete: %v", err)
+		return
+	}
+
+	if len(users) == 0 {
+		return
+	}
+
+	usersIDs := make([]int64, len(users))
+	avatars := make([]string, 0, len(users))
+	for i, user := range users {
+		usersIDs[i] = user.ID
+		if user.Avatar != nil {
+			avatars = append(avatars, *user.Avatar)
+		}
+	}
+
+	wg := sync.WaitGroup{}
+
+	// Delete tenants, groups, members of users in tenants service
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		err = uc.tenants.DeleteUsersTenants(ctx, usersIDs)
+		if err != nil {
+			uc.log.Errorf("failed to delete data in tenants: %v", err)
+		}
+	}()
+
+	// Delete contacts, relations of users in contacts service
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		err = uc.contacts.DeleteUsersDataInContacts(ctx, usersIDs)
+		if err != nil {
+			uc.log.Errorf("failed to delete data in contacts: %v", err)
+		}
+	}()
+
+	// Delete members of users in chats service
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		err = uc.chats.DeleteUsersDataInChats(ctx, usersIDs)
+		if err != nil {
+			uc.log.Errorf("failed to delete data in chats: %v", err)
+		}
+	}()
+
+	// Delete members of users in events service
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		err = uc.events.DeleteUsersDataInEvents(ctx, usersIDs)
+		if err != nil {
+			uc.log.Errorf("failed to delete data in chats: %v", err)
+		}
+	}()
+
+	// Delete avatars of users in media service including s3 (aws)
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		err = uc.media.DeleteAvatar(ctx, avatars)
+		if err != nil {
+			uc.log.Errorf("failed to delete avatars: %v", err)
+		}
+	}()
+
+	wg.Wait()
+
+	err = uc.usersRepo.DeleteUsers(ctx, usersIDs)
+	if err != nil {
+		uc.log.Errorf("failed to delete users: %v", err)
+	} else {
+		uc.log.Infof("users deleted from services: %v", usersIDs)
+	}
+}
+
 func (uc *UsersUsecase) GetUserProfile(ctx context.Context, filter data.GetUserFilterDto) (*UserItem, error) {
 	var user *ent.User
 	var err error
@@ -111,11 +217,11 @@ func (uc *UsersUsecase) GetUserProfile(ctx context.Context, filter data.GetUserF
 		btoi(filter.Email != "")<<1 |
 		btoi(filter.UserID != 0)<<2 {
 	case phoneMask:
-		user, err = uc.usersRepo.GetUserByPhone(ctx, filter.Phone)
+		user, err = uc.usersRepo.GetUserByPhone(ctx, filter.Phone, false)
 	case emailMask:
-		user, err = uc.usersRepo.GetUserByEmail(ctx, filter.Email)
+		user, err = uc.usersRepo.GetUserByEmail(ctx, filter.Email, false)
 	case userIDMask:
-		user, err = uc.usersRepo.GetUserByID(ctx, filter.UserID)
+		user, err = uc.usersRepo.GetUserByID(ctx, filter.UserID, false)
 	default:
 		return nil, v1.ErrorInvalidRequest("invalid request")
 	}
@@ -133,12 +239,14 @@ func (uc *UsersUsecase) GetUserProfile(ctx context.Context, filter data.GetUserF
 	return replyUser, nil
 }
 
-func (uc *UsersUsecase) UpdateUserProfile(ctx context.Context, userID int64, dto data.UpdateUserDto) (
-	*UserItem, error,
-) {
+func (uc *UsersUsecase) UpdateUserProfile(
+	ctx context.Context,
+	userID int64,
+	dto data.UpdateUserDto,
+) (*UserItem, error) {
 	var err error
 
-	user, err := uc.usersRepo.GetUserByID(ctx, userID)
+	user, err := uc.usersRepo.GetUserByID(ctx, userID, false)
 	if err != nil {
 		if ent.IsNotFound(err) {
 			return nil, v1.ErrorUserNotFound("user not found")
@@ -174,19 +282,24 @@ func (uc *UsersUsecase) UpdateUserProfile(ctx context.Context, userID int64, dto
 	}, nil
 }
 
-func (uc *UsersUsecase) DeleteUser(ctx context.Context, userID int64) error {
-	err := uc.usersRepo.DeleteUser(ctx, userID)
+func (uc *UsersUsecase) ScheduleUserDeletion(ctx context.Context, actorID int64) error {
+	deleteDuration := DeleteDuration
+	if os.Getenv("DEBUG") != "" {
+		deleteDuration = DeleteDurationInDebug
+	}
+
+	err := uc.usersRepo.ScheduleUserDeletion(ctx, actorID, deleteDuration)
 	if err != nil {
-		if ent.IsNotFound(err) {
-			return v1.ErrorUserNotFound("user not found")
-		}
 		return v1.ErrorDatabaseQuery("database error: %s", err.Error())
 	}
 	return nil
 }
 
 func (uc *UsersUsecase) ListUsers(
-	ctx context.Context, filter data.GetUsersFilterDto, sort *utils_v1.SortRequest, paginate *utils_v1.PaginateRequest,
+	ctx context.Context,
+	filter data.GetUsersFilterDto,
+	sort *utils_v1.SortRequest,
+	paginate *utils_v1.PaginateRequest,
 ) ([]*UserItem, error) {
 	if paginate == nil {
 		paginate = &utils_v1.PaginateRequest{}
@@ -205,9 +318,7 @@ func (uc *UsersUsecase) ListUsers(
 	return replyUsers, nil
 }
 
-func (uc *UsersUsecase) GetUsers(ctx context.Context, actorID int64, filter data.GetUsersFilterDto) (
-	[]*UserItem, error,
-) {
+func (uc *UsersUsecase) GetUsers(ctx context.Context, filter data.GetUsersFilterDto) ([]*UserItem, error) {
 	users, err := uc.usersRepo.GetUsers(ctx, filter)
 	if err != nil {
 		return nil, v1.ErrorDatabaseQuery("database error: %s", err.Error())
