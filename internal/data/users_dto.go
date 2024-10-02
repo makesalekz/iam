@@ -89,6 +89,9 @@ func (dto *UpdateUserDto) ApplyAvatar() *UpdateUserDto {
 			dto.shouldUpdate = true
 			dto.updateQuery.SetAvatar(dto.Avatar)
 		}
+	} else if dto.user.Avatar != nil {
+		dto.shouldUpdate = true
+		dto.updateQuery.ClearAvatar()
 	}
 
 	return dto

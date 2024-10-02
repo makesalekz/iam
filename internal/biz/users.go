@@ -254,6 +254,14 @@ func (uc *UsersUsecase) UpdateUserProfile(
 		return nil, v1.ErrorDatabaseQuery("database error: %s", err.Error())
 	}
 
+	if dto.Avatar == "" && user.Avatar != nil {
+		err = uc.media.DeleteAvatar(ctx, []string{*user.Avatar})
+		if err != nil {
+			uc.log.Errorf("failed to delete avatar: %v", err)
+			dto.Avatar = *user.Avatar
+		}
+	}
+
 	updatedUser, err := uc.usersRepo.UpdateUserData(ctx, user, dto)
 	if err != nil {
 		if u_error.IsUniqueViolation(err) {
