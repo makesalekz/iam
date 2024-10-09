@@ -14,6 +14,8 @@ import (
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/mitchellh/mapstructure"
 	"golang.org/x/oauth2/google"
+	"google.golang.org/api/oauth2/v2"
+	"google.golang.org/api/option"
 )
 
 type CredentialsUsecase struct {
@@ -55,19 +57,44 @@ func (uc *CredentialsUsecase) AuthByGoogle(ctx context.Context, actorID int64, a
 	}
 
 	// get config from credentials
-	config, err := google.ConfigFromJSON([]byte(googleCredentials))
+	googleConfig, err := google.ConfigFromJSON(
+		[]byte(googleCredentials),
+		oauth2.UserinfoProfileScope,
+		oauth2.UserinfoEmailScope,
+	)
 	if err != nil {
 		return iam_v1.ErrorServiceFailed("Unable to parse client secret file to config: %v", err.Error())
 	}
 
 	// exchange auth code to token
-	tok, err := config.Exchange(ctx, authCode)
+	tok, err := googleConfig.Exchange(ctx, authCode)
 	if err != nil {
 		return iam_v1.ErrorServiceFailed("Unable to retrieve token from web: %v", err.Error())
 	}
 
+	// get http client
+	client := googleConfig.Client(ctx, tok)
+
+	oauth2Service, err := oauth2.NewService(ctx, option.WithHTTPClient(client))
+	if err != nil {
+		return iam_v1.ErrorServiceFailed("Unable to retrieve OAuth2 service: %v", err.Error())
+	}
+
+	userInfoService := oauth2.NewUserinfoV2MeService(oauth2Service)
+	userInfo, err := userInfoService.Get().Do()
+	if err != nil {
+		return iam_v1.ErrorServiceFailed("Unable to retrieve user info: %v", err.Error())
+	}
+
 	// save tokens to database
-	_, err = uc.credentialsRepo.CreateCredential(ctx, actorID, tok)
+	dto := data.CredentialDto{
+		UserID:      actorID,
+		DisplayName: userInfo.Name,
+		Email:       userInfo.Email,
+		Provider:    u_struc.Google,
+		Token:       tok,
+	}
+	err = uc.credentialsRepo.CreateCredential(ctx, dto)
 	if err != nil {
 		return iam_v1.ErrorDatabaseQuery("database error: %s", err.Error())
 	}
@@ -77,14 +104,17 @@ func (uc *CredentialsUsecase) AuthByGoogle(ctx context.Context, actorID int64, a
 
 func (uc *CredentialsUsecase) GetCredential(
 	ctx context.Context,
-	actorID int64,
-	provider u_struc.Provider,
+	actorID, credentialID int64,
 ) (*ent.UserCredentials, error) {
-	return uc.credentialsRepo.GetCredential(ctx, actorID, provider)
+	return uc.credentialsRepo.GetCredential(ctx, actorID, credentialID)
 }
 
-func (uc *CredentialsUsecase) ListCredentials(ctx context.Context, actorID int64) ([]*ent.UserCredentials, error) {
-	return uc.credentialsRepo.ListCredentials(ctx, actorID)
+func (uc *CredentialsUsecase) ListCredentials(
+	ctx context.Context,
+	actorID int64,
+	provider *u_struc.Provider,
+) ([]*ent.UserCredentials, error) {
+	return uc.credentialsRepo.ListCredentials(ctx, actorID, provider)
 }
 
 func (uc *CredentialsUsecase) DeleteCredential(ctx context.Context, actorID, credentialID int64) error {

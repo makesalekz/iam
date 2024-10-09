@@ -19,7 +19,7 @@ type UserCredentials struct {
 func (UserCredentials) Fields() []ent.Field {
 	return []ent.Field{
 		field.Int64("user_id"),
-		field.String("mail").Optional().Nillable(),
+		field.String("mail").Unique(),
 		field.String("display_name").Optional().Nillable(),
 		field.Enum("provider").GoType(u_struc.Provider("")).Optional().Nillable(),
 		field.String("access_token"),

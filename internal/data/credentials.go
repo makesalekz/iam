@@ -10,10 +10,18 @@ import (
 	"golang.org/x/oauth2"
 )
 
+type CredentialDto struct {
+	UserID      int64
+	Provider    u_struc.Provider
+	DisplayName string
+	Email       string
+	Token       *oauth2.Token
+}
+
 type CredentialsRepo interface {
-	CreateCredential(ctx context.Context, actorID int64, token *oauth2.Token) (*ent.UserCredentials, error)
-	GetCredential(ctx context.Context, userID int64, provider u_struc.Provider) (*ent.UserCredentials, error)
-	ListCredentials(ctx context.Context, userID int64) ([]*ent.UserCredentials, error)
+	CreateCredential(ctx context.Context, dto CredentialDto) error
+	GetCredential(ctx context.Context, userID, credentialID int64) (*ent.UserCredentials, error)
+	ListCredentials(ctx context.Context, userID int64, provider *u_struc.Provider) ([]*ent.UserCredentials, error)
 	DeleteCredential(ctx context.Context, userID, credentialID int64) (int, error)
 }
 
@@ -28,36 +36,53 @@ func NewCredentialsRepo(d *Data) CredentialsRepo {
 }
 
 func (r *credentialsRepo) CreateCredential(
-	ctx context.Context, actorID int64, token *oauth2.Token,
-) (*ent.UserCredentials, error) {
+	ctx context.Context, dto CredentialDto,
+) error {
 	return r.db.UserCredentials.Create().
-		SetUserID(actorID).
-		SetProvider(u_struc.Google).
-		SetAccessToken(token.AccessToken).
-		SetTokenType(token.TokenType).
-		SetRefreshToken(token.RefreshToken).
-		SetExpiresAt(token.Expiry).
-		Save(ctx)
+		SetUserID(dto.UserID).
+		SetDisplayName(dto.DisplayName).
+		SetMail(dto.Email).
+		SetProvider(dto.Provider).
+		SetAccessToken(dto.Token.AccessToken).
+		SetTokenType(dto.Token.TokenType).
+		SetRefreshToken(dto.Token.RefreshToken).
+		SetExpiresAt(dto.Token.Expiry).
+		OnConflictColumns(usercredentials.FieldMail).
+		UpdateDisplayName().
+		UpdateAccessToken().
+		UpdateTokenType().
+		UpdateRefreshToken().
+		UpdateExpiresAt().
+		Exec(ctx)
 }
 
 func (r *credentialsRepo) GetCredential(
-	ctx context.Context, userID int64, provider u_struc.Provider,
+	ctx context.Context, userID, credentialID int64,
 ) (*ent.UserCredentials, error) {
 	return r.db.UserCredentials.Query().
 		Where(
+			usercredentials.ID(credentialID),
 			usercredentials.UserID(userID),
-			usercredentials.ProviderEQ(provider),
 		).
 		Order(ent.Desc(usercredentials.FieldID)).
 		First(ctx)
 }
 
-func (r *credentialsRepo) ListCredentials(ctx context.Context, userID int64) ([]*ent.UserCredentials, error) {
-	return r.db.UserCredentials.Query().
+func (r *credentialsRepo) ListCredentials(
+	ctx context.Context,
+	userID int64,
+	provider *u_struc.Provider,
+) ([]*ent.UserCredentials, error) {
+	query := r.db.UserCredentials.Query().
 		Where(
 			usercredentials.UserID(userID),
-		).
-		All(ctx)
+		)
+
+	if provider != nil {
+		query = query.Where(usercredentials.ProviderEQ(*provider))
+	}
+
+	return query.All(ctx)
 }
 
 func (r *credentialsRepo) DeleteCredential(ctx context.Context, userID, credentialID int64) (int, error) {

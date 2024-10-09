@@ -74,7 +74,7 @@ var (
 	UserCredentialsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt64, Increment: true},
 		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
-		{Name: "mail", Type: field.TypeString, Nullable: true},
+		{Name: "mail", Type: field.TypeString, Unique: true},
 		{Name: "display_name", Type: field.TypeString, Nullable: true},
 		{Name: "provider", Type: field.TypeEnum, Nullable: true, Enums: []string{"CALENDARIA", "GOOGLE", "OUTLOOK", "APPLE"}},
 		{Name: "access_token", Type: field.TypeString},
