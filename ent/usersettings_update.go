@@ -137,7 +137,7 @@ func (usu *UserSettingsUpdate) check() error {
 			return &ValidationError{Name: "setting", err: fmt.Errorf(`ent: validator failed for field "UserSettings.setting": %w`, err)}
 		}
 	}
-	if _, ok := usu.mutation.UserID(); usu.mutation.UserCleared() && !ok {
+	if usu.mutation.UserCleared() && len(usu.mutation.UserIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "UserSettings.user"`)
 	}
 	return nil
@@ -340,7 +340,7 @@ func (usuo *UserSettingsUpdateOne) check() error {
 			return &ValidationError{Name: "setting", err: fmt.Errorf(`ent: validator failed for field "UserSettings.setting": %w`, err)}
 		}
 	}
-	if _, ok := usuo.mutation.UserID(); usuo.mutation.UserCleared() && !ok {
+	if usuo.mutation.UserCleared() && len(usuo.mutation.UserIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "UserSettings.user"`)
 	}
 	return nil

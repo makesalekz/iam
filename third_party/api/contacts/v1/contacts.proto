@@ -14,7 +14,7 @@ service Contacts {
   rpc CreateContacts(CreateContactsRequest) returns (utils.v1.EmptyReply);
   rpc UpdateContact(UpdateContactRequest) returns (ContactReply);
   rpc DeleteContact(DeleteContactRequest) returns (utils.v1.EmptyReply);
-  rpc DeleteUser(UserIDRequest) returns (utils.v1.EmptyReply);
+  rpc DeleteUser(UserIdRequest) returns (utils.v1.EmptyReply);
   rpc GetContact(GetContactRequest) returns (ContactReply);
   rpc GetContacts(GetContactsRequest) returns (GetContactsReply);
 
@@ -26,10 +26,10 @@ service Contacts {
   // Request: userId of whom we need to get all labels
   // Returns: list of labels which user has in our contacts, including the empty
   // ones
-  rpc GetLabelsByUserID(UserIDRequest) returns (GetLabelsByUserIDResponse);
-  rpc GetContactsByUserID(UserIDRequest) returns (GetContactsReply);
-  rpc GetContactsByUserIDs(UserIDsRequest) returns (GetContactsReply);
-  rpc DeleteUsersData (DeleteUsersDataRequest) returns (utils.v1.EmptyReply);
+  rpc GetLabelsByUserId(UserIdRequest) returns (GetLabelsByUserIdResponse);
+  rpc GetContactsByUserId(UserIdRequest) returns (GetContactsReply);
+  rpc GetContactsByUserIds(UserIdsRequest) returns (GetContactsReply);
+  rpc DeleteUsersData(DeleteUsersDataRequest) returns (utils.v1.EmptyReply);
 }
 
 message CreateContactRequest {
@@ -68,10 +68,6 @@ message GetContactsRequest {
   string search = 2;
 }
 
-message GetContactsReply {
-  repeated Contact contacts = 1;
-}
-
 message ListContactsRequest {
   // A general string which will be used for search, similar to DB %LIKE%
   optional string query = 5;
@@ -84,15 +80,15 @@ message ListContactsReply {
   PaginateReply paginate = 2;
 }
 
-message UserIDRequest {
+message UserIdRequest {
   int64 userId = 2;
 }
 
-message UserIDsRequest {
+message UserIdsRequest {
   repeated int64 userIds = 2;
 }
 
-message GetLabelsByUserIDResponse {
+message GetLabelsByUserIdResponse {
   repeated string labels = 1;
 }
 

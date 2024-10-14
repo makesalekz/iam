@@ -170,7 +170,7 @@ func (otpu *OneTimePasswordUpdate) check() error {
 			return &ValidationError{Name: "type", err: fmt.Errorf(`ent: validator failed for field "OneTimePassword.type": %w`, err)}
 		}
 	}
-	if _, ok := otpu.mutation.UserID(); otpu.mutation.UserCleared() && !ok {
+	if otpu.mutation.UserCleared() && len(otpu.mutation.UserIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "OneTimePassword.user"`)
 	}
 	return nil
@@ -412,7 +412,7 @@ func (otpuo *OneTimePasswordUpdateOne) check() error {
 			return &ValidationError{Name: "type", err: fmt.Errorf(`ent: validator failed for field "OneTimePassword.type": %w`, err)}
 		}
 	}
-	if _, ok := otpuo.mutation.UserID(); otpuo.mutation.UserCleared() && !ok {
+	if otpuo.mutation.UserCleared() && len(otpuo.mutation.UserIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "OneTimePassword.user"`)
 	}
 	return nil

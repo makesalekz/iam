@@ -271,7 +271,7 @@ func (ucu *UserCredentialsUpdate) check() error {
 			return &ValidationError{Name: "provider", err: fmt.Errorf(`ent: validator failed for field "UserCredentials.provider": %w`, err)}
 		}
 	}
-	if _, ok := ucu.mutation.UserID(); ucu.mutation.UserCleared() && !ok {
+	if ucu.mutation.UserCleared() && len(ucu.mutation.UserIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "UserCredentials.user"`)
 	}
 	return nil
@@ -647,7 +647,7 @@ func (ucuo *UserCredentialsUpdateOne) check() error {
 			return &ValidationError{Name: "provider", err: fmt.Errorf(`ent: validator failed for field "UserCredentials.provider": %w`, err)}
 		}
 	}
-	if _, ok := ucuo.mutation.UserID(); ucuo.mutation.UserCleared() && !ok {
+	if ucuo.mutation.UserCleared() && len(ucuo.mutation.UserIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "UserCredentials.user"`)
 	}
 	return nil

@@ -126,7 +126,7 @@ func (upc *UserPrivacyCreate) check() error {
 	if _, ok := upc.mutation.UpdatedAt(); !ok {
 		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "UserPrivacy.updated_at"`)}
 	}
-	if _, ok := upc.mutation.UserID(); !ok {
+	if len(upc.mutation.UserIDs()) == 0 {
 		return &ValidationError{Name: "user", err: errors.New(`ent: missing required edge "UserPrivacy.user"`)}
 	}
 	return nil

@@ -235,7 +235,7 @@ func (ucc *UserCredentialsCreate) check() error {
 	if _, ok := ucc.mutation.UpdatedAt(); !ok {
 		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "UserCredentials.updated_at"`)}
 	}
-	if _, ok := ucc.mutation.UserID(); !ok {
+	if len(ucc.mutation.UserIDs()) == 0 {
 		return &ValidationError{Name: "user", err: errors.New(`ent: missing required edge "UserCredentials.user"`)}
 	}
 	return nil
