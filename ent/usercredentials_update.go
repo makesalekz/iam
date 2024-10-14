@@ -79,12 +79,6 @@ func (ucu *UserCredentialsUpdate) SetNillableMail(s *string) *UserCredentialsUpd
 	return ucu
 }
 
-// ClearMail clears the value of the "mail" field.
-func (ucu *UserCredentialsUpdate) ClearMail() *UserCredentialsUpdate {
-	ucu.mutation.ClearMail()
-	return ucu
-}
-
 // SetDisplayName sets the "display_name" field.
 func (ucu *UserCredentialsUpdate) SetDisplayName(s string) *UserCredentialsUpdate {
 	ucu.mutation.SetDisplayName(s)
@@ -310,9 +304,6 @@ func (ucu *UserCredentialsUpdate) sqlSave(ctx context.Context) (n int, err error
 	if value, ok := ucu.mutation.Mail(); ok {
 		_spec.SetField(usercredentials.FieldMail, field.TypeString, value)
 	}
-	if ucu.mutation.MailCleared() {
-		_spec.ClearField(usercredentials.FieldMail, field.TypeString)
-	}
 	if value, ok := ucu.mutation.DisplayName(); ok {
 		_spec.SetField(usercredentials.FieldDisplayName, field.TypeString, value)
 	}
@@ -448,12 +439,6 @@ func (ucuo *UserCredentialsUpdateOne) SetNillableMail(s *string) *UserCredential
 	if s != nil {
 		ucuo.SetMail(*s)
 	}
-	return ucuo
-}
-
-// ClearMail clears the value of the "mail" field.
-func (ucuo *UserCredentialsUpdateOne) ClearMail() *UserCredentialsUpdateOne {
-	ucuo.mutation.ClearMail()
 	return ucuo
 }
 
@@ -711,9 +696,6 @@ func (ucuo *UserCredentialsUpdateOne) sqlSave(ctx context.Context) (_node *UserC
 	}
 	if value, ok := ucuo.mutation.Mail(); ok {
 		_spec.SetField(usercredentials.FieldMail, field.TypeString, value)
-	}
-	if ucuo.mutation.MailCleared() {
-		_spec.ClearField(usercredentials.FieldMail, field.TypeString)
 	}
 	if value, ok := ucuo.mutation.DisplayName(); ok {
 		_spec.SetField(usercredentials.FieldDisplayName, field.TypeString, value)

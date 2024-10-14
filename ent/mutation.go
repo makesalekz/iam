@@ -2302,7 +2302,7 @@ func (m *UserCredentialsMutation) Mail() (r string, exists bool) {
 // OldMail returns the old "mail" field's value of the UserCredentials entity.
 // If the UserCredentials object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *UserCredentialsMutation) OldMail(ctx context.Context) (v *string, err error) {
+func (m *UserCredentialsMutation) OldMail(ctx context.Context) (v string, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldMail is only allowed on UpdateOne operations")
 	}
@@ -2316,22 +2316,9 @@ func (m *UserCredentialsMutation) OldMail(ctx context.Context) (v *string, err e
 	return oldValue.Mail, nil
 }
 
-// ClearMail clears the value of the "mail" field.
-func (m *UserCredentialsMutation) ClearMail() {
-	m.mail = nil
-	m.clearedFields[usercredentials.FieldMail] = struct{}{}
-}
-
-// MailCleared returns if the "mail" field was cleared in this mutation.
-func (m *UserCredentialsMutation) MailCleared() bool {
-	_, ok := m.clearedFields[usercredentials.FieldMail]
-	return ok
-}
-
 // ResetMail resets all changes to the "mail" field.
 func (m *UserCredentialsMutation) ResetMail() {
 	m.mail = nil
-	delete(m.clearedFields, usercredentials.FieldMail)
 }
 
 // SetDisplayName sets the "display_name" field.
@@ -2965,9 +2952,6 @@ func (m *UserCredentialsMutation) ClearedFields() []string {
 	if m.FieldCleared(usercredentials.FieldDeletedAt) {
 		fields = append(fields, usercredentials.FieldDeletedAt)
 	}
-	if m.FieldCleared(usercredentials.FieldMail) {
-		fields = append(fields, usercredentials.FieldMail)
-	}
 	if m.FieldCleared(usercredentials.FieldDisplayName) {
 		fields = append(fields, usercredentials.FieldDisplayName)
 	}
@@ -2999,9 +2983,6 @@ func (m *UserCredentialsMutation) ClearField(name string) error {
 	switch name {
 	case usercredentials.FieldDeletedAt:
 		m.ClearDeletedAt()
-		return nil
-	case usercredentials.FieldMail:
-		m.ClearMail()
 		return nil
 	case usercredentials.FieldDisplayName:
 		m.ClearDisplayName()
