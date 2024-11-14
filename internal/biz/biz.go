@@ -6,9 +6,9 @@ import (
 )
 
 const (
-	QueueContactsPhoneVerified  = "contacts/confirmed_phone"
-	QueueContactsEmailVerified  = "contacts/confirmed_emails"
-	QueueEventsDefaultCalendars = "events/default_calendars"
+	QueueContactsPhoneVerified  = "contacts.confirmed_phone"
+	QueueContactsEmailVerified  = "contacts.confirmed_emails"
+	QueueEventsDefaultCalendars = "events.default_calendars"
 )
 
 // ProviderSet is biz providers.
