@@ -400,8 +400,8 @@ gitlab.calendaria.team/services/notifications v1.3.9 h1:js7RGCk5aq+FtrGARu4cGkK3
 gitlab.calendaria.team/services/notifications v1.3.9/go.mod h1:tkgQ46SPdsH89+OICbfR3gmHoSoT3bJ7p29yR6qYrDs=
 gitlab.calendaria.team/services/tenants v1.2.0-pre h1:tL9PDRLBh/g/H08DOwPGNCvmJZhtWZ7mpmGTHlEbD2k=
 gitlab.calendaria.team/services/tenants v1.2.0-pre/go.mod h1:vKxJFikEGsVtVYnvaUVHGPWeujFo/k1Gvpw1yCYGUw4=
-gitlab.calendaria.team/services/utils v0.3.13 h1:GJfnP0yJlJL/QiPh9qDlVNardPSU9nydelBzVDlar8M=
-gitlab.calendaria.team/services/utils v0.3.13/go.mod h1:0s9bWQ+nNc+Pt6stwUSJI9IuG10/fJ97diAGBPYQre0=
+gitlab.calendaria.team/services/utils v0.3.14 h1:8MeXuE/9kXbzeLEdHXq4KMsJ2Pl3oNU58ZKSzun9al4=
+gitlab.calendaria.team/services/utils v0.3.14/go.mod h1:0s9bWQ+nNc+Pt6stwUSJI9IuG10/fJ97diAGBPYQre0=
 go.opencensus.io v0.24.0 h1:y73uSU6J157QMP2kn2r30vwW1A2W2WFwSCGnAVxeaD0=
 go.opencensus.io v0.24.0/go.mod h1:vNK8G9p7aAivkbmorf4v+7Hgx+Zs0yY+0fOtgBfjQKo=
 go.opentelemetry.io/otel v1.0.0-RC1/go.mod h1:x9tRa9HK4hSSq7jf2TKbqFbtt58/TGk0f9XiEYISI1I=
