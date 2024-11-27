@@ -156,7 +156,7 @@ func (otpc *OneTimePasswordCreate) check() error {
 	if _, ok := otpc.mutation.CreatedAt(); !ok {
 		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "OneTimePassword.created_at"`)}
 	}
-	if _, ok := otpc.mutation.UserID(); !ok {
+	if len(otpc.mutation.UserIDs()) == 0 {
 		return &ValidationError{Name: "user", err: errors.New(`ent: missing required edge "OneTimePassword.user"`)}
 	}
 	return nil

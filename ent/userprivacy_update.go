@@ -142,7 +142,7 @@ func (upu *UserPrivacyUpdate) check() error {
 			return &ValidationError{Name: "option", err: fmt.Errorf(`ent: validator failed for field "UserPrivacy.option": %w`, err)}
 		}
 	}
-	if _, ok := upu.mutation.UserID(); upu.mutation.UserCleared() && !ok {
+	if upu.mutation.UserCleared() && len(upu.mutation.UserIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "UserPrivacy.user"`)
 	}
 	return nil
@@ -350,7 +350,7 @@ func (upuo *UserPrivacyUpdateOne) check() error {
 			return &ValidationError{Name: "option", err: fmt.Errorf(`ent: validator failed for field "UserPrivacy.option": %w`, err)}
 		}
 	}
-	if _, ok := upuo.mutation.UserID(); upuo.mutation.UserCleared() && !ok {
+	if upuo.mutation.UserCleared() && len(upuo.mutation.UserIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "UserPrivacy.user"`)
 	}
 	return nil

@@ -36,13 +36,13 @@ type CredentialsClient interface {
 	// Get credentials by provider
 	// Request: Provider code
 	// Reply: Full user's credentials
-	GetCredential(ctx context.Context, in *GetCredentialRequest, opts ...grpc.CallOption) (*CredentialReply, error)
+	GetCredential(ctx context.Context, in *CredentialRequest, opts ...grpc.CallOption) (*CredentialReply, error)
 	// Get list of user's credentials
 	// Reply: List of user's credentials
-	ListCredentials(ctx context.Context, in *v1.EmptyRequest, opts ...grpc.CallOption) (*ListCredentialsReply, error)
+	ListCredentials(ctx context.Context, in *ListCredentialsRequest, opts ...grpc.CallOption) (*ListCredentialsReply, error)
 	// Delete credentials by record ID
 	// Request: Credentials record ID
-	DeleteCredential(ctx context.Context, in *CredentialsRequest, opts ...grpc.CallOption) (*v1.EmptyReply, error)
+	DeleteCredential(ctx context.Context, in *CredentialRequest, opts ...grpc.CallOption) (*v1.EmptyReply, error)
 }
 
 type credentialsClient struct {
@@ -63,7 +63,7 @@ func (c *credentialsClient) AuthByGoogle(ctx context.Context, in *AuthByGoogleRe
 	return out, nil
 }
 
-func (c *credentialsClient) GetCredential(ctx context.Context, in *GetCredentialRequest, opts ...grpc.CallOption) (*CredentialReply, error) {
+func (c *credentialsClient) GetCredential(ctx context.Context, in *CredentialRequest, opts ...grpc.CallOption) (*CredentialReply, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(CredentialReply)
 	err := c.cc.Invoke(ctx, Credentials_GetCredential_FullMethodName, in, out, cOpts...)
@@ -73,7 +73,7 @@ func (c *credentialsClient) GetCredential(ctx context.Context, in *GetCredential
 	return out, nil
 }
 
-func (c *credentialsClient) ListCredentials(ctx context.Context, in *v1.EmptyRequest, opts ...grpc.CallOption) (*ListCredentialsReply, error) {
+func (c *credentialsClient) ListCredentials(ctx context.Context, in *ListCredentialsRequest, opts ...grpc.CallOption) (*ListCredentialsReply, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(ListCredentialsReply)
 	err := c.cc.Invoke(ctx, Credentials_ListCredentials_FullMethodName, in, out, cOpts...)
@@ -83,7 +83,7 @@ func (c *credentialsClient) ListCredentials(ctx context.Context, in *v1.EmptyReq
 	return out, nil
 }
 
-func (c *credentialsClient) DeleteCredential(ctx context.Context, in *CredentialsRequest, opts ...grpc.CallOption) (*v1.EmptyReply, error) {
+func (c *credentialsClient) DeleteCredential(ctx context.Context, in *CredentialRequest, opts ...grpc.CallOption) (*v1.EmptyReply, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(v1.EmptyReply)
 	err := c.cc.Invoke(ctx, Credentials_DeleteCredential_FullMethodName, in, out, cOpts...)
@@ -103,13 +103,13 @@ type CredentialsServer interface {
 	// Get credentials by provider
 	// Request: Provider code
 	// Reply: Full user's credentials
-	GetCredential(context.Context, *GetCredentialRequest) (*CredentialReply, error)
+	GetCredential(context.Context, *CredentialRequest) (*CredentialReply, error)
 	// Get list of user's credentials
 	// Reply: List of user's credentials
-	ListCredentials(context.Context, *v1.EmptyRequest) (*ListCredentialsReply, error)
+	ListCredentials(context.Context, *ListCredentialsRequest) (*ListCredentialsReply, error)
 	// Delete credentials by record ID
 	// Request: Credentials record ID
-	DeleteCredential(context.Context, *CredentialsRequest) (*v1.EmptyReply, error)
+	DeleteCredential(context.Context, *CredentialRequest) (*v1.EmptyReply, error)
 	mustEmbedUnimplementedCredentialsServer()
 }
 
@@ -123,13 +123,13 @@ type UnimplementedCredentialsServer struct{}
 func (UnimplementedCredentialsServer) AuthByGoogle(context.Context, *AuthByGoogleRequest) (*v1.EmptyReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AuthByGoogle not implemented")
 }
-func (UnimplementedCredentialsServer) GetCredential(context.Context, *GetCredentialRequest) (*CredentialReply, error) {
+func (UnimplementedCredentialsServer) GetCredential(context.Context, *CredentialRequest) (*CredentialReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetCredential not implemented")
 }
-func (UnimplementedCredentialsServer) ListCredentials(context.Context, *v1.EmptyRequest) (*ListCredentialsReply, error) {
+func (UnimplementedCredentialsServer) ListCredentials(context.Context, *ListCredentialsRequest) (*ListCredentialsReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListCredentials not implemented")
 }
-func (UnimplementedCredentialsServer) DeleteCredential(context.Context, *CredentialsRequest) (*v1.EmptyReply, error) {
+func (UnimplementedCredentialsServer) DeleteCredential(context.Context, *CredentialRequest) (*v1.EmptyReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteCredential not implemented")
 }
 func (UnimplementedCredentialsServer) mustEmbedUnimplementedCredentialsServer() {}
@@ -172,7 +172,7 @@ func _Credentials_AuthByGoogle_Handler(srv interface{}, ctx context.Context, dec
 }
 
 func _Credentials_GetCredential_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetCredentialRequest)
+	in := new(CredentialRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -184,13 +184,13 @@ func _Credentials_GetCredential_Handler(srv interface{}, ctx context.Context, de
 		FullMethod: Credentials_GetCredential_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(CredentialsServer).GetCredential(ctx, req.(*GetCredentialRequest))
+		return srv.(CredentialsServer).GetCredential(ctx, req.(*CredentialRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _Credentials_ListCredentials_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(v1.EmptyRequest)
+	in := new(ListCredentialsRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -202,13 +202,13 @@ func _Credentials_ListCredentials_Handler(srv interface{}, ctx context.Context, 
 		FullMethod: Credentials_ListCredentials_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(CredentialsServer).ListCredentials(ctx, req.(*v1.EmptyRequest))
+		return srv.(CredentialsServer).ListCredentials(ctx, req.(*ListCredentialsRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _Credentials_DeleteCredential_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(CredentialsRequest)
+	in := new(CredentialRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -220,7 +220,7 @@ func _Credentials_DeleteCredential_Handler(srv interface{}, ctx context.Context,
 		FullMethod: Credentials_DeleteCredential_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(CredentialsServer).DeleteCredential(ctx, req.(*CredentialsRequest))
+		return srv.(CredentialsServer).DeleteCredential(ctx, req.(*CredentialRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }

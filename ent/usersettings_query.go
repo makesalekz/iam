@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"math"
 
+	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
@@ -85,7 +86,7 @@ func (usq *UserSettingsQuery) QueryUser() *UserQuery {
 // First returns the first UserSettings entity from the query.
 // Returns a *NotFoundError when no UserSettings was found.
 func (usq *UserSettingsQuery) First(ctx context.Context) (*UserSettings, error) {
-	nodes, err := usq.Limit(1).All(setContextOp(ctx, usq.ctx, "First"))
+	nodes, err := usq.Limit(1).All(setContextOp(ctx, usq.ctx, ent.OpQueryFirst))
 	if err != nil {
 		return nil, err
 	}
@@ -108,7 +109,7 @@ func (usq *UserSettingsQuery) FirstX(ctx context.Context) *UserSettings {
 // Returns a *NotFoundError when no UserSettings ID was found.
 func (usq *UserSettingsQuery) FirstID(ctx context.Context) (id int64, err error) {
 	var ids []int64
-	if ids, err = usq.Limit(1).IDs(setContextOp(ctx, usq.ctx, "FirstID")); err != nil {
+	if ids, err = usq.Limit(1).IDs(setContextOp(ctx, usq.ctx, ent.OpQueryFirstID)); err != nil {
 		return
 	}
 	if len(ids) == 0 {
@@ -131,7 +132,7 @@ func (usq *UserSettingsQuery) FirstIDX(ctx context.Context) int64 {
 // Returns a *NotSingularError when more than one UserSettings entity is found.
 // Returns a *NotFoundError when no UserSettings entities are found.
 func (usq *UserSettingsQuery) Only(ctx context.Context) (*UserSettings, error) {
-	nodes, err := usq.Limit(2).All(setContextOp(ctx, usq.ctx, "Only"))
+	nodes, err := usq.Limit(2).All(setContextOp(ctx, usq.ctx, ent.OpQueryOnly))
 	if err != nil {
 		return nil, err
 	}
@@ -159,7 +160,7 @@ func (usq *UserSettingsQuery) OnlyX(ctx context.Context) *UserSettings {
 // Returns a *NotFoundError when no entities are found.
 func (usq *UserSettingsQuery) OnlyID(ctx context.Context) (id int64, err error) {
 	var ids []int64
-	if ids, err = usq.Limit(2).IDs(setContextOp(ctx, usq.ctx, "OnlyID")); err != nil {
+	if ids, err = usq.Limit(2).IDs(setContextOp(ctx, usq.ctx, ent.OpQueryOnlyID)); err != nil {
 		return
 	}
 	switch len(ids) {
@@ -184,7 +185,7 @@ func (usq *UserSettingsQuery) OnlyIDX(ctx context.Context) int64 {
 
 // All executes the query and returns a list of UserSettingsSlice.
 func (usq *UserSettingsQuery) All(ctx context.Context) ([]*UserSettings, error) {
-	ctx = setContextOp(ctx, usq.ctx, "All")
+	ctx = setContextOp(ctx, usq.ctx, ent.OpQueryAll)
 	if err := usq.prepareQuery(ctx); err != nil {
 		return nil, err
 	}
@@ -206,7 +207,7 @@ func (usq *UserSettingsQuery) IDs(ctx context.Context) (ids []int64, err error) 
 	if usq.ctx.Unique == nil && usq.path != nil {
 		usq.Unique(true)
 	}
-	ctx = setContextOp(ctx, usq.ctx, "IDs")
+	ctx = setContextOp(ctx, usq.ctx, ent.OpQueryIDs)
 	if err = usq.Select(usersettings.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
@@ -224,7 +225,7 @@ func (usq *UserSettingsQuery) IDsX(ctx context.Context) []int64 {
 
 // Count returns the count of the given query.
 func (usq *UserSettingsQuery) Count(ctx context.Context) (int, error) {
-	ctx = setContextOp(ctx, usq.ctx, "Count")
+	ctx = setContextOp(ctx, usq.ctx, ent.OpQueryCount)
 	if err := usq.prepareQuery(ctx); err != nil {
 		return 0, err
 	}
@@ -242,7 +243,7 @@ func (usq *UserSettingsQuery) CountX(ctx context.Context) int {
 
 // Exist returns true if the query has elements in the graph.
 func (usq *UserSettingsQuery) Exist(ctx context.Context) (bool, error) {
-	ctx = setContextOp(ctx, usq.ctx, "Exist")
+	ctx = setContextOp(ctx, usq.ctx, ent.OpQueryExist)
 	switch _, err := usq.FirstID(ctx); {
 	case IsNotFound(err):
 		return false, nil
@@ -276,8 +277,9 @@ func (usq *UserSettingsQuery) Clone() *UserSettingsQuery {
 		predicates: append([]predicate.UserSettings{}, usq.predicates...),
 		withUser:   usq.withUser.Clone(),
 		// clone intermediate query.
-		sql:  usq.sql.Clone(),
-		path: usq.path,
+		sql:       usq.sql.Clone(),
+		path:      usq.path,
+		modifiers: append([]func(*sql.Selector){}, usq.modifiers...),
 	}
 }
 
@@ -544,7 +546,7 @@ func (usgb *UserSettingsGroupBy) Aggregate(fns ...AggregateFunc) *UserSettingsGr
 
 // Scan applies the selector query and scans the result into the given value.
 func (usgb *UserSettingsGroupBy) Scan(ctx context.Context, v any) error {
-	ctx = setContextOp(ctx, usgb.build.ctx, "GroupBy")
+	ctx = setContextOp(ctx, usgb.build.ctx, ent.OpQueryGroupBy)
 	if err := usgb.build.prepareQuery(ctx); err != nil {
 		return err
 	}
@@ -592,7 +594,7 @@ func (uss *UserSettingsSelect) Aggregate(fns ...AggregateFunc) *UserSettingsSele
 
 // Scan applies the selector query and scans the result into the given value.
 func (uss *UserSettingsSelect) Scan(ctx context.Context, v any) error {
-	ctx = setContextOp(ctx, uss.ctx, "Select")
+	ctx = setContextOp(ctx, uss.ctx, ent.OpQuerySelect)
 	if err := uss.prepareQuery(ctx); err != nil {
 		return err
 	}

@@ -231,16 +231,6 @@ func MailHasSuffix(v string) predicate.UserCredentials {
 	return predicate.UserCredentials(sql.FieldHasSuffix(FieldMail, v))
 }
 
-// MailIsNil applies the IsNil predicate on the "mail" field.
-func MailIsNil() predicate.UserCredentials {
-	return predicate.UserCredentials(sql.FieldIsNull(FieldMail))
-}
-
-// MailNotNil applies the NotNil predicate on the "mail" field.
-func MailNotNil() predicate.UserCredentials {
-	return predicate.UserCredentials(sql.FieldNotNull(FieldMail))
-}
-
 // MailEqualFold applies the EqualFold predicate on the "mail" field.
 func MailEqualFold(v string) predicate.UserCredentials {
 	return predicate.UserCredentials(sql.FieldEqualFold(FieldMail, v))

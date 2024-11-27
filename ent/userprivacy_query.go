@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"math"
 
+	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
@@ -85,7 +86,7 @@ func (upq *UserPrivacyQuery) QueryUser() *UserQuery {
 // First returns the first UserPrivacy entity from the query.
 // Returns a *NotFoundError when no UserPrivacy was found.
 func (upq *UserPrivacyQuery) First(ctx context.Context) (*UserPrivacy, error) {
-	nodes, err := upq.Limit(1).All(setContextOp(ctx, upq.ctx, "First"))
+	nodes, err := upq.Limit(1).All(setContextOp(ctx, upq.ctx, ent.OpQueryFirst))
 	if err != nil {
 		return nil, err
 	}
@@ -108,7 +109,7 @@ func (upq *UserPrivacyQuery) FirstX(ctx context.Context) *UserPrivacy {
 // Returns a *NotFoundError when no UserPrivacy ID was found.
 func (upq *UserPrivacyQuery) FirstID(ctx context.Context) (id int64, err error) {
 	var ids []int64
-	if ids, err = upq.Limit(1).IDs(setContextOp(ctx, upq.ctx, "FirstID")); err != nil {
+	if ids, err = upq.Limit(1).IDs(setContextOp(ctx, upq.ctx, ent.OpQueryFirstID)); err != nil {
 		return
 	}
 	if len(ids) == 0 {
@@ -131,7 +132,7 @@ func (upq *UserPrivacyQuery) FirstIDX(ctx context.Context) int64 {
 // Returns a *NotSingularError when more than one UserPrivacy entity is found.
 // Returns a *NotFoundError when no UserPrivacy entities are found.
 func (upq *UserPrivacyQuery) Only(ctx context.Context) (*UserPrivacy, error) {
-	nodes, err := upq.Limit(2).All(setContextOp(ctx, upq.ctx, "Only"))
+	nodes, err := upq.Limit(2).All(setContextOp(ctx, upq.ctx, ent.OpQueryOnly))
 	if err != nil {
 		return nil, err
 	}
@@ -159,7 +160,7 @@ func (upq *UserPrivacyQuery) OnlyX(ctx context.Context) *UserPrivacy {
 // Returns a *NotFoundError when no entities are found.
 func (upq *UserPrivacyQuery) OnlyID(ctx context.Context) (id int64, err error) {
 	var ids []int64
-	if ids, err = upq.Limit(2).IDs(setContextOp(ctx, upq.ctx, "OnlyID")); err != nil {
+	if ids, err = upq.Limit(2).IDs(setContextOp(ctx, upq.ctx, ent.OpQueryOnlyID)); err != nil {
 		return
 	}
 	switch len(ids) {
@@ -184,7 +185,7 @@ func (upq *UserPrivacyQuery) OnlyIDX(ctx context.Context) int64 {
 
 // All executes the query and returns a list of UserPrivacies.
 func (upq *UserPrivacyQuery) All(ctx context.Context) ([]*UserPrivacy, error) {
-	ctx = setContextOp(ctx, upq.ctx, "All")
+	ctx = setContextOp(ctx, upq.ctx, ent.OpQueryAll)
 	if err := upq.prepareQuery(ctx); err != nil {
 		return nil, err
 	}
@@ -206,7 +207,7 @@ func (upq *UserPrivacyQuery) IDs(ctx context.Context) (ids []int64, err error) {
 	if upq.ctx.Unique == nil && upq.path != nil {
 		upq.Unique(true)
 	}
-	ctx = setContextOp(ctx, upq.ctx, "IDs")
+	ctx = setContextOp(ctx, upq.ctx, ent.OpQueryIDs)
 	if err = upq.Select(userprivacy.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
@@ -224,7 +225,7 @@ func (upq *UserPrivacyQuery) IDsX(ctx context.Context) []int64 {
 
 // Count returns the count of the given query.
 func (upq *UserPrivacyQuery) Count(ctx context.Context) (int, error) {
-	ctx = setContextOp(ctx, upq.ctx, "Count")
+	ctx = setContextOp(ctx, upq.ctx, ent.OpQueryCount)
 	if err := upq.prepareQuery(ctx); err != nil {
 		return 0, err
 	}
@@ -242,7 +243,7 @@ func (upq *UserPrivacyQuery) CountX(ctx context.Context) int {
 
 // Exist returns true if the query has elements in the graph.
 func (upq *UserPrivacyQuery) Exist(ctx context.Context) (bool, error) {
-	ctx = setContextOp(ctx, upq.ctx, "Exist")
+	ctx = setContextOp(ctx, upq.ctx, ent.OpQueryExist)
 	switch _, err := upq.FirstID(ctx); {
 	case IsNotFound(err):
 		return false, nil
@@ -276,8 +277,9 @@ func (upq *UserPrivacyQuery) Clone() *UserPrivacyQuery {
 		predicates: append([]predicate.UserPrivacy{}, upq.predicates...),
 		withUser:   upq.withUser.Clone(),
 		// clone intermediate query.
-		sql:  upq.sql.Clone(),
-		path: upq.path,
+		sql:       upq.sql.Clone(),
+		path:      upq.path,
+		modifiers: append([]func(*sql.Selector){}, upq.modifiers...),
 	}
 }
 
@@ -544,7 +546,7 @@ func (upgb *UserPrivacyGroupBy) Aggregate(fns ...AggregateFunc) *UserPrivacyGrou
 
 // Scan applies the selector query and scans the result into the given value.
 func (upgb *UserPrivacyGroupBy) Scan(ctx context.Context, v any) error {
-	ctx = setContextOp(ctx, upgb.build.ctx, "GroupBy")
+	ctx = setContextOp(ctx, upgb.build.ctx, ent.OpQueryGroupBy)
 	if err := upgb.build.prepareQuery(ctx); err != nil {
 		return err
 	}
@@ -592,7 +594,7 @@ func (ups *UserPrivacySelect) Aggregate(fns ...AggregateFunc) *UserPrivacySelect
 
 // Scan applies the selector query and scans the result into the given value.
 func (ups *UserPrivacySelect) Scan(ctx context.Context, v any) error {
-	ctx = setContextOp(ctx, ups.ctx, "Select")
+	ctx = setContextOp(ctx, ups.ctx, ent.OpQuerySelect)
 	if err := ups.prepareQuery(ctx); err != nil {
 		return err
 	}

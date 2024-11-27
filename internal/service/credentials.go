@@ -2,7 +2,6 @@ package service
 
 import (
 	"context"
-	u_struc "gitlab.calendaria.team/services/utils/v2/struc"
 	"time"
 
 	iam_v1 "gitlab.calendaria.team/services/iam/api/iam/v1"
@@ -10,6 +9,7 @@ import (
 	"gitlab.calendaria.team/services/iam/internal/biz"
 	utils_v1 "gitlab.calendaria.team/services/utils/api/utils/v1"
 	"gitlab.calendaria.team/services/utils/v2/auth"
+	u_struc "gitlab.calendaria.team/services/utils/v2/struc"
 
 	"github.com/go-kratos/kratos/v2/log"
 )
@@ -31,12 +31,12 @@ func NewCredentialsService(
 	}
 }
 
-func userCredentialToV1Credential(userCredentials *ent.UserCredentials) *iam_v1.UserCredentials {
+func userCredentialToV1Credential(userCredentials *ent.UserCredentials) *iam_v1.UserCredential {
 	if userCredentials == nil {
-		return &iam_v1.UserCredentials{}
+		return &iam_v1.UserCredential{}
 	}
 
-	replyUserCredentials := &iam_v1.UserCredentials{
+	replyUserCredentials := &iam_v1.UserCredential{
 		Id:           userCredentials.ID,
 		Mail:         userCredentials.Mail,
 		DisplayName:  userCredentials.DisplayName,
@@ -58,12 +58,12 @@ func userCredentialToV1Credential(userCredentials *ent.UserCredentials) *iam_v1.
 	return replyUserCredentials
 }
 
-func userCredentialToV1CredentialShort(userCredentials *ent.UserCredentials) *iam_v1.UserCredentialsShort {
+func userCredentialToV1CredentialShort(userCredentials *ent.UserCredentials) *iam_v1.UserCredentialShort {
 	if userCredentials == nil {
-		return &iam_v1.UserCredentialsShort{}
+		return &iam_v1.UserCredentialShort{}
 	}
 
-	replyUserCredentials := &iam_v1.UserCredentialsShort{
+	replyUserCredentials := &iam_v1.UserCredentialShort{
 		Id:          userCredentials.ID,
 		Mail:        userCredentials.Mail,
 		DisplayName: userCredentials.DisplayName,
@@ -77,8 +77,8 @@ func userCredentialToV1CredentialShort(userCredentials *ent.UserCredentials) *ia
 	return replyUserCredentials
 }
 
-func userCredentialsToV1CredentialShorts(userCredentials []*ent.UserCredentials) []*iam_v1.UserCredentialsShort {
-	trUserCredentials := make([]*iam_v1.UserCredentialsShort, len(userCredentials))
+func userCredentialsToV1CredentialShorts(userCredentials []*ent.UserCredentials) []*iam_v1.UserCredentialShort {
+	trUserCredentials := make([]*iam_v1.UserCredentialShort, len(userCredentials))
 	for i, userCredential := range userCredentials {
 		trUserCredentials[i] = userCredentialToV1CredentialShort(userCredential)
 	}
@@ -86,13 +86,16 @@ func userCredentialsToV1CredentialShorts(userCredentials []*ent.UserCredentials)
 	return trUserCredentials
 }
 
-func (s *CredentialsService) AuthByGoogle(ctx context.Context, req *iam_v1.AuthByGoogleRequest) (*utils_v1.EmptyReply, error) {
-	actorId := auth.GetActorIdFromContext(ctx)
-	if actorId == 0 {
+func (s *CredentialsService) AuthByGoogle(
+	ctx context.Context,
+	req *iam_v1.AuthByGoogleRequest,
+) (*utils_v1.EmptyReply, error) {
+	actorID := auth.GetActorIdFromContext(ctx)
+	if actorID == 0 {
 		return nil, iam_v1.ErrorEmptyActorId("empty actor id")
 	}
 
-	err := s.uc.AuthByGoogle(ctx, actorId, req.AuthCode)
+	err := s.uc.AuthByGoogle(ctx, actorID, req.GetAuthCode())
 	if err != nil {
 		return nil, err
 	}
@@ -100,18 +103,16 @@ func (s *CredentialsService) AuthByGoogle(ctx context.Context, req *iam_v1.AuthB
 	return &utils_v1.EmptyReply{}, nil
 }
 
-func (s *CredentialsService) GetCredential(ctx context.Context, req *iam_v1.GetCredentialRequest) (*iam_v1.CredentialReply, error) {
-	actorId := auth.GetActorIdFromContext(ctx)
-	if actorId == 0 {
+func (s *CredentialsService) GetCredential(
+	ctx context.Context,
+	req *iam_v1.CredentialRequest,
+) (*iam_v1.CredentialReply, error) {
+	actorID := auth.GetActorIdFromContext(ctx)
+	if actorID == 0 {
 		return nil, iam_v1.ErrorEmptyActorId("empty actor id")
 	}
 
-	provider := u_struc.Provider(req.Provider)
-	if !provider.IsValid() {
-		return nil, iam_v1.ErrorInvalidProvider("invalid provider")
-	}
-
-	credential, err := s.uc.GetCredential(ctx, actorId, provider)
+	credential, err := s.uc.GetCredential(ctx, actorID, req.GetCredentialId())
 	if err != nil {
 		return nil, err
 	}
@@ -119,13 +120,25 @@ func (s *CredentialsService) GetCredential(ctx context.Context, req *iam_v1.GetC
 	return &iam_v1.CredentialReply{Credential: userCredentialToV1Credential(credential)}, nil
 }
 
-func (s *CredentialsService) ListCredentials(ctx context.Context, req *utils_v1.EmptyRequest) (*iam_v1.ListCredentialsReply, error) {
-	actorId := auth.GetActorIdFromContext(ctx)
-	if actorId == 0 {
+func (s *CredentialsService) ListCredentials(
+	ctx context.Context,
+	req *iam_v1.ListCredentialsRequest,
+) (*iam_v1.ListCredentialsReply, error) {
+	actorID := auth.GetActorIdFromContext(ctx)
+	if actorID == 0 {
 		return nil, iam_v1.ErrorEmptyActorId("empty actor id")
 	}
 
-	credentials, err := s.uc.ListCredentials(ctx, actorId)
+	var provider *u_struc.Provider
+	if req.GetProvider() != "" {
+		p := u_struc.Provider(req.GetProvider())
+		if !p.IsValid() {
+			return nil, iam_v1.ErrorInvalidProvider("invalid provider")
+		}
+		provider = &p
+	}
+
+	credentials, err := s.uc.ListCredentials(ctx, actorID, provider)
 	if err != nil {
 		return nil, err
 	}
@@ -133,13 +146,16 @@ func (s *CredentialsService) ListCredentials(ctx context.Context, req *utils_v1.
 	return &iam_v1.ListCredentialsReply{Credentials: userCredentialsToV1CredentialShorts(credentials)}, nil
 }
 
-func (s *CredentialsService) DeleteCredential(ctx context.Context, req *iam_v1.CredentialsRequest) (*utils_v1.EmptyReply, error) {
-	actorId := auth.GetActorIdFromContext(ctx)
-	if actorId == 0 {
+func (s *CredentialsService) DeleteCredential(
+	ctx context.Context,
+	req *iam_v1.CredentialRequest,
+) (*utils_v1.EmptyReply, error) {
+	actorID := auth.GetActorIdFromContext(ctx)
+	if actorID == 0 {
 		return nil, iam_v1.ErrorEmptyActorId("empty actor id")
 	}
 
-	err := s.uc.DeleteCredential(ctx, actorId, req.CredentialId)
+	err := s.uc.DeleteCredential(ctx, actorID, req.GetCredentialId())
 	if err != nil {
 		return nil, err
 	}
