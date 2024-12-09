@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"math"
 
+	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
@@ -85,7 +86,7 @@ func (otpq *OneTimePasswordQuery) QueryUser() *UserQuery {
 // First returns the first OneTimePassword entity from the query.
 // Returns a *NotFoundError when no OneTimePassword was found.
 func (otpq *OneTimePasswordQuery) First(ctx context.Context) (*OneTimePassword, error) {
-	nodes, err := otpq.Limit(1).All(setContextOp(ctx, otpq.ctx, "First"))
+	nodes, err := otpq.Limit(1).All(setContextOp(ctx, otpq.ctx, ent.OpQueryFirst))
 	if err != nil {
 		return nil, err
 	}
@@ -108,7 +109,7 @@ func (otpq *OneTimePasswordQuery) FirstX(ctx context.Context) *OneTimePassword {
 // Returns a *NotFoundError when no OneTimePassword ID was found.
 func (otpq *OneTimePasswordQuery) FirstID(ctx context.Context) (id int64, err error) {
 	var ids []int64
-	if ids, err = otpq.Limit(1).IDs(setContextOp(ctx, otpq.ctx, "FirstID")); err != nil {
+	if ids, err = otpq.Limit(1).IDs(setContextOp(ctx, otpq.ctx, ent.OpQueryFirstID)); err != nil {
 		return
 	}
 	if len(ids) == 0 {
@@ -131,7 +132,7 @@ func (otpq *OneTimePasswordQuery) FirstIDX(ctx context.Context) int64 {
 // Returns a *NotSingularError when more than one OneTimePassword entity is found.
 // Returns a *NotFoundError when no OneTimePassword entities are found.
 func (otpq *OneTimePasswordQuery) Only(ctx context.Context) (*OneTimePassword, error) {
-	nodes, err := otpq.Limit(2).All(setContextOp(ctx, otpq.ctx, "Only"))
+	nodes, err := otpq.Limit(2).All(setContextOp(ctx, otpq.ctx, ent.OpQueryOnly))
 	if err != nil {
 		return nil, err
 	}
@@ -159,7 +160,7 @@ func (otpq *OneTimePasswordQuery) OnlyX(ctx context.Context) *OneTimePassword {
 // Returns a *NotFoundError when no entities are found.
 func (otpq *OneTimePasswordQuery) OnlyID(ctx context.Context) (id int64, err error) {
 	var ids []int64
-	if ids, err = otpq.Limit(2).IDs(setContextOp(ctx, otpq.ctx, "OnlyID")); err != nil {
+	if ids, err = otpq.Limit(2).IDs(setContextOp(ctx, otpq.ctx, ent.OpQueryOnlyID)); err != nil {
 		return
 	}
 	switch len(ids) {
@@ -184,7 +185,7 @@ func (otpq *OneTimePasswordQuery) OnlyIDX(ctx context.Context) int64 {
 
 // All executes the query and returns a list of OneTimePasswords.
 func (otpq *OneTimePasswordQuery) All(ctx context.Context) ([]*OneTimePassword, error) {
-	ctx = setContextOp(ctx, otpq.ctx, "All")
+	ctx = setContextOp(ctx, otpq.ctx, ent.OpQueryAll)
 	if err := otpq.prepareQuery(ctx); err != nil {
 		return nil, err
 	}
@@ -206,7 +207,7 @@ func (otpq *OneTimePasswordQuery) IDs(ctx context.Context) (ids []int64, err err
 	if otpq.ctx.Unique == nil && otpq.path != nil {
 		otpq.Unique(true)
 	}
-	ctx = setContextOp(ctx, otpq.ctx, "IDs")
+	ctx = setContextOp(ctx, otpq.ctx, ent.OpQueryIDs)
 	if err = otpq.Select(onetimepassword.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
@@ -224,7 +225,7 @@ func (otpq *OneTimePasswordQuery) IDsX(ctx context.Context) []int64 {
 
 // Count returns the count of the given query.
 func (otpq *OneTimePasswordQuery) Count(ctx context.Context) (int, error) {
-	ctx = setContextOp(ctx, otpq.ctx, "Count")
+	ctx = setContextOp(ctx, otpq.ctx, ent.OpQueryCount)
 	if err := otpq.prepareQuery(ctx); err != nil {
 		return 0, err
 	}
@@ -242,7 +243,7 @@ func (otpq *OneTimePasswordQuery) CountX(ctx context.Context) int {
 
 // Exist returns true if the query has elements in the graph.
 func (otpq *OneTimePasswordQuery) Exist(ctx context.Context) (bool, error) {
-	ctx = setContextOp(ctx, otpq.ctx, "Exist")
+	ctx = setContextOp(ctx, otpq.ctx, ent.OpQueryExist)
 	switch _, err := otpq.FirstID(ctx); {
 	case IsNotFound(err):
 		return false, nil
@@ -276,8 +277,9 @@ func (otpq *OneTimePasswordQuery) Clone() *OneTimePasswordQuery {
 		predicates: append([]predicate.OneTimePassword{}, otpq.predicates...),
 		withUser:   otpq.withUser.Clone(),
 		// clone intermediate query.
-		sql:  otpq.sql.Clone(),
-		path: otpq.path,
+		sql:       otpq.sql.Clone(),
+		path:      otpq.path,
+		modifiers: append([]func(*sql.Selector){}, otpq.modifiers...),
 	}
 }
 
@@ -544,7 +546,7 @@ func (otpgb *OneTimePasswordGroupBy) Aggregate(fns ...AggregateFunc) *OneTimePas
 
 // Scan applies the selector query and scans the result into the given value.
 func (otpgb *OneTimePasswordGroupBy) Scan(ctx context.Context, v any) error {
-	ctx = setContextOp(ctx, otpgb.build.ctx, "GroupBy")
+	ctx = setContextOp(ctx, otpgb.build.ctx, ent.OpQueryGroupBy)
 	if err := otpgb.build.prepareQuery(ctx); err != nil {
 		return err
 	}
@@ -592,7 +594,7 @@ func (otps *OneTimePasswordSelect) Aggregate(fns ...AggregateFunc) *OneTimePassw
 
 // Scan applies the selector query and scans the result into the given value.
 func (otps *OneTimePasswordSelect) Scan(ctx context.Context, v any) error {
-	ctx = setContextOp(ctx, otps.ctx, "Select")
+	ctx = setContextOp(ctx, otps.ctx, ent.OpQuerySelect)
 	if err := otps.prepareQuery(ctx); err != nil {
 		return err
 	}

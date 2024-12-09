@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"math"
 
+	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
@@ -85,7 +86,7 @@ func (ucq *UserCredentialsQuery) QueryUser() *UserQuery {
 // First returns the first UserCredentials entity from the query.
 // Returns a *NotFoundError when no UserCredentials was found.
 func (ucq *UserCredentialsQuery) First(ctx context.Context) (*UserCredentials, error) {
-	nodes, err := ucq.Limit(1).All(setContextOp(ctx, ucq.ctx, "First"))
+	nodes, err := ucq.Limit(1).All(setContextOp(ctx, ucq.ctx, ent.OpQueryFirst))
 	if err != nil {
 		return nil, err
 	}
@@ -108,7 +109,7 @@ func (ucq *UserCredentialsQuery) FirstX(ctx context.Context) *UserCredentials {
 // Returns a *NotFoundError when no UserCredentials ID was found.
 func (ucq *UserCredentialsQuery) FirstID(ctx context.Context) (id int64, err error) {
 	var ids []int64
-	if ids, err = ucq.Limit(1).IDs(setContextOp(ctx, ucq.ctx, "FirstID")); err != nil {
+	if ids, err = ucq.Limit(1).IDs(setContextOp(ctx, ucq.ctx, ent.OpQueryFirstID)); err != nil {
 		return
 	}
 	if len(ids) == 0 {
@@ -131,7 +132,7 @@ func (ucq *UserCredentialsQuery) FirstIDX(ctx context.Context) int64 {
 // Returns a *NotSingularError when more than one UserCredentials entity is found.
 // Returns a *NotFoundError when no UserCredentials entities are found.
 func (ucq *UserCredentialsQuery) Only(ctx context.Context) (*UserCredentials, error) {
-	nodes, err := ucq.Limit(2).All(setContextOp(ctx, ucq.ctx, "Only"))
+	nodes, err := ucq.Limit(2).All(setContextOp(ctx, ucq.ctx, ent.OpQueryOnly))
 	if err != nil {
 		return nil, err
 	}
@@ -159,7 +160,7 @@ func (ucq *UserCredentialsQuery) OnlyX(ctx context.Context) *UserCredentials {
 // Returns a *NotFoundError when no entities are found.
 func (ucq *UserCredentialsQuery) OnlyID(ctx context.Context) (id int64, err error) {
 	var ids []int64
-	if ids, err = ucq.Limit(2).IDs(setContextOp(ctx, ucq.ctx, "OnlyID")); err != nil {
+	if ids, err = ucq.Limit(2).IDs(setContextOp(ctx, ucq.ctx, ent.OpQueryOnlyID)); err != nil {
 		return
 	}
 	switch len(ids) {
@@ -184,7 +185,7 @@ func (ucq *UserCredentialsQuery) OnlyIDX(ctx context.Context) int64 {
 
 // All executes the query and returns a list of UserCredentialsSlice.
 func (ucq *UserCredentialsQuery) All(ctx context.Context) ([]*UserCredentials, error) {
-	ctx = setContextOp(ctx, ucq.ctx, "All")
+	ctx = setContextOp(ctx, ucq.ctx, ent.OpQueryAll)
 	if err := ucq.prepareQuery(ctx); err != nil {
 		return nil, err
 	}
@@ -206,7 +207,7 @@ func (ucq *UserCredentialsQuery) IDs(ctx context.Context) (ids []int64, err erro
 	if ucq.ctx.Unique == nil && ucq.path != nil {
 		ucq.Unique(true)
 	}
-	ctx = setContextOp(ctx, ucq.ctx, "IDs")
+	ctx = setContextOp(ctx, ucq.ctx, ent.OpQueryIDs)
 	if err = ucq.Select(usercredentials.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
@@ -224,7 +225,7 @@ func (ucq *UserCredentialsQuery) IDsX(ctx context.Context) []int64 {
 
 // Count returns the count of the given query.
 func (ucq *UserCredentialsQuery) Count(ctx context.Context) (int, error) {
-	ctx = setContextOp(ctx, ucq.ctx, "Count")
+	ctx = setContextOp(ctx, ucq.ctx, ent.OpQueryCount)
 	if err := ucq.prepareQuery(ctx); err != nil {
 		return 0, err
 	}
@@ -242,7 +243,7 @@ func (ucq *UserCredentialsQuery) CountX(ctx context.Context) int {
 
 // Exist returns true if the query has elements in the graph.
 func (ucq *UserCredentialsQuery) Exist(ctx context.Context) (bool, error) {
-	ctx = setContextOp(ctx, ucq.ctx, "Exist")
+	ctx = setContextOp(ctx, ucq.ctx, ent.OpQueryExist)
 	switch _, err := ucq.FirstID(ctx); {
 	case IsNotFound(err):
 		return false, nil
@@ -276,8 +277,9 @@ func (ucq *UserCredentialsQuery) Clone() *UserCredentialsQuery {
 		predicates: append([]predicate.UserCredentials{}, ucq.predicates...),
 		withUser:   ucq.withUser.Clone(),
 		// clone intermediate query.
-		sql:  ucq.sql.Clone(),
-		path: ucq.path,
+		sql:       ucq.sql.Clone(),
+		path:      ucq.path,
+		modifiers: append([]func(*sql.Selector){}, ucq.modifiers...),
 	}
 }
 
@@ -544,7 +546,7 @@ func (ucgb *UserCredentialsGroupBy) Aggregate(fns ...AggregateFunc) *UserCredent
 
 // Scan applies the selector query and scans the result into the given value.
 func (ucgb *UserCredentialsGroupBy) Scan(ctx context.Context, v any) error {
-	ctx = setContextOp(ctx, ucgb.build.ctx, "GroupBy")
+	ctx = setContextOp(ctx, ucgb.build.ctx, ent.OpQueryGroupBy)
 	if err := ucgb.build.prepareQuery(ctx); err != nil {
 		return err
 	}
@@ -592,7 +594,7 @@ func (ucs *UserCredentialsSelect) Aggregate(fns ...AggregateFunc) *UserCredentia
 
 // Scan applies the selector query and scans the result into the given value.
 func (ucs *UserCredentialsSelect) Scan(ctx context.Context, v any) error {
-	ctx = setContextOp(ctx, ucs.ctx, "Select")
+	ctx = setContextOp(ctx, ucs.ctx, ent.OpQuerySelect)
 	if err := ucs.prepareQuery(ctx); err != nil {
 		return err
 	}

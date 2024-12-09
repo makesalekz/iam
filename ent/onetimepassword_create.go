@@ -76,6 +76,20 @@ func (otpc *OneTimePasswordCreate) SetNillableCreatedAt(t *time.Time) *OneTimePa
 	return otpc
 }
 
+// SetFailedAttempts sets the "failed_attempts" field.
+func (otpc *OneTimePasswordCreate) SetFailedAttempts(i int64) *OneTimePasswordCreate {
+	otpc.mutation.SetFailedAttempts(i)
+	return otpc
+}
+
+// SetNillableFailedAttempts sets the "failed_attempts" field if the given value is not nil.
+func (otpc *OneTimePasswordCreate) SetNillableFailedAttempts(i *int64) *OneTimePasswordCreate {
+	if i != nil {
+		otpc.SetFailedAttempts(*i)
+	}
+	return otpc
+}
+
 // SetUser sets the "user" edge to the User entity.
 func (otpc *OneTimePasswordCreate) SetUser(u *User) *OneTimePasswordCreate {
 	return otpc.SetUserID(u.ID)
@@ -124,6 +138,10 @@ func (otpc *OneTimePasswordCreate) defaults() {
 		v := onetimepassword.DefaultCreatedAt()
 		otpc.mutation.SetCreatedAt(v)
 	}
+	if _, ok := otpc.mutation.FailedAttempts(); !ok {
+		v := onetimepassword.DefaultFailedAttempts
+		otpc.mutation.SetFailedAttempts(v)
+	}
 }
 
 // check runs all checks and user-defined validators on the builder.
@@ -156,7 +174,10 @@ func (otpc *OneTimePasswordCreate) check() error {
 	if _, ok := otpc.mutation.CreatedAt(); !ok {
 		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "OneTimePassword.created_at"`)}
 	}
-	if _, ok := otpc.mutation.UserID(); !ok {
+	if _, ok := otpc.mutation.FailedAttempts(); !ok {
+		return &ValidationError{Name: "failed_attempts", err: errors.New(`ent: missing required field "OneTimePassword.failed_attempts"`)}
+	}
+	if len(otpc.mutation.UserIDs()) == 0 {
 		return &ValidationError{Name: "user", err: errors.New(`ent: missing required edge "OneTimePassword.user"`)}
 	}
 	return nil
@@ -205,6 +226,10 @@ func (otpc *OneTimePasswordCreate) createSpec() (*OneTimePassword, *sqlgraph.Cre
 	if value, ok := otpc.mutation.CreatedAt(); ok {
 		_spec.SetField(onetimepassword.FieldCreatedAt, field.TypeTime, value)
 		_node.CreatedAt = value
+	}
+	if value, ok := otpc.mutation.FailedAttempts(); ok {
+		_spec.SetField(onetimepassword.FieldFailedAttempts, field.TypeInt64, value)
+		_node.FailedAttempts = value
 	}
 	if nodes := otpc.mutation.UserIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
@@ -347,6 +372,24 @@ func (u *OneTimePasswordUpsert) UpdateCreatedAt() *OneTimePasswordUpsert {
 	return u
 }
 
+// SetFailedAttempts sets the "failed_attempts" field.
+func (u *OneTimePasswordUpsert) SetFailedAttempts(v int64) *OneTimePasswordUpsert {
+	u.Set(onetimepassword.FieldFailedAttempts, v)
+	return u
+}
+
+// UpdateFailedAttempts sets the "failed_attempts" field to the value that was provided on create.
+func (u *OneTimePasswordUpsert) UpdateFailedAttempts() *OneTimePasswordUpsert {
+	u.SetExcluded(onetimepassword.FieldFailedAttempts)
+	return u
+}
+
+// AddFailedAttempts adds v to the "failed_attempts" field.
+func (u *OneTimePasswordUpsert) AddFailedAttempts(v int64) *OneTimePasswordUpsert {
+	u.Add(onetimepassword.FieldFailedAttempts, v)
+	return u
+}
+
 // UpdateNewValues updates the mutable fields using the new values that were set on create.
 // Using this option is equivalent to using:
 //
@@ -468,6 +511,27 @@ func (u *OneTimePasswordUpsertOne) SetCreatedAt(v time.Time) *OneTimePasswordUps
 func (u *OneTimePasswordUpsertOne) UpdateCreatedAt() *OneTimePasswordUpsertOne {
 	return u.Update(func(s *OneTimePasswordUpsert) {
 		s.UpdateCreatedAt()
+	})
+}
+
+// SetFailedAttempts sets the "failed_attempts" field.
+func (u *OneTimePasswordUpsertOne) SetFailedAttempts(v int64) *OneTimePasswordUpsertOne {
+	return u.Update(func(s *OneTimePasswordUpsert) {
+		s.SetFailedAttempts(v)
+	})
+}
+
+// AddFailedAttempts adds v to the "failed_attempts" field.
+func (u *OneTimePasswordUpsertOne) AddFailedAttempts(v int64) *OneTimePasswordUpsertOne {
+	return u.Update(func(s *OneTimePasswordUpsert) {
+		s.AddFailedAttempts(v)
+	})
+}
+
+// UpdateFailedAttempts sets the "failed_attempts" field to the value that was provided on create.
+func (u *OneTimePasswordUpsertOne) UpdateFailedAttempts() *OneTimePasswordUpsertOne {
+	return u.Update(func(s *OneTimePasswordUpsert) {
+		s.UpdateFailedAttempts()
 	})
 }
 
@@ -756,6 +820,27 @@ func (u *OneTimePasswordUpsertBulk) SetCreatedAt(v time.Time) *OneTimePasswordUp
 func (u *OneTimePasswordUpsertBulk) UpdateCreatedAt() *OneTimePasswordUpsertBulk {
 	return u.Update(func(s *OneTimePasswordUpsert) {
 		s.UpdateCreatedAt()
+	})
+}
+
+// SetFailedAttempts sets the "failed_attempts" field.
+func (u *OneTimePasswordUpsertBulk) SetFailedAttempts(v int64) *OneTimePasswordUpsertBulk {
+	return u.Update(func(s *OneTimePasswordUpsert) {
+		s.SetFailedAttempts(v)
+	})
+}
+
+// AddFailedAttempts adds v to the "failed_attempts" field.
+func (u *OneTimePasswordUpsertBulk) AddFailedAttempts(v int64) *OneTimePasswordUpsertBulk {
+	return u.Update(func(s *OneTimePasswordUpsert) {
+		s.AddFailedAttempts(v)
+	})
+}
+
+// UpdateFailedAttempts sets the "failed_attempts" field to the value that was provided on create.
+func (u *OneTimePasswordUpsertBulk) UpdateFailedAttempts() *OneTimePasswordUpsertBulk {
+	return u.Update(func(s *OneTimePasswordUpsert) {
+		s.UpdateFailedAttempts()
 	})
 }
 

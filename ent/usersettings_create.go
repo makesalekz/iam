@@ -121,7 +121,7 @@ func (usc *UserSettingsCreate) check() error {
 	if _, ok := usc.mutation.UpdatedAt(); !ok {
 		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "UserSettings.updated_at"`)}
 	}
-	if _, ok := usc.mutation.UserID(); !ok {
+	if len(usc.mutation.UserIDs()) == 0 {
 		return &ValidationError{Name: "user", err: errors.New(`ent: missing required edge "UserSettings.user"`)}
 	}
 	return nil

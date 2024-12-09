@@ -31,6 +31,10 @@ func init() {
 	onetimepasswordDescCreatedAt := onetimepasswordFields[5].Descriptor()
 	// onetimepassword.DefaultCreatedAt holds the default value on creation for the created_at field.
 	onetimepassword.DefaultCreatedAt = onetimepasswordDescCreatedAt.Default.(func() time.Time)
+	// onetimepasswordDescFailedAttempts is the schema descriptor for failed_attempts field.
+	onetimepasswordDescFailedAttempts := onetimepasswordFields[6].Descriptor()
+	// onetimepassword.DefaultFailedAttempts holds the default value on creation for the failed_attempts field.
+	onetimepassword.DefaultFailedAttempts = onetimepasswordDescFailedAttempts.Default.(int64)
 	userMixin := schema.User{}.Mixin()
 	userMixinHooks0 := userMixin[0].Hooks()
 	user.Hooks[0] = userMixinHooks0[0]
@@ -124,6 +128,6 @@ func init() {
 }
 
 const (
-	Version = "v0.13.1"                                         // Version of ent codegen.
-	Sum     = "h1:uD8QwN1h6SNphdCCzmkMN3feSUzNnVvV/WIkHKMbzOE=" // Sum of ent codegen.
+	Version = "v0.14.1"                                         // Version of ent codegen.
+	Sum     = "h1:fUERL506Pqr92EPHJqr8EYxbPioflJo6PudkrEA8a/s=" // Sum of ent codegen.
 )

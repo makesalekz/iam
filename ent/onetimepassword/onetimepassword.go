@@ -28,6 +28,8 @@ const (
 	FieldExpiresAt = "expires_at"
 	// FieldCreatedAt holds the string denoting the created_at field in the database.
 	FieldCreatedAt = "created_at"
+	// FieldFailedAttempts holds the string denoting the failed_attempts field in the database.
+	FieldFailedAttempts = "failed_attempts"
 	// EdgeUser holds the string denoting the user edge name in mutations.
 	EdgeUser = "user"
 	// Table holds the table name of the onetimepassword in the database.
@@ -50,6 +52,7 @@ var Columns = []string{
 	FieldIsUsed,
 	FieldExpiresAt,
 	FieldCreatedAt,
+	FieldFailedAttempts,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -69,6 +72,8 @@ var (
 	DefaultIsUsed bool
 	// DefaultCreatedAt holds the default value on creation for the "created_at" field.
 	DefaultCreatedAt func() time.Time
+	// DefaultFailedAttempts holds the default value on creation for the "failed_attempts" field.
+	DefaultFailedAttempts int64
 )
 
 // TypeValidator is a validator for the "type" field enum values. It is called by the builders before save.
@@ -117,6 +122,11 @@ func ByExpiresAt(opts ...sql.OrderTermOption) OrderOption {
 // ByCreatedAt orders the results by the created_at field.
 func ByCreatedAt(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldCreatedAt, opts...).ToFunc()
+}
+
+// ByFailedAttempts orders the results by the failed_attempts field.
+func ByFailedAttempts(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldFailedAttempts, opts...).ToFunc()
 }
 
 // ByUserField orders the results by user field.
