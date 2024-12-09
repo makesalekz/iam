@@ -13,8 +13,8 @@ import (
 	tenants_v1 "gitlab.calendaria.team/services/tenants/api/tenants/v1"
 	utils_v1 "gitlab.calendaria.team/services/utils/api/utils/v1"
 	u_error "gitlab.calendaria.team/services/utils/v1/error"
-	u_nats "gitlab.calendaria.team/services/utils/v1/nats"
 	u_jwt "gitlab.calendaria.team/services/utils/v2/jwt"
+	u_nats "gitlab.calendaria.team/services/utils/v2/nats"
 
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/lib/pq"
@@ -252,6 +252,14 @@ func (uc *UsersUsecase) UpdateUserProfile(
 			return nil, v1.ErrorUserNotFound("user not found")
 		}
 		return nil, v1.ErrorDatabaseQuery("database error: %s", err.Error())
+	}
+
+	if dto.Avatar == "" && user.Avatar != nil {
+		err = uc.media.DeleteAvatar(ctx, []string{*user.Avatar})
+		if err != nil {
+			uc.log.Errorf("failed to delete avatar: %v", err)
+			dto.Avatar = *user.Avatar
+		}
 	}
 
 	updatedUser, err := uc.usersRepo.UpdateUserData(ctx, user, dto)

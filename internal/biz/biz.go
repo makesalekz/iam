@@ -2,13 +2,13 @@ package biz
 
 import (
 	"github.com/google/wire"
-	"gitlab.calendaria.team/services/utils/v1/nats"
+	"gitlab.calendaria.team/services/utils/v2/nats"
 )
 
 const (
-	QueueContactsPhoneVerified  = "contacts/confirmed_phone"
-	QueueContactsEmailVerified  = "contacts/confirmed_emails"
-	QueueEventsDefaultCalendars = "events/default_calendars"
+	QueueContactsPhoneVerified  = "contacts.confirmed_phone"
+	QueueContactsEmailVerified  = "contacts.confirmed_emails"
+	QueueEventsDefaultCalendars = "events.default_calendars"
 )
 
 // ProviderSet is biz providers.
