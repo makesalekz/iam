@@ -23,16 +23,18 @@ message FcmDeviceRequest {
 message FcmDataRequest {
   string language = 1;
   string token = 2;
+  optional string oldToken = 3;
 }
 
 message PersonalSmsSenderRequest {
   string phone = 1;
   string message = 2;
+  string sender = 3;
 }
 
 message EmailSenderRequest {
   optional string language = 1 [(validate.rules).string = {in: ["en", "ru", "kk"]}];
-  string type = 2 [(validate.rules).string = {in: ["invite"]}];
+  string type = 2 [(validate.rules).string = {in: ["invite", "confirm_email"]}];
   repeated string emails = 3 [(validate.rules).repeated = {items: {string: {email: true}}}];
   map<string, string> data = 4;
 }

@@ -20,9 +20,10 @@ import (
 )
 
 const (
+	aigendaAppID    = "AIgenda"
 	calendariaAppID = "calendaria"
 	smsCode         = "777333"
-	smsText         = "AIgenda Kod: 777333"
+	smsText         = "AIgenda Kod: 777333\nTOO \"AXIO\""
 )
 
 func TestAuthSuccess(t *testing.T) {
@@ -55,7 +56,7 @@ func TestAuthSuccess(t *testing.T) {
 
 	usersRepo.EXPECT().GetUserByPhone(gomock.Any(), phone, true).Return(expectedUser, nil)
 	otpRepo.EXPECT().CreateOneTimePassword(gomock.Any(), userID, enum.Phone, smsCode, 5*time.Minute).Return(otp, nil)
-	notificationsRemote.EXPECT().PersonalSmsSender(gomock.Any(), phone, smsText).Return(nil)
+	notificationsRemote.EXPECT().PersonalSmsSender(gomock.Any(), aigendaAppID, phone, smsText).Return(nil)
 
 	_, err = authUseCase.AuthUserByPhone(ctx, &biz.AuthPhoneDto{
 		AppID: calendariaAppID,
@@ -95,7 +96,7 @@ func TestUserNotExist(t *testing.T) {
 	usersRepo.EXPECT().GetUserByPhone(gomock.Any(), phone, true).Return(nil, &ent.NotFoundError{})
 	usersRepo.EXPECT().CreateUserWithPhone(gomock.Any(), phone).Return(expectedUser, nil)
 	otpRepo.EXPECT().CreateOneTimePassword(gomock.Any(), userID, enum.Phone, smsCode, 5*time.Minute).Return(otp, nil)
-	notificationsRemote.EXPECT().PersonalSmsSender(gomock.Any(), phone, smsText).Return(nil)
+	notificationsRemote.EXPECT().PersonalSmsSender(gomock.Any(), aigendaAppID, phone, smsText).Return(nil)
 
 	_, err = authUseCase.AuthUserByPhone(ctx, &biz.AuthPhoneDto{
 		AppID: calendariaAppID,
@@ -165,7 +166,7 @@ func TestUserRegistration(t *testing.T) {
 	usersRepo.EXPECT().GetUserByPhone(gomock.Any(), phone, true).Return(nil, &ent.NotFoundError{})
 	usersRepo.EXPECT().CreateUserWithPhone(gomock.Any(), phone).Return(expectedUser, nil)
 	otpRepo.EXPECT().CreateOneTimePassword(gomock.Any(), userID, enum.Phone, smsCode, 5*time.Minute).Return(otp, nil)
-	notificationsRemote.EXPECT().PersonalSmsSender(gomock.Any(), phone, smsText).Return(nil)
+	notificationsRemote.EXPECT().PersonalSmsSender(gomock.Any(), aigendaAppID, phone, smsText).Return(nil)
 
 	_, err = authUseCase.AuthUserByPhone(ctx, &biz.AuthPhoneDto{
 		AppID:          calendariaAppID,
