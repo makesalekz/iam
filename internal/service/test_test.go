@@ -8,8 +8,8 @@ import (
 	"gitlab.calendaria.team/services/iam/internal/biz"
 	"gitlab.calendaria.team/services/iam/internal/data/mock"
 	"gitlab.calendaria.team/services/iam/internal/service"
-	u_nats_mock "gitlab.calendaria.team/services/utils/v1/nats/mock"
 	jwt_mock "gitlab.calendaria.team/services/utils/v2/jwt/mock"
+	u_nats_mock "gitlab.calendaria.team/services/utils/v2/nats/mock"
 	u_zap "gitlab.calendaria.team/services/utils/v2/zap"
 
 	"github.com/go-kratos/kratos/v2/metadata"

@@ -167,7 +167,7 @@ mock:
 	mockgen -source internal/data/tenants.go -destination internal/data/mock/tenants.go -package mock
 	mockgen -source internal/data/credentials.go -destination internal/data/mock/credentials.go -package mock
 	mockgen -source internal/data/otp.go -destination internal/data/mock/otp.go -package mock
-	mockgen -source internal/data/notifications_interface.go -destination internal/data/mock/notifications.go -package mock
+	mockgen -source internal/data/notifications.go -destination internal/data/mock/notifications.go -package mock
 
 interfaces:
 	ifacemaker -f internal/data/tenants.go -s  TenantsRemote -i ITenantRemote -p data -o internal/data/tenant_interface.go

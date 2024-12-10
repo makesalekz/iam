@@ -53,6 +53,7 @@ func (r *credentialsRepo) CreateCredential(
 		UpdateTokenType().
 		UpdateRefreshToken().
 		UpdateExpiresAt().
+		ClearDeletedAt().
 		Exec(ctx)
 }
 
