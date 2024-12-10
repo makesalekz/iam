@@ -2,6 +2,7 @@ package data
 
 import (
 	"context"
+	"fmt"
 	"time"
 
 	"entgo.io/ent/dialect/sql"
@@ -79,14 +80,12 @@ func (r *otpRepo) CheckOneTimePassword(ctx context.Context, userID int64, code s
 			onetimepassword.ExpiresAtGT(time.Now()),
 		).Modify(func(s *sql.UpdateBuilder) {
 			s.Add(onetimepassword.FieldFailedAttempts, 1)
+			s.Set(onetimepassword.FieldIsUsed, sql.ExprFunc(func(b *sql.Builder) {
+				b.WriteString(fmt.Sprintf("CASE WHEN %s >= %d THEN true ELSE false END",
+					b.Quote(sql.Table(onetimepassword.Table).C(onetimepassword.FieldFailedAttempts)),
+					FailedAttemptsLimit))
+			}))
 		}).Exec(ctx)
-		if err != nil {
-			return nil, err
-		}
-
-		err = tx.OneTimePassword.Update().Where(
-			onetimepassword.FailedAttemptsGT(FailedAttemptsLimit),
-		).SetIsUsed(true).Exec(ctx)
 		if err != nil {
 			return nil, err
 		}
