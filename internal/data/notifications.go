@@ -12,7 +12,7 @@ import (
 // INotificationsRemote ...
 type INotificationsRemote interface {
 	GetSenderClient(ctx context.Context) (notifications_v1.SenderClient, error)
-	PersonalSmsSender(ctx context.Context, phone, message string) error
+	PersonalSmsSender(ctx context.Context, sender, phone, message string) error
 	PersonalEmailSender(ctx context.Context, email, emailType, language string, data map[string]string) error
 }
 
@@ -43,7 +43,7 @@ func (r *NotificationsRemote) GetSenderClient(ctx context.Context) (notification
 	return notifications_v1.NewSenderClient(conn), nil
 }
 
-func (r *NotificationsRemote) PersonalSmsSender(ctx context.Context, phone, message string) error {
+func (r *NotificationsRemote) PersonalSmsSender(ctx context.Context, sender, phone, message string) error {
 	client, err := r.GetSenderClient(ctx)
 	if err != nil {
 		return err
@@ -51,6 +51,7 @@ func (r *NotificationsRemote) PersonalSmsSender(ctx context.Context, phone, mess
 
 	_, err = client.PersonalSmsSender(
 		ctx, &notifications_v1.PersonalSmsSenderRequest{
+			Sender:  sender,
 			Phone:   phone,
 			Message: message,
 		},

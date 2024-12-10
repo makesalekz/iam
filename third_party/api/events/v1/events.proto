@@ -13,7 +13,7 @@ service Events {
   rpc GetEvent(EventRequest) returns (EventReply);
   rpc CreateEvent(CreateEventRequest) returns (EventReply);
   rpc UpdateEvent(UpdateEventRequest) returns (EventReply);
-  rpc DeleteEvent(EventRequest) returns (utils.v1.EmptyReply);
+  rpc DeleteEvent(DeleteEventRequest) returns (DeleteEventReply);
   rpc DeleteEventCover(EventRequest) returns (utils.v1.EmptyReply);
   rpc DeleteEventLocation(EventRequest) returns (utils.v1.EmptyReply);
   rpc ListEvents(ListEventsRequest) returns (ListEventsReply);
@@ -35,6 +35,17 @@ message UpdateEventRequest {
   EventDto event = 2;
 }
 
+message DeleteEventRequest {
+  int64 eventId = 1;
+  string deleteStartDateTime = 2;
+  string eventModifyType = 3;
+}
+
+message DeleteEventReply {
+  optional Event event = 1;
+  repeated EventSchedule schedules = 2;
+}
+
 message ListEventsRequest {
   optional bool isAllDay = 3;
   bool isSetRemind = 4;
@@ -53,15 +64,12 @@ message ListEventsRequest {
 
 message ListSlotsRequest {
   int64 userId = 1;
-  SlotType slotType = 2;
-  bool withSchedule = 14;
-  string fromDateTime = 5;
-  string toDateTime = 6;
+  string fromDateTime = 2;
+  string toDateTime = 3;
 }
 
 message ListSlotsReply {
-  repeated EventSlot slots = 1;
-  repeated EventRecurrence recurrences = 3;
+  repeated EventByPrivacy events = 1;
   repeated EventSchedule schedules = 4;
 }
 

@@ -63,7 +63,7 @@ func (dto *AuthPhoneDto) GenerateCode() string {
 }
 
 func (dto *AuthPhoneDto) GetOtpMessage() string {
-	sms := fmt.Sprintf("%s Kod: %s", dto.AppID.BrandName(), dto.code)
+	sms := fmt.Sprintf("%s Kod: %s\n%s", dto.AppID.BrandName(), dto.code, dto.AppID.CompanyFullName())
 
 	if dto.AppSignature != "" {
 		sms = fmt.Sprintf("%s\n%s", sms, dto.AppSignature)
