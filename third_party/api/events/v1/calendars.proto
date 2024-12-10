@@ -40,7 +40,7 @@ message ListCalendarsReply {
 }
 
 message ListExternalCalendarsRequest {
-  string provider = 1;
+  int64 credentialId = 1;
 }
 
 message ListExternalCalendarsReply {
@@ -48,8 +48,8 @@ message ListExternalCalendarsReply {
 }
 
 message ConnectExternalCalendarRequest {
-  int64 calendarId = 1;
-  string provider = 2;
+  int64 credentialId = 1;
+  int64 calendarId = 2;
   string externalId = 3;
 }
 

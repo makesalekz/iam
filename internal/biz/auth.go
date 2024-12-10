@@ -10,9 +10,9 @@ import (
 	"gitlab.calendaria.team/services/iam/ent"
 	"gitlab.calendaria.team/services/iam/ent/enum"
 	"gitlab.calendaria.team/services/iam/internal/data"
-	u_nats "gitlab.calendaria.team/services/utils/v1/nats"
 	u_auth "gitlab.calendaria.team/services/utils/v2/auth"
 	u_jwt "gitlab.calendaria.team/services/utils/v2/jwt"
+	u_nats "gitlab.calendaria.team/services/utils/v2/nats"
 	u_struc "gitlab.calendaria.team/services/utils/v2/struc"
 
 	"github.com/go-kratos/kratos/v2/log"
@@ -124,7 +124,7 @@ func (uc *AuthUsecase) AuthUserByPhone(ctx context.Context, dto *AuthPhoneDto) (
 	}
 
 	sms := dto.GetOtpMessage()
-	err = uc.notifications.PersonalSmsSender(ctx, dto.Phone, sms)
+	err = uc.notifications.PersonalSmsSender(ctx, dto.AppID.BrandName(), dto.Phone, sms)
 	if err != nil {
 		uc.log.Errorf("notifications.PersonalSmsSender: %s", err.Error())
 	}
