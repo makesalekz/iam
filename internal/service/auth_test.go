@@ -14,8 +14,8 @@ import (
 	"gitlab.calendaria.team/services/iam/ent/enum"
 	"gitlab.calendaria.team/services/iam/internal/biz"
 	"gitlab.calendaria.team/services/iam/internal/data/mock"
-	nats_mock "gitlab.calendaria.team/services/utils/v1/nats/mock"
 	jwt_mock "gitlab.calendaria.team/services/utils/v2/jwt/mock"
+	nats_mock "gitlab.calendaria.team/services/utils/v2/nats/mock"
 	"gitlab.calendaria.team/services/utils/v2/zap"
 )
 
