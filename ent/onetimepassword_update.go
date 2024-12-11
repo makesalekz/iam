@@ -115,6 +115,27 @@ func (otpu *OneTimePasswordUpdate) SetNillableCreatedAt(t *time.Time) *OneTimePa
 	return otpu
 }
 
+// SetFailedAttempts sets the "failed_attempts" field.
+func (otpu *OneTimePasswordUpdate) SetFailedAttempts(i int64) *OneTimePasswordUpdate {
+	otpu.mutation.ResetFailedAttempts()
+	otpu.mutation.SetFailedAttempts(i)
+	return otpu
+}
+
+// SetNillableFailedAttempts sets the "failed_attempts" field if the given value is not nil.
+func (otpu *OneTimePasswordUpdate) SetNillableFailedAttempts(i *int64) *OneTimePasswordUpdate {
+	if i != nil {
+		otpu.SetFailedAttempts(*i)
+	}
+	return otpu
+}
+
+// AddFailedAttempts adds i to the "failed_attempts" field.
+func (otpu *OneTimePasswordUpdate) AddFailedAttempts(i int64) *OneTimePasswordUpdate {
+	otpu.mutation.AddFailedAttempts(i)
+	return otpu
+}
+
 // SetUser sets the "user" edge to the User entity.
 func (otpu *OneTimePasswordUpdate) SetUser(u *User) *OneTimePasswordUpdate {
 	return otpu.SetUserID(u.ID)
@@ -208,6 +229,12 @@ func (otpu *OneTimePasswordUpdate) sqlSave(ctx context.Context) (n int, err erro
 	}
 	if value, ok := otpu.mutation.CreatedAt(); ok {
 		_spec.SetField(onetimepassword.FieldCreatedAt, field.TypeTime, value)
+	}
+	if value, ok := otpu.mutation.FailedAttempts(); ok {
+		_spec.SetField(onetimepassword.FieldFailedAttempts, field.TypeInt64, value)
+	}
+	if value, ok := otpu.mutation.AddedFailedAttempts(); ok {
+		_spec.AddField(onetimepassword.FieldFailedAttempts, field.TypeInt64, value)
 	}
 	if otpu.mutation.UserCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -344,6 +371,27 @@ func (otpuo *OneTimePasswordUpdateOne) SetNillableCreatedAt(t *time.Time) *OneTi
 	return otpuo
 }
 
+// SetFailedAttempts sets the "failed_attempts" field.
+func (otpuo *OneTimePasswordUpdateOne) SetFailedAttempts(i int64) *OneTimePasswordUpdateOne {
+	otpuo.mutation.ResetFailedAttempts()
+	otpuo.mutation.SetFailedAttempts(i)
+	return otpuo
+}
+
+// SetNillableFailedAttempts sets the "failed_attempts" field if the given value is not nil.
+func (otpuo *OneTimePasswordUpdateOne) SetNillableFailedAttempts(i *int64) *OneTimePasswordUpdateOne {
+	if i != nil {
+		otpuo.SetFailedAttempts(*i)
+	}
+	return otpuo
+}
+
+// AddFailedAttempts adds i to the "failed_attempts" field.
+func (otpuo *OneTimePasswordUpdateOne) AddFailedAttempts(i int64) *OneTimePasswordUpdateOne {
+	otpuo.mutation.AddFailedAttempts(i)
+	return otpuo
+}
+
 // SetUser sets the "user" edge to the User entity.
 func (otpuo *OneTimePasswordUpdateOne) SetUser(u *User) *OneTimePasswordUpdateOne {
 	return otpuo.SetUserID(u.ID)
@@ -467,6 +515,12 @@ func (otpuo *OneTimePasswordUpdateOne) sqlSave(ctx context.Context) (_node *OneT
 	}
 	if value, ok := otpuo.mutation.CreatedAt(); ok {
 		_spec.SetField(onetimepassword.FieldCreatedAt, field.TypeTime, value)
+	}
+	if value, ok := otpuo.mutation.FailedAttempts(); ok {
+		_spec.SetField(onetimepassword.FieldFailedAttempts, field.TypeInt64, value)
+	}
+	if value, ok := otpuo.mutation.AddedFailedAttempts(); ok {
+		_spec.AddField(onetimepassword.FieldFailedAttempts, field.TypeInt64, value)
 	}
 	if otpuo.mutation.UserCleared() {
 		edge := &sqlgraph.EdgeSpec{

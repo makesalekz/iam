@@ -17,6 +17,7 @@ var (
 		{Name: "is_used", Type: field.TypeBool, Default: false},
 		{Name: "expires_at", Type: field.TypeTime},
 		{Name: "created_at", Type: field.TypeTime},
+		{Name: "failed_attempts", Type: field.TypeInt64, Default: 0},
 		{Name: "user_id", Type: field.TypeInt64},
 	}
 	// OneTimePasswordsTable holds the schema information for the "one_time_passwords" table.
@@ -27,7 +28,7 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "one_time_passwords_users_user",
-				Columns:    []*schema.Column{OneTimePasswordsColumns[6]},
+				Columns:    []*schema.Column{OneTimePasswordsColumns[7]},
 				RefColumns: []*schema.Column{UsersColumns[0]},
 				OnDelete:   schema.NoAction,
 			},

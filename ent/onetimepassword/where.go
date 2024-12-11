@@ -81,6 +81,11 @@ func CreatedAt(v time.Time) predicate.OneTimePassword {
 	return predicate.OneTimePassword(sql.FieldEQ(FieldCreatedAt, v))
 }
 
+// FailedAttempts applies equality check predicate on the "failed_attempts" field. It's identical to FailedAttemptsEQ.
+func FailedAttempts(v int64) predicate.OneTimePassword {
+	return predicate.OneTimePassword(sql.FieldEQ(FieldFailedAttempts, v))
+}
+
 // UserIDEQ applies the EQ predicate on the "user_id" field.
 func UserIDEQ(v int64) predicate.OneTimePassword {
 	return predicate.OneTimePassword(sql.FieldEQ(FieldUserID, v))
@@ -284,6 +289,46 @@ func CreatedAtLT(v time.Time) predicate.OneTimePassword {
 // CreatedAtLTE applies the LTE predicate on the "created_at" field.
 func CreatedAtLTE(v time.Time) predicate.OneTimePassword {
 	return predicate.OneTimePassword(sql.FieldLTE(FieldCreatedAt, v))
+}
+
+// FailedAttemptsEQ applies the EQ predicate on the "failed_attempts" field.
+func FailedAttemptsEQ(v int64) predicate.OneTimePassword {
+	return predicate.OneTimePassword(sql.FieldEQ(FieldFailedAttempts, v))
+}
+
+// FailedAttemptsNEQ applies the NEQ predicate on the "failed_attempts" field.
+func FailedAttemptsNEQ(v int64) predicate.OneTimePassword {
+	return predicate.OneTimePassword(sql.FieldNEQ(FieldFailedAttempts, v))
+}
+
+// FailedAttemptsIn applies the In predicate on the "failed_attempts" field.
+func FailedAttemptsIn(vs ...int64) predicate.OneTimePassword {
+	return predicate.OneTimePassword(sql.FieldIn(FieldFailedAttempts, vs...))
+}
+
+// FailedAttemptsNotIn applies the NotIn predicate on the "failed_attempts" field.
+func FailedAttemptsNotIn(vs ...int64) predicate.OneTimePassword {
+	return predicate.OneTimePassword(sql.FieldNotIn(FieldFailedAttempts, vs...))
+}
+
+// FailedAttemptsGT applies the GT predicate on the "failed_attempts" field.
+func FailedAttemptsGT(v int64) predicate.OneTimePassword {
+	return predicate.OneTimePassword(sql.FieldGT(FieldFailedAttempts, v))
+}
+
+// FailedAttemptsGTE applies the GTE predicate on the "failed_attempts" field.
+func FailedAttemptsGTE(v int64) predicate.OneTimePassword {
+	return predicate.OneTimePassword(sql.FieldGTE(FieldFailedAttempts, v))
+}
+
+// FailedAttemptsLT applies the LT predicate on the "failed_attempts" field.
+func FailedAttemptsLT(v int64) predicate.OneTimePassword {
+	return predicate.OneTimePassword(sql.FieldLT(FieldFailedAttempts, v))
+}
+
+// FailedAttemptsLTE applies the LTE predicate on the "failed_attempts" field.
+func FailedAttemptsLTE(v int64) predicate.OneTimePassword {
+	return predicate.OneTimePassword(sql.FieldLTE(FieldFailedAttempts, v))
 }
 
 // HasUser applies the HasEdge predicate on the "user" edge.

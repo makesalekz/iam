@@ -2,6 +2,7 @@ package mixins
 
 import (
 	"context"
+
 	"gitlab.calendaria.team/services/iam/ent/intercept"
 
 	"entgo.io/ent"

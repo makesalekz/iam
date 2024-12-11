@@ -31,6 +31,8 @@ type OneTimePassword struct {
 	ExpiresAt time.Time `json:"expires_at,omitempty"`
 	// CreatedAt holds the value of the "created_at" field.
 	CreatedAt time.Time `json:"created_at,omitempty"`
+	// FailedAttempts holds the value of the "failed_attempts" field.
+	FailedAttempts int64 `json:"failed_attempts,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the OneTimePasswordQuery when eager-loading is set.
 	Edges        OneTimePasswordEdges `json:"edges"`
@@ -64,7 +66,7 @@ func (*OneTimePassword) scanValues(columns []string) ([]any, error) {
 		switch columns[i] {
 		case onetimepassword.FieldIsUsed:
 			values[i] = new(sql.NullBool)
-		case onetimepassword.FieldID, onetimepassword.FieldUserID:
+		case onetimepassword.FieldID, onetimepassword.FieldUserID, onetimepassword.FieldFailedAttempts:
 			values[i] = new(sql.NullInt64)
 		case onetimepassword.FieldCode, onetimepassword.FieldType:
 			values[i] = new(sql.NullString)
@@ -127,6 +129,12 @@ func (otp *OneTimePassword) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				otp.CreatedAt = value.Time
 			}
+		case onetimepassword.FieldFailedAttempts:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field failed_attempts", values[i])
+			} else if value.Valid {
+				otp.FailedAttempts = value.Int64
+			}
 		default:
 			otp.selectValues.Set(columns[i], values[i])
 		}
@@ -185,6 +193,9 @@ func (otp *OneTimePassword) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("created_at=")
 	builder.WriteString(otp.CreatedAt.Format(time.ANSIC))
+	builder.WriteString(", ")
+	builder.WriteString("failed_attempts=")
+	builder.WriteString(fmt.Sprintf("%v", otp.FailedAttempts))
 	builder.WriteByte(')')
 	return builder.String()
 }

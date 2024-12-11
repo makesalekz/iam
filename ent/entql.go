@@ -30,12 +30,13 @@ var schemaGraph = func() *sqlgraph.Schema {
 		},
 		Type: "OneTimePassword",
 		Fields: map[string]*sqlgraph.FieldSpec{
-			onetimepassword.FieldUserID:    {Type: field.TypeInt64, Column: onetimepassword.FieldUserID},
-			onetimepassword.FieldCode:      {Type: field.TypeString, Column: onetimepassword.FieldCode},
-			onetimepassword.FieldType:      {Type: field.TypeEnum, Column: onetimepassword.FieldType},
-			onetimepassword.FieldIsUsed:    {Type: field.TypeBool, Column: onetimepassword.FieldIsUsed},
-			onetimepassword.FieldExpiresAt: {Type: field.TypeTime, Column: onetimepassword.FieldExpiresAt},
-			onetimepassword.FieldCreatedAt: {Type: field.TypeTime, Column: onetimepassword.FieldCreatedAt},
+			onetimepassword.FieldUserID:         {Type: field.TypeInt64, Column: onetimepassword.FieldUserID},
+			onetimepassword.FieldCode:           {Type: field.TypeString, Column: onetimepassword.FieldCode},
+			onetimepassword.FieldType:           {Type: field.TypeEnum, Column: onetimepassword.FieldType},
+			onetimepassword.FieldIsUsed:         {Type: field.TypeBool, Column: onetimepassword.FieldIsUsed},
+			onetimepassword.FieldExpiresAt:      {Type: field.TypeTime, Column: onetimepassword.FieldExpiresAt},
+			onetimepassword.FieldCreatedAt:      {Type: field.TypeTime, Column: onetimepassword.FieldCreatedAt},
+			onetimepassword.FieldFailedAttempts: {Type: field.TypeInt64, Column: onetimepassword.FieldFailedAttempts},
 		},
 	}
 	graph.Nodes[1] = &sqlgraph.Node{
@@ -251,6 +252,11 @@ func (f *OneTimePasswordFilter) WhereExpiresAt(p entql.TimeP) {
 // WhereCreatedAt applies the entql time.Time predicate on the created_at field.
 func (f *OneTimePasswordFilter) WhereCreatedAt(p entql.TimeP) {
 	f.Where(p.Field(onetimepassword.FieldCreatedAt))
+}
+
+// WhereFailedAttempts applies the entql int64 predicate on the failed_attempts field.
+func (f *OneTimePasswordFilter) WhereFailedAttempts(p entql.Int64P) {
+	f.Where(p.Field(onetimepassword.FieldFailedAttempts))
 }
 
 // WhereHasUser applies a predicate to check if query has an edge user.
