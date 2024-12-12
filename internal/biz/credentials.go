@@ -2,6 +2,7 @@ package biz
 
 import (
 	"context"
+	"fmt"
 
 	iam_v1 "gitlab.calendaria.team/services/iam/api/iam/v1"
 	"gitlab.calendaria.team/services/iam/ent"
@@ -13,7 +14,9 @@ import (
 
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/mitchellh/mapstructure"
+	goauth2 "golang.org/x/oauth2"
 	"golang.org/x/oauth2/google"
+	"google.golang.org/api/calendar/v3"
 	"google.golang.org/api/oauth2/v2"
 	"google.golang.org/api/option"
 )
@@ -100,6 +103,68 @@ func (uc *CredentialsUsecase) AuthByGoogle(ctx context.Context, actorID int64, a
 	}
 
 	return nil
+}
+
+func (uc *CredentialsUsecase) RefreshCredential(
+	ctx context.Context,
+	actorID, credentialID int64,
+) (*ent.UserCredentials, error) {
+	credential, err := uc.credentialsRepo.GetCredential(ctx, actorID, credentialID)
+	if err != nil {
+		if ent.IsNotFound(err) {
+			return nil, iam_v1.ErrorCredentialNotFound("credential not found")
+		}
+		return nil, iam_v1.ErrorDatabaseQuery("database error: %s", err.Error())
+	}
+
+	// get google credentials
+	mapGoogleCredentials, err := uc.config.ReadGlobalSecretsFor(ctx, "gwebcredentials")
+	if err != nil {
+		return nil, fmt.Errorf("unable to read client secret from vault: %w", err)
+	}
+
+	// decode google credentials
+	googleCredentials := ""
+	err = mapstructure.Decode(mapGoogleCredentials["data"], &googleCredentials)
+	if err != nil {
+		return nil, fmt.Errorf("unable to decode client secret: %w", err)
+	}
+
+	// If modifying these scopes, delete your previously saved token.json.
+	config, err := google.ConfigFromJSON([]byte(googleCredentials), calendar.CalendarScope)
+	if err != nil {
+		return nil, fmt.Errorf("unable to parse client secret file to config: %w", err)
+	}
+
+	// collect token
+	token := &goauth2.Token{
+		AccessToken: credential.AccessToken,
+	}
+	if credential.TokenType != nil {
+		token.TokenType = *credential.TokenType
+	}
+	if credential.RefreshToken != nil {
+		token.RefreshToken = *credential.RefreshToken
+	}
+	if credential.ExpiresAt != nil {
+		token.Expiry = credential.ExpiresAt.UTC()
+	}
+
+	// refresh token if expired
+	if !token.Valid() {
+		newToken, err2 := config.TokenSource(ctx, token).Token()
+		if err2 != nil {
+			return nil, fmt.Errorf("unable to refresh token: %w", err2)
+		}
+
+		token = newToken
+	}
+
+	updCredential := data.CredentialDto{
+		Token: token,
+	}
+
+	return uc.credentialsRepo.UpdateCredential(ctx, credentialID, updCredential)
 }
 
 func (uc *CredentialsUsecase) GetCredential(

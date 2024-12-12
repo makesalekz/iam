@@ -103,6 +103,23 @@ func (s *CredentialsService) AuthByGoogle(
 	return &utils_v1.EmptyReply{}, nil
 }
 
+func (s *CredentialsService) RefreshCredential(
+	ctx context.Context,
+	req *iam_v1.CredentialRequest,
+) (*iam_v1.CredentialReply, error) {
+	actorID := auth.GetActorIdFromContext(ctx)
+	if actorID == 0 {
+		return nil, iam_v1.ErrorEmptyActorId("empty actor id")
+	}
+
+	credential, err := s.uc.RefreshCredential(ctx, actorID, req.GetCredentialId())
+	if err != nil {
+		return nil, err
+	}
+
+	return &iam_v1.CredentialReply{Credential: userCredentialToV1Credential(credential)}, nil
+}
+
 func (s *CredentialsService) GetCredential(
 	ctx context.Context,
 	req *iam_v1.CredentialRequest,
