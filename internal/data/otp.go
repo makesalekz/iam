@@ -2,11 +2,17 @@ package data
 
 import (
 	"context"
+	"fmt"
 	"time"
 
+	"entgo.io/ent/dialect/sql"
 	"gitlab.calendaria.team/services/iam/ent"
 	"gitlab.calendaria.team/services/iam/ent/enum"
 	"gitlab.calendaria.team/services/iam/ent/onetimepassword"
+)
+
+const (
+	FailedAttemptsLimit = 5
 )
 
 // OtpRepo.
@@ -46,18 +52,6 @@ func (r *otpRepo) CreateOneTimePassword(
 }
 
 func (r *otpRepo) CheckOneTimePassword(ctx context.Context, userID int64, code string) (*ent.OneTimePassword, error) {
-	otp, err := r.db.OneTimePassword.Query().Where(
-		onetimepassword.UserID(userID),
-		onetimepassword.Code(code),
-		onetimepassword.IsUsed(false),
-		onetimepassword.ExpiresAtGT(time.Now()),
-	).First(ctx)
-
-	if err != nil {
-		return nil, err
-	}
-
-	// creating a transaction and rollback method
 	tx, err := r.db.Tx(ctx)
 	if err != nil {
 		return nil, err
@@ -67,6 +61,42 @@ func (r *otpRepo) CheckOneTimePassword(ctx context.Context, userID int64, code s
 			_ = tx.Rollback()
 		}
 	}()
+
+	otp, err := tx.OneTimePassword.Query().Where(
+		onetimepassword.UserID(userID),
+		onetimepassword.Code(code),
+		onetimepassword.IsUsed(false),
+		onetimepassword.ExpiresAtGT(time.Now()),
+		onetimepassword.FailedAttemptsLTE(FailedAttemptsLimit),
+	).First(ctx)
+	if err != nil && !ent.IsNotFound(err) {
+		return nil, err
+	}
+
+	if ent.IsNotFound(err) {
+		err = tx.OneTimePassword.Update().Where(
+			onetimepassword.UserID(userID),
+			onetimepassword.IsUsed(false),
+			onetimepassword.ExpiresAtGT(time.Now()),
+		).Modify(func(s *sql.UpdateBuilder) {
+			s.Add(onetimepassword.FieldFailedAttempts, 1)
+			s.Set(onetimepassword.FieldIsUsed, sql.ExprFunc(func(b *sql.Builder) {
+				b.WriteString(fmt.Sprintf("CASE WHEN %s >= %d THEN true ELSE false END",
+					b.Quote(sql.Table(onetimepassword.Table).C(onetimepassword.FieldFailedAttempts)),
+					FailedAttemptsLimit))
+			}))
+		}).Exec(ctx)
+		if err != nil {
+			return nil, err
+		}
+
+		err = tx.Commit()
+		if err != nil {
+			return nil, err
+		}
+
+		return nil, &ent.NotFoundError{}
+	}
 
 	otp, err = tx.OneTimePassword.UpdateOne(otp).SetIsUsed(true).Save(ctx)
 	if err != nil {

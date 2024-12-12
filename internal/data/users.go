@@ -5,9 +5,8 @@ import (
 	"fmt"
 	"time"
 
-	"gitlab.calendaria.team/services/iam/ent/mixins"
-
 	"gitlab.calendaria.team/services/iam/ent"
+	"gitlab.calendaria.team/services/iam/ent/mixins"
 	"gitlab.calendaria.team/services/iam/ent/user"
 	utils_v1 "gitlab.calendaria.team/services/utils/api/utils/v1"
 )
