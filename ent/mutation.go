@@ -40,20 +40,22 @@ const (
 // OneTimePasswordMutation represents an operation that mutates the OneTimePassword nodes in the graph.
 type OneTimePasswordMutation struct {
 	config
-	op            Op
-	typ           string
-	id            *int64
-	code          *string
-	_type         *enum.OneTimePasswordType
-	is_used       *bool
-	expires_at    *time.Time
-	created_at    *time.Time
-	clearedFields map[string]struct{}
-	user          *int64
-	cleareduser   bool
-	done          bool
-	oldValue      func(context.Context) (*OneTimePassword, error)
-	predicates    []predicate.OneTimePassword
+	op                 Op
+	typ                string
+	id                 *int64
+	code               *string
+	_type              *enum.OneTimePasswordType
+	is_used            *bool
+	expires_at         *time.Time
+	created_at         *time.Time
+	failed_attempts    *int64
+	addfailed_attempts *int64
+	clearedFields      map[string]struct{}
+	user               *int64
+	cleareduser        bool
+	done               bool
+	oldValue           func(context.Context) (*OneTimePassword, error)
+	predicates         []predicate.OneTimePassword
 }
 
 var _ ent.Mutation = (*OneTimePasswordMutation)(nil)
@@ -370,6 +372,62 @@ func (m *OneTimePasswordMutation) ResetCreatedAt() {
 	m.created_at = nil
 }
 
+// SetFailedAttempts sets the "failed_attempts" field.
+func (m *OneTimePasswordMutation) SetFailedAttempts(i int64) {
+	m.failed_attempts = &i
+	m.addfailed_attempts = nil
+}
+
+// FailedAttempts returns the value of the "failed_attempts" field in the mutation.
+func (m *OneTimePasswordMutation) FailedAttempts() (r int64, exists bool) {
+	v := m.failed_attempts
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldFailedAttempts returns the old "failed_attempts" field's value of the OneTimePassword entity.
+// If the OneTimePassword object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *OneTimePasswordMutation) OldFailedAttempts(ctx context.Context) (v int64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldFailedAttempts is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldFailedAttempts requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldFailedAttempts: %w", err)
+	}
+	return oldValue.FailedAttempts, nil
+}
+
+// AddFailedAttempts adds i to the "failed_attempts" field.
+func (m *OneTimePasswordMutation) AddFailedAttempts(i int64) {
+	if m.addfailed_attempts != nil {
+		*m.addfailed_attempts += i
+	} else {
+		m.addfailed_attempts = &i
+	}
+}
+
+// AddedFailedAttempts returns the value that was added to the "failed_attempts" field in this mutation.
+func (m *OneTimePasswordMutation) AddedFailedAttempts() (r int64, exists bool) {
+	v := m.addfailed_attempts
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetFailedAttempts resets all changes to the "failed_attempts" field.
+func (m *OneTimePasswordMutation) ResetFailedAttempts() {
+	m.failed_attempts = nil
+	m.addfailed_attempts = nil
+}
+
 // ClearUser clears the "user" edge to the User entity.
 func (m *OneTimePasswordMutation) ClearUser() {
 	m.cleareduser = true
@@ -431,7 +489,7 @@ func (m *OneTimePasswordMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *OneTimePasswordMutation) Fields() []string {
-	fields := make([]string, 0, 6)
+	fields := make([]string, 0, 7)
 	if m.user != nil {
 		fields = append(fields, onetimepassword.FieldUserID)
 	}
@@ -449,6 +507,9 @@ func (m *OneTimePasswordMutation) Fields() []string {
 	}
 	if m.created_at != nil {
 		fields = append(fields, onetimepassword.FieldCreatedAt)
+	}
+	if m.failed_attempts != nil {
+		fields = append(fields, onetimepassword.FieldFailedAttempts)
 	}
 	return fields
 }
@@ -470,6 +531,8 @@ func (m *OneTimePasswordMutation) Field(name string) (ent.Value, bool) {
 		return m.ExpiresAt()
 	case onetimepassword.FieldCreatedAt:
 		return m.CreatedAt()
+	case onetimepassword.FieldFailedAttempts:
+		return m.FailedAttempts()
 	}
 	return nil, false
 }
@@ -491,6 +554,8 @@ func (m *OneTimePasswordMutation) OldField(ctx context.Context, name string) (en
 		return m.OldExpiresAt(ctx)
 	case onetimepassword.FieldCreatedAt:
 		return m.OldCreatedAt(ctx)
+	case onetimepassword.FieldFailedAttempts:
+		return m.OldFailedAttempts(ctx)
 	}
 	return nil, fmt.Errorf("unknown OneTimePassword field %s", name)
 }
@@ -542,6 +607,13 @@ func (m *OneTimePasswordMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetCreatedAt(v)
 		return nil
+	case onetimepassword.FieldFailedAttempts:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetFailedAttempts(v)
+		return nil
 	}
 	return fmt.Errorf("unknown OneTimePassword field %s", name)
 }
@@ -550,6 +622,9 @@ func (m *OneTimePasswordMutation) SetField(name string, value ent.Value) error {
 // this mutation.
 func (m *OneTimePasswordMutation) AddedFields() []string {
 	var fields []string
+	if m.addfailed_attempts != nil {
+		fields = append(fields, onetimepassword.FieldFailedAttempts)
+	}
 	return fields
 }
 
@@ -558,6 +633,8 @@ func (m *OneTimePasswordMutation) AddedFields() []string {
 // was not set, or was not defined in the schema.
 func (m *OneTimePasswordMutation) AddedField(name string) (ent.Value, bool) {
 	switch name {
+	case onetimepassword.FieldFailedAttempts:
+		return m.AddedFailedAttempts()
 	}
 	return nil, false
 }
@@ -567,6 +644,13 @@ func (m *OneTimePasswordMutation) AddedField(name string) (ent.Value, bool) {
 // type.
 func (m *OneTimePasswordMutation) AddField(name string, value ent.Value) error {
 	switch name {
+	case onetimepassword.FieldFailedAttempts:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddFailedAttempts(v)
+		return nil
 	}
 	return fmt.Errorf("unknown OneTimePassword numeric field %s", name)
 }
@@ -611,6 +695,9 @@ func (m *OneTimePasswordMutation) ResetField(name string) error {
 		return nil
 	case onetimepassword.FieldCreatedAt:
 		m.ResetCreatedAt()
+		return nil
+	case onetimepassword.FieldFailedAttempts:
+		m.ResetFailedAttempts()
 		return nil
 	}
 	return fmt.Errorf("unknown OneTimePassword field %s", name)
