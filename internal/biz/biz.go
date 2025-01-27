@@ -5,12 +5,6 @@ import (
 	"gitlab.calendaria.team/services/utils/v2/nats"
 )
 
-const (
-	QueueContactsPhoneVerified  = "contacts.confirmed_phone"
-	QueueContactsEmailVerified  = "contacts.confirmed_emails"
-	QueueEventsDefaultCalendars = "events.default_calendars"
-)
-
 // ProviderSet is biz providers.
 //
 //nolint:gochecknoglobals // this global variable is required for wire

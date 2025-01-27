@@ -24,6 +24,7 @@ func (OneTimePassword) Fields() []ent.Field {
 		field.Bool("is_used").Default(false),
 		field.Time("expires_at"),
 		field.Time("created_at").Default(time.Now),
+		field.Int64("failed_attempts").Default(0),
 	}
 }
 

@@ -20,6 +20,7 @@ type CredentialDto struct {
 
 type CredentialsRepo interface {
 	CreateCredential(ctx context.Context, dto CredentialDto) error
+	UpdateCredential(ctx context.Context, credentialID int64, dto CredentialDto) (*ent.UserCredentials, error)
 	GetCredential(ctx context.Context, userID, credentialID int64) (*ent.UserCredentials, error)
 	ListCredentials(ctx context.Context, userID int64, provider *u_struc.Provider) ([]*ent.UserCredentials, error)
 	DeleteCredential(ctx context.Context, userID, credentialID int64) (int, error)
@@ -55,6 +56,18 @@ func (r *credentialsRepo) CreateCredential(
 		UpdateExpiresAt().
 		ClearDeletedAt().
 		Exec(ctx)
+}
+
+func (r *credentialsRepo) UpdateCredential(
+	ctx context.Context, credentialID int64, dto CredentialDto,
+) (*ent.UserCredentials, error) {
+	return r.db.UserCredentials.
+		UpdateOneID(credentialID).
+		SetAccessToken(dto.Token.AccessToken).
+		SetTokenType(dto.Token.TokenType).
+		SetRefreshToken(dto.Token.RefreshToken).
+		SetExpiresAt(dto.Token.Expiry).
+		Save(ctx)
 }
 
 func (r *credentialsRepo) GetCredential(

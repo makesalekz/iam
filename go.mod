@@ -12,17 +12,17 @@ require (
 	github.com/lib/pq v1.10.9
 	github.com/mitchellh/mapstructure v1.5.0
 	github.com/nats-io/nats.go v1.32.0
-	github.com/nyaruka/phonenumbers v1.3.1
+	github.com/nyaruka/phonenumbers v1.4.3
 	github.com/prometheus/client_golang v1.18.0
 	github.com/robfig/cron/v3 v3.0.1
-	github.com/stretchr/testify v1.8.4
+	github.com/stretchr/testify v1.9.0
 	gitlab.calendaria.team/services/chats v1.1.0
 	gitlab.calendaria.team/services/contacts v1.8.0
 	gitlab.calendaria.team/services/events v1.8.8-pre
 	gitlab.calendaria.team/services/media v1.5.0-pre
 	gitlab.calendaria.team/services/notifications v1.4.7-pre
 	gitlab.calendaria.team/services/tenants v1.2.0-pre
-	gitlab.calendaria.team/services/utils v0.3.16-pre
+	gitlab.calendaria.team/services/utils v0.3.17-pre
 	go.uber.org/automaxprocs v1.5.3
 	golang.org/x/oauth2 v0.20.0
 	google.golang.org/api v0.169.0
@@ -108,7 +108,7 @@ require (
 	go.uber.org/multierr v1.11.0 // indirect
 	go.uber.org/zap v1.26.0 // indirect
 	golang.org/x/crypto v0.26.0 // indirect
-	golang.org/x/exp v0.0.0-20240110193028-0dcbfd608b1e // indirect
+	golang.org/x/exp v0.0.0-20240525044651-4c93da0ed11d // indirect
 	golang.org/x/mod v0.20.0 // indirect
 	golang.org/x/net v0.28.0 // indirect
 	golang.org/x/sync v0.8.0 // indirect

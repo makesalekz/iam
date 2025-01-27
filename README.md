@@ -77,6 +77,12 @@ To stop docker:
 make stop
 ```
 
+### Consul
+
+```bash
+app/iam/SXODIM_AUTH_URL = <URL: string>
+```
+
 ## Vault
 
 TODO: DB creds
@@ -85,8 +91,8 @@ To save JWT secret in Vault terminal (write command, ENTER, paste secret, CTRL+D
 
 ```bash
 export VAULT_TOKEN=myroot
+vault kv put -mount=secret app/iam/sxodimclientsecret secret=<password>
 vault kv put -mount=secret app/global/jwt data=-
-
 vault kv put -mount=secret app/global/gwebcredentials data=-
 ```
 

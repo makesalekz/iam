@@ -31,6 +31,10 @@ func init() {
 	onetimepasswordDescCreatedAt := onetimepasswordFields[5].Descriptor()
 	// onetimepassword.DefaultCreatedAt holds the default value on creation for the created_at field.
 	onetimepassword.DefaultCreatedAt = onetimepasswordDescCreatedAt.Default.(func() time.Time)
+	// onetimepasswordDescFailedAttempts is the schema descriptor for failed_attempts field.
+	onetimepasswordDescFailedAttempts := onetimepasswordFields[6].Descriptor()
+	// onetimepassword.DefaultFailedAttempts holds the default value on creation for the failed_attempts field.
+	onetimepassword.DefaultFailedAttempts = onetimepasswordDescFailedAttempts.Default.(int64)
 	userMixin := schema.User{}.Mixin()
 	userMixinHooks0 := userMixin[0].Hooks()
 	user.Hooks[0] = userMixinHooks0[0]
