@@ -22,6 +22,7 @@ type CredentialsRepo interface {
 	CreateCredential(ctx context.Context, dto CredentialDto) error
 	UpdateCredential(ctx context.Context, credentialID int64, dto CredentialDto) (*ent.UserCredentials, error)
 	GetCredential(ctx context.Context, userID, credentialID int64) (*ent.UserCredentials, error)
+	GetCredentialByMail(ctx context.Context, mail string) (*ent.UserCredentials, error)
 	ListCredentials(ctx context.Context, userID int64, provider *u_struc.Provider) ([]*ent.UserCredentials, error)
 	DeleteCredential(ctx context.Context, userID, credentialID int64) (int, error)
 }
@@ -54,6 +55,7 @@ func (r *credentialsRepo) CreateCredential(
 		UpdateTokenType().
 		UpdateRefreshToken().
 		UpdateExpiresAt().
+		UpdateUserID().
 		ClearDeletedAt().
 		Exec(ctx)
 }
@@ -78,7 +80,16 @@ func (r *credentialsRepo) GetCredential(
 			usercredentials.ID(credentialID),
 			usercredentials.UserID(userID),
 		).
-		Order(ent.Desc(usercredentials.FieldID)).
+		First(ctx)
+}
+
+func (r *credentialsRepo) GetCredentialByMail(
+	ctx context.Context, mail string,
+) (*ent.UserCredentials, error) {
+	return r.db.UserCredentials.Query().
+		Where(
+			usercredentials.MailEQ(mail),
+		).
 		First(ctx)
 }
 
