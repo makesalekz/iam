@@ -28,6 +28,7 @@ enum ErrorReason {
   INVALID_TIMEZONE = 15 [(errors.code) = 400];
   INVALID_USERNAME = 16 [(errors.code) = 400];
   INVALID_PROVIDER = 17 [(errors.code) = 400];
+  FORBIDDEN = 18 [(errors.code) = 403];
 
   USER_NOT_FOUND = 20 [(errors.code) = 404];
   INVALID_REQUEST = 21 [(errors.code) = 400];

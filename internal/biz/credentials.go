@@ -93,6 +93,15 @@ func (uc *CredentialsUsecase) AuthByGoogle(ctx context.Context, actorID int64, a
 		return iam_v1.ErrorServiceFailed("Unable to retrieve user info: %v", err.Error())
 	}
 
+	credential, err := uc.credentialsRepo.GetCredentialByMail(ctx, userInfo.Email)
+	if err != nil && !ent.IsNotFound(err) {
+		return iam_v1.ErrorDatabaseQuery("Unable to get credential: %v", err.Error())
+	}
+
+	if credential != nil && credential.UserID != actorID {
+		return iam_v1.ErrorForbidden("This email address is already in use by another user")
+	}
+
 	// save tokens to database
 	dto := data.CredentialDto{
 		UserID:      actorID,

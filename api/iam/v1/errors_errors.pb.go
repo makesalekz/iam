@@ -181,6 +181,18 @@ func ErrorInvalidProvider(format string, args ...interface{}) *errors.Error {
 	return errors.New(400, ErrorReason_INVALID_PROVIDER.String(), fmt.Sprintf(format, args...))
 }
 
+func IsForbidden(err error) bool {
+	if err == nil {
+		return false
+	}
+	e := errors.FromError(err)
+	return e.Reason == ErrorReason_FORBIDDEN.String() && e.Code == 403
+}
+
+func ErrorForbidden(format string, args ...interface{}) *errors.Error {
+	return errors.New(403, ErrorReason_FORBIDDEN.String(), fmt.Sprintf(format, args...))
+}
+
 func IsUserNotFound(err error) bool {
 	if err == nil {
 		return false
