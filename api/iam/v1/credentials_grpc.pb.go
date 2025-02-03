@@ -20,9 +20,8 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	Credentials_AuthByGoogle_FullMethodName      = "/iam.v1.Credentials/AuthByGoogle"
+	Credentials_ExternalAuth_FullMethodName      = "/iam.v1.Credentials/ExternalAuth"
 	Credentials_RefreshCredential_FullMethodName = "/iam.v1.Credentials/RefreshCredential"
-	Credentials_AuthBySxodim_FullMethodName      = "/iam.v1.Credentials/AuthBySxodim"
 	Credentials_GetCredential_FullMethodName     = "/iam.v1.Credentials/GetCredential"
 	Credentials_ListCredentials_FullMethodName   = "/iam.v1.Credentials/ListCredentials"
 	Credentials_DeleteCredential_FullMethodName  = "/iam.v1.Credentials/DeleteCredential"
@@ -34,14 +33,11 @@ const (
 type CredentialsClient interface {
 	// Authenticate a user by Google OAuth2
 	// Request: Google code
-	AuthByGoogle(ctx context.Context, in *AuthByGoogleRequest, opts ...grpc.CallOption) (*v1.EmptyReply, error)
+	ExternalAuth(ctx context.Context, in *ExternalAuthRequest, opts ...grpc.CallOption) (*v1.EmptyReply, error)
 	// Refresh credential (token)
 	// Request: Credential ID
 	// Reply: Full user's credentials
 	RefreshCredential(ctx context.Context, in *CredentialRequest, opts ...grpc.CallOption) (*CredentialReply, error)
-	// Authenticate a user by Sxodim OAuth2
-	// Request: Sxodim code
-	AuthBySxodim(ctx context.Context, in *AuthBySxodimRequest, opts ...grpc.CallOption) (*v1.EmptyReply, error)
 	// Get credentials by provider
 	// Request: Provider code
 	// Reply: Full user's credentials
@@ -62,10 +58,10 @@ func NewCredentialsClient(cc grpc.ClientConnInterface) CredentialsClient {
 	return &credentialsClient{cc}
 }
 
-func (c *credentialsClient) AuthByGoogle(ctx context.Context, in *AuthByGoogleRequest, opts ...grpc.CallOption) (*v1.EmptyReply, error) {
+func (c *credentialsClient) ExternalAuth(ctx context.Context, in *ExternalAuthRequest, opts ...grpc.CallOption) (*v1.EmptyReply, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(v1.EmptyReply)
-	err := c.cc.Invoke(ctx, Credentials_AuthByGoogle_FullMethodName, in, out, cOpts...)
+	err := c.cc.Invoke(ctx, Credentials_ExternalAuth_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -76,16 +72,6 @@ func (c *credentialsClient) RefreshCredential(ctx context.Context, in *Credentia
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(CredentialReply)
 	err := c.cc.Invoke(ctx, Credentials_RefreshCredential_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *credentialsClient) AuthBySxodim(ctx context.Context, in *AuthBySxodimRequest, opts ...grpc.CallOption) (*v1.EmptyReply, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(v1.EmptyReply)
-	err := c.cc.Invoke(ctx, Credentials_AuthBySxodim_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -128,14 +114,11 @@ func (c *credentialsClient) DeleteCredential(ctx context.Context, in *Credential
 type CredentialsServer interface {
 	// Authenticate a user by Google OAuth2
 	// Request: Google code
-	AuthByGoogle(context.Context, *AuthByGoogleRequest) (*v1.EmptyReply, error)
+	ExternalAuth(context.Context, *ExternalAuthRequest) (*v1.EmptyReply, error)
 	// Refresh credential (token)
 	// Request: Credential ID
 	// Reply: Full user's credentials
 	RefreshCredential(context.Context, *CredentialRequest) (*CredentialReply, error)
-	// Authenticate a user by Sxodim OAuth2
-	// Request: Sxodim code
-	AuthBySxodim(context.Context, *AuthBySxodimRequest) (*v1.EmptyReply, error)
 	// Get credentials by provider
 	// Request: Provider code
 	// Reply: Full user's credentials
@@ -156,14 +139,11 @@ type CredentialsServer interface {
 // pointer dereference when methods are called.
 type UnimplementedCredentialsServer struct{}
 
-func (UnimplementedCredentialsServer) AuthByGoogle(context.Context, *AuthByGoogleRequest) (*v1.EmptyReply, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method AuthByGoogle not implemented")
+func (UnimplementedCredentialsServer) ExternalAuth(context.Context, *ExternalAuthRequest) (*v1.EmptyReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ExternalAuth not implemented")
 }
 func (UnimplementedCredentialsServer) RefreshCredential(context.Context, *CredentialRequest) (*CredentialReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RefreshCredential not implemented")
-}
-func (UnimplementedCredentialsServer) AuthBySxodim(context.Context, *AuthBySxodimRequest) (*v1.EmptyReply, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method AuthBySxodim not implemented")
 }
 func (UnimplementedCredentialsServer) GetCredential(context.Context, *CredentialRequest) (*CredentialReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetCredential not implemented")
@@ -195,20 +175,20 @@ func RegisterCredentialsServer(s grpc.ServiceRegistrar, srv CredentialsServer) {
 	s.RegisterService(&Credentials_ServiceDesc, srv)
 }
 
-func _Credentials_AuthByGoogle_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(AuthByGoogleRequest)
+func _Credentials_ExternalAuth_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ExternalAuthRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(CredentialsServer).AuthByGoogle(ctx, in)
+		return srv.(CredentialsServer).ExternalAuth(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: Credentials_AuthByGoogle_FullMethodName,
+		FullMethod: Credentials_ExternalAuth_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(CredentialsServer).AuthByGoogle(ctx, req.(*AuthByGoogleRequest))
+		return srv.(CredentialsServer).ExternalAuth(ctx, req.(*ExternalAuthRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -227,24 +207,6 @@ func _Credentials_RefreshCredential_Handler(srv interface{}, ctx context.Context
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(CredentialsServer).RefreshCredential(ctx, req.(*CredentialRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _Credentials_AuthBySxodim_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(AuthBySxodimRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(CredentialsServer).AuthBySxodim(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: Credentials_AuthBySxodim_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(CredentialsServer).AuthBySxodim(ctx, req.(*AuthBySxodimRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -311,16 +273,12 @@ var Credentials_ServiceDesc = grpc.ServiceDesc{
 	HandlerType: (*CredentialsServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "AuthByGoogle",
-			Handler:    _Credentials_AuthByGoogle_Handler,
+			MethodName: "ExternalAuth",
+			Handler:    _Credentials_ExternalAuth_Handler,
 		},
 		{
 			MethodName: "RefreshCredential",
 			Handler:    _Credentials_RefreshCredential_Handler,
-		},
-		{
-			MethodName: "AuthBySxodim",
-			Handler:    _Credentials_AuthBySxodim_Handler,
 		},
 		{
 			MethodName: "GetCredential",

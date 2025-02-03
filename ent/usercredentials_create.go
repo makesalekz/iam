@@ -50,6 +50,14 @@ func (ucc *UserCredentialsCreate) SetMail(s string) *UserCredentialsCreate {
 	return ucc
 }
 
+// SetNillableMail sets the "mail" field if the given value is not nil.
+func (ucc *UserCredentialsCreate) SetNillableMail(s *string) *UserCredentialsCreate {
+	if s != nil {
+		ucc.SetMail(*s)
+	}
+	return ucc
+}
+
 // SetDisplayName sets the "display_name" field.
 func (ucc *UserCredentialsCreate) SetDisplayName(s string) *UserCredentialsCreate {
 	ucc.mutation.SetDisplayName(s)
@@ -218,9 +226,6 @@ func (ucc *UserCredentialsCreate) check() error {
 	if _, ok := ucc.mutation.UserID(); !ok {
 		return &ValidationError{Name: "user_id", err: errors.New(`ent: missing required field "UserCredentials.user_id"`)}
 	}
-	if _, ok := ucc.mutation.Mail(); !ok {
-		return &ValidationError{Name: "mail", err: errors.New(`ent: missing required field "UserCredentials.mail"`)}
-	}
 	if v, ok := ucc.mutation.Provider(); ok {
 		if err := usercredentials.ProviderValidator(v); err != nil {
 			return &ValidationError{Name: "provider", err: fmt.Errorf(`ent: validator failed for field "UserCredentials.provider": %w`, err)}
@@ -271,7 +276,7 @@ func (ucc *UserCredentialsCreate) createSpec() (*UserCredentials, *sqlgraph.Crea
 	}
 	if value, ok := ucc.mutation.Mail(); ok {
 		_spec.SetField(usercredentials.FieldMail, field.TypeString, value)
-		_node.Mail = value
+		_node.Mail = &value
 	}
 	if value, ok := ucc.mutation.DisplayName(); ok {
 		_spec.SetField(usercredentials.FieldDisplayName, field.TypeString, value)
@@ -413,6 +418,12 @@ func (u *UserCredentialsUpsert) SetMail(v string) *UserCredentialsUpsert {
 // UpdateMail sets the "mail" field to the value that was provided on create.
 func (u *UserCredentialsUpsert) UpdateMail() *UserCredentialsUpsert {
 	u.SetExcluded(usercredentials.FieldMail)
+	return u
+}
+
+// ClearMail clears the value of the "mail" field.
+func (u *UserCredentialsUpsert) ClearMail() *UserCredentialsUpsert {
+	u.SetNull(usercredentials.FieldMail)
 	return u
 }
 
@@ -628,6 +639,13 @@ func (u *UserCredentialsUpsertOne) SetMail(v string) *UserCredentialsUpsertOne {
 func (u *UserCredentialsUpsertOne) UpdateMail() *UserCredentialsUpsertOne {
 	return u.Update(func(s *UserCredentialsUpsert) {
 		s.UpdateMail()
+	})
+}
+
+// ClearMail clears the value of the "mail" field.
+func (u *UserCredentialsUpsertOne) ClearMail() *UserCredentialsUpsertOne {
+	return u.Update(func(s *UserCredentialsUpsert) {
+		s.ClearMail()
 	})
 }
 
@@ -1028,6 +1046,13 @@ func (u *UserCredentialsUpsertBulk) SetMail(v string) *UserCredentialsUpsertBulk
 func (u *UserCredentialsUpsertBulk) UpdateMail() *UserCredentialsUpsertBulk {
 	return u.Update(func(s *UserCredentialsUpsert) {
 		s.UpdateMail()
+	})
+}
+
+// ClearMail clears the value of the "mail" field.
+func (u *UserCredentialsUpsertBulk) ClearMail() *UserCredentialsUpsertBulk {
+	return u.Update(func(s *UserCredentialsUpsert) {
+		s.ClearMail()
 	})
 }
 

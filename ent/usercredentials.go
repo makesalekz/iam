@@ -24,7 +24,7 @@ type UserCredentials struct {
 	// UserID holds the value of the "user_id" field.
 	UserID int64 `json:"user_id,omitempty"`
 	// Mail holds the value of the "mail" field.
-	Mail string `json:"mail,omitempty"`
+	Mail *string `json:"mail,omitempty"`
 	// DisplayName holds the value of the "display_name" field.
 	DisplayName *string `json:"display_name,omitempty"`
 	// Provider holds the value of the "provider" field.
@@ -116,7 +116,8 @@ func (uc *UserCredentials) assignValues(columns []string, values []any) error {
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field mail", values[i])
 			} else if value.Valid {
-				uc.Mail = value.String
+				uc.Mail = new(string)
+				*uc.Mail = value.String
 			}
 		case usercredentials.FieldDisplayName:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -220,8 +221,10 @@ func (uc *UserCredentials) String() string {
 	builder.WriteString("user_id=")
 	builder.WriteString(fmt.Sprintf("%v", uc.UserID))
 	builder.WriteString(", ")
-	builder.WriteString("mail=")
-	builder.WriteString(uc.Mail)
+	if v := uc.Mail; v != nil {
+		builder.WriteString("mail=")
+		builder.WriteString(*v)
+	}
 	builder.WriteString(", ")
 	if v := uc.DisplayName; v != nil {
 		builder.WriteString("display_name=")

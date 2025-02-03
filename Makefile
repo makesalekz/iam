@@ -164,14 +164,16 @@ cover:
 # generate mock - (example here)
 mock:
 	mockgen -source internal/data/users.go -destination internal/data/mock/users.go -package mock
-	mockgen -source internal/data/tenants.go -destination internal/data/mock/tenants.go -package mock
 	mockgen -source internal/data/credentials.go -destination internal/data/mock/credentials.go -package mock
 	mockgen -source internal/data/otp.go -destination internal/data/mock/otp.go -package mock
-	mockgen -source internal/data/notifications.go -destination internal/data/mock/notifications.go -package mock
+	mockgen -source internal/data/dialer/tenants.go -destination internal/data/mock/tenants.go -package mock
+	mockgen -source internal/data/dialer/notifications.go -destination internal/data/mock/notifications.go -package mock
+	mockgen -source internal/data/integration/provider_manager.go -destination internal/data/mock/provider_manager.go -package mock
+	mockgen -source internal/data/integration/provider_gateway.go -destination internal/data/mock/provider_gateway.go -package mock
 
 interfaces:
-	ifacemaker -f internal/data/tenants.go -s  TenantsRemote -i ITenantRemote -p data -o internal/data/tenant_interface.go
-	ifacemaker -f internal/data/notifications.go -s  NotificationsRemote -i INotificationsRemote -p data -o internal/data/notifications_interface.go
+	ifacemaker -f internal/data/dialer/tenants.go -s  TenantsRemote -i ITenantRemote -p data -o internal/data/dialer/tenant_interface.go
+	ifacemaker -f internal/data/dialer/notifications.go -s  NotificationsRemote -i INotificationsRemote -p data -o internal/data/dialer/notifications_interface.go
 
 # show help
 help:

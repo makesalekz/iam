@@ -80,7 +80,8 @@ func main() {
 		panic(err)
 	}
 
-	app, cleanup, err := wireApp(&bc, logger)
+	const isTesting = false
+	app, cleanup, err := wireApp(isTesting, &bc, logger)
 	if err != nil {
 		panic(err)
 	}

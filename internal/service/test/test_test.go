@@ -1,4 +1,4 @@
-package service_test
+package test_test
 
 import (
 	"context"
@@ -23,8 +23,11 @@ type dataMock struct {
 	jwt                 *jwt_mock.MockIJwtProcessor
 	usersRepo           *mock.MockUsersRepo
 	otpRepo             *mock.MockOtpRepo
+	credentialsRepo     *mock.MockCredentialsRepo
 	tenantsRemote       *mock.MockITenantsRemote
 	notificationsRemote *mock.MockINotificationsRemote
+	provider            *mock.MockIProviderManager
+	providerGateway     *mock.MockIProviderGateway
 }
 
 type idCollection struct {
@@ -102,4 +105,48 @@ func createAuthService(t *testing.T) (context.Context, *dataMock, *service.AuthS
 	require.NoError(t, err)
 
 	return ctx, repo, service.NewAuthService(eu)
+}
+
+func createCredentialsService(t *testing.T) (context.Context, *dataMock, *service.CredentialsService) {
+	// create context
+	ctx := mockServerContext()
+
+	// create controller
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	// create logger
+	logger := u_zap.NewZapLogger(true)
+
+	// create mocks
+	qm := u_nats_mock.NewMockIQueueManager(ctrl)
+	queue := u_nats_mock.NewMockIQueue(ctrl)
+	jwt := jwt_mock.NewMockIJwtProcessor(ctrl)
+	provider := mock.NewMockIProviderManager(ctrl)
+	providerGateway := mock.NewMockIProviderGateway(ctrl)
+	credentialsRepo := mock.NewMockCredentialsRepo(ctrl)
+
+	// collect repo
+	repo := &dataMock{
+		qm:              qm,
+		queue:           queue,
+		jwt:             jwt,
+		provider:        provider,
+		providerGateway: providerGateway,
+		credentialsRepo: credentialsRepo,
+	}
+
+	// create service
+	eu, err := biz.NewCredentialsUsecase(
+		true,
+		nil,
+		logger,
+		qm,
+		jwt,
+		provider,
+		credentialsRepo,
+	)
+	require.NoError(t, err)
+
+	return ctx, repo, service.NewCredentialsService(logger, eu)
 }

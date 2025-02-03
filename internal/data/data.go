@@ -4,6 +4,9 @@ import (
 	"context"
 	"os"
 
+	"gitlab.calendaria.team/services/iam/internal/data/dialer"
+	"gitlab.calendaria.team/services/iam/internal/data/integration"
+
 	"gitlab.calendaria.team/services/iam/ent"
 	"gitlab.calendaria.team/services/iam/internal/conf"
 	u_config "gitlab.calendaria.team/services/utils/v1/config"
@@ -29,12 +32,13 @@ var ProviderSet = wire.NewSet(
 	u_dialer.NewServiceDialerManager,
 	u_tracing.NewTracer,
 	NewNatsClient,
-	NewNotificationsRemote,
-	NewTenantsRemote,
-	NewContactsRemote,
-	NewChatsRemote,
-	NewEventsRemote,
-	NewMediaRemote,
+	dialer.NewNotificationsRemote,
+	dialer.NewTenantsRemote,
+	dialer.NewContactsRemote,
+	dialer.NewChatsRemote,
+	dialer.NewEventsRemote,
+	dialer.NewMediaRemote,
+	integration.NewProviderManager,
 	NewUsersRepo,
 	NewOtpRepo,
 	NewPrivacyRepo,

@@ -5,22 +5,13 @@ import (
 
 	"gitlab.calendaria.team/services/iam/ent"
 	"gitlab.calendaria.team/services/iam/ent/usercredentials"
+	"gitlab.calendaria.team/services/iam/internal/data/integration"
 	u_struc "gitlab.calendaria.team/services/utils/v2/struc"
-
-	"golang.org/x/oauth2"
 )
 
-type CredentialDto struct {
-	UserID      int64
-	Provider    u_struc.Provider
-	DisplayName string
-	Email       string
-	Token       *oauth2.Token
-}
-
 type CredentialsRepo interface {
-	CreateCredential(ctx context.Context, dto CredentialDto) error
-	UpdateCredential(ctx context.Context, credentialID int64, dto CredentialDto) (*ent.UserCredentials, error)
+	CreateCredential(ctx context.Context, dto integration.CredentialDto) error
+	UpdateCredential(ctx context.Context, credentialID int64, dto integration.CredentialDto) (*ent.UserCredentials, error)
 	GetCredential(ctx context.Context, userID, credentialID int64) (*ent.UserCredentials, error)
 	GetCredentialByMail(ctx context.Context, mail string) (*ent.UserCredentials, error)
 	ListCredentials(ctx context.Context, userID int64, provider *u_struc.Provider) ([]*ent.UserCredentials, error)
@@ -38,7 +29,7 @@ func NewCredentialsRepo(d *Data) CredentialsRepo {
 }
 
 func (r *credentialsRepo) CreateCredential(
-	ctx context.Context, dto CredentialDto,
+	ctx context.Context, dto integration.CredentialDto,
 ) error {
 	return r.db.UserCredentials.Create().
 		SetUserID(dto.UserID).
@@ -61,7 +52,7 @@ func (r *credentialsRepo) CreateCredential(
 }
 
 func (r *credentialsRepo) UpdateCredential(
-	ctx context.Context, credentialID int64, dto CredentialDto,
+	ctx context.Context, credentialID int64, dto integration.CredentialDto,
 ) (*ent.UserCredentials, error) {
 	return r.db.UserCredentials.
 		UpdateOneID(credentialID).

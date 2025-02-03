@@ -193,6 +193,18 @@ func ErrorForbidden(format string, args ...interface{}) *errors.Error {
 	return errors.New(403, ErrorReason_FORBIDDEN.String(), fmt.Sprintf(format, args...))
 }
 
+func IsNotFound(err error) bool {
+	if err == nil {
+		return false
+	}
+	e := errors.FromError(err)
+	return e.Reason == ErrorReason_NOT_FOUND.String() && e.Code == 404
+}
+
+func ErrorNotFound(format string, args ...interface{}) *errors.Error {
+	return errors.New(404, ErrorReason_NOT_FOUND.String(), fmt.Sprintf(format, args...))
+}
+
 func IsUserNotFound(err error) bool {
 	if err == nil {
 		return false

@@ -7,6 +7,8 @@ import (
 	"sync"
 	"time"
 
+	"gitlab.calendaria.team/services/iam/internal/data/dialer"
+
 	v1 "gitlab.calendaria.team/services/iam/api/iam/v1"
 	"gitlab.calendaria.team/services/iam/ent"
 	"gitlab.calendaria.team/services/iam/internal/data"
@@ -32,11 +34,11 @@ type UsersUsecase struct {
 	log           *log.Helper
 	jwt           u_jwt.IJwtProcessor
 	queue         u_nats.IQueueManager
-	tenants       data.ITenantsRemote
-	contacts      data.IContactsRemote
-	chats         data.IChatsRemote
-	events        data.IEventsRemote
-	media         data.IMediaRemote
+	tenants       dialer.ITenantsRemote
+	contacts      dialer.IContactsRemote
+	chats         dialer.IChatsRemote
+	events        dialer.IEventsRemote
+	media         dialer.IMediaRemote
 	usersRepo     data.UsersRepo
 	otpRepo       data.OtpRepo
 	privaciesRepo data.PrivacyRepo
@@ -62,11 +64,11 @@ func NewUsersUsecase(
 	logger log.Logger,
 	jwt u_jwt.IJwtProcessor,
 	queue u_nats.IQueueManager,
-	tenants data.ITenantsRemote,
-	contacts data.IContactsRemote,
-	chats data.IChatsRemote,
-	events data.IEventsRemote,
-	media data.IMediaRemote,
+	tenants dialer.ITenantsRemote,
+	contacts dialer.IContactsRemote,
+	chats dialer.IChatsRemote,
+	events dialer.IEventsRemote,
+	media dialer.IMediaRemote,
 	usersRepo data.UsersRepo,
 	otpRepo data.OtpRepo,
 	privaciesRepo data.PrivacyRepo,

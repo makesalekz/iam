@@ -38,11 +38,14 @@ func userCredentialToV1Credential(userCredentials *ent.UserCredentials) *iam_v1.
 
 	replyUserCredentials := &iam_v1.UserCredential{
 		Id:           userCredentials.ID,
-		Mail:         userCredentials.Mail,
 		DisplayName:  userCredentials.DisplayName,
 		AccessToken:  userCredentials.AccessToken,
 		TokenType:    userCredentials.TokenType,
 		RefreshToken: userCredentials.RefreshToken,
+	}
+
+	if userCredentials.Mail != nil {
+		replyUserCredentials.Mail = *userCredentials.Mail
 	}
 
 	if userCredentials.Provider != nil {
@@ -65,8 +68,11 @@ func userCredentialToV1CredentialShort(userCredentials *ent.UserCredentials) *ia
 
 	replyUserCredentials := &iam_v1.UserCredentialShort{
 		Id:          userCredentials.ID,
-		Mail:        userCredentials.Mail,
 		DisplayName: userCredentials.DisplayName,
+	}
+
+	if userCredentials.Mail != nil {
+		replyUserCredentials.Mail = *userCredentials.Mail
 	}
 
 	if userCredentials.Provider != nil {
@@ -86,16 +92,21 @@ func userCredentialsToV1CredentialShorts(userCredentials []*ent.UserCredentials)
 	return trUserCredentials
 }
 
-func (s *CredentialsService) AuthByGoogle(
+func (s *CredentialsService) ExternalAuth(
 	ctx context.Context,
-	req *iam_v1.AuthByGoogleRequest,
+	req *iam_v1.ExternalAuthRequest,
 ) (*utils_v1.EmptyReply, error) {
 	actorID := auth.GetActorIdFromContext(ctx)
 	if actorID == 0 {
 		return nil, iam_v1.ErrorEmptyActorId("empty actor id")
 	}
 
-	err := s.uc.AuthByGoogle(ctx, actorID, req.GetAuthCode())
+	provider := u_struc.Provider(req.GetProvider())
+	if !provider.IsValid() {
+		return nil, iam_v1.ErrorInvalidProvider("invalid provider")
+	}
+
+	err := s.uc.ExternalAuth(ctx, actorID, provider, req.GetAuthCode())
 	if err != nil {
 		return nil, err
 	}
@@ -118,23 +129,6 @@ func (s *CredentialsService) RefreshCredential(
 	}
 
 	return &iam_v1.CredentialReply{Credential: userCredentialToV1Credential(credential)}, nil
-}
-
-func (s *CredentialsService) AuthBySxodim(
-	ctx context.Context,
-	req *iam_v1.AuthBySxodimRequest,
-) (*utils_v1.EmptyReply, error) {
-	actorID := auth.GetActorIdFromContext(ctx)
-	if actorID == 0 {
-		return nil, iam_v1.ErrorEmptyActorId("empty actor id")
-	}
-
-	err := s.uc.AuthBySxodim(ctx, actorID, req.GetAuthCode(), req.GetScope())
-	if err != nil {
-		return nil, err
-	}
-
-	return &utils_v1.EmptyReply{}, nil
 }
 
 func (s *CredentialsService) GetCredential(
