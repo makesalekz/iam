@@ -1,13 +1,12 @@
 package test_test
 
 import (
-	"gitlab.calendaria.team/services/iam/ent"
 	"testing"
 
 	v1 "gitlab.calendaria.team/services/iam/api/iam/v1"
+	"gitlab.calendaria.team/services/iam/ent"
 	"gitlab.calendaria.team/services/iam/internal/data/integration"
 	u_struc "gitlab.calendaria.team/services/utils/v2/struc"
-	u_zap "gitlab.calendaria.team/services/utils/v2/zap"
 
 	"github.com/stretchr/testify/require"
 )
@@ -18,7 +17,6 @@ const (
 )
 
 func TestCredentialsService_ExternalAuth(t *testing.T) {
-	logger := u_zap.NewZapLogger(true)
 	ctx, repo, credentialService := createCredentialsService(t)
 
 	req := &v1.ExternalAuthRequest{
@@ -26,14 +24,14 @@ func TestCredentialsService_ExternalAuth(t *testing.T) {
 		Provider: provider1.Value(),
 	}
 
-	providerManager, err := integration.NewProviderManager(nil, logger)
+	providerManager, err := integration.NewProviderManager(nil)
 	require.NoError(t, err)
 
-	provider, err := providerManager.NewProviderGateway(provider1)
+	provider, err := providerManager.NewProviderGateway(nil, provider1)
 	require.NoError(t, err)
 
 	googleProvider, _ := provider.(*integration.GoogleGateway)
-	repo.provider.EXPECT().NewProviderGateway(provider1).Return(googleProvider, nil)
+	repo.provider.EXPECT().NewProviderGateway(nil, provider1).Return(googleProvider, nil)
 
 	_, err = credentialService.ExternalAuth(ctx, req)
 	require.NoError(t, err)
@@ -52,7 +50,6 @@ func TestCredentialsService_ExternalAuth_ErrorCase(t *testing.T) {
 }
 
 func TestCredentialsService_RefreshCredential(t *testing.T) {
-	logger := u_zap.NewZapLogger(true)
 	ctx, repo, credentialService := createCredentialsService(t)
 	ids := getIDs()
 
@@ -69,14 +66,14 @@ func TestCredentialsService_RefreshCredential(t *testing.T) {
 	}
 	repo.credentialsRepo.EXPECT().GetCredential(ctx, ids.actorID, req.CredentialId).Return(credential, nil)
 
-	providerManager, err := integration.NewProviderManager(nil, logger)
+	providerManager, err := integration.NewProviderManager(nil)
 	require.NoError(t, err)
 
-	provider, err := providerManager.NewProviderGateway(provider1)
+	provider, err := providerManager.NewProviderGateway(nil, provider1)
 	require.NoError(t, err)
 
 	googleProvider, _ := provider.(*integration.GoogleGateway)
-	repo.provider.EXPECT().NewProviderGateway(provider1).Return(googleProvider, nil)
+	repo.provider.EXPECT().NewProviderGateway(nil, provider1).Return(googleProvider, nil)
 
 	_, err = credentialService.RefreshCredential(ctx, req)
 	require.NoError(t, err)

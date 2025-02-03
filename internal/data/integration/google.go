@@ -9,7 +9,6 @@ import (
 	"gitlab.calendaria.team/services/utils/v1/config"
 	u_struc "gitlab.calendaria.team/services/utils/v2/struc"
 
-	"github.com/go-kratos/kratos/v2/log"
 	"github.com/mitchellh/mapstructure"
 	xoauth2 "golang.org/x/oauth2"
 	"golang.org/x/oauth2/google"
@@ -20,16 +19,13 @@ import (
 
 type GoogleGateway struct {
 	config *config.Config
-	log    *log.Helper
 }
 
 func NewGoogleRemote(
 	config *config.Config,
-	logger log.Logger,
 ) (IProviderGateway, error) {
 	return &GoogleGateway{
 		config: config,
-		log:    log.NewHelper(log.With(logger, "module", "data/google")),
 	}, nil
 }
 
@@ -130,7 +126,7 @@ func (r *GoogleGateway) RefreshToken(
 
 	// Check valid token and refresh token existence
 	if dto == nil || dto.Token == nil || dto.Token.RefreshToken == "" {
-		return nil, iam_v1.ErrorInternal("invalid token")
+		return nil, iam_v1.ErrorNeedReauthorization("invalid token or null refresh token, need reauthorization")
 	}
 
 	// Refresh token if expired

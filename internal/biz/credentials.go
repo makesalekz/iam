@@ -51,7 +51,7 @@ func (uc *CredentialsUsecase) ExternalAuth(
 	provider u_struc.Provider,
 	authCode string,
 ) error {
-	providerGateway, err := uc.provider.NewProviderGateway(provider)
+	providerGateway, err := uc.provider.NewProviderGateway(uc.config, provider)
 	if err != nil {
 		return err
 	}
@@ -102,13 +102,13 @@ func (uc *CredentialsUsecase) RefreshCredential(
 		return nil, iam_v1.ErrorInternal("credential don't have provider")
 	}
 
-	providerGateway, err := uc.provider.NewProviderGateway(*credential.Provider)
+	providerGateway, err := uc.provider.NewProviderGateway(uc.config, *credential.Provider)
 	if err != nil {
 		return nil, err
 	}
 
 	if uc.isTesting {
-		return nil, nil
+		return credential, nil
 	}
 
 	// Exchange token

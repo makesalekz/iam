@@ -95,7 +95,7 @@ var (
 // ProviderValidator is a validator for the "provider" field enum values. It is called by the builders before save.
 func ProviderValidator(pr struc.Provider) error {
 	switch pr {
-	case "CALENDARIA", "GOOGLE", "OUTLOOK", "APPLE":
+	case "CALENDARIA", "GOOGLE", "OUTLOOK", "APPLE", "SXODIM":
 		return nil
 	default:
 		return fmt.Errorf("usercredentials: invalid enum value for provider field: %q", pr)

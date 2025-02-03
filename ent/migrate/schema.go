@@ -77,7 +77,7 @@ var (
 		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
 		{Name: "mail", Type: field.TypeString, Nullable: true},
 		{Name: "display_name", Type: field.TypeString, Nullable: true},
-		{Name: "provider", Type: field.TypeEnum, Nullable: true, Enums: []string{"CALENDARIA", "GOOGLE", "OUTLOOK", "APPLE"}},
+		{Name: "provider", Type: field.TypeEnum, Nullable: true, Enums: []string{"CALENDARIA", "GOOGLE", "OUTLOOK", "APPLE", "SXODIM"}},
 		{Name: "access_token", Type: field.TypeString},
 		{Name: "token_type", Type: field.TypeString, Nullable: true},
 		{Name: "refresh_token", Type: field.TypeString, Nullable: true},

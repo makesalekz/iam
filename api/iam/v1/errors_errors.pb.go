@@ -288,3 +288,15 @@ func IsUserAlreadyExist(err error) bool {
 func ErrorUserAlreadyExist(format string, args ...interface{}) *errors.Error {
 	return errors.New(409, ErrorReason_USER_ALREADY_EXIST.String(), fmt.Sprintf(format, args...))
 }
+
+func IsNeedReauthorization(err error) bool {
+	if err == nil {
+		return false
+	}
+	e := errors.FromError(err)
+	return e.Reason == ErrorReason_NEED_REAUTHORIZATION.String() && e.Code == 400
+}
+
+func ErrorNeedReauthorization(format string, args ...interface{}) *errors.Error {
+	return errors.New(400, ErrorReason_NEED_REAUTHORIZATION.String(), fmt.Sprintf(format, args...))
+}

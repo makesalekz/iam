@@ -149,7 +149,7 @@ func wireApp(bool2 bool, bootstrap *conf.Bootstrap, logger log.Logger) (*kratos.
 		return nil, nil, err
 	}
 	settingsService := service.NewSettingsService(settingsUsecase)
-	iProviderManager, err := integration.NewProviderManager(configConfig, logger)
+	iProviderManager, err := integration.NewProviderManager(configConfig)
 	if err != nil {
 		cleanup7()
 		cleanup6()
