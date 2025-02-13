@@ -3,43 +3,25 @@ package integration
 import (
 	"context"
 
-	iam_v1 "gitlab.calendaria.team/services/iam/api/iam/v1"
 	"gitlab.calendaria.team/services/iam/ent"
-	"gitlab.calendaria.team/services/utils/v1/config"
 	u_struc "gitlab.calendaria.team/services/utils/v2/struc"
 
 	xoauth2 "golang.org/x/oauth2"
 )
 
 type CredentialDto struct {
-	UserID      int64
-	Provider    u_struc.Provider
-	DisplayName string
-	Email       string
-	Token       *xoauth2.Token
+	UserID         int64
+	ExternalUserID *int64
+	Provider       u_struc.Provider
+	DisplayName    string
+	Email          string
+	Phone          string
+	Token          *xoauth2.Token
 }
 
 type IProviderGateway interface {
 	Authenticate(ctx context.Context, actorID int64, authCode string) (*CredentialDto, error)
 	RefreshToken(ctx context.Context, credential *ent.UserCredentials) (*CredentialDto, error)
-}
-
-func (dm *ProviderManager) NewProviderGateway(
-	config *config.Config,
-	provider u_struc.Provider,
-) (IProviderGateway, error) {
-	switch provider {
-	case u_struc.Google:
-		return &GoogleGateway{
-			config: config,
-		}, nil
-	case u_struc.Sxodim:
-		return &SxodimGateway{
-			config: config,
-		}, nil
-	}
-
-	return nil, iam_v1.ErrorNotFound("unknown provider")
 }
 
 func CredentialToDto(credential *ent.UserCredentials) *CredentialDto {

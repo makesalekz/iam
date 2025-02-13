@@ -56,6 +56,16 @@ func IDLTE(id int64) predicate.UserCredentials {
 	return predicate.UserCredentials(sql.FieldLTE(FieldID, id))
 }
 
+// CreatedAt applies equality check predicate on the "created_at" field. It's identical to CreatedAtEQ.
+func CreatedAt(v time.Time) predicate.UserCredentials {
+	return predicate.UserCredentials(sql.FieldEQ(FieldCreatedAt, v))
+}
+
+// UpdatedAt applies equality check predicate on the "updated_at" field. It's identical to UpdatedAtEQ.
+func UpdatedAt(v time.Time) predicate.UserCredentials {
+	return predicate.UserCredentials(sql.FieldEQ(FieldUpdatedAt, v))
+}
+
 // DeletedAt applies equality check predicate on the "deleted_at" field. It's identical to DeletedAtEQ.
 func DeletedAt(v time.Time) predicate.UserCredentials {
 	return predicate.UserCredentials(sql.FieldEQ(FieldDeletedAt, v))
@@ -66,9 +76,19 @@ func UserID(v int64) predicate.UserCredentials {
 	return predicate.UserCredentials(sql.FieldEQ(FieldUserID, v))
 }
 
+// ExternalUserID applies equality check predicate on the "external_user_id" field. It's identical to ExternalUserIDEQ.
+func ExternalUserID(v int64) predicate.UserCredentials {
+	return predicate.UserCredentials(sql.FieldEQ(FieldExternalUserID, v))
+}
+
 // Mail applies equality check predicate on the "mail" field. It's identical to MailEQ.
 func Mail(v string) predicate.UserCredentials {
 	return predicate.UserCredentials(sql.FieldEQ(FieldMail, v))
+}
+
+// Phone applies equality check predicate on the "phone" field. It's identical to PhoneEQ.
+func Phone(v string) predicate.UserCredentials {
+	return predicate.UserCredentials(sql.FieldEQ(FieldPhone, v))
 }
 
 // DisplayName applies equality check predicate on the "display_name" field. It's identical to DisplayNameEQ.
@@ -96,14 +116,84 @@ func ExpiresAt(v time.Time) predicate.UserCredentials {
 	return predicate.UserCredentials(sql.FieldEQ(FieldExpiresAt, v))
 }
 
-// CreatedAt applies equality check predicate on the "created_at" field. It's identical to CreatedAtEQ.
-func CreatedAt(v time.Time) predicate.UserCredentials {
+// CreatedAtEQ applies the EQ predicate on the "created_at" field.
+func CreatedAtEQ(v time.Time) predicate.UserCredentials {
 	return predicate.UserCredentials(sql.FieldEQ(FieldCreatedAt, v))
 }
 
-// UpdatedAt applies equality check predicate on the "updated_at" field. It's identical to UpdatedAtEQ.
-func UpdatedAt(v time.Time) predicate.UserCredentials {
+// CreatedAtNEQ applies the NEQ predicate on the "created_at" field.
+func CreatedAtNEQ(v time.Time) predicate.UserCredentials {
+	return predicate.UserCredentials(sql.FieldNEQ(FieldCreatedAt, v))
+}
+
+// CreatedAtIn applies the In predicate on the "created_at" field.
+func CreatedAtIn(vs ...time.Time) predicate.UserCredentials {
+	return predicate.UserCredentials(sql.FieldIn(FieldCreatedAt, vs...))
+}
+
+// CreatedAtNotIn applies the NotIn predicate on the "created_at" field.
+func CreatedAtNotIn(vs ...time.Time) predicate.UserCredentials {
+	return predicate.UserCredentials(sql.FieldNotIn(FieldCreatedAt, vs...))
+}
+
+// CreatedAtGT applies the GT predicate on the "created_at" field.
+func CreatedAtGT(v time.Time) predicate.UserCredentials {
+	return predicate.UserCredentials(sql.FieldGT(FieldCreatedAt, v))
+}
+
+// CreatedAtGTE applies the GTE predicate on the "created_at" field.
+func CreatedAtGTE(v time.Time) predicate.UserCredentials {
+	return predicate.UserCredentials(sql.FieldGTE(FieldCreatedAt, v))
+}
+
+// CreatedAtLT applies the LT predicate on the "created_at" field.
+func CreatedAtLT(v time.Time) predicate.UserCredentials {
+	return predicate.UserCredentials(sql.FieldLT(FieldCreatedAt, v))
+}
+
+// CreatedAtLTE applies the LTE predicate on the "created_at" field.
+func CreatedAtLTE(v time.Time) predicate.UserCredentials {
+	return predicate.UserCredentials(sql.FieldLTE(FieldCreatedAt, v))
+}
+
+// UpdatedAtEQ applies the EQ predicate on the "updated_at" field.
+func UpdatedAtEQ(v time.Time) predicate.UserCredentials {
 	return predicate.UserCredentials(sql.FieldEQ(FieldUpdatedAt, v))
+}
+
+// UpdatedAtNEQ applies the NEQ predicate on the "updated_at" field.
+func UpdatedAtNEQ(v time.Time) predicate.UserCredentials {
+	return predicate.UserCredentials(sql.FieldNEQ(FieldUpdatedAt, v))
+}
+
+// UpdatedAtIn applies the In predicate on the "updated_at" field.
+func UpdatedAtIn(vs ...time.Time) predicate.UserCredentials {
+	return predicate.UserCredentials(sql.FieldIn(FieldUpdatedAt, vs...))
+}
+
+// UpdatedAtNotIn applies the NotIn predicate on the "updated_at" field.
+func UpdatedAtNotIn(vs ...time.Time) predicate.UserCredentials {
+	return predicate.UserCredentials(sql.FieldNotIn(FieldUpdatedAt, vs...))
+}
+
+// UpdatedAtGT applies the GT predicate on the "updated_at" field.
+func UpdatedAtGT(v time.Time) predicate.UserCredentials {
+	return predicate.UserCredentials(sql.FieldGT(FieldUpdatedAt, v))
+}
+
+// UpdatedAtGTE applies the GTE predicate on the "updated_at" field.
+func UpdatedAtGTE(v time.Time) predicate.UserCredentials {
+	return predicate.UserCredentials(sql.FieldGTE(FieldUpdatedAt, v))
+}
+
+// UpdatedAtLT applies the LT predicate on the "updated_at" field.
+func UpdatedAtLT(v time.Time) predicate.UserCredentials {
+	return predicate.UserCredentials(sql.FieldLT(FieldUpdatedAt, v))
+}
+
+// UpdatedAtLTE applies the LTE predicate on the "updated_at" field.
+func UpdatedAtLTE(v time.Time) predicate.UserCredentials {
+	return predicate.UserCredentials(sql.FieldLTE(FieldUpdatedAt, v))
 }
 
 // DeletedAtEQ applies the EQ predicate on the "deleted_at" field.
@@ -174,6 +264,56 @@ func UserIDIn(vs ...int64) predicate.UserCredentials {
 // UserIDNotIn applies the NotIn predicate on the "user_id" field.
 func UserIDNotIn(vs ...int64) predicate.UserCredentials {
 	return predicate.UserCredentials(sql.FieldNotIn(FieldUserID, vs...))
+}
+
+// ExternalUserIDEQ applies the EQ predicate on the "external_user_id" field.
+func ExternalUserIDEQ(v int64) predicate.UserCredentials {
+	return predicate.UserCredentials(sql.FieldEQ(FieldExternalUserID, v))
+}
+
+// ExternalUserIDNEQ applies the NEQ predicate on the "external_user_id" field.
+func ExternalUserIDNEQ(v int64) predicate.UserCredentials {
+	return predicate.UserCredentials(sql.FieldNEQ(FieldExternalUserID, v))
+}
+
+// ExternalUserIDIn applies the In predicate on the "external_user_id" field.
+func ExternalUserIDIn(vs ...int64) predicate.UserCredentials {
+	return predicate.UserCredentials(sql.FieldIn(FieldExternalUserID, vs...))
+}
+
+// ExternalUserIDNotIn applies the NotIn predicate on the "external_user_id" field.
+func ExternalUserIDNotIn(vs ...int64) predicate.UserCredentials {
+	return predicate.UserCredentials(sql.FieldNotIn(FieldExternalUserID, vs...))
+}
+
+// ExternalUserIDGT applies the GT predicate on the "external_user_id" field.
+func ExternalUserIDGT(v int64) predicate.UserCredentials {
+	return predicate.UserCredentials(sql.FieldGT(FieldExternalUserID, v))
+}
+
+// ExternalUserIDGTE applies the GTE predicate on the "external_user_id" field.
+func ExternalUserIDGTE(v int64) predicate.UserCredentials {
+	return predicate.UserCredentials(sql.FieldGTE(FieldExternalUserID, v))
+}
+
+// ExternalUserIDLT applies the LT predicate on the "external_user_id" field.
+func ExternalUserIDLT(v int64) predicate.UserCredentials {
+	return predicate.UserCredentials(sql.FieldLT(FieldExternalUserID, v))
+}
+
+// ExternalUserIDLTE applies the LTE predicate on the "external_user_id" field.
+func ExternalUserIDLTE(v int64) predicate.UserCredentials {
+	return predicate.UserCredentials(sql.FieldLTE(FieldExternalUserID, v))
+}
+
+// ExternalUserIDIsNil applies the IsNil predicate on the "external_user_id" field.
+func ExternalUserIDIsNil() predicate.UserCredentials {
+	return predicate.UserCredentials(sql.FieldIsNull(FieldExternalUserID))
+}
+
+// ExternalUserIDNotNil applies the NotNil predicate on the "external_user_id" field.
+func ExternalUserIDNotNil() predicate.UserCredentials {
+	return predicate.UserCredentials(sql.FieldNotNull(FieldExternalUserID))
 }
 
 // MailEQ applies the EQ predicate on the "mail" field.
@@ -249,6 +389,81 @@ func MailEqualFold(v string) predicate.UserCredentials {
 // MailContainsFold applies the ContainsFold predicate on the "mail" field.
 func MailContainsFold(v string) predicate.UserCredentials {
 	return predicate.UserCredentials(sql.FieldContainsFold(FieldMail, v))
+}
+
+// PhoneEQ applies the EQ predicate on the "phone" field.
+func PhoneEQ(v string) predicate.UserCredentials {
+	return predicate.UserCredentials(sql.FieldEQ(FieldPhone, v))
+}
+
+// PhoneNEQ applies the NEQ predicate on the "phone" field.
+func PhoneNEQ(v string) predicate.UserCredentials {
+	return predicate.UserCredentials(sql.FieldNEQ(FieldPhone, v))
+}
+
+// PhoneIn applies the In predicate on the "phone" field.
+func PhoneIn(vs ...string) predicate.UserCredentials {
+	return predicate.UserCredentials(sql.FieldIn(FieldPhone, vs...))
+}
+
+// PhoneNotIn applies the NotIn predicate on the "phone" field.
+func PhoneNotIn(vs ...string) predicate.UserCredentials {
+	return predicate.UserCredentials(sql.FieldNotIn(FieldPhone, vs...))
+}
+
+// PhoneGT applies the GT predicate on the "phone" field.
+func PhoneGT(v string) predicate.UserCredentials {
+	return predicate.UserCredentials(sql.FieldGT(FieldPhone, v))
+}
+
+// PhoneGTE applies the GTE predicate on the "phone" field.
+func PhoneGTE(v string) predicate.UserCredentials {
+	return predicate.UserCredentials(sql.FieldGTE(FieldPhone, v))
+}
+
+// PhoneLT applies the LT predicate on the "phone" field.
+func PhoneLT(v string) predicate.UserCredentials {
+	return predicate.UserCredentials(sql.FieldLT(FieldPhone, v))
+}
+
+// PhoneLTE applies the LTE predicate on the "phone" field.
+func PhoneLTE(v string) predicate.UserCredentials {
+	return predicate.UserCredentials(sql.FieldLTE(FieldPhone, v))
+}
+
+// PhoneContains applies the Contains predicate on the "phone" field.
+func PhoneContains(v string) predicate.UserCredentials {
+	return predicate.UserCredentials(sql.FieldContains(FieldPhone, v))
+}
+
+// PhoneHasPrefix applies the HasPrefix predicate on the "phone" field.
+func PhoneHasPrefix(v string) predicate.UserCredentials {
+	return predicate.UserCredentials(sql.FieldHasPrefix(FieldPhone, v))
+}
+
+// PhoneHasSuffix applies the HasSuffix predicate on the "phone" field.
+func PhoneHasSuffix(v string) predicate.UserCredentials {
+	return predicate.UserCredentials(sql.FieldHasSuffix(FieldPhone, v))
+}
+
+// PhoneIsNil applies the IsNil predicate on the "phone" field.
+func PhoneIsNil() predicate.UserCredentials {
+	return predicate.UserCredentials(sql.FieldIsNull(FieldPhone))
+}
+
+// PhoneNotNil applies the NotNil predicate on the "phone" field.
+func PhoneNotNil() predicate.UserCredentials {
+	return predicate.UserCredentials(sql.FieldNotNull(FieldPhone))
+}
+
+// PhoneEqualFold applies the EqualFold predicate on the "phone" field.
+func PhoneEqualFold(v string) predicate.UserCredentials {
+	return predicate.UserCredentials(sql.FieldEqualFold(FieldPhone, v))
+}
+
+// PhoneContainsFold applies the ContainsFold predicate on the "phone" field.
+func PhoneContainsFold(v string) predicate.UserCredentials {
+	return predicate.UserCredentials(sql.FieldContainsFold(FieldPhone, v))
 }
 
 // DisplayNameEQ applies the EQ predicate on the "display_name" field.
@@ -629,86 +844,6 @@ func ExpiresAtIsNil() predicate.UserCredentials {
 // ExpiresAtNotNil applies the NotNil predicate on the "expires_at" field.
 func ExpiresAtNotNil() predicate.UserCredentials {
 	return predicate.UserCredentials(sql.FieldNotNull(FieldExpiresAt))
-}
-
-// CreatedAtEQ applies the EQ predicate on the "created_at" field.
-func CreatedAtEQ(v time.Time) predicate.UserCredentials {
-	return predicate.UserCredentials(sql.FieldEQ(FieldCreatedAt, v))
-}
-
-// CreatedAtNEQ applies the NEQ predicate on the "created_at" field.
-func CreatedAtNEQ(v time.Time) predicate.UserCredentials {
-	return predicate.UserCredentials(sql.FieldNEQ(FieldCreatedAt, v))
-}
-
-// CreatedAtIn applies the In predicate on the "created_at" field.
-func CreatedAtIn(vs ...time.Time) predicate.UserCredentials {
-	return predicate.UserCredentials(sql.FieldIn(FieldCreatedAt, vs...))
-}
-
-// CreatedAtNotIn applies the NotIn predicate on the "created_at" field.
-func CreatedAtNotIn(vs ...time.Time) predicate.UserCredentials {
-	return predicate.UserCredentials(sql.FieldNotIn(FieldCreatedAt, vs...))
-}
-
-// CreatedAtGT applies the GT predicate on the "created_at" field.
-func CreatedAtGT(v time.Time) predicate.UserCredentials {
-	return predicate.UserCredentials(sql.FieldGT(FieldCreatedAt, v))
-}
-
-// CreatedAtGTE applies the GTE predicate on the "created_at" field.
-func CreatedAtGTE(v time.Time) predicate.UserCredentials {
-	return predicate.UserCredentials(sql.FieldGTE(FieldCreatedAt, v))
-}
-
-// CreatedAtLT applies the LT predicate on the "created_at" field.
-func CreatedAtLT(v time.Time) predicate.UserCredentials {
-	return predicate.UserCredentials(sql.FieldLT(FieldCreatedAt, v))
-}
-
-// CreatedAtLTE applies the LTE predicate on the "created_at" field.
-func CreatedAtLTE(v time.Time) predicate.UserCredentials {
-	return predicate.UserCredentials(sql.FieldLTE(FieldCreatedAt, v))
-}
-
-// UpdatedAtEQ applies the EQ predicate on the "updated_at" field.
-func UpdatedAtEQ(v time.Time) predicate.UserCredentials {
-	return predicate.UserCredentials(sql.FieldEQ(FieldUpdatedAt, v))
-}
-
-// UpdatedAtNEQ applies the NEQ predicate on the "updated_at" field.
-func UpdatedAtNEQ(v time.Time) predicate.UserCredentials {
-	return predicate.UserCredentials(sql.FieldNEQ(FieldUpdatedAt, v))
-}
-
-// UpdatedAtIn applies the In predicate on the "updated_at" field.
-func UpdatedAtIn(vs ...time.Time) predicate.UserCredentials {
-	return predicate.UserCredentials(sql.FieldIn(FieldUpdatedAt, vs...))
-}
-
-// UpdatedAtNotIn applies the NotIn predicate on the "updated_at" field.
-func UpdatedAtNotIn(vs ...time.Time) predicate.UserCredentials {
-	return predicate.UserCredentials(sql.FieldNotIn(FieldUpdatedAt, vs...))
-}
-
-// UpdatedAtGT applies the GT predicate on the "updated_at" field.
-func UpdatedAtGT(v time.Time) predicate.UserCredentials {
-	return predicate.UserCredentials(sql.FieldGT(FieldUpdatedAt, v))
-}
-
-// UpdatedAtGTE applies the GTE predicate on the "updated_at" field.
-func UpdatedAtGTE(v time.Time) predicate.UserCredentials {
-	return predicate.UserCredentials(sql.FieldGTE(FieldUpdatedAt, v))
-}
-
-// UpdatedAtLT applies the LT predicate on the "updated_at" field.
-func UpdatedAtLT(v time.Time) predicate.UserCredentials {
-	return predicate.UserCredentials(sql.FieldLT(FieldUpdatedAt, v))
-}
-
-// UpdatedAtLTE applies the LTE predicate on the "updated_at" field.
-func UpdatedAtLTE(v time.Time) predicate.UserCredentials {
-	return predicate.UserCredentials(sql.FieldLTE(FieldUpdatedAt, v))
 }
 
 // HasUser applies the HasEdge predicate on the "user" edge.

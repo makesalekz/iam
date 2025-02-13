@@ -6,7 +6,7 @@ import (
 	v1 "gitlab.calendaria.team/services/iam/api/iam/v1"
 	"gitlab.calendaria.team/services/iam/internal/conf"
 	tenants_v1 "gitlab.calendaria.team/services/tenants/api/tenants/v1"
-	u_dialer "gitlab.calendaria.team/services/utils/v2/dialer"
+	u_dialer "gitlab.calendaria.team/services/utils/v4/dialer"
 )
 
 type ITenantsRemote interface {

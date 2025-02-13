@@ -24,6 +24,34 @@ type UserCredentialsCreate struct {
 	conflict []sql.ConflictOption
 }
 
+// SetCreatedAt sets the "created_at" field.
+func (ucc *UserCredentialsCreate) SetCreatedAt(t time.Time) *UserCredentialsCreate {
+	ucc.mutation.SetCreatedAt(t)
+	return ucc
+}
+
+// SetNillableCreatedAt sets the "created_at" field if the given value is not nil.
+func (ucc *UserCredentialsCreate) SetNillableCreatedAt(t *time.Time) *UserCredentialsCreate {
+	if t != nil {
+		ucc.SetCreatedAt(*t)
+	}
+	return ucc
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (ucc *UserCredentialsCreate) SetUpdatedAt(t time.Time) *UserCredentialsCreate {
+	ucc.mutation.SetUpdatedAt(t)
+	return ucc
+}
+
+// SetNillableUpdatedAt sets the "updated_at" field if the given value is not nil.
+func (ucc *UserCredentialsCreate) SetNillableUpdatedAt(t *time.Time) *UserCredentialsCreate {
+	if t != nil {
+		ucc.SetUpdatedAt(*t)
+	}
+	return ucc
+}
+
 // SetDeletedAt sets the "deleted_at" field.
 func (ucc *UserCredentialsCreate) SetDeletedAt(t time.Time) *UserCredentialsCreate {
 	ucc.mutation.SetDeletedAt(t)
@@ -44,6 +72,20 @@ func (ucc *UserCredentialsCreate) SetUserID(i int64) *UserCredentialsCreate {
 	return ucc
 }
 
+// SetExternalUserID sets the "external_user_id" field.
+func (ucc *UserCredentialsCreate) SetExternalUserID(i int64) *UserCredentialsCreate {
+	ucc.mutation.SetExternalUserID(i)
+	return ucc
+}
+
+// SetNillableExternalUserID sets the "external_user_id" field if the given value is not nil.
+func (ucc *UserCredentialsCreate) SetNillableExternalUserID(i *int64) *UserCredentialsCreate {
+	if i != nil {
+		ucc.SetExternalUserID(*i)
+	}
+	return ucc
+}
+
 // SetMail sets the "mail" field.
 func (ucc *UserCredentialsCreate) SetMail(s string) *UserCredentialsCreate {
 	ucc.mutation.SetMail(s)
@@ -54,6 +96,20 @@ func (ucc *UserCredentialsCreate) SetMail(s string) *UserCredentialsCreate {
 func (ucc *UserCredentialsCreate) SetNillableMail(s *string) *UserCredentialsCreate {
 	if s != nil {
 		ucc.SetMail(*s)
+	}
+	return ucc
+}
+
+// SetPhone sets the "phone" field.
+func (ucc *UserCredentialsCreate) SetPhone(s string) *UserCredentialsCreate {
+	ucc.mutation.SetPhone(s)
+	return ucc
+}
+
+// SetNillablePhone sets the "phone" field if the given value is not nil.
+func (ucc *UserCredentialsCreate) SetNillablePhone(s *string) *UserCredentialsCreate {
+	if s != nil {
+		ucc.SetPhone(*s)
 	}
 	return ucc
 }
@@ -134,34 +190,6 @@ func (ucc *UserCredentialsCreate) SetNillableExpiresAt(t *time.Time) *UserCreden
 	return ucc
 }
 
-// SetCreatedAt sets the "created_at" field.
-func (ucc *UserCredentialsCreate) SetCreatedAt(t time.Time) *UserCredentialsCreate {
-	ucc.mutation.SetCreatedAt(t)
-	return ucc
-}
-
-// SetNillableCreatedAt sets the "created_at" field if the given value is not nil.
-func (ucc *UserCredentialsCreate) SetNillableCreatedAt(t *time.Time) *UserCredentialsCreate {
-	if t != nil {
-		ucc.SetCreatedAt(*t)
-	}
-	return ucc
-}
-
-// SetUpdatedAt sets the "updated_at" field.
-func (ucc *UserCredentialsCreate) SetUpdatedAt(t time.Time) *UserCredentialsCreate {
-	ucc.mutation.SetUpdatedAt(t)
-	return ucc
-}
-
-// SetNillableUpdatedAt sets the "updated_at" field if the given value is not nil.
-func (ucc *UserCredentialsCreate) SetNillableUpdatedAt(t *time.Time) *UserCredentialsCreate {
-	if t != nil {
-		ucc.SetUpdatedAt(*t)
-	}
-	return ucc
-}
-
 // SetUser sets the "user" edge to the User entity.
 func (ucc *UserCredentialsCreate) SetUser(u *User) *UserCredentialsCreate {
 	return ucc.SetUserID(u.ID)
@@ -223,6 +251,12 @@ func (ucc *UserCredentialsCreate) defaults() error {
 
 // check runs all checks and user-defined validators on the builder.
 func (ucc *UserCredentialsCreate) check() error {
+	if _, ok := ucc.mutation.CreatedAt(); !ok {
+		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "UserCredentials.created_at"`)}
+	}
+	if _, ok := ucc.mutation.UpdatedAt(); !ok {
+		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "UserCredentials.updated_at"`)}
+	}
 	if _, ok := ucc.mutation.UserID(); !ok {
 		return &ValidationError{Name: "user_id", err: errors.New(`ent: missing required field "UserCredentials.user_id"`)}
 	}
@@ -233,12 +267,6 @@ func (ucc *UserCredentialsCreate) check() error {
 	}
 	if _, ok := ucc.mutation.AccessToken(); !ok {
 		return &ValidationError{Name: "access_token", err: errors.New(`ent: missing required field "UserCredentials.access_token"`)}
-	}
-	if _, ok := ucc.mutation.CreatedAt(); !ok {
-		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "UserCredentials.created_at"`)}
-	}
-	if _, ok := ucc.mutation.UpdatedAt(); !ok {
-		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "UserCredentials.updated_at"`)}
 	}
 	if len(ucc.mutation.UserIDs()) == 0 {
 		return &ValidationError{Name: "user", err: errors.New(`ent: missing required edge "UserCredentials.user"`)}
@@ -270,13 +298,29 @@ func (ucc *UserCredentialsCreate) createSpec() (*UserCredentials, *sqlgraph.Crea
 		_spec = sqlgraph.NewCreateSpec(usercredentials.Table, sqlgraph.NewFieldSpec(usercredentials.FieldID, field.TypeInt64))
 	)
 	_spec.OnConflict = ucc.conflict
+	if value, ok := ucc.mutation.CreatedAt(); ok {
+		_spec.SetField(usercredentials.FieldCreatedAt, field.TypeTime, value)
+		_node.CreatedAt = value
+	}
+	if value, ok := ucc.mutation.UpdatedAt(); ok {
+		_spec.SetField(usercredentials.FieldUpdatedAt, field.TypeTime, value)
+		_node.UpdatedAt = value
+	}
 	if value, ok := ucc.mutation.DeletedAt(); ok {
 		_spec.SetField(usercredentials.FieldDeletedAt, field.TypeTime, value)
 		_node.DeletedAt = &value
 	}
+	if value, ok := ucc.mutation.ExternalUserID(); ok {
+		_spec.SetField(usercredentials.FieldExternalUserID, field.TypeInt64, value)
+		_node.ExternalUserID = &value
+	}
 	if value, ok := ucc.mutation.Mail(); ok {
 		_spec.SetField(usercredentials.FieldMail, field.TypeString, value)
 		_node.Mail = &value
+	}
+	if value, ok := ucc.mutation.Phone(); ok {
+		_spec.SetField(usercredentials.FieldPhone, field.TypeString, value)
+		_node.Phone = &value
 	}
 	if value, ok := ucc.mutation.DisplayName(); ok {
 		_spec.SetField(usercredentials.FieldDisplayName, field.TypeString, value)
@@ -302,14 +346,6 @@ func (ucc *UserCredentialsCreate) createSpec() (*UserCredentials, *sqlgraph.Crea
 		_spec.SetField(usercredentials.FieldExpiresAt, field.TypeTime, value)
 		_node.ExpiresAt = &value
 	}
-	if value, ok := ucc.mutation.CreatedAt(); ok {
-		_spec.SetField(usercredentials.FieldCreatedAt, field.TypeTime, value)
-		_node.CreatedAt = value
-	}
-	if value, ok := ucc.mutation.UpdatedAt(); ok {
-		_spec.SetField(usercredentials.FieldUpdatedAt, field.TypeTime, value)
-		_node.UpdatedAt = value
-	}
 	if nodes := ucc.mutation.UserIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -334,7 +370,7 @@ func (ucc *UserCredentialsCreate) createSpec() (*UserCredentials, *sqlgraph.Crea
 // of the `INSERT` statement. For example:
 //
 //	client.UserCredentials.Create().
-//		SetDeletedAt(v).
+//		SetCreatedAt(v).
 //		OnConflict(
 //			// Update the row with the new values
 //			// the was proposed for insertion.
@@ -343,7 +379,7 @@ func (ucc *UserCredentialsCreate) createSpec() (*UserCredentials, *sqlgraph.Crea
 //		// Override some of the fields with custom
 //		// update values.
 //		Update(func(u *ent.UserCredentialsUpsert) {
-//			SetDeletedAt(v+v).
+//			SetCreatedAt(v+v).
 //		}).
 //		Exec(ctx)
 func (ucc *UserCredentialsCreate) OnConflict(opts ...sql.ConflictOption) *UserCredentialsUpsertOne {
@@ -379,6 +415,18 @@ type (
 	}
 )
 
+// SetUpdatedAt sets the "updated_at" field.
+func (u *UserCredentialsUpsert) SetUpdatedAt(v time.Time) *UserCredentialsUpsert {
+	u.Set(usercredentials.FieldUpdatedAt, v)
+	return u
+}
+
+// UpdateUpdatedAt sets the "updated_at" field to the value that was provided on create.
+func (u *UserCredentialsUpsert) UpdateUpdatedAt() *UserCredentialsUpsert {
+	u.SetExcluded(usercredentials.FieldUpdatedAt)
+	return u
+}
+
 // SetDeletedAt sets the "deleted_at" field.
 func (u *UserCredentialsUpsert) SetDeletedAt(v time.Time) *UserCredentialsUpsert {
 	u.Set(usercredentials.FieldDeletedAt, v)
@@ -409,6 +457,30 @@ func (u *UserCredentialsUpsert) UpdateUserID() *UserCredentialsUpsert {
 	return u
 }
 
+// SetExternalUserID sets the "external_user_id" field.
+func (u *UserCredentialsUpsert) SetExternalUserID(v int64) *UserCredentialsUpsert {
+	u.Set(usercredentials.FieldExternalUserID, v)
+	return u
+}
+
+// UpdateExternalUserID sets the "external_user_id" field to the value that was provided on create.
+func (u *UserCredentialsUpsert) UpdateExternalUserID() *UserCredentialsUpsert {
+	u.SetExcluded(usercredentials.FieldExternalUserID)
+	return u
+}
+
+// AddExternalUserID adds v to the "external_user_id" field.
+func (u *UserCredentialsUpsert) AddExternalUserID(v int64) *UserCredentialsUpsert {
+	u.Add(usercredentials.FieldExternalUserID, v)
+	return u
+}
+
+// ClearExternalUserID clears the value of the "external_user_id" field.
+func (u *UserCredentialsUpsert) ClearExternalUserID() *UserCredentialsUpsert {
+	u.SetNull(usercredentials.FieldExternalUserID)
+	return u
+}
+
 // SetMail sets the "mail" field.
 func (u *UserCredentialsUpsert) SetMail(v string) *UserCredentialsUpsert {
 	u.Set(usercredentials.FieldMail, v)
@@ -424,6 +496,24 @@ func (u *UserCredentialsUpsert) UpdateMail() *UserCredentialsUpsert {
 // ClearMail clears the value of the "mail" field.
 func (u *UserCredentialsUpsert) ClearMail() *UserCredentialsUpsert {
 	u.SetNull(usercredentials.FieldMail)
+	return u
+}
+
+// SetPhone sets the "phone" field.
+func (u *UserCredentialsUpsert) SetPhone(v string) *UserCredentialsUpsert {
+	u.Set(usercredentials.FieldPhone, v)
+	return u
+}
+
+// UpdatePhone sets the "phone" field to the value that was provided on create.
+func (u *UserCredentialsUpsert) UpdatePhone() *UserCredentialsUpsert {
+	u.SetExcluded(usercredentials.FieldPhone)
+	return u
+}
+
+// ClearPhone clears the value of the "phone" field.
+func (u *UserCredentialsUpsert) ClearPhone() *UserCredentialsUpsert {
+	u.SetNull(usercredentials.FieldPhone)
 	return u
 }
 
@@ -529,30 +619,6 @@ func (u *UserCredentialsUpsert) ClearExpiresAt() *UserCredentialsUpsert {
 	return u
 }
 
-// SetCreatedAt sets the "created_at" field.
-func (u *UserCredentialsUpsert) SetCreatedAt(v time.Time) *UserCredentialsUpsert {
-	u.Set(usercredentials.FieldCreatedAt, v)
-	return u
-}
-
-// UpdateCreatedAt sets the "created_at" field to the value that was provided on create.
-func (u *UserCredentialsUpsert) UpdateCreatedAt() *UserCredentialsUpsert {
-	u.SetExcluded(usercredentials.FieldCreatedAt)
-	return u
-}
-
-// SetUpdatedAt sets the "updated_at" field.
-func (u *UserCredentialsUpsert) SetUpdatedAt(v time.Time) *UserCredentialsUpsert {
-	u.Set(usercredentials.FieldUpdatedAt, v)
-	return u
-}
-
-// UpdateUpdatedAt sets the "updated_at" field to the value that was provided on create.
-func (u *UserCredentialsUpsert) UpdateUpdatedAt() *UserCredentialsUpsert {
-	u.SetExcluded(usercredentials.FieldUpdatedAt)
-	return u
-}
-
 // UpdateNewValues updates the mutable fields using the new values that were set on create.
 // Using this option is equivalent to using:
 //
@@ -563,6 +629,11 @@ func (u *UserCredentialsUpsert) UpdateUpdatedAt() *UserCredentialsUpsert {
 //		Exec(ctx)
 func (u *UserCredentialsUpsertOne) UpdateNewValues() *UserCredentialsUpsertOne {
 	u.create.conflict = append(u.create.conflict, sql.ResolveWithNewValues())
+	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
+		if _, exists := u.create.mutation.CreatedAt(); exists {
+			s.SetIgnore(usercredentials.FieldCreatedAt)
+		}
+	}))
 	return u
 }
 
@@ -591,6 +662,20 @@ func (u *UserCredentialsUpsertOne) Update(set func(*UserCredentialsUpsert)) *Use
 		set(&UserCredentialsUpsert{UpdateSet: update})
 	}))
 	return u
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (u *UserCredentialsUpsertOne) SetUpdatedAt(v time.Time) *UserCredentialsUpsertOne {
+	return u.Update(func(s *UserCredentialsUpsert) {
+		s.SetUpdatedAt(v)
+	})
+}
+
+// UpdateUpdatedAt sets the "updated_at" field to the value that was provided on create.
+func (u *UserCredentialsUpsertOne) UpdateUpdatedAt() *UserCredentialsUpsertOne {
+	return u.Update(func(s *UserCredentialsUpsert) {
+		s.UpdateUpdatedAt()
+	})
 }
 
 // SetDeletedAt sets the "deleted_at" field.
@@ -628,6 +713,34 @@ func (u *UserCredentialsUpsertOne) UpdateUserID() *UserCredentialsUpsertOne {
 	})
 }
 
+// SetExternalUserID sets the "external_user_id" field.
+func (u *UserCredentialsUpsertOne) SetExternalUserID(v int64) *UserCredentialsUpsertOne {
+	return u.Update(func(s *UserCredentialsUpsert) {
+		s.SetExternalUserID(v)
+	})
+}
+
+// AddExternalUserID adds v to the "external_user_id" field.
+func (u *UserCredentialsUpsertOne) AddExternalUserID(v int64) *UserCredentialsUpsertOne {
+	return u.Update(func(s *UserCredentialsUpsert) {
+		s.AddExternalUserID(v)
+	})
+}
+
+// UpdateExternalUserID sets the "external_user_id" field to the value that was provided on create.
+func (u *UserCredentialsUpsertOne) UpdateExternalUserID() *UserCredentialsUpsertOne {
+	return u.Update(func(s *UserCredentialsUpsert) {
+		s.UpdateExternalUserID()
+	})
+}
+
+// ClearExternalUserID clears the value of the "external_user_id" field.
+func (u *UserCredentialsUpsertOne) ClearExternalUserID() *UserCredentialsUpsertOne {
+	return u.Update(func(s *UserCredentialsUpsert) {
+		s.ClearExternalUserID()
+	})
+}
+
 // SetMail sets the "mail" field.
 func (u *UserCredentialsUpsertOne) SetMail(v string) *UserCredentialsUpsertOne {
 	return u.Update(func(s *UserCredentialsUpsert) {
@@ -646,6 +759,27 @@ func (u *UserCredentialsUpsertOne) UpdateMail() *UserCredentialsUpsertOne {
 func (u *UserCredentialsUpsertOne) ClearMail() *UserCredentialsUpsertOne {
 	return u.Update(func(s *UserCredentialsUpsert) {
 		s.ClearMail()
+	})
+}
+
+// SetPhone sets the "phone" field.
+func (u *UserCredentialsUpsertOne) SetPhone(v string) *UserCredentialsUpsertOne {
+	return u.Update(func(s *UserCredentialsUpsert) {
+		s.SetPhone(v)
+	})
+}
+
+// UpdatePhone sets the "phone" field to the value that was provided on create.
+func (u *UserCredentialsUpsertOne) UpdatePhone() *UserCredentialsUpsertOne {
+	return u.Update(func(s *UserCredentialsUpsert) {
+		s.UpdatePhone()
+	})
+}
+
+// ClearPhone clears the value of the "phone" field.
+func (u *UserCredentialsUpsertOne) ClearPhone() *UserCredentialsUpsertOne {
+	return u.Update(func(s *UserCredentialsUpsert) {
+		s.ClearPhone()
 	})
 }
 
@@ -765,34 +899,6 @@ func (u *UserCredentialsUpsertOne) UpdateExpiresAt() *UserCredentialsUpsertOne {
 func (u *UserCredentialsUpsertOne) ClearExpiresAt() *UserCredentialsUpsertOne {
 	return u.Update(func(s *UserCredentialsUpsert) {
 		s.ClearExpiresAt()
-	})
-}
-
-// SetCreatedAt sets the "created_at" field.
-func (u *UserCredentialsUpsertOne) SetCreatedAt(v time.Time) *UserCredentialsUpsertOne {
-	return u.Update(func(s *UserCredentialsUpsert) {
-		s.SetCreatedAt(v)
-	})
-}
-
-// UpdateCreatedAt sets the "created_at" field to the value that was provided on create.
-func (u *UserCredentialsUpsertOne) UpdateCreatedAt() *UserCredentialsUpsertOne {
-	return u.Update(func(s *UserCredentialsUpsert) {
-		s.UpdateCreatedAt()
-	})
-}
-
-// SetUpdatedAt sets the "updated_at" field.
-func (u *UserCredentialsUpsertOne) SetUpdatedAt(v time.Time) *UserCredentialsUpsertOne {
-	return u.Update(func(s *UserCredentialsUpsert) {
-		s.SetUpdatedAt(v)
-	})
-}
-
-// UpdateUpdatedAt sets the "updated_at" field to the value that was provided on create.
-func (u *UserCredentialsUpsertOne) UpdateUpdatedAt() *UserCredentialsUpsertOne {
-	return u.Update(func(s *UserCredentialsUpsert) {
-		s.UpdateUpdatedAt()
 	})
 }
 
@@ -931,7 +1037,7 @@ func (uccb *UserCredentialsCreateBulk) ExecX(ctx context.Context) {
 //		// Override some of the fields with custom
 //		// update values.
 //		Update(func(u *ent.UserCredentialsUpsert) {
-//			SetDeletedAt(v+v).
+//			SetCreatedAt(v+v).
 //		}).
 //		Exec(ctx)
 func (uccb *UserCredentialsCreateBulk) OnConflict(opts ...sql.ConflictOption) *UserCredentialsUpsertBulk {
@@ -970,6 +1076,13 @@ type UserCredentialsUpsertBulk struct {
 //		Exec(ctx)
 func (u *UserCredentialsUpsertBulk) UpdateNewValues() *UserCredentialsUpsertBulk {
 	u.create.conflict = append(u.create.conflict, sql.ResolveWithNewValues())
+	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
+		for _, b := range u.create.builders {
+			if _, exists := b.mutation.CreatedAt(); exists {
+				s.SetIgnore(usercredentials.FieldCreatedAt)
+			}
+		}
+	}))
 	return u
 }
 
@@ -998,6 +1111,20 @@ func (u *UserCredentialsUpsertBulk) Update(set func(*UserCredentialsUpsert)) *Us
 		set(&UserCredentialsUpsert{UpdateSet: update})
 	}))
 	return u
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (u *UserCredentialsUpsertBulk) SetUpdatedAt(v time.Time) *UserCredentialsUpsertBulk {
+	return u.Update(func(s *UserCredentialsUpsert) {
+		s.SetUpdatedAt(v)
+	})
+}
+
+// UpdateUpdatedAt sets the "updated_at" field to the value that was provided on create.
+func (u *UserCredentialsUpsertBulk) UpdateUpdatedAt() *UserCredentialsUpsertBulk {
+	return u.Update(func(s *UserCredentialsUpsert) {
+		s.UpdateUpdatedAt()
+	})
 }
 
 // SetDeletedAt sets the "deleted_at" field.
@@ -1035,6 +1162,34 @@ func (u *UserCredentialsUpsertBulk) UpdateUserID() *UserCredentialsUpsertBulk {
 	})
 }
 
+// SetExternalUserID sets the "external_user_id" field.
+func (u *UserCredentialsUpsertBulk) SetExternalUserID(v int64) *UserCredentialsUpsertBulk {
+	return u.Update(func(s *UserCredentialsUpsert) {
+		s.SetExternalUserID(v)
+	})
+}
+
+// AddExternalUserID adds v to the "external_user_id" field.
+func (u *UserCredentialsUpsertBulk) AddExternalUserID(v int64) *UserCredentialsUpsertBulk {
+	return u.Update(func(s *UserCredentialsUpsert) {
+		s.AddExternalUserID(v)
+	})
+}
+
+// UpdateExternalUserID sets the "external_user_id" field to the value that was provided on create.
+func (u *UserCredentialsUpsertBulk) UpdateExternalUserID() *UserCredentialsUpsertBulk {
+	return u.Update(func(s *UserCredentialsUpsert) {
+		s.UpdateExternalUserID()
+	})
+}
+
+// ClearExternalUserID clears the value of the "external_user_id" field.
+func (u *UserCredentialsUpsertBulk) ClearExternalUserID() *UserCredentialsUpsertBulk {
+	return u.Update(func(s *UserCredentialsUpsert) {
+		s.ClearExternalUserID()
+	})
+}
+
 // SetMail sets the "mail" field.
 func (u *UserCredentialsUpsertBulk) SetMail(v string) *UserCredentialsUpsertBulk {
 	return u.Update(func(s *UserCredentialsUpsert) {
@@ -1053,6 +1208,27 @@ func (u *UserCredentialsUpsertBulk) UpdateMail() *UserCredentialsUpsertBulk {
 func (u *UserCredentialsUpsertBulk) ClearMail() *UserCredentialsUpsertBulk {
 	return u.Update(func(s *UserCredentialsUpsert) {
 		s.ClearMail()
+	})
+}
+
+// SetPhone sets the "phone" field.
+func (u *UserCredentialsUpsertBulk) SetPhone(v string) *UserCredentialsUpsertBulk {
+	return u.Update(func(s *UserCredentialsUpsert) {
+		s.SetPhone(v)
+	})
+}
+
+// UpdatePhone sets the "phone" field to the value that was provided on create.
+func (u *UserCredentialsUpsertBulk) UpdatePhone() *UserCredentialsUpsertBulk {
+	return u.Update(func(s *UserCredentialsUpsert) {
+		s.UpdatePhone()
+	})
+}
+
+// ClearPhone clears the value of the "phone" field.
+func (u *UserCredentialsUpsertBulk) ClearPhone() *UserCredentialsUpsertBulk {
+	return u.Update(func(s *UserCredentialsUpsert) {
+		s.ClearPhone()
 	})
 }
 
@@ -1172,34 +1348,6 @@ func (u *UserCredentialsUpsertBulk) UpdateExpiresAt() *UserCredentialsUpsertBulk
 func (u *UserCredentialsUpsertBulk) ClearExpiresAt() *UserCredentialsUpsertBulk {
 	return u.Update(func(s *UserCredentialsUpsert) {
 		s.ClearExpiresAt()
-	})
-}
-
-// SetCreatedAt sets the "created_at" field.
-func (u *UserCredentialsUpsertBulk) SetCreatedAt(v time.Time) *UserCredentialsUpsertBulk {
-	return u.Update(func(s *UserCredentialsUpsert) {
-		s.SetCreatedAt(v)
-	})
-}
-
-// UpdateCreatedAt sets the "created_at" field to the value that was provided on create.
-func (u *UserCredentialsUpsertBulk) UpdateCreatedAt() *UserCredentialsUpsertBulk {
-	return u.Update(func(s *UserCredentialsUpsert) {
-		s.UpdateCreatedAt()
-	})
-}
-
-// SetUpdatedAt sets the "updated_at" field.
-func (u *UserCredentialsUpsertBulk) SetUpdatedAt(v time.Time) *UserCredentialsUpsertBulk {
-	return u.Update(func(s *UserCredentialsUpsert) {
-		s.SetUpdatedAt(v)
-	})
-}
-
-// UpdateUpdatedAt sets the "updated_at" field to the value that was provided on create.
-func (u *UserCredentialsUpsertBulk) UpdateUpdatedAt() *UserCredentialsUpsertBulk {
-	return u.Update(func(s *UserCredentialsUpsert) {
-		s.UpdateUpdatedAt()
 	})
 }
 

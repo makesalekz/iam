@@ -38,11 +38,12 @@ func (m *MockCredentialsRepo) EXPECT() *MockCredentialsRepoMockRecorder {
 }
 
 // CreateCredential mocks base method.
-func (m *MockCredentialsRepo) CreateCredential(ctx context.Context, dto integration.CredentialDto) error {
+func (m *MockCredentialsRepo) CreateCredential(ctx context.Context, dto integration.CredentialDto) (*ent.UserCredentials, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "CreateCredential", ctx, dto)
-	ret0, _ := ret[0].(error)
-	return ret0
+	ret0, _ := ret[0].(*ent.UserCredentials)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
 }
 
 // CreateCredential indicates an expected call of CreateCredential.
@@ -82,18 +83,18 @@ func (mr *MockCredentialsRepoMockRecorder) GetCredential(ctx, userID, credential
 }
 
 // GetCredentialByMail mocks base method.
-func (m *MockCredentialsRepo) GetCredentialByMail(ctx context.Context, mail string) (*ent.UserCredentials, error) {
+func (m *MockCredentialsRepo) GetCredentialByMail(ctx context.Context, mail string, provider struc.Provider) (*ent.UserCredentials, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetCredentialByMail", ctx, mail)
+	ret := m.ctrl.Call(m, "GetCredentialByMail", ctx, mail, provider)
 	ret0, _ := ret[0].(*ent.UserCredentials)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // GetCredentialByMail indicates an expected call of GetCredentialByMail.
-func (mr *MockCredentialsRepoMockRecorder) GetCredentialByMail(ctx, mail interface{}) *gomock.Call {
+func (mr *MockCredentialsRepoMockRecorder) GetCredentialByMail(ctx, mail, provider interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetCredentialByMail", reflect.TypeOf((*MockCredentialsRepo)(nil).GetCredentialByMail), ctx, mail)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetCredentialByMail", reflect.TypeOf((*MockCredentialsRepo)(nil).GetCredentialByMail), ctx, mail, provider)
 }
 
 // ListCredentials mocks base method.

@@ -6,8 +6,8 @@ import (
 
 	iam_v1 "gitlab.calendaria.team/services/iam/api/iam/v1"
 	"gitlab.calendaria.team/services/iam/ent"
-	"gitlab.calendaria.team/services/utils/v1/config"
 	u_struc "gitlab.calendaria.team/services/utils/v2/struc"
+	"gitlab.calendaria.team/services/utils/v4/config"
 
 	"github.com/mitchellh/mapstructure"
 	xoauth2 "golang.org/x/oauth2"
@@ -18,11 +18,11 @@ import (
 )
 
 type GoogleGateway struct {
-	config *config.Config
+	config config.IConfig
 }
 
 func NewGoogleRemote(
-	config *config.Config,
+	config config.IConfig,
 ) (IProviderGateway, error) {
 	return &GoogleGateway{
 		config: config,

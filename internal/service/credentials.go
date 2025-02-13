@@ -31,7 +31,7 @@ func NewCredentialsService(
 	}
 }
 
-func userCredentialToV1Credential(userCredentials *ent.UserCredentials) *iam_v1.UserCredential {
+func UserCredentialToV1Credential(userCredentials *ent.UserCredentials) *iam_v1.UserCredential {
 	if userCredentials == nil {
 		return &iam_v1.UserCredential{}
 	}
@@ -106,7 +106,7 @@ func (s *CredentialsService) ExternalAuth(
 		return nil, iam_v1.ErrorInvalidProvider("invalid provider")
 	}
 
-	err := s.uc.ExternalAuth(ctx, actorID, provider, req.GetAuthCode())
+	_, err := s.uc.ExternalAuth(ctx, actorID, provider, req.GetAuthCode())
 	if err != nil {
 		return nil, err
 	}
@@ -128,7 +128,7 @@ func (s *CredentialsService) RefreshCredential(
 		return nil, err
 	}
 
-	return &iam_v1.CredentialReply{Credential: userCredentialToV1Credential(credential)}, nil
+	return &iam_v1.CredentialReply{Credential: UserCredentialToV1Credential(credential)}, nil
 }
 
 func (s *CredentialsService) GetCredential(
@@ -145,7 +145,7 @@ func (s *CredentialsService) GetCredential(
 		return nil, err
 	}
 
-	return &iam_v1.CredentialReply{Credential: userCredentialToV1Credential(credential)}, nil
+	return &iam_v1.CredentialReply{Credential: UserCredentialToV1Credential(credential)}, nil
 }
 
 func (s *CredentialsService) ListCredentials(

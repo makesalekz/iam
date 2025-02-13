@@ -80,7 +80,7 @@ make stop
 ### Consul
 
 ```bash
-app/iam/SXODIM_AUTH_URL = <URL: string>
+consul kv put app/global/SXODIM_DOMAIN "https://dev.sxodim.com"
 ```
 
 ## Vault

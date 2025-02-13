@@ -10,10 +10,10 @@ import (
 )
 
 type CredentialsRepo interface {
-	CreateCredential(ctx context.Context, dto integration.CredentialDto) error
+	CreateCredential(ctx context.Context, dto integration.CredentialDto) (*ent.UserCredentials, error)
 	UpdateCredential(ctx context.Context, credentialID int64, dto integration.CredentialDto) (*ent.UserCredentials, error)
 	GetCredential(ctx context.Context, userID, credentialID int64) (*ent.UserCredentials, error)
-	GetCredentialByMail(ctx context.Context, mail string) (*ent.UserCredentials, error)
+	GetCredentialByMail(ctx context.Context, mail string, provider u_struc.Provider) (*ent.UserCredentials, error)
 	ListCredentials(ctx context.Context, userID int64, provider *u_struc.Provider) ([]*ent.UserCredentials, error)
 	DeleteCredential(ctx context.Context, userID, credentialID int64) (int, error)
 }
@@ -30,25 +30,19 @@ func NewCredentialsRepo(d *Data) CredentialsRepo {
 
 func (r *credentialsRepo) CreateCredential(
 	ctx context.Context, dto integration.CredentialDto,
-) error {
+) (*ent.UserCredentials, error) {
 	return r.db.UserCredentials.Create().
 		SetUserID(dto.UserID).
+		SetNillableExternalUserID(dto.ExternalUserID).
 		SetDisplayName(dto.DisplayName).
 		SetMail(dto.Email).
+		SetPhone(dto.Phone).
 		SetProvider(dto.Provider).
 		SetAccessToken(dto.Token.AccessToken).
 		SetTokenType(dto.Token.TokenType).
 		SetRefreshToken(dto.Token.RefreshToken).
 		SetExpiresAt(dto.Token.Expiry).
-		OnConflictColumns(usercredentials.FieldMail).
-		UpdateDisplayName().
-		UpdateAccessToken().
-		UpdateTokenType().
-		UpdateRefreshToken().
-		UpdateExpiresAt().
-		UpdateUserID().
-		ClearDeletedAt().
-		Exec(ctx)
+		Save(ctx)
 }
 
 func (r *credentialsRepo) UpdateCredential(
@@ -75,13 +69,14 @@ func (r *credentialsRepo) GetCredential(
 }
 
 func (r *credentialsRepo) GetCredentialByMail(
-	ctx context.Context, mail string,
+	ctx context.Context, mail string, provider u_struc.Provider,
 ) (*ent.UserCredentials, error) {
 	return r.db.UserCredentials.Query().
 		Where(
 			usercredentials.MailEQ(mail),
+			usercredentials.ProviderEQ(provider),
 		).
-		First(ctx)
+		Only(ctx)
 }
 
 func (r *credentialsRepo) ListCredentials(

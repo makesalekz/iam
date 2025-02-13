@@ -7,7 +7,7 @@ import (
 	events_v1 "gitlab.calendaria.team/services/events/api/events/v1"
 	iam_v1 "gitlab.calendaria.team/services/iam/api/iam/v1"
 	"gitlab.calendaria.team/services/iam/internal/conf"
-	"gitlab.calendaria.team/services/utils/v2/dialer"
+	"gitlab.calendaria.team/services/utils/v4/dialer"
 )
 
 type IEventsRemote interface {

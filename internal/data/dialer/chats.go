@@ -6,7 +6,7 @@ import (
 	chats_v1 "gitlab.calendaria.team/services/chats/api/chats/v1"
 	v1 "gitlab.calendaria.team/services/iam/api/iam/v1"
 	"gitlab.calendaria.team/services/iam/internal/conf"
-	u_dialer "gitlab.calendaria.team/services/utils/v2/dialer"
+	u_dialer "gitlab.calendaria.team/services/utils/v4/dialer"
 )
 
 type IChatsRemote interface {

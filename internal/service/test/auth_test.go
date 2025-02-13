@@ -6,16 +6,16 @@ import (
 	"time"
 
 	v1 "gitlab.calendaria.team/services/iam/api/iam/v1"
-	tenants_v1 "gitlab.calendaria.team/services/tenants/api/tenants/v1"
-
-	"github.com/golang/mock/gomock"
-	"github.com/stretchr/testify/require"
 	"gitlab.calendaria.team/services/iam/ent"
 	"gitlab.calendaria.team/services/iam/ent/enum"
 	"gitlab.calendaria.team/services/iam/internal/biz"
 	"gitlab.calendaria.team/services/iam/internal/data/mock"
-	jwt_mock "gitlab.calendaria.team/services/utils/v2/jwt/mock"
-	nats_mock "gitlab.calendaria.team/services/utils/v2/nats/mock"
+	tenants_v1 "gitlab.calendaria.team/services/tenants/api/tenants/v1"
+	jwt_mock "gitlab.calendaria.team/services/utils/v4/jwt/mock"
+	nats_mock "gitlab.calendaria.team/services/utils/v4/nats/mock"
+
+	"github.com/golang/mock/gomock"
+	"github.com/stretchr/testify/require"
 	"gitlab.calendaria.team/services/utils/v2/zap"
 )
 

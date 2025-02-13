@@ -8,9 +8,10 @@ import (
 	"gitlab.calendaria.team/services/iam/internal/biz"
 	"gitlab.calendaria.team/services/iam/internal/data/mock"
 	"gitlab.calendaria.team/services/iam/internal/service"
-	jwt_mock "gitlab.calendaria.team/services/utils/v2/jwt/mock"
-	u_nats_mock "gitlab.calendaria.team/services/utils/v2/nats/mock"
 	u_zap "gitlab.calendaria.team/services/utils/v2/zap"
+	u_config_mock "gitlab.calendaria.team/services/utils/v4/config/mock"
+	jwt_mock "gitlab.calendaria.team/services/utils/v4/jwt/mock"
+	u_nats_mock "gitlab.calendaria.team/services/utils/v4/nats/mock"
 
 	"github.com/go-kratos/kratos/v2/metadata"
 	"github.com/golang/mock/gomock"
@@ -18,6 +19,7 @@ import (
 )
 
 type dataMock struct {
+	config              *u_config_mock.MockIConfig
 	qm                  *u_nats_mock.MockIQueueManager
 	queue               *u_nats_mock.MockIQueue
 	jwt                 *jwt_mock.MockIJwtProcessor
@@ -119,6 +121,7 @@ func createCredentialsService(t *testing.T) (context.Context, *dataMock, *servic
 	logger := u_zap.NewZapLogger(true)
 
 	// create mocks
+	config := u_config_mock.NewMockIConfig(ctrl)
 	qm := u_nats_mock.NewMockIQueueManager(ctrl)
 	queue := u_nats_mock.NewMockIQueue(ctrl)
 	jwt := jwt_mock.NewMockIJwtProcessor(ctrl)
@@ -128,6 +131,7 @@ func createCredentialsService(t *testing.T) (context.Context, *dataMock, *servic
 
 	// collect repo
 	repo := &dataMock{
+		config:          config,
 		qm:              qm,
 		queue:           queue,
 		jwt:             jwt,
@@ -138,8 +142,7 @@ func createCredentialsService(t *testing.T) (context.Context, *dataMock, *servic
 
 	// create service
 	eu, err := biz.NewCredentialsUsecase(
-		true,
-		nil,
+		config,
 		logger,
 		qm,
 		jwt,

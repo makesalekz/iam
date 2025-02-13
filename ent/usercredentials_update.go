@@ -31,6 +31,12 @@ func (ucu *UserCredentialsUpdate) Where(ps ...predicate.UserCredentials) *UserCr
 	return ucu
 }
 
+// SetUpdatedAt sets the "updated_at" field.
+func (ucu *UserCredentialsUpdate) SetUpdatedAt(t time.Time) *UserCredentialsUpdate {
+	ucu.mutation.SetUpdatedAt(t)
+	return ucu
+}
+
 // SetDeletedAt sets the "deleted_at" field.
 func (ucu *UserCredentialsUpdate) SetDeletedAt(t time.Time) *UserCredentialsUpdate {
 	ucu.mutation.SetDeletedAt(t)
@@ -65,6 +71,33 @@ func (ucu *UserCredentialsUpdate) SetNillableUserID(i *int64) *UserCredentialsUp
 	return ucu
 }
 
+// SetExternalUserID sets the "external_user_id" field.
+func (ucu *UserCredentialsUpdate) SetExternalUserID(i int64) *UserCredentialsUpdate {
+	ucu.mutation.ResetExternalUserID()
+	ucu.mutation.SetExternalUserID(i)
+	return ucu
+}
+
+// SetNillableExternalUserID sets the "external_user_id" field if the given value is not nil.
+func (ucu *UserCredentialsUpdate) SetNillableExternalUserID(i *int64) *UserCredentialsUpdate {
+	if i != nil {
+		ucu.SetExternalUserID(*i)
+	}
+	return ucu
+}
+
+// AddExternalUserID adds i to the "external_user_id" field.
+func (ucu *UserCredentialsUpdate) AddExternalUserID(i int64) *UserCredentialsUpdate {
+	ucu.mutation.AddExternalUserID(i)
+	return ucu
+}
+
+// ClearExternalUserID clears the value of the "external_user_id" field.
+func (ucu *UserCredentialsUpdate) ClearExternalUserID() *UserCredentialsUpdate {
+	ucu.mutation.ClearExternalUserID()
+	return ucu
+}
+
 // SetMail sets the "mail" field.
 func (ucu *UserCredentialsUpdate) SetMail(s string) *UserCredentialsUpdate {
 	ucu.mutation.SetMail(s)
@@ -82,6 +115,26 @@ func (ucu *UserCredentialsUpdate) SetNillableMail(s *string) *UserCredentialsUpd
 // ClearMail clears the value of the "mail" field.
 func (ucu *UserCredentialsUpdate) ClearMail() *UserCredentialsUpdate {
 	ucu.mutation.ClearMail()
+	return ucu
+}
+
+// SetPhone sets the "phone" field.
+func (ucu *UserCredentialsUpdate) SetPhone(s string) *UserCredentialsUpdate {
+	ucu.mutation.SetPhone(s)
+	return ucu
+}
+
+// SetNillablePhone sets the "phone" field if the given value is not nil.
+func (ucu *UserCredentialsUpdate) SetNillablePhone(s *string) *UserCredentialsUpdate {
+	if s != nil {
+		ucu.SetPhone(*s)
+	}
+	return ucu
+}
+
+// ClearPhone clears the value of the "phone" field.
+func (ucu *UserCredentialsUpdate) ClearPhone() *UserCredentialsUpdate {
+	ucu.mutation.ClearPhone()
 	return ucu
 }
 
@@ -199,34 +252,6 @@ func (ucu *UserCredentialsUpdate) ClearExpiresAt() *UserCredentialsUpdate {
 	return ucu
 }
 
-// SetCreatedAt sets the "created_at" field.
-func (ucu *UserCredentialsUpdate) SetCreatedAt(t time.Time) *UserCredentialsUpdate {
-	ucu.mutation.SetCreatedAt(t)
-	return ucu
-}
-
-// SetNillableCreatedAt sets the "created_at" field if the given value is not nil.
-func (ucu *UserCredentialsUpdate) SetNillableCreatedAt(t *time.Time) *UserCredentialsUpdate {
-	if t != nil {
-		ucu.SetCreatedAt(*t)
-	}
-	return ucu
-}
-
-// SetUpdatedAt sets the "updated_at" field.
-func (ucu *UserCredentialsUpdate) SetUpdatedAt(t time.Time) *UserCredentialsUpdate {
-	ucu.mutation.SetUpdatedAt(t)
-	return ucu
-}
-
-// SetNillableUpdatedAt sets the "updated_at" field if the given value is not nil.
-func (ucu *UserCredentialsUpdate) SetNillableUpdatedAt(t *time.Time) *UserCredentialsUpdate {
-	if t != nil {
-		ucu.SetUpdatedAt(*t)
-	}
-	return ucu
-}
-
 // SetUser sets the "user" edge to the User entity.
 func (ucu *UserCredentialsUpdate) SetUser(u *User) *UserCredentialsUpdate {
 	return ucu.SetUserID(u.ID)
@@ -245,6 +270,9 @@ func (ucu *UserCredentialsUpdate) ClearUser() *UserCredentialsUpdate {
 
 // Save executes the query and returns the number of nodes affected by the update operation.
 func (ucu *UserCredentialsUpdate) Save(ctx context.Context) (int, error) {
+	if err := ucu.defaults(); err != nil {
+		return 0, err
+	}
 	return withHooks(ctx, ucu.sqlSave, ucu.mutation, ucu.hooks)
 }
 
@@ -268,6 +296,18 @@ func (ucu *UserCredentialsUpdate) ExecX(ctx context.Context) {
 	if err := ucu.Exec(ctx); err != nil {
 		panic(err)
 	}
+}
+
+// defaults sets the default values of the builder before save.
+func (ucu *UserCredentialsUpdate) defaults() error {
+	if _, ok := ucu.mutation.UpdatedAt(); !ok {
+		if usercredentials.UpdateDefaultUpdatedAt == nil {
+			return fmt.Errorf("ent: uninitialized usercredentials.UpdateDefaultUpdatedAt (forgotten import ent/runtime?)")
+		}
+		v := usercredentials.UpdateDefaultUpdatedAt()
+		ucu.mutation.SetUpdatedAt(v)
+	}
+	return nil
 }
 
 // check runs all checks and user-defined validators on the builder.
@@ -301,17 +341,35 @@ func (ucu *UserCredentialsUpdate) sqlSave(ctx context.Context) (n int, err error
 			}
 		}
 	}
+	if value, ok := ucu.mutation.UpdatedAt(); ok {
+		_spec.SetField(usercredentials.FieldUpdatedAt, field.TypeTime, value)
+	}
 	if value, ok := ucu.mutation.DeletedAt(); ok {
 		_spec.SetField(usercredentials.FieldDeletedAt, field.TypeTime, value)
 	}
 	if ucu.mutation.DeletedAtCleared() {
 		_spec.ClearField(usercredentials.FieldDeletedAt, field.TypeTime)
 	}
+	if value, ok := ucu.mutation.ExternalUserID(); ok {
+		_spec.SetField(usercredentials.FieldExternalUserID, field.TypeInt64, value)
+	}
+	if value, ok := ucu.mutation.AddedExternalUserID(); ok {
+		_spec.AddField(usercredentials.FieldExternalUserID, field.TypeInt64, value)
+	}
+	if ucu.mutation.ExternalUserIDCleared() {
+		_spec.ClearField(usercredentials.FieldExternalUserID, field.TypeInt64)
+	}
 	if value, ok := ucu.mutation.Mail(); ok {
 		_spec.SetField(usercredentials.FieldMail, field.TypeString, value)
 	}
 	if ucu.mutation.MailCleared() {
 		_spec.ClearField(usercredentials.FieldMail, field.TypeString)
+	}
+	if value, ok := ucu.mutation.Phone(); ok {
+		_spec.SetField(usercredentials.FieldPhone, field.TypeString, value)
+	}
+	if ucu.mutation.PhoneCleared() {
+		_spec.ClearField(usercredentials.FieldPhone, field.TypeString)
 	}
 	if value, ok := ucu.mutation.DisplayName(); ok {
 		_spec.SetField(usercredentials.FieldDisplayName, field.TypeString, value)
@@ -345,12 +403,6 @@ func (ucu *UserCredentialsUpdate) sqlSave(ctx context.Context) (n int, err error
 	}
 	if ucu.mutation.ExpiresAtCleared() {
 		_spec.ClearField(usercredentials.FieldExpiresAt, field.TypeTime)
-	}
-	if value, ok := ucu.mutation.CreatedAt(); ok {
-		_spec.SetField(usercredentials.FieldCreatedAt, field.TypeTime, value)
-	}
-	if value, ok := ucu.mutation.UpdatedAt(); ok {
-		_spec.SetField(usercredentials.FieldUpdatedAt, field.TypeTime, value)
 	}
 	if ucu.mutation.UserCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -403,6 +455,12 @@ type UserCredentialsUpdateOne struct {
 	modifiers []func(*sql.UpdateBuilder)
 }
 
+// SetUpdatedAt sets the "updated_at" field.
+func (ucuo *UserCredentialsUpdateOne) SetUpdatedAt(t time.Time) *UserCredentialsUpdateOne {
+	ucuo.mutation.SetUpdatedAt(t)
+	return ucuo
+}
+
 // SetDeletedAt sets the "deleted_at" field.
 func (ucuo *UserCredentialsUpdateOne) SetDeletedAt(t time.Time) *UserCredentialsUpdateOne {
 	ucuo.mutation.SetDeletedAt(t)
@@ -437,6 +495,33 @@ func (ucuo *UserCredentialsUpdateOne) SetNillableUserID(i *int64) *UserCredentia
 	return ucuo
 }
 
+// SetExternalUserID sets the "external_user_id" field.
+func (ucuo *UserCredentialsUpdateOne) SetExternalUserID(i int64) *UserCredentialsUpdateOne {
+	ucuo.mutation.ResetExternalUserID()
+	ucuo.mutation.SetExternalUserID(i)
+	return ucuo
+}
+
+// SetNillableExternalUserID sets the "external_user_id" field if the given value is not nil.
+func (ucuo *UserCredentialsUpdateOne) SetNillableExternalUserID(i *int64) *UserCredentialsUpdateOne {
+	if i != nil {
+		ucuo.SetExternalUserID(*i)
+	}
+	return ucuo
+}
+
+// AddExternalUserID adds i to the "external_user_id" field.
+func (ucuo *UserCredentialsUpdateOne) AddExternalUserID(i int64) *UserCredentialsUpdateOne {
+	ucuo.mutation.AddExternalUserID(i)
+	return ucuo
+}
+
+// ClearExternalUserID clears the value of the "external_user_id" field.
+func (ucuo *UserCredentialsUpdateOne) ClearExternalUserID() *UserCredentialsUpdateOne {
+	ucuo.mutation.ClearExternalUserID()
+	return ucuo
+}
+
 // SetMail sets the "mail" field.
 func (ucuo *UserCredentialsUpdateOne) SetMail(s string) *UserCredentialsUpdateOne {
 	ucuo.mutation.SetMail(s)
@@ -454,6 +539,26 @@ func (ucuo *UserCredentialsUpdateOne) SetNillableMail(s *string) *UserCredential
 // ClearMail clears the value of the "mail" field.
 func (ucuo *UserCredentialsUpdateOne) ClearMail() *UserCredentialsUpdateOne {
 	ucuo.mutation.ClearMail()
+	return ucuo
+}
+
+// SetPhone sets the "phone" field.
+func (ucuo *UserCredentialsUpdateOne) SetPhone(s string) *UserCredentialsUpdateOne {
+	ucuo.mutation.SetPhone(s)
+	return ucuo
+}
+
+// SetNillablePhone sets the "phone" field if the given value is not nil.
+func (ucuo *UserCredentialsUpdateOne) SetNillablePhone(s *string) *UserCredentialsUpdateOne {
+	if s != nil {
+		ucuo.SetPhone(*s)
+	}
+	return ucuo
+}
+
+// ClearPhone clears the value of the "phone" field.
+func (ucuo *UserCredentialsUpdateOne) ClearPhone() *UserCredentialsUpdateOne {
+	ucuo.mutation.ClearPhone()
 	return ucuo
 }
 
@@ -571,34 +676,6 @@ func (ucuo *UserCredentialsUpdateOne) ClearExpiresAt() *UserCredentialsUpdateOne
 	return ucuo
 }
 
-// SetCreatedAt sets the "created_at" field.
-func (ucuo *UserCredentialsUpdateOne) SetCreatedAt(t time.Time) *UserCredentialsUpdateOne {
-	ucuo.mutation.SetCreatedAt(t)
-	return ucuo
-}
-
-// SetNillableCreatedAt sets the "created_at" field if the given value is not nil.
-func (ucuo *UserCredentialsUpdateOne) SetNillableCreatedAt(t *time.Time) *UserCredentialsUpdateOne {
-	if t != nil {
-		ucuo.SetCreatedAt(*t)
-	}
-	return ucuo
-}
-
-// SetUpdatedAt sets the "updated_at" field.
-func (ucuo *UserCredentialsUpdateOne) SetUpdatedAt(t time.Time) *UserCredentialsUpdateOne {
-	ucuo.mutation.SetUpdatedAt(t)
-	return ucuo
-}
-
-// SetNillableUpdatedAt sets the "updated_at" field if the given value is not nil.
-func (ucuo *UserCredentialsUpdateOne) SetNillableUpdatedAt(t *time.Time) *UserCredentialsUpdateOne {
-	if t != nil {
-		ucuo.SetUpdatedAt(*t)
-	}
-	return ucuo
-}
-
 // SetUser sets the "user" edge to the User entity.
 func (ucuo *UserCredentialsUpdateOne) SetUser(u *User) *UserCredentialsUpdateOne {
 	return ucuo.SetUserID(u.ID)
@@ -630,6 +707,9 @@ func (ucuo *UserCredentialsUpdateOne) Select(field string, fields ...string) *Us
 
 // Save executes the query and returns the updated UserCredentials entity.
 func (ucuo *UserCredentialsUpdateOne) Save(ctx context.Context) (*UserCredentials, error) {
+	if err := ucuo.defaults(); err != nil {
+		return nil, err
+	}
 	return withHooks(ctx, ucuo.sqlSave, ucuo.mutation, ucuo.hooks)
 }
 
@@ -653,6 +733,18 @@ func (ucuo *UserCredentialsUpdateOne) ExecX(ctx context.Context) {
 	if err := ucuo.Exec(ctx); err != nil {
 		panic(err)
 	}
+}
+
+// defaults sets the default values of the builder before save.
+func (ucuo *UserCredentialsUpdateOne) defaults() error {
+	if _, ok := ucuo.mutation.UpdatedAt(); !ok {
+		if usercredentials.UpdateDefaultUpdatedAt == nil {
+			return fmt.Errorf("ent: uninitialized usercredentials.UpdateDefaultUpdatedAt (forgotten import ent/runtime?)")
+		}
+		v := usercredentials.UpdateDefaultUpdatedAt()
+		ucuo.mutation.SetUpdatedAt(v)
+	}
+	return nil
 }
 
 // check runs all checks and user-defined validators on the builder.
@@ -703,17 +795,35 @@ func (ucuo *UserCredentialsUpdateOne) sqlSave(ctx context.Context) (_node *UserC
 			}
 		}
 	}
+	if value, ok := ucuo.mutation.UpdatedAt(); ok {
+		_spec.SetField(usercredentials.FieldUpdatedAt, field.TypeTime, value)
+	}
 	if value, ok := ucuo.mutation.DeletedAt(); ok {
 		_spec.SetField(usercredentials.FieldDeletedAt, field.TypeTime, value)
 	}
 	if ucuo.mutation.DeletedAtCleared() {
 		_spec.ClearField(usercredentials.FieldDeletedAt, field.TypeTime)
 	}
+	if value, ok := ucuo.mutation.ExternalUserID(); ok {
+		_spec.SetField(usercredentials.FieldExternalUserID, field.TypeInt64, value)
+	}
+	if value, ok := ucuo.mutation.AddedExternalUserID(); ok {
+		_spec.AddField(usercredentials.FieldExternalUserID, field.TypeInt64, value)
+	}
+	if ucuo.mutation.ExternalUserIDCleared() {
+		_spec.ClearField(usercredentials.FieldExternalUserID, field.TypeInt64)
+	}
 	if value, ok := ucuo.mutation.Mail(); ok {
 		_spec.SetField(usercredentials.FieldMail, field.TypeString, value)
 	}
 	if ucuo.mutation.MailCleared() {
 		_spec.ClearField(usercredentials.FieldMail, field.TypeString)
+	}
+	if value, ok := ucuo.mutation.Phone(); ok {
+		_spec.SetField(usercredentials.FieldPhone, field.TypeString, value)
+	}
+	if ucuo.mutation.PhoneCleared() {
+		_spec.ClearField(usercredentials.FieldPhone, field.TypeString)
 	}
 	if value, ok := ucuo.mutation.DisplayName(); ok {
 		_spec.SetField(usercredentials.FieldDisplayName, field.TypeString, value)
@@ -747,12 +857,6 @@ func (ucuo *UserCredentialsUpdateOne) sqlSave(ctx context.Context) (_node *UserC
 	}
 	if ucuo.mutation.ExpiresAtCleared() {
 		_spec.ClearField(usercredentials.FieldExpiresAt, field.TypeTime)
-	}
-	if value, ok := ucuo.mutation.CreatedAt(); ok {
-		_spec.SetField(usercredentials.FieldCreatedAt, field.TypeTime, value)
-	}
-	if value, ok := ucuo.mutation.UpdatedAt(); ok {
-		_spec.SetField(usercredentials.FieldUpdatedAt, field.TypeTime, value)
 	}
 	if ucuo.mutation.UserCleared() {
 		edge := &sqlgraph.EdgeSpec{

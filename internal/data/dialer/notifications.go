@@ -6,7 +6,7 @@ import (
 	v1 "gitlab.calendaria.team/services/contacts/api/contacts/v1"
 	"gitlab.calendaria.team/services/iam/internal/conf"
 	notifications_v1 "gitlab.calendaria.team/services/notifications/api/notifications/v1"
-	"gitlab.calendaria.team/services/utils/v2/dialer"
+	"gitlab.calendaria.team/services/utils/v4/dialer"
 )
 
 // INotificationsRemote ...

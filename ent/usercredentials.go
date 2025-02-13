@@ -19,12 +19,20 @@ type UserCredentials struct {
 	config `json:"-"`
 	// ID of the ent.
 	ID int64 `json:"id,omitempty"`
+	// CreatedAt holds the value of the "created_at" field.
+	CreatedAt time.Time `json:"created_at,omitempty"`
+	// UpdatedAt holds the value of the "updated_at" field.
+	UpdatedAt time.Time `json:"updated_at,omitempty"`
 	// DeletedAt holds the value of the "deleted_at" field.
 	DeletedAt *time.Time `json:"deleted_at,omitempty"`
 	// UserID holds the value of the "user_id" field.
 	UserID int64 `json:"user_id,omitempty"`
+	// ExternalUserID holds the value of the "external_user_id" field.
+	ExternalUserID *int64 `json:"external_user_id,omitempty"`
 	// Mail holds the value of the "mail" field.
 	Mail *string `json:"mail,omitempty"`
+	// Phone holds the value of the "phone" field.
+	Phone *string `json:"phone,omitempty"`
 	// DisplayName holds the value of the "display_name" field.
 	DisplayName *string `json:"display_name,omitempty"`
 	// Provider holds the value of the "provider" field.
@@ -37,10 +45,6 @@ type UserCredentials struct {
 	RefreshToken *string `json:"refresh_token,omitempty"`
 	// ExpiresAt holds the value of the "expires_at" field.
 	ExpiresAt *time.Time `json:"expires_at,omitempty"`
-	// CreatedAt holds the value of the "created_at" field.
-	CreatedAt time.Time `json:"created_at,omitempty"`
-	// UpdatedAt holds the value of the "updated_at" field.
-	UpdatedAt time.Time `json:"updated_at,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the UserCredentialsQuery when eager-loading is set.
 	Edges        UserCredentialsEdges `json:"edges"`
@@ -72,11 +76,11 @@ func (*UserCredentials) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case usercredentials.FieldID, usercredentials.FieldUserID:
+		case usercredentials.FieldID, usercredentials.FieldUserID, usercredentials.FieldExternalUserID:
 			values[i] = new(sql.NullInt64)
-		case usercredentials.FieldMail, usercredentials.FieldDisplayName, usercredentials.FieldProvider, usercredentials.FieldAccessToken, usercredentials.FieldTokenType, usercredentials.FieldRefreshToken:
+		case usercredentials.FieldMail, usercredentials.FieldPhone, usercredentials.FieldDisplayName, usercredentials.FieldProvider, usercredentials.FieldAccessToken, usercredentials.FieldTokenType, usercredentials.FieldRefreshToken:
 			values[i] = new(sql.NullString)
-		case usercredentials.FieldDeletedAt, usercredentials.FieldExpiresAt, usercredentials.FieldCreatedAt, usercredentials.FieldUpdatedAt:
+		case usercredentials.FieldCreatedAt, usercredentials.FieldUpdatedAt, usercredentials.FieldDeletedAt, usercredentials.FieldExpiresAt:
 			values[i] = new(sql.NullTime)
 		default:
 			values[i] = new(sql.UnknownType)
@@ -99,6 +103,18 @@ func (uc *UserCredentials) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field id", value)
 			}
 			uc.ID = int64(value.Int64)
+		case usercredentials.FieldCreatedAt:
+			if value, ok := values[i].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field created_at", values[i])
+			} else if value.Valid {
+				uc.CreatedAt = value.Time
+			}
+		case usercredentials.FieldUpdatedAt:
+			if value, ok := values[i].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field updated_at", values[i])
+			} else if value.Valid {
+				uc.UpdatedAt = value.Time
+			}
 		case usercredentials.FieldDeletedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field deleted_at", values[i])
@@ -112,12 +128,26 @@ func (uc *UserCredentials) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				uc.UserID = value.Int64
 			}
+		case usercredentials.FieldExternalUserID:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field external_user_id", values[i])
+			} else if value.Valid {
+				uc.ExternalUserID = new(int64)
+				*uc.ExternalUserID = value.Int64
+			}
 		case usercredentials.FieldMail:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field mail", values[i])
 			} else if value.Valid {
 				uc.Mail = new(string)
 				*uc.Mail = value.String
+			}
+		case usercredentials.FieldPhone:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field phone", values[i])
+			} else if value.Valid {
+				uc.Phone = new(string)
+				*uc.Phone = value.String
 			}
 		case usercredentials.FieldDisplayName:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -160,18 +190,6 @@ func (uc *UserCredentials) assignValues(columns []string, values []any) error {
 				uc.ExpiresAt = new(time.Time)
 				*uc.ExpiresAt = value.Time
 			}
-		case usercredentials.FieldCreatedAt:
-			if value, ok := values[i].(*sql.NullTime); !ok {
-				return fmt.Errorf("unexpected type %T for field created_at", values[i])
-			} else if value.Valid {
-				uc.CreatedAt = value.Time
-			}
-		case usercredentials.FieldUpdatedAt:
-			if value, ok := values[i].(*sql.NullTime); !ok {
-				return fmt.Errorf("unexpected type %T for field updated_at", values[i])
-			} else if value.Valid {
-				uc.UpdatedAt = value.Time
-			}
 		default:
 			uc.selectValues.Set(columns[i], values[i])
 		}
@@ -213,6 +231,12 @@ func (uc *UserCredentials) String() string {
 	var builder strings.Builder
 	builder.WriteString("UserCredentials(")
 	builder.WriteString(fmt.Sprintf("id=%v, ", uc.ID))
+	builder.WriteString("created_at=")
+	builder.WriteString(uc.CreatedAt.Format(time.ANSIC))
+	builder.WriteString(", ")
+	builder.WriteString("updated_at=")
+	builder.WriteString(uc.UpdatedAt.Format(time.ANSIC))
+	builder.WriteString(", ")
 	if v := uc.DeletedAt; v != nil {
 		builder.WriteString("deleted_at=")
 		builder.WriteString(v.Format(time.ANSIC))
@@ -221,8 +245,18 @@ func (uc *UserCredentials) String() string {
 	builder.WriteString("user_id=")
 	builder.WriteString(fmt.Sprintf("%v", uc.UserID))
 	builder.WriteString(", ")
+	if v := uc.ExternalUserID; v != nil {
+		builder.WriteString("external_user_id=")
+		builder.WriteString(fmt.Sprintf("%v", *v))
+	}
+	builder.WriteString(", ")
 	if v := uc.Mail; v != nil {
 		builder.WriteString("mail=")
+		builder.WriteString(*v)
+	}
+	builder.WriteString(", ")
+	if v := uc.Phone; v != nil {
+		builder.WriteString("phone=")
 		builder.WriteString(*v)
 	}
 	builder.WriteString(", ")
@@ -253,12 +287,6 @@ func (uc *UserCredentials) String() string {
 		builder.WriteString("expires_at=")
 		builder.WriteString(v.Format(time.ANSIC))
 	}
-	builder.WriteString(", ")
-	builder.WriteString("created_at=")
-	builder.WriteString(uc.CreatedAt.Format(time.ANSIC))
-	builder.WriteString(", ")
-	builder.WriteString("updated_at=")
-	builder.WriteString(uc.UpdatedAt.Format(time.ANSIC))
 	builder.WriteByte(')')
 	return builder.String()
 }

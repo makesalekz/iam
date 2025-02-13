@@ -7,16 +7,15 @@ import (
 	"sync"
 	"time"
 
-	"gitlab.calendaria.team/services/iam/internal/data/dialer"
-
 	v1 "gitlab.calendaria.team/services/iam/api/iam/v1"
 	"gitlab.calendaria.team/services/iam/ent"
 	"gitlab.calendaria.team/services/iam/internal/data"
+	"gitlab.calendaria.team/services/iam/internal/data/dialer"
 	tenants_v1 "gitlab.calendaria.team/services/tenants/api/tenants/v1"
 	utils_v1 "gitlab.calendaria.team/services/utils/api/utils/v1"
 	u_error "gitlab.calendaria.team/services/utils/v1/error"
-	u_jwt "gitlab.calendaria.team/services/utils/v2/jwt"
-	u_nats "gitlab.calendaria.team/services/utils/v2/nats"
+	u_jwt "gitlab.calendaria.team/services/utils/v4/jwt"
+	u_nats "gitlab.calendaria.team/services/utils/v4/nats"
 
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/lib/pq"

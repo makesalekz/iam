@@ -74,16 +74,18 @@ var (
 	// UserCredentialsColumns holds the columns for the "user_credentials" table.
 	UserCredentialsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt64, Increment: true},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
 		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
+		{Name: "external_user_id", Type: field.TypeInt64, Nullable: true},
 		{Name: "mail", Type: field.TypeString, Nullable: true},
+		{Name: "phone", Type: field.TypeString, Nullable: true},
 		{Name: "display_name", Type: field.TypeString, Nullable: true},
 		{Name: "provider", Type: field.TypeEnum, Nullable: true, Enums: []string{"CALENDARIA", "GOOGLE", "OUTLOOK", "APPLE", "SXODIM"}},
 		{Name: "access_token", Type: field.TypeString},
 		{Name: "token_type", Type: field.TypeString, Nullable: true},
 		{Name: "refresh_token", Type: field.TypeString, Nullable: true},
 		{Name: "expires_at", Type: field.TypeTime, Nullable: true},
-		{Name: "created_at", Type: field.TypeTime},
-		{Name: "updated_at", Type: field.TypeTime},
 		{Name: "user_id", Type: field.TypeInt64},
 	}
 	// UserCredentialsTable holds the schema information for the "user_credentials" table.
@@ -94,7 +96,7 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "user_credentials_users_user",
-				Columns:    []*schema.Column{UserCredentialsColumns[11]},
+				Columns:    []*schema.Column{UserCredentialsColumns[13]},
 				RefColumns: []*schema.Column{UsersColumns[0]},
 				OnDelete:   schema.NoAction,
 			},

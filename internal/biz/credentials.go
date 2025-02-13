@@ -7,18 +7,17 @@ import (
 	"gitlab.calendaria.team/services/iam/ent"
 	"gitlab.calendaria.team/services/iam/internal/data"
 	"gitlab.calendaria.team/services/iam/internal/data/integration"
-	"gitlab.calendaria.team/services/utils/v1/config"
-	u_jwt "gitlab.calendaria.team/services/utils/v2/jwt"
-	u_nats "gitlab.calendaria.team/services/utils/v2/nats"
 	u_struc "gitlab.calendaria.team/services/utils/v2/struc"
+	"gitlab.calendaria.team/services/utils/v4/config"
+	u_jwt "gitlab.calendaria.team/services/utils/v4/jwt"
+	u_nats "gitlab.calendaria.team/services/utils/v4/nats"
 
 	"github.com/go-kratos/kratos/v2/log"
 )
 
 type CredentialsUsecase struct {
-	isTesting       bool
-	config          *config.Config
 	log             *log.Helper
+	config          config.IConfig
 	queue           u_nats.IQueueManager
 	jwt             u_jwt.IJwtProcessor
 	provider        integration.IProviderManager
@@ -26,8 +25,7 @@ type CredentialsUsecase struct {
 }
 
 func NewCredentialsUsecase(
-	isTesting bool,
-	config *config.Config,
+	config config.IConfig,
 	logger log.Logger,
 	queue u_nats.IQueueManager,
 	jwt u_jwt.IJwtProcessor,
@@ -35,7 +33,6 @@ func NewCredentialsUsecase(
 	credentialsRepo data.CredentialsRepo,
 ) (*CredentialsUsecase, error) {
 	return &CredentialsUsecase{
-		isTesting:       isTesting,
 		config:          config,
 		log:             log.NewHelper(logger),
 		jwt:             jwt,
@@ -50,39 +47,53 @@ func (uc *CredentialsUsecase) ExternalAuth(
 	actorID int64,
 	provider u_struc.Provider,
 	authCode string,
-) error {
-	providerGateway, err := uc.provider.NewProviderGateway(uc.config, provider)
+) (*ent.UserCredentials, error) {
+	providerGateway, err := uc.provider.NewProviderGateway(provider)
 	if err != nil {
-		return err
-	}
-
-	if uc.isTesting {
-		return nil
+		return nil, err
 	}
 
 	// Exchange token
 	credentialDto, err := providerGateway.Authenticate(ctx, actorID, authCode)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	// Check credential existence
-	credential, err := uc.credentialsRepo.GetCredentialByMail(ctx, credentialDto.Email)
-	if err != nil && !ent.IsNotFound(err) {
-		return iam_v1.ErrorDatabaseQuery("Unable to get credential: %v", err.Error())
+	// Check mail credential existence
+	credential := &ent.UserCredentials{}
+	if credentialDto.Email != "" {
+		// Check credential existence
+		credential, err = uc.credentialsRepo.GetCredentialByMail(ctx, credentialDto.Email, provider)
+		if err != nil && !ent.IsNotFound(err) {
+			if ent.IsNotSingular(err) {
+				uc.log.Errorf("multi credential in one e-mail (%s) provider: %v", credentialDto.Email, err)
+			}
+
+			return nil, iam_v1.ErrorDatabaseQuery("Unable to get credential: %v", err.Error())
+		}
+
+		if credential != nil && credential.UserID != actorID {
+			return nil, iam_v1.ErrorForbidden("This email address is already in use by another user")
+		}
 	}
 
-	if credential != nil && credential.UserID != actorID {
-		return iam_v1.ErrorForbidden("This email address is already in use by another user")
+	// Save new credential to db
+	userCredential := &ent.UserCredentials{}
+	if ent.IsNotFound(err) {
+		// Save credential to database
+		userCredential, err = uc.credentialsRepo.CreateCredential(ctx, *credentialDto)
+		if err != nil {
+			return nil, iam_v1.ErrorDatabaseQuery("Unable to create credential: %v", err.Error())
+		}
+	} else if credential != nil {
+		// Update credential to database
+		userCredential, err = uc.credentialsRepo.UpdateCredential(ctx, credential.ID, *credentialDto)
+		if err != nil {
+			return nil, iam_v1.ErrorDatabaseQuery("Unable to create credential: %v", err.Error())
+		}
 	}
 
-	// Save credential to database
-	err = uc.credentialsRepo.CreateCredential(ctx, *credentialDto)
-	if err != nil {
-		return iam_v1.ErrorDatabaseQuery("database error: %s", err.Error())
-	}
-
-	return nil
+	return userCredential, nil
 }
 
 func (uc *CredentialsUsecase) RefreshCredential(
@@ -102,13 +113,9 @@ func (uc *CredentialsUsecase) RefreshCredential(
 		return nil, iam_v1.ErrorInternal("credential don't have provider")
 	}
 
-	providerGateway, err := uc.provider.NewProviderGateway(uc.config, *credential.Provider)
+	providerGateway, err := uc.provider.NewProviderGateway(*credential.Provider)
 	if err != nil {
 		return nil, err
-	}
-
-	if uc.isTesting {
-		return credential, nil
 	}
 
 	// Exchange token

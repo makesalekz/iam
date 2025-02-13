@@ -6,7 +6,7 @@ import (
 	iam_v1 "gitlab.calendaria.team/services/iam/api/iam/v1"
 	"gitlab.calendaria.team/services/iam/internal/conf"
 	media_v1 "gitlab.calendaria.team/services/media/api/media/v1"
-	u_dialer "gitlab.calendaria.team/services/utils/v2/dialer"
+	u_dialer "gitlab.calendaria.team/services/utils/v4/dialer"
 
 	"github.com/go-kratos/kratos/v2/log"
 )

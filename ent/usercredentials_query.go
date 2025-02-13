@@ -300,12 +300,12 @@ func (ucq *UserCredentialsQuery) WithUser(opts ...func(*UserQuery)) *UserCredent
 // Example:
 //
 //	var v []struct {
-//		DeletedAt time.Time `json:"deleted_at,omitempty"`
+//		CreatedAt time.Time `json:"created_at,omitempty"`
 //		Count int `json:"count,omitempty"`
 //	}
 //
 //	client.UserCredentials.Query().
-//		GroupBy(usercredentials.FieldDeletedAt).
+//		GroupBy(usercredentials.FieldCreatedAt).
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
 func (ucq *UserCredentialsQuery) GroupBy(field string, fields ...string) *UserCredentialsGroupBy {
@@ -323,11 +323,11 @@ func (ucq *UserCredentialsQuery) GroupBy(field string, fields ...string) *UserCr
 // Example:
 //
 //	var v []struct {
-//		DeletedAt time.Time `json:"deleted_at,omitempty"`
+//		CreatedAt time.Time `json:"created_at,omitempty"`
 //	}
 //
 //	client.UserCredentials.Query().
-//		Select(usercredentials.FieldDeletedAt).
+//		Select(usercredentials.FieldCreatedAt).
 //		Scan(ctx, &v)
 func (ucq *UserCredentialsQuery) Select(fields ...string) *UserCredentialsSelect {
 	ucq.ctx.Fields = append(ucq.ctx.Fields, fields...)

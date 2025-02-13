@@ -9,7 +9,6 @@ import (
 
 	gomock "github.com/golang/mock/gomock"
 	integration "gitlab.calendaria.team/services/iam/internal/data/integration"
-	config "gitlab.calendaria.team/services/utils/v1/config"
 	struc "gitlab.calendaria.team/services/utils/v2/struc"
 )
 
@@ -37,16 +36,16 @@ func (m *MockIProviderManager) EXPECT() *MockIProviderManagerMockRecorder {
 }
 
 // NewProviderGateway mocks base method.
-func (m *MockIProviderManager) NewProviderGateway(config *config.Config, provider struc.Provider) (integration.IProviderGateway, error) {
+func (m *MockIProviderManager) NewProviderGateway(provider struc.Provider) (integration.IProviderGateway, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "NewProviderGateway", config, provider)
+	ret := m.ctrl.Call(m, "NewProviderGateway", provider)
 	ret0, _ := ret[0].(integration.IProviderGateway)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // NewProviderGateway indicates an expected call of NewProviderGateway.
-func (mr *MockIProviderManagerMockRecorder) NewProviderGateway(config, provider interface{}) *gomock.Call {
+func (mr *MockIProviderManagerMockRecorder) NewProviderGateway(provider interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "NewProviderGateway", reflect.TypeOf((*MockIProviderManager)(nil).NewProviderGateway), config, provider)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "NewProviderGateway", reflect.TypeOf((*MockIProviderManager)(nil).NewProviderGateway), provider)
 }
