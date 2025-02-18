@@ -85,8 +85,14 @@ func (r *GoogleGateway) Authenticate(ctx context.Context, actorID int64, authCod
 		return nil, err
 	}
 
+	// Set access_type option to offline
+	// Flag for: "Set the value to offline if your application needs to refresh access tokens
+	// when the user is not present at the browser"
+	authOption := xoauth2.SetAuthURLParam("access_type", "offline")
+	authOption2 := xoauth2.SetAuthURLParam("prompt", "consent")
+
 	// exchange auth code to token
-	token, err := googleConfig.Exchange(ctx, authCode)
+	token, err := googleConfig.Exchange(ctx, authCode, authOption, authOption2)
 	if err != nil {
 		return nil, iam_v1.ErrorServiceFailed("Unable to retrieve token from web: %v", err.Error())
 	}

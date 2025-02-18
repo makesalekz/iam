@@ -10,6 +10,7 @@ import (
 	v1 "gitlab.calendaria.team/services/contacts/api/contacts/v1"
 	iam_v1 "gitlab.calendaria.team/services/iam/api/iam/v1"
 	"gitlab.calendaria.team/services/iam/ent"
+	"gitlab.calendaria.team/services/iam/ent/enum"
 	u_struc "gitlab.calendaria.team/services/utils/v2/struc"
 	"gitlab.calendaria.team/services/utils/v4/config"
 
@@ -22,7 +23,6 @@ const (
 
 	SxodimAuthUrl     = "/oauth/token"
 	SxodimUserDataUrl = "/api/aigenda/user"
-	SxodimGrantType   = "authorization_code"
 	SxodimClientID    = "3"
 )
 
@@ -88,6 +88,7 @@ type sxodimAuthRequestBody struct {
 	ClientID     string `json:"client_id"`
 	ClientSecret string `json:"client_secret"`
 	Code         string `json:"code"`
+	RefreshToken string `json:"refresh_token"`
 }
 
 type sxodimAuthResponseBody struct {
@@ -148,13 +149,19 @@ func (g *SxodimGateway) doSxodimRequest(
 //   - Requires "sxodimclientsecret" to be properly configured in the secret store
 //   - Requires SxodimAuthUrl is preconfigured with the correct endpoint
 //   - Converts ExpiresIn from milliseconds to time.Time expiry
-func (g *SxodimGateway) exchangeSxodimToken(ctx context.Context, authCode string) (*xoauth2.Token, error) {
+func (g *SxodimGateway) exchangeSxodimToken(ctx context.Context, grandType enum.SxodimGrantType, authCode string) (*xoauth2.Token, error) {
 	// Collect body
 	body := sxodimAuthRequestBody{
-		GrantType:    SxodimGrantType,
+		GrantType:    grandType.Value(),
 		ClientID:     SxodimClientID,
 		ClientSecret: g.storage.ClientSecret,
-		Code:         authCode,
+	}
+
+	switch grandType {
+	case enum.Authorization:
+		body.Code = authCode
+	case enum.RefreshToken:
+		body.RefreshToken = authCode
 	}
 
 	// Marshal body to []byte
@@ -225,7 +232,7 @@ func (g *SxodimGateway) getUserData(ctx context.Context, accessToken string) (*s
 }
 
 func (g *SxodimGateway) Authenticate(ctx context.Context, actorID int64, authCode string) (*CredentialDto, error) {
-	token, err := g.exchangeSxodimToken(ctx, authCode)
+	token, err := g.exchangeSxodimToken(ctx, enum.Authorization, authCode)
 	if err != nil {
 		return nil, err
 	}
@@ -262,7 +269,7 @@ func (g *SxodimGateway) RefreshToken(
 
 	// Check if token valid
 	if !dto.Token.Valid() {
-		newToken, err := g.exchangeSxodimToken(ctx, dto.Token.RefreshToken)
+		newToken, err := g.exchangeSxodimToken(ctx, enum.RefreshToken, dto.Token.RefreshToken)
 		if err != nil {
 			return nil, err
 		}
