@@ -73,7 +73,7 @@ func (uc *CredentialsUsecase) ExternalAuth(
 		}
 
 		if credential != nil && credential.UserID != actorID {
-			return nil, iam_v1.ErrorForbidden("This email address is already in use by another user")
+			return nil, iam_v1.ErrorCredentialsAlreadyInUse("This email address is already in use by another user")
 		}
 	}
 

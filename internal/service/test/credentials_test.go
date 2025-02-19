@@ -249,7 +249,7 @@ func TestCredentialsService_ExternalAuth_ErrorCases(t *testing.T) {
 			GetCredentialByMail(ctx, credentialDto.Email, provider1).
 			Return(existingCredential, nil)
 
-		expectedErr := v1.ErrorForbidden("This email address is already in use by another user")
+		expectedErr := v1.ErrorCredentialsAlreadyInUse("This email address is already in use by another user")
 		result, err := credentialService.ExternalAuth(ctx, req)
 		require.Error(t, err)
 		require.Nil(t, result)

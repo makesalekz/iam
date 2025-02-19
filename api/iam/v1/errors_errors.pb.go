@@ -289,6 +289,18 @@ func ErrorUserAlreadyExist(format string, args ...interface{}) *errors.Error {
 	return errors.New(409, ErrorReason_USER_ALREADY_EXIST.String(), fmt.Sprintf(format, args...))
 }
 
+func IsCredentialsAlreadyInUse(err error) bool {
+	if err == nil {
+		return false
+	}
+	e := errors.FromError(err)
+	return e.Reason == ErrorReason_CREDENTIALS_ALREADY_IN_USE.String() && e.Code == 409
+}
+
+func ErrorCredentialsAlreadyInUse(format string, args ...interface{}) *errors.Error {
+	return errors.New(409, ErrorReason_CREDENTIALS_ALREADY_IN_USE.String(), fmt.Sprintf(format, args...))
+}
+
 func IsNeedReauthorization(err error) bool {
 	if err == nil {
 		return false
