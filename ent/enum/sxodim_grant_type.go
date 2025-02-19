@@ -7,12 +7,12 @@ const (
 	RefreshToken  SxodimGrantType = "refresh_token"
 )
 
-func grandTypeValues() []SxodimGrantType {
+func grantTypeValues() []SxodimGrantType {
 	return []SxodimGrantType{Authorization, RefreshToken}
 }
 
 func (SxodimGrantType) Values() (kinds []string) {
-	for _, value := range grandTypeValues() {
+	for _, value := range grantTypeValues() {
 		kinds = append(kinds, string(value))
 	}
 	return
@@ -23,7 +23,7 @@ func (m SxodimGrantType) Value() string {
 }
 
 func (m SxodimGrantType) IsValid() bool {
-	for _, value := range grandTypeValues() {
+	for _, value := range grantTypeValues() {
 		if m == value {
 			return true
 		}

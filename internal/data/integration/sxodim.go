@@ -149,15 +149,15 @@ func (g *SxodimGateway) doSxodimRequest(
 //   - Requires "sxodimclientsecret" to be properly configured in the secret store
 //   - Requires SxodimAuthUrl is preconfigured with the correct endpoint
 //   - Converts ExpiresIn from milliseconds to time.Time expiry
-func (g *SxodimGateway) exchangeSxodimToken(ctx context.Context, grandType enum.SxodimGrantType, authCode string) (*xoauth2.Token, error) {
+func (g *SxodimGateway) exchangeSxodimToken(ctx context.Context, grantType enum.SxodimGrantType, authCode string) (*xoauth2.Token, error) {
 	// Collect body
 	body := sxodimAuthRequestBody{
-		GrantType:    grandType.Value(),
+		GrantType:    grantType.Value(),
 		ClientID:     SxodimClientID,
 		ClientSecret: g.storage.ClientSecret,
 	}
 
-	switch grandType {
+	switch grantType {
 	case enum.Authorization:
 		body.Code = authCode
 	case enum.RefreshToken:
