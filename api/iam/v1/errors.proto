@@ -30,6 +30,8 @@ enum ErrorReason {
   INVALID_PROVIDER = 17 [(errors.code) = 400];
   FORBIDDEN = 18 [(errors.code) = 403];
 
+  NOT_FOUND = 19 [(errors.code) = 404];
+
   USER_NOT_FOUND = 20 [(errors.code) = 404];
   INVALID_REQUEST = 21 [(errors.code) = 400];
   CONTACT_NOT_FOUND = 22 [(errors.code) = 404];
@@ -37,4 +39,6 @@ enum ErrorReason {
   COMMON_CHAT_NOT_FOUND = 24 [(errors.code) = 404];
   CREDENTIAL_NOT_FOUND = 25 [(errors.code) = 404];
   USER_ALREADY_EXIST = 26 [(errors.code) = 409];
+
+  NEED_REAUTHORIZATION = 27 [(errors.code) = 400];
 }

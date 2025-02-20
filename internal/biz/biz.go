@@ -2,7 +2,7 @@ package biz
 
 import (
 	"github.com/google/wire"
-	"gitlab.calendaria.team/services/utils/v2/nats"
+	"gitlab.calendaria.team/services/utils/v4/nats"
 )
 
 // ProviderSet is biz providers.

@@ -10,10 +10,11 @@ import (
 	"gitlab.calendaria.team/services/iam/ent"
 	"gitlab.calendaria.team/services/iam/ent/enum"
 	"gitlab.calendaria.team/services/iam/internal/data"
+	"gitlab.calendaria.team/services/iam/internal/data/dialer"
 	u_auth "gitlab.calendaria.team/services/utils/v2/auth"
-	u_jwt "gitlab.calendaria.team/services/utils/v2/jwt"
-	u_nats "gitlab.calendaria.team/services/utils/v2/nats"
 	u_struc "gitlab.calendaria.team/services/utils/v2/struc"
+	u_jwt "gitlab.calendaria.team/services/utils/v4/jwt"
+	u_nats "gitlab.calendaria.team/services/utils/v4/nats"
 
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/golang-jwt/jwt/v5"
@@ -35,8 +36,8 @@ type AuthUsecase struct {
 	log                  *log.Helper
 	jwt                  u_jwt.IJwtProcessor
 	queue                u_nats.IQueueManager
-	tenants              data.ITenantsRemote
-	notifications        data.INotificationsRemote
+	tenants              dialer.ITenantsRemote
+	notifications        dialer.INotificationsRemote
 	usersRepo            data.UsersRepo
 	otpRepo              data.OtpRepo
 	accessTokenDuration  time.Duration
@@ -48,8 +49,8 @@ func NewAuthUsecase(
 	logger log.Logger,
 	jwt u_jwt.IJwtProcessor,
 	queue u_nats.IQueueManager,
-	tenants data.ITenantsRemote,
-	notifications data.INotificationsRemote,
+	tenants dialer.ITenantsRemote,
+	notifications dialer.INotificationsRemote,
 	usersRepo data.UsersRepo,
 	otpRepo data.OtpRepo,
 ) (*AuthUsecase, error) {

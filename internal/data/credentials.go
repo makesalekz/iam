@@ -5,24 +5,15 @@ import (
 
 	"gitlab.calendaria.team/services/iam/ent"
 	"gitlab.calendaria.team/services/iam/ent/usercredentials"
+	"gitlab.calendaria.team/services/iam/internal/data/integration"
 	u_struc "gitlab.calendaria.team/services/utils/v2/struc"
-
-	"golang.org/x/oauth2"
 )
 
-type CredentialDto struct {
-	UserID      int64
-	Provider    u_struc.Provider
-	DisplayName string
-	Email       string
-	Token       *oauth2.Token
-}
-
 type CredentialsRepo interface {
-	CreateCredential(ctx context.Context, dto CredentialDto) error
-	UpdateCredential(ctx context.Context, credentialID int64, dto CredentialDto) (*ent.UserCredentials, error)
+	CreateCredential(ctx context.Context, dto integration.CredentialDto) (*ent.UserCredentials, error)
+	UpdateCredential(ctx context.Context, credentialID int64, dto integration.CredentialDto) (*ent.UserCredentials, error)
 	GetCredential(ctx context.Context, userID, credentialID int64) (*ent.UserCredentials, error)
-	GetCredentialByMail(ctx context.Context, mail string) (*ent.UserCredentials, error)
+	GetCredentialByMail(ctx context.Context, mail string, provider u_struc.Provider) (*ent.UserCredentials, error)
 	ListCredentials(ctx context.Context, userID int64, provider *u_struc.Provider) ([]*ent.UserCredentials, error)
 	DeleteCredential(ctx context.Context, userID, credentialID int64) (int, error)
 }
@@ -38,30 +29,24 @@ func NewCredentialsRepo(d *Data) CredentialsRepo {
 }
 
 func (r *credentialsRepo) CreateCredential(
-	ctx context.Context, dto CredentialDto,
-) error {
+	ctx context.Context, dto integration.CredentialDto,
+) (*ent.UserCredentials, error) {
 	return r.db.UserCredentials.Create().
 		SetUserID(dto.UserID).
+		SetNillableExternalUserID(dto.ExternalUserID).
 		SetDisplayName(dto.DisplayName).
 		SetMail(dto.Email).
+		SetPhone(dto.Phone).
 		SetProvider(dto.Provider).
 		SetAccessToken(dto.Token.AccessToken).
 		SetTokenType(dto.Token.TokenType).
 		SetRefreshToken(dto.Token.RefreshToken).
 		SetExpiresAt(dto.Token.Expiry).
-		OnConflictColumns(usercredentials.FieldMail).
-		UpdateDisplayName().
-		UpdateAccessToken().
-		UpdateTokenType().
-		UpdateRefreshToken().
-		UpdateExpiresAt().
-		UpdateUserID().
-		ClearDeletedAt().
-		Exec(ctx)
+		Save(ctx)
 }
 
 func (r *credentialsRepo) UpdateCredential(
-	ctx context.Context, credentialID int64, dto CredentialDto,
+	ctx context.Context, credentialID int64, dto integration.CredentialDto,
 ) (*ent.UserCredentials, error) {
 	return r.db.UserCredentials.
 		UpdateOneID(credentialID).
@@ -84,13 +69,14 @@ func (r *credentialsRepo) GetCredential(
 }
 
 func (r *credentialsRepo) GetCredentialByMail(
-	ctx context.Context, mail string,
+	ctx context.Context, mail string, provider u_struc.Provider,
 ) (*ent.UserCredentials, error) {
 	return r.db.UserCredentials.Query().
 		Where(
 			usercredentials.MailEQ(mail),
+			usercredentials.ProviderEQ(provider),
 		).
-		First(ctx)
+		Only(ctx)
 }
 
 func (r *credentialsRepo) ListCredentials(

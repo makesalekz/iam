@@ -99,20 +99,24 @@ func init() {
 	// user.DefaultUpdatedAt holds the default value on creation for the updated_at field.
 	user.DefaultUpdatedAt = userDescUpdatedAt.Default.(func() time.Time)
 	usercredentialsMixin := schema.UserCredentials{}.Mixin()
-	usercredentialsMixinHooks0 := usercredentialsMixin[0].Hooks()
-	usercredentials.Hooks[0] = usercredentialsMixinHooks0[0]
-	usercredentialsMixinInters0 := usercredentialsMixin[0].Interceptors()
-	usercredentials.Interceptors[0] = usercredentialsMixinInters0[0]
+	usercredentialsMixinHooks1 := usercredentialsMixin[1].Hooks()
+	usercredentials.Hooks[0] = usercredentialsMixinHooks1[0]
+	usercredentialsMixinInters1 := usercredentialsMixin[1].Interceptors()
+	usercredentials.Interceptors[0] = usercredentialsMixinInters1[0]
+	usercredentialsMixinFields0 := usercredentialsMixin[0].Fields()
+	_ = usercredentialsMixinFields0
 	usercredentialsFields := schema.UserCredentials{}.Fields()
 	_ = usercredentialsFields
 	// usercredentialsDescCreatedAt is the schema descriptor for created_at field.
-	usercredentialsDescCreatedAt := usercredentialsFields[8].Descriptor()
+	usercredentialsDescCreatedAt := usercredentialsMixinFields0[0].Descriptor()
 	// usercredentials.DefaultCreatedAt holds the default value on creation for the created_at field.
 	usercredentials.DefaultCreatedAt = usercredentialsDescCreatedAt.Default.(func() time.Time)
 	// usercredentialsDescUpdatedAt is the schema descriptor for updated_at field.
-	usercredentialsDescUpdatedAt := usercredentialsFields[9].Descriptor()
+	usercredentialsDescUpdatedAt := usercredentialsMixinFields0[1].Descriptor()
 	// usercredentials.DefaultUpdatedAt holds the default value on creation for the updated_at field.
 	usercredentials.DefaultUpdatedAt = usercredentialsDescUpdatedAt.Default.(func() time.Time)
+	// usercredentials.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	usercredentials.UpdateDefaultUpdatedAt = usercredentialsDescUpdatedAt.UpdateDefault.(func() time.Time)
 	userprivacyFields := schema.UserPrivacy{}.Fields()
 	_ = userprivacyFields
 	// userprivacyDescUpdatedAt is the schema descriptor for updated_at field.

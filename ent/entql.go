@@ -80,17 +80,19 @@ var schemaGraph = func() *sqlgraph.Schema {
 		},
 		Type: "UserCredentials",
 		Fields: map[string]*sqlgraph.FieldSpec{
-			usercredentials.FieldDeletedAt:    {Type: field.TypeTime, Column: usercredentials.FieldDeletedAt},
-			usercredentials.FieldUserID:       {Type: field.TypeInt64, Column: usercredentials.FieldUserID},
-			usercredentials.FieldMail:         {Type: field.TypeString, Column: usercredentials.FieldMail},
-			usercredentials.FieldDisplayName:  {Type: field.TypeString, Column: usercredentials.FieldDisplayName},
-			usercredentials.FieldProvider:     {Type: field.TypeEnum, Column: usercredentials.FieldProvider},
-			usercredentials.FieldAccessToken:  {Type: field.TypeString, Column: usercredentials.FieldAccessToken},
-			usercredentials.FieldTokenType:    {Type: field.TypeString, Column: usercredentials.FieldTokenType},
-			usercredentials.FieldRefreshToken: {Type: field.TypeString, Column: usercredentials.FieldRefreshToken},
-			usercredentials.FieldExpiresAt:    {Type: field.TypeTime, Column: usercredentials.FieldExpiresAt},
-			usercredentials.FieldCreatedAt:    {Type: field.TypeTime, Column: usercredentials.FieldCreatedAt},
-			usercredentials.FieldUpdatedAt:    {Type: field.TypeTime, Column: usercredentials.FieldUpdatedAt},
+			usercredentials.FieldCreatedAt:      {Type: field.TypeTime, Column: usercredentials.FieldCreatedAt},
+			usercredentials.FieldUpdatedAt:      {Type: field.TypeTime, Column: usercredentials.FieldUpdatedAt},
+			usercredentials.FieldDeletedAt:      {Type: field.TypeTime, Column: usercredentials.FieldDeletedAt},
+			usercredentials.FieldUserID:         {Type: field.TypeInt64, Column: usercredentials.FieldUserID},
+			usercredentials.FieldExternalUserID: {Type: field.TypeInt64, Column: usercredentials.FieldExternalUserID},
+			usercredentials.FieldMail:           {Type: field.TypeString, Column: usercredentials.FieldMail},
+			usercredentials.FieldPhone:          {Type: field.TypeString, Column: usercredentials.FieldPhone},
+			usercredentials.FieldDisplayName:    {Type: field.TypeString, Column: usercredentials.FieldDisplayName},
+			usercredentials.FieldProvider:       {Type: field.TypeEnum, Column: usercredentials.FieldProvider},
+			usercredentials.FieldAccessToken:    {Type: field.TypeString, Column: usercredentials.FieldAccessToken},
+			usercredentials.FieldTokenType:      {Type: field.TypeString, Column: usercredentials.FieldTokenType},
+			usercredentials.FieldRefreshToken:   {Type: field.TypeString, Column: usercredentials.FieldRefreshToken},
+			usercredentials.FieldExpiresAt:      {Type: field.TypeTime, Column: usercredentials.FieldExpiresAt},
 		},
 	}
 	graph.Nodes[3] = &sqlgraph.Node{
@@ -438,6 +440,16 @@ func (f *UserCredentialsFilter) WhereID(p entql.Int64P) {
 	f.Where(p.Field(usercredentials.FieldID))
 }
 
+// WhereCreatedAt applies the entql time.Time predicate on the created_at field.
+func (f *UserCredentialsFilter) WhereCreatedAt(p entql.TimeP) {
+	f.Where(p.Field(usercredentials.FieldCreatedAt))
+}
+
+// WhereUpdatedAt applies the entql time.Time predicate on the updated_at field.
+func (f *UserCredentialsFilter) WhereUpdatedAt(p entql.TimeP) {
+	f.Where(p.Field(usercredentials.FieldUpdatedAt))
+}
+
 // WhereDeletedAt applies the entql time.Time predicate on the deleted_at field.
 func (f *UserCredentialsFilter) WhereDeletedAt(p entql.TimeP) {
 	f.Where(p.Field(usercredentials.FieldDeletedAt))
@@ -448,9 +460,19 @@ func (f *UserCredentialsFilter) WhereUserID(p entql.Int64P) {
 	f.Where(p.Field(usercredentials.FieldUserID))
 }
 
+// WhereExternalUserID applies the entql int64 predicate on the external_user_id field.
+func (f *UserCredentialsFilter) WhereExternalUserID(p entql.Int64P) {
+	f.Where(p.Field(usercredentials.FieldExternalUserID))
+}
+
 // WhereMail applies the entql string predicate on the mail field.
 func (f *UserCredentialsFilter) WhereMail(p entql.StringP) {
 	f.Where(p.Field(usercredentials.FieldMail))
+}
+
+// WherePhone applies the entql string predicate on the phone field.
+func (f *UserCredentialsFilter) WherePhone(p entql.StringP) {
+	f.Where(p.Field(usercredentials.FieldPhone))
 }
 
 // WhereDisplayName applies the entql string predicate on the display_name field.
@@ -481,16 +503,6 @@ func (f *UserCredentialsFilter) WhereRefreshToken(p entql.StringP) {
 // WhereExpiresAt applies the entql time.Time predicate on the expires_at field.
 func (f *UserCredentialsFilter) WhereExpiresAt(p entql.TimeP) {
 	f.Where(p.Field(usercredentials.FieldExpiresAt))
-}
-
-// WhereCreatedAt applies the entql time.Time predicate on the created_at field.
-func (f *UserCredentialsFilter) WhereCreatedAt(p entql.TimeP) {
-	f.Where(p.Field(usercredentials.FieldCreatedAt))
-}
-
-// WhereUpdatedAt applies the entql time.Time predicate on the updated_at field.
-func (f *UserCredentialsFilter) WhereUpdatedAt(p entql.TimeP) {
-	f.Where(p.Field(usercredentials.FieldUpdatedAt))
 }
 
 // WhereHasUser applies a predicate to check if query has an edge user.

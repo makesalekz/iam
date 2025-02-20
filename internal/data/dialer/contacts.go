@@ -1,5 +1,5 @@
 //nolint: dupl // different services
-package data
+package dialer
 
 import (
 	"context"
@@ -7,7 +7,7 @@ import (
 	contacts_v1 "gitlab.calendaria.team/services/contacts/api/contacts/v1"
 	iam_v1 "gitlab.calendaria.team/services/iam/api/iam/v1"
 	"gitlab.calendaria.team/services/iam/internal/conf"
-	u_dialer "gitlab.calendaria.team/services/utils/v2/dialer"
+	u_dialer "gitlab.calendaria.team/services/utils/v4/dialer"
 )
 
 type IContactsRemote interface {
