@@ -200,7 +200,7 @@ func TestAuthService_RefreshToken(t *testing.T) {
 			Member: "member1",
 			Groups: []string{"group1", "group2"},
 		}
-		repo.tenantsRemote.EXPECT().GetMemberIdentities(ctx, req.GetTenantId(), user.ID).Return(tenantIdentities, nil)
+		repo.tenants.EXPECT().GetMemberIdentities(ctx, req.GetTenantId(), user.ID).Return(tenantIdentities, nil)
 
 		// jwt secret
 		secret := []byte{1}

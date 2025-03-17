@@ -6,13 +6,13 @@ package mock
 
 import (
 	context "context"
-	"gitlab.calendaria.team/services/iam/internal/data/dto"
 	reflect "reflect"
 	time "time"
 
 	gomock "github.com/golang/mock/gomock"
 	ent "gitlab.calendaria.team/services/iam/ent"
 	data "gitlab.calendaria.team/services/iam/internal/data"
+	dto "gitlab.calendaria.team/services/iam/internal/data/dto"
 	utils_v1 "gitlab.calendaria.team/services/utils/api/utils/v1"
 )
 
