@@ -4,9 +4,10 @@ import (
 	"net/mail"
 	"time"
 
-	"github.com/nyaruka/phonenumbers"
 	v1 "gitlab.calendaria.team/services/iam/api/iam/v1"
-	"gitlab.calendaria.team/services/iam/internal/biz"
+	"gitlab.calendaria.team/services/iam/internal/data/dto"
+
+	"github.com/nyaruka/phonenumbers"
 )
 
 func ParseEmail(email string) (*mail.Address, error) {
@@ -22,7 +23,7 @@ func ParsePhone(phone string) (string, error) {
 		return "", v1.ErrorInvalidPhoneNumber("phone is empty")
 	}
 
-	phoneNumber, err := phonenumbers.Parse(phone, biz.DefaultRegion)
+	phoneNumber, err := phonenumbers.Parse(phone, dto.DefaultRegion)
 	if err != nil {
 		return "", v1.ErrorInvalidPhoneNumber("parse error: %s", err.Error())
 	}

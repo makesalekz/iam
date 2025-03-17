@@ -11,6 +11,7 @@ import (
 	"gitlab.calendaria.team/services/iam/ent"
 	"gitlab.calendaria.team/services/iam/internal/data"
 	"gitlab.calendaria.team/services/iam/internal/data/dialer"
+	"gitlab.calendaria.team/services/iam/internal/data/dto"
 	tenants_v1 "gitlab.calendaria.team/services/tenants/api/tenants/v1"
 	utils_v1 "gitlab.calendaria.team/services/utils/api/utils/v1"
 	u_error "gitlab.calendaria.team/services/utils/v1/error"
@@ -243,7 +244,7 @@ func (uc *UsersUsecase) GetUserProfile(ctx context.Context, filter data.GetUserF
 func (uc *UsersUsecase) UpdateUserProfile(
 	ctx context.Context,
 	userID int64,
-	dto data.UpdateUserDto,
+	dto dto.UpdateUserDto,
 ) (*UserItem, error) {
 	var err error
 
