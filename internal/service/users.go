@@ -2,18 +2,16 @@ package service
 
 import (
 	"context"
-	"net/mail"
-	"regexp"
-	"strconv"
-	"strings"
 	"time"
 
-	"github.com/go-kratos/kratos/v2/log"
 	v1 "gitlab.calendaria.team/services/iam/api/iam/v1"
 	"gitlab.calendaria.team/services/iam/internal/biz"
 	"gitlab.calendaria.team/services/iam/internal/data"
+	"gitlab.calendaria.team/services/iam/internal/data/dto"
 	utils_v1 "gitlab.calendaria.team/services/utils/api/utils/v1"
 	"gitlab.calendaria.team/services/utils/v2/auth"
+
+	"github.com/go-kratos/kratos/v2/log"
 )
 
 type UsersService struct {
@@ -31,24 +29,6 @@ func NewUsersService(
 		log: log.NewHelper(log.With(logger, "module", "service/users")),
 		uc:  uc,
 	}
-}
-
-func validUsername(actorID int64, username string) bool {
-	if username == "" {
-		return true
-	}
-
-	// username can't be default format (user{number}), only access to own user id
-	if len(username) > 4 && strings.ToLower(username[:4]) == "user" {
-		userID, err := strconv.ParseInt(username[4:], 10, 64)
-		if err == nil && userID != actorID {
-			return false
-		}
-	}
-
-	// username must contain only lowercase letters and numbers
-	re := regexp.MustCompile(`^[a-z][a-z0-9]+$`)
-	return re.MatchString(username)
 }
 
 func (s *UsersService) GetOwnProfile(ctx context.Context, _ *utils_v1.EmptyRequest) (*v1.UserFullReply, error) {
@@ -90,47 +70,12 @@ func (s *UsersService) UpdateOwnProfile(
 		return nil, v1.ErrorEmptyActorId("empty actor id")
 	}
 
-	if !validUsername(actorID, req.GetUsername()) {
-		return nil, v1.ErrorInvalidUsername("forbidden username format")
+	userDto := dto.NewUpdateUserDto(actorID, req)
+	if err := userDto.Validate(); err != nil {
+		return nil, err
 	}
 
-	var email *mail.Address
-
-	var err error
-
-	dto := data.UpdateUserDto{
-		Phone:    req.GetPhone(),
-		Email:    req.GetEmail(),
-		Name:     req.GetName(),
-		Username: req.GetUsername(),
-		Bio:      req.Bio, //nolint:protogetter // optional field, acquired by ref
-		Avatar:   req.GetAvatar(),
-		Timezone: req.GetTimezone(),
-	}
-
-	if dto.Phone != "" {
-		dto.Phone, err = ParsePhone(dto.Phone)
-		if err != nil {
-			return nil, err
-		}
-	}
-
-	if dto.Email != "" {
-		email, err = ParseEmail(dto.Email)
-		if err != nil {
-			return nil, err
-		}
-		dto.Email = email.Address
-	}
-
-	if dto.Timezone != "" {
-		err = CheckTimezone(dto.Timezone)
-		if err != nil {
-			return nil, err
-		}
-	}
-
-	user, err := s.uc.UpdateUserProfile(ctx, actorID, dto)
+	user, err := s.uc.UpdateUserProfile(ctx, actorID, *userDto)
 	if err != nil {
 		return nil, err
 	}

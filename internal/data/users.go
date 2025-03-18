@@ -8,6 +8,7 @@ import (
 	"gitlab.calendaria.team/services/iam/ent"
 	"gitlab.calendaria.team/services/iam/ent/mixins"
 	"gitlab.calendaria.team/services/iam/ent/user"
+	"gitlab.calendaria.team/services/iam/internal/data/dto"
 	utils_v1 "gitlab.calendaria.team/services/utils/api/utils/v1"
 )
 
@@ -34,7 +35,7 @@ type UsersRepo interface {
 	GetUserByEmail(ctx context.Context, email string, skipRemoveAt bool) (*ent.User, error)
 	CreateUserWithPhone(ctx context.Context, phone string) (*ent.User, error)
 	CreateUserWithEmail(ctx context.Context, email string) (*ent.User, error)
-	UpdateUserData(ctx context.Context, user *ent.User, dto UpdateUserDto) (*ent.User, error)
+	UpdateUserData(ctx context.Context, user *ent.User, dto dto.UpdateUserDto) (*ent.User, error)
 	ScheduleUserDeletion(ctx context.Context, id int64, deleteDuration time.Duration) error
 	GetUsersToDelete(ctx context.Context) ([]*ent.User, error)
 	DeleteUsers(ctx context.Context, usersIDs []int64) error
@@ -70,7 +71,7 @@ func (r *usersRepo) CreateUserWithEmail(ctx context.Context, email string) (*ent
 	return r.db.User.Create().SetEmail(email).Save(ctx)
 }
 
-func (r *usersRepo) UpdateUserData(ctx context.Context, user *ent.User, dto UpdateUserDto) (*ent.User, error) {
+func (r *usersRepo) UpdateUserData(ctx context.Context, user *ent.User, dto dto.UpdateUserDto) (*ent.User, error) {
 	now := time.Now()
 	query := r.db.User.UpdateOne(user).SetLastLoginAt(now).SetUpdatedAt(now)
 

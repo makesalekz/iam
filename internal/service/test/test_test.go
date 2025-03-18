@@ -19,17 +19,22 @@ import (
 )
 
 type dataMock struct {
-	config              *u_config_mock.MockIConfig
-	qm                  *u_nats_mock.MockIQueueManager
-	queue               *u_nats_mock.MockIQueue
-	jwt                 *jwt_mock.MockIJwtProcessor
-	usersRepo           *mock.MockUsersRepo
-	otpRepo             *mock.MockOtpRepo
-	credentialsRepo     *mock.MockCredentialsRepo
-	tenantsRemote       *mock.MockITenantsRemote
-	notificationsRemote *mock.MockINotificationsRemote
-	provider            *mock.MockIProviderManager
-	providerGateway     *mock.MockIProviderGateway
+	config          *u_config_mock.MockIConfig
+	qm              *u_nats_mock.MockIQueueManager
+	queue           *u_nats_mock.MockIQueue
+	jwt             *jwt_mock.MockIJwtProcessor
+	usersRepo       *mock.MockUsersRepo
+	otpRepo         *mock.MockOtpRepo
+	privacyRepo     *mock.MockPrivacyRepo
+	credentialsRepo *mock.MockCredentialsRepo
+	chats           *mock.MockIChatsRemote
+	contacts        *mock.MockIContactsRemote
+	events          *mock.MockIEventsRemote
+	media           *mock.MockIMediaRemote
+	tenants         *mock.MockITenantsRemote
+	notifications   *mock.MockINotificationsRemote
+	provider        *mock.MockIProviderManager
+	providerGateway *mock.MockIProviderGateway
 }
 
 type idCollection struct {
@@ -93,13 +98,13 @@ func createAuthService(t *testing.T) (context.Context, *dataMock, *service.AuthS
 
 	// collect repo
 	repo := &dataMock{
-		qm:                  qm,
-		queue:               queue,
-		jwt:                 jwt,
-		usersRepo:           usersRepo,
-		otpRepo:             otpRepo,
-		tenantsRemote:       tenantRemote,
-		notificationsRemote: notificationsRemote,
+		qm:            qm,
+		queue:         queue,
+		jwt:           jwt,
+		usersRepo:     usersRepo,
+		otpRepo:       otpRepo,
+		tenants:       tenantRemote,
+		notifications: notificationsRemote,
 	}
 
 	// create service
@@ -152,4 +157,62 @@ func createCredentialsService(t *testing.T) (context.Context, *dataMock, *servic
 	require.NoError(t, err)
 
 	return ctx, repo, service.NewCredentialsService(logger, eu)
+}
+
+func createUsersService(t *testing.T) (context.Context, *dataMock, *service.UsersService) {
+	// create context
+	ctx := mockServerContext()
+
+	// create controller
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	// create logger
+	logger := u_zap.NewZapLogger(true)
+
+	// create mocks
+	qm := u_nats_mock.NewMockIQueueManager(ctrl)
+	queue := u_nats_mock.NewMockIQueue(ctrl)
+	jwt := jwt_mock.NewMockIJwtProcessor(ctrl)
+	tenants := mock.NewMockITenantsRemote(ctrl)
+	contacts := mock.NewMockIContactsRemote(ctrl)
+	chats := mock.NewMockIChatsRemote(ctrl)
+	events := mock.NewMockIEventsRemote(ctrl)
+	media := mock.NewMockIMediaRemote(ctrl)
+	usersRepo := mock.NewMockUsersRepo(ctrl)
+	otpRepo := mock.NewMockOtpRepo(ctrl)
+	privacyRepo := mock.NewMockPrivacyRepo(ctrl)
+
+	// collect repo
+	repo := &dataMock{
+		qm:          qm,
+		queue:       queue,
+		jwt:         jwt,
+		tenants:     tenants,
+		contacts:    contacts,
+		chats:       chats,
+		events:      events,
+		media:       media,
+		usersRepo:   usersRepo,
+		otpRepo:     otpRepo,
+		privacyRepo: privacyRepo,
+	}
+
+	// create service
+	eu, err := biz.NewUsersUsecase(
+		logger,
+		jwt,
+		qm,
+		tenants,
+		contacts,
+		chats,
+		events,
+		media,
+		usersRepo,
+		otpRepo,
+		privacyRepo,
+	)
+	require.NoError(t, err)
+
+	return ctx, repo, service.NewUsersService(logger, eu)
 }

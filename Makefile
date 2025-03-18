@@ -166,8 +166,13 @@ mock:
 	mockgen -source internal/data/users.go -destination internal/data/mock/users.go -package mock
 	mockgen -source internal/data/credentials.go -destination internal/data/mock/credentials.go -package mock
 	mockgen -source internal/data/otp.go -destination internal/data/mock/otp.go -package mock
-	mockgen -source internal/data/dialer/tenants.go -destination internal/data/mock/tenants.go -package mock
+	mockgen -source internal/data/privacy.go -destination internal/data/mock/privacy.go -package mock
+	mockgen -source internal/data/dialer/chats.go -destination internal/data/mock/chats.go -package mock
+	mockgen -source internal/data/dialer/contacts.go -destination internal/data/mock/contacts.go -package mock
+	mockgen -source internal/data/dialer/events.go -destination internal/data/mock/events.go -package mock
+	mockgen -source internal/data/dialer/media.go -destination internal/data/mock/media.go -package mock
 	mockgen -source internal/data/dialer/notifications.go -destination internal/data/mock/notifications.go -package mock
+	mockgen -source internal/data/dialer/tenants.go -destination internal/data/mock/tenants.go -package mock
 	mockgen -source internal/data/integration/provider_manager.go -destination internal/data/mock/provider_manager.go -package mock
 	mockgen -source internal/data/integration/provider_gateway.go -destination internal/data/mock/provider_gateway.go -package mock
 
