@@ -291,3 +291,7 @@ func (g *SxodimGateway) RefreshToken(
 
 	return dto, nil
 }
+
+func (g *SxodimGateway) RevokeToken(ctx context.Context, credential *ent.UserCredentials) error {
+	return nil
+}

@@ -20,8 +20,8 @@ const (
 )
 
 func TestCredentialsService_ExternalAuth_Success(t *testing.T) {
-	// Set up the test context, mocks, and service.
-	ctx, repo, service := createCredentialsService(t)
+	// Set up the test context, mocks, and credentialService.
+	ctx, repo, credentialService := createCredentialsService(t)
 	// Ensure that actorID is properly set in the context (e.g., via mockServerContext).
 	ids := getIDs() // Assume ids.actorID is set appropriately.
 
@@ -34,10 +34,15 @@ func TestCredentialsService_ExternalAuth_Success(t *testing.T) {
 		}
 
 		// --- Expectations ---
-		// Expect that the service calls the provider mock to create a gateway.
+		// Expect that the credentialService calls the provider mock to create a gateway.
 		repo.provider.EXPECT().
 			NewProviderGateway(provider1).
 			Return(repo.providerGateway, nil)
+
+		// Simulate the scenario where the credential is not found in the repository.
+		repo.credentialsRepo.EXPECT().
+			GetCredentialByProvider(ctx, ids.actorID, provider1).
+			Return(nil, &ent.NotFoundError{})
 
 		// Expect that the Authenticate method is called with the actorID and auth code.
 		credentialDto := &integration.CredentialDto{
@@ -66,7 +71,7 @@ func TestCredentialsService_ExternalAuth_Success(t *testing.T) {
 
 		// --- Execute ---
 		// Call the ExternalAuth method.
-		_, err := service.ExternalAuth(ctx, req)
+		_, err := credentialService.ExternalAuth(ctx, req)
 		require.NoError(t, err)
 	}
 
@@ -79,40 +84,43 @@ func TestCredentialsService_ExternalAuth_Success(t *testing.T) {
 		}
 
 		// --- Expectations ---
-		// Expect that the service calls the provider mock to create a gateway.
+		// Expect that the credentialService calls the provider mock to create a gateway.
 		repo.provider.EXPECT().
 			NewProviderGateway(provider1).
 			Return(repo.providerGateway, nil)
 
+		provider := provider1
+		mail := "user@example.com"
+		existingCredential := &ent.UserCredentials{
+			UserID:   ids.actorID,
+			Provider: &provider,
+			Mail:     &mail,
+		}
+		repo.credentialsRepo.EXPECT().
+			GetCredentialByProvider(ctx, ids.actorID, provider1).
+			Return(existingCredential, nil)
+
 		// Expect that the Authenticate method is called with the actorID and auth code.
 		credentialDto := &integration.CredentialDto{
 			UserID: ids.userID,
-			Email:  "user@example.com",
+			Email:  mail,
 		}
 		repo.providerGateway.EXPECT().
 			Authenticate(ctx, ids.actorID, authCode).
 			Return(credentialDto, nil)
 
-		// Simulate the scenario where the credential is not found in the repository.
-		provider := provider1
-		userCredentials := &ent.UserCredentials{
-			ID:          777,
-			UserID:      ids.actorID,
-			Provider:    &provider,
-			AccessToken: accessToken,
-		}
-		repo.credentialsRepo.EXPECT().
-			GetCredentialByMail(ctx, credentialDto.Email, provider1).
-			Return(userCredentials, nil)
+		repo.providerGateway.EXPECT().
+			RefreshToken(ctx, existingCredential).
+			Return(credentialDto, nil)
 
 		// Expect that a new credential is created successfully.
 		repo.credentialsRepo.EXPECT().
-			UpdateCredential(ctx, userCredentials.ID, *credentialDto).
-			Return(userCredentials, nil)
+			UpdateCredential(ctx, existingCredential.ID, *credentialDto).
+			Return(existingCredential, nil)
 
 		// --- Execute ---
 		// Call the ExternalAuth method.
-		_, err := service.ExternalAuth(ctx, req)
+		_, err := credentialService.ExternalAuth(ctx, req)
 		require.NoError(t, err)
 	}
 }
@@ -156,11 +164,12 @@ func TestCredentialsService_ExternalAuth_ErrorCases(t *testing.T) {
 			Provider: provider1.Value(),
 		}
 
-		expectedErr := v1.ErrorInternal("gateway error")
+		errFunc := v1.ErrorNotFound("unknown provider")
 		repo.provider.EXPECT().
 			NewProviderGateway(provider1).
-			Return(nil, expectedErr)
+			Return(nil, errFunc)
 
+		expectedErr := v1.ErrorInvalidProvider("provider gateway creation failed: %s", errFunc.Error())
 		result, err := credentialService.ExternalAuth(ctx, req)
 		require.Error(t, err)
 		require.Nil(t, result)
@@ -178,11 +187,17 @@ func TestCredentialsService_ExternalAuth_ErrorCases(t *testing.T) {
 			NewProviderGateway(provider1).
 			Return(repo.providerGateway, nil)
 
-		expectedErr := v1.ErrorInternal("auth failed")
+		// Simulate the scenario where the credential is not found in the repository.
+		repo.credentialsRepo.EXPECT().
+			GetCredentialByProvider(ctx, ids.actorID, provider1).
+			Return(nil, &ent.NotFoundError{})
+
+		errFunc := v1.ErrorInternal("auth failed")
 		repo.providerGateway.EXPECT().
 			Authenticate(ctx, ids.actorID, authCode).
-			Return(nil, expectedErr)
+			Return(nil, errFunc)
 
+		expectedErr := v1.ErrorServiceFailed("service error: %s", errFunc.Error())
 		result, err := credentialService.ExternalAuth(ctx, req)
 		require.Error(t, err)
 		require.Nil(t, result)
@@ -200,6 +215,11 @@ func TestCredentialsService_ExternalAuth_ErrorCases(t *testing.T) {
 			NewProviderGateway(provider1).
 			Return(repo.providerGateway, nil)
 
+		// Simulate the scenario where the credential is not found in the repository.
+		repo.credentialsRepo.EXPECT().
+			GetCredentialByProvider(ctx, ids.actorID, provider1).
+			Return(nil, &ent.NotFoundError{})
+
 		credentialDto := &integration.CredentialDto{
 			UserID: ids.userID,
 			Email:  "user@example.com",
@@ -213,7 +233,7 @@ func TestCredentialsService_ExternalAuth_ErrorCases(t *testing.T) {
 			GetCredentialByMail(ctx, credentialDto.Email, provider1).
 			Return(nil, dbErr)
 
-		expectedErr := v1.ErrorDatabaseQuery("Unable to get credential: %v", dbErr.Error())
+		expectedErr := v1.ErrorDatabaseQuery("error querying credentials: %s", dbErr.Error())
 		result, err := credentialService.ExternalAuth(ctx, req)
 		require.Error(t, err)
 		require.Nil(t, result)
@@ -230,6 +250,11 @@ func TestCredentialsService_ExternalAuth_ErrorCases(t *testing.T) {
 		repo.provider.EXPECT().
 			NewProviderGateway(provider1).
 			Return(repo.providerGateway, nil)
+
+		// Simulate the scenario where the credential is not found in the repository.
+		repo.credentialsRepo.EXPECT().
+			GetCredentialByProvider(ctx, ids.actorID, provider1).
+			Return(nil, &ent.NotFoundError{})
 
 		credentialDto := &integration.CredentialDto{
 			UserID: ids.userID,
@@ -249,7 +274,7 @@ func TestCredentialsService_ExternalAuth_ErrorCases(t *testing.T) {
 			GetCredentialByMail(ctx, credentialDto.Email, provider1).
 			Return(existingCredential, nil)
 
-		expectedErr := v1.ErrorCredentialsAlreadyInUse("This email address is already in use by another user")
+		expectedErr := v1.ErrorCredentialsAlreadyInUse("this email address is already in use by another user")
 		result, err := credentialService.ExternalAuth(ctx, req)
 		require.Error(t, err)
 		require.Nil(t, result)
@@ -267,8 +292,13 @@ func TestCredentialsService_ExternalAuth_ErrorCases(t *testing.T) {
 			NewProviderGateway(provider1).
 			Return(repo.providerGateway, nil)
 
+		// Simulate the scenario where the credential is not found in the repository.
+		repo.credentialsRepo.EXPECT().
+			GetCredentialByProvider(ctx, ids.actorID, provider1).
+			Return(nil, &ent.NotFoundError{})
+
 		credentialDto := &integration.CredentialDto{
-			UserID: ids.userID,
+			UserID: ids.actorID,
 			Email:  "user@example.com",
 		}
 		repo.providerGateway.EXPECT().
@@ -279,12 +309,16 @@ func TestCredentialsService_ExternalAuth_ErrorCases(t *testing.T) {
 			GetCredentialByMail(ctx, credentialDto.Email, provider1).
 			Return(nil, &ent.NotFoundError{})
 
+		repo.credentialsRepo.EXPECT().
+			GetCredentialByProvider(ctx, ids.actorID, provider1).
+			Return(nil, &ent.NotFoundError{})
+
 		dbErr := v1.ErrorInternal("insert failed")
 		repo.credentialsRepo.EXPECT().
 			CreateCredential(ctx, *credentialDto).
 			Return(nil, dbErr)
 
-		expectedErr := v1.ErrorDatabaseQuery("Unable to create credential: %v", dbErr.Error())
+		expectedErr := v1.ErrorDatabaseQuery("failed to create credential: %v", dbErr.Error())
 		result, err := credentialService.ExternalAuth(ctx, req)
 		require.Error(t, err)
 		require.Nil(t, result)
@@ -461,11 +495,12 @@ func TestCredentialsService_RefreshCredential_ErrorCases(t *testing.T) {
 			NewProviderGateway(provider1).
 			Return(repo.providerGateway, nil)
 
-		expectedErr := v1.ErrorInternal("refresh token failed")
+		errFunc := v1.ErrorInternal("refresh token failed")
 		repo.providerGateway.EXPECT().
 			RefreshToken(ctx, cred).
-			Return(nil, expectedErr)
+			Return(nil, errFunc)
 
+		expectedErr := v1.ErrorServiceFailed("service error: %v", errFunc)
 		result, err := credentialService.RefreshCredential(ctx, req)
 		require.Error(t, err)
 		require.Nil(t, result)

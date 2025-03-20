@@ -65,3 +65,17 @@ func (mr *MockIProviderGatewayMockRecorder) RefreshToken(ctx, credential interfa
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "RefreshToken", reflect.TypeOf((*MockIProviderGateway)(nil).RefreshToken), ctx, credential)
 }
+
+// RevokeToken mocks base method.
+func (m *MockIProviderGateway) RevokeToken(ctx context.Context, credential *ent.UserCredentials) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "RevokeToken", ctx, credential)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// RevokeToken indicates an expected call of RevokeToken.
+func (mr *MockIProviderGatewayMockRecorder) RevokeToken(ctx, credential interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "RevokeToken", reflect.TypeOf((*MockIProviderGateway)(nil).RevokeToken), ctx, credential)
+}

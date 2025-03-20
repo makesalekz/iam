@@ -22,6 +22,7 @@ type CredentialDto struct {
 type IProviderGateway interface {
 	Authenticate(ctx context.Context, actorID int64, authCode string) (*CredentialDto, error)
 	RefreshToken(ctx context.Context, credential *ent.UserCredentials) (*CredentialDto, error)
+	RevokeToken(ctx context.Context, credential *ent.UserCredentials) error
 }
 
 func CredentialToDto(credential *ent.UserCredentials) *CredentialDto {

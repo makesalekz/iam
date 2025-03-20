@@ -14,6 +14,7 @@ type CredentialsRepo interface {
 	UpdateCredential(ctx context.Context, credentialID int64, dto integration.CredentialDto) (*ent.UserCredentials, error)
 	GetCredential(ctx context.Context, userID, credentialID int64) (*ent.UserCredentials, error)
 	GetCredentialByMail(ctx context.Context, mail string, provider u_struc.Provider) (*ent.UserCredentials, error)
+	GetCredentialByProvider(ctx context.Context, userID int64, provider u_struc.Provider) (*ent.UserCredentials, error)
 	ListCredentials(ctx context.Context, userID int64, provider *u_struc.Provider) ([]*ent.UserCredentials, error)
 	DeleteCredential(ctx context.Context, userID, credentialID int64) (int, error)
 }
@@ -74,6 +75,17 @@ func (r *credentialsRepo) GetCredentialByMail(
 	return r.db.UserCredentials.Query().
 		Where(
 			usercredentials.MailEQ(mail),
+			usercredentials.ProviderEQ(provider),
+		).
+		Only(ctx)
+}
+
+func (r *credentialsRepo) GetCredentialByProvider(
+	ctx context.Context, userID int64, provider u_struc.Provider,
+) (*ent.UserCredentials, error) {
+	return r.db.UserCredentials.Query().
+		Where(
+			usercredentials.UserID(userID),
 			usercredentials.ProviderEQ(provider),
 		).
 		Only(ctx)
