@@ -7,6 +7,7 @@ import (
 	"gitlab.calendaria.team/services/iam/ent"
 	"gitlab.calendaria.team/services/iam/ent/mixins"
 	"gitlab.calendaria.team/services/iam/internal/data"
+	"gitlab.calendaria.team/services/iam/internal/data/dialer"
 	"gitlab.calendaria.team/services/iam/internal/data/errors"
 	"gitlab.calendaria.team/services/iam/internal/data/integration"
 	u_struc "gitlab.calendaria.team/services/utils/v2/struc"
@@ -23,6 +24,7 @@ type CredentialsUsecase struct {
 	queue           u_nats.IQueueManager
 	jwt             u_jwt.IJwtProcessor
 	provider        integration.IProviderManager
+	events          dialer.IEventsRemote
 	credentialsRepo data.CredentialsRepo
 }
 
@@ -32,6 +34,7 @@ func NewCredentialsUsecase(
 	queue u_nats.IQueueManager,
 	jwt u_jwt.IJwtProcessor,
 	provide integration.IProviderManager,
+	events dialer.IEventsRemote,
 	credentialsRepo data.CredentialsRepo,
 ) (*CredentialsUsecase, error) {
 	return &CredentialsUsecase{
@@ -42,6 +45,7 @@ func NewCredentialsUsecase(
 		jwt:             jwt,
 		queue:           queue,
 		provider:        provide,
+		events:          events,
 		credentialsRepo: credentialsRepo,
 	}, nil
 }
@@ -195,6 +199,13 @@ func (uc *CredentialsUsecase) DeleteCredential(ctx context.Context, actorID, cre
 		return iam_v1.ErrorDatabaseQuery("database error: %s", err.Error())
 	}
 
+	// Disconnect calendars from deleted credential
+	err = uc.events.DisconnectExternalCalendarsBulk(ctx, credential.ID)
+	if err != nil {
+		return err
+	}
+
+	// Delete credential from db
 	_, err = uc.credentialsRepo.DeleteCredential(mixins.SkipSoftDelete(ctx), actorID, credentialID)
 	if err != nil {
 		return iam_v1.ErrorDatabaseQuery("database error: %s", err.Error())
@@ -213,9 +224,6 @@ func (uc *CredentialsUsecase) DeleteCredential(ctx context.Context, actorID, cre
 				err, actorID, credentialID)
 		}
 	}
-
-	// Disconnect calendars from deleted credential
-	uc.queue.GetRemote(QueueEventsDisconnectCalendars).Pub(&credentialID)
 
 	return nil
 }
