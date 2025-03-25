@@ -214,5 +214,8 @@ func (uc *CredentialsUsecase) DeleteCredential(ctx context.Context, actorID, cre
 		}
 	}
 
+	// Disconnect calendars from deleted credential
+	uc.queue.GetRemote(QueueEventsDisconnectCalendars).Pub(&credentialID)
+
 	return nil
 }
