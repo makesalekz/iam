@@ -12,6 +12,7 @@ import (
 
 type IEventsRemote interface {
 	DeleteUsersDataInEvents(ctx context.Context, usersIDs []int64) error
+	DisconnectExternalCalendarsBulk(ctx context.Context, credentialID int64) error
 }
 
 type EventsRemote struct {
@@ -45,6 +46,15 @@ func (r *EventsRemote) getEventsClient(ctx context.Context) (events_v1.EventsCli
 	return events_v1.NewEventsClient(conn), nil
 }
 
+func (r *EventsRemote) getCalendarsClient(ctx context.Context) (events_v1.CalendarsClient, error) {
+	conn, err := r.dialer.Connect(ctx)
+	if err != nil {
+		return nil, iam_v1.ErrorGrpcConnection("can't connect to calendars: %s", err.Error())
+	}
+
+	return events_v1.NewCalendarsClient(conn), nil
+}
+
 func (r *EventsRemote) DeleteUsersDataInEvents(ctx context.Context, usersIDs []int64) error {
 	client, err := r.getEventsClient(ctx)
 	if err != nil {
@@ -52,6 +62,20 @@ func (r *EventsRemote) DeleteUsersDataInEvents(ctx context.Context, usersIDs []i
 	}
 
 	_, err = client.DeleteUsersData(ctx, &events_v1.DeleteUsersDataRequest{UsersIds: usersIDs})
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (r *EventsRemote) DisconnectExternalCalendarsBulk(ctx context.Context, credentialID int64) error {
+	client, err := r.getCalendarsClient(ctx)
+	if err != nil {
+		return err
+	}
+
+	_, err = client.DisconnectExternalCalendarsBulk(ctx, &events_v1.DisconnectExternalCalendarsBulkRequest{CredentialId: credentialID})
 	if err != nil {
 		return err
 	}

@@ -4,26 +4,26 @@ go 1.23.1
 
 require (
 	entgo.io/ent v0.14.1
-	github.com/go-kratos/kratos/contrib/metrics/prometheus/v2 v2.0.0-20240119085030-a556a2b53120
+	github.com/go-kratos/kratos/contrib/metrics/prometheus/v2 v2.0.0-20240322155018-41971ffa647a
 	github.com/go-kratos/kratos/v2 v2.7.3
 	github.com/golang-jwt/jwt/v5 v5.2.1
 	github.com/golang/mock v1.6.0
 	github.com/google/wire v0.6.0
 	github.com/lib/pq v1.10.9
 	github.com/mitchellh/mapstructure v1.5.0
-	github.com/nats-io/nats.go v1.32.0
+	github.com/nats-io/nats.go v1.36.0
 	github.com/nyaruka/phonenumbers v1.4.3
 	github.com/prometheus/client_golang v1.18.0
 	github.com/robfig/cron/v3 v3.0.1
 	github.com/stretchr/testify v1.9.0
 	gitlab.calendaria.team/services/chats v1.1.0
 	gitlab.calendaria.team/services/contacts v1.8.0
-	gitlab.calendaria.team/services/events v1.8.8-pre
+	gitlab.calendaria.team/services/events v1.9.6-pre
 	gitlab.calendaria.team/services/media v1.5.0-pre
-	gitlab.calendaria.team/services/notifications v1.4.7-pre
+	gitlab.calendaria.team/services/notifications v1.4.8-pre
 	gitlab.calendaria.team/services/tenants v1.2.0-pre
-	gitlab.calendaria.team/services/utils v0.3.17
-	go.uber.org/automaxprocs v1.5.3
+	gitlab.calendaria.team/services/utils v0.3.19-pre
+	go.uber.org/automaxprocs v1.6.0
 	golang.org/x/oauth2 v0.20.0
 	google.golang.org/grpc v1.65.0
 	google.golang.org/protobuf v1.34.1
@@ -76,14 +76,13 @@ require (
 	github.com/klauspost/compress v1.17.2 // indirect
 	github.com/mattn/go-colorable v0.1.13 // indirect
 	github.com/mattn/go-isatty v0.0.17 // indirect
-	github.com/matttproud/golang_protobuf_extensions/v2 v2.0.0 // indirect
 	github.com/mitchellh/go-homedir v1.1.0 // indirect
 	github.com/mitchellh/go-wordwrap v1.0.0 // indirect
 	github.com/nats-io/nkeys v0.4.7 // indirect
 	github.com/nats-io/nuid v1.0.1 // indirect
 	github.com/pmezard/go-difflib v1.0.1-0.20181226105442-5d4384ee4fb2 // indirect
 	github.com/prometheus/client_model v0.5.0 // indirect
-	github.com/prometheus/common v0.45.0 // indirect
+	github.com/prometheus/common v0.46.0 // indirect
 	github.com/prometheus/procfs v0.12.0 // indirect
 	github.com/ryanuber/go-glob v1.0.0 // indirect
 	github.com/zclconf/go-cty v1.8.0 // indirect

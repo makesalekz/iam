@@ -47,3 +47,17 @@ func (mr *MockIEventsRemoteMockRecorder) DeleteUsersDataInEvents(ctx, usersIDs i
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteUsersDataInEvents", reflect.TypeOf((*MockIEventsRemote)(nil).DeleteUsersDataInEvents), ctx, usersIDs)
 }
+
+// DisconnectExternalCalendarsBulk mocks base method.
+func (m *MockIEventsRemote) DisconnectExternalCalendarsBulk(ctx context.Context, credentialID int64) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "DisconnectExternalCalendarsBulk", ctx, credentialID)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// DisconnectExternalCalendarsBulk indicates an expected call of DisconnectExternalCalendarsBulk.
+func (mr *MockIEventsRemoteMockRecorder) DisconnectExternalCalendarsBulk(ctx, credentialID interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DisconnectExternalCalendarsBulk", reflect.TypeOf((*MockIEventsRemote)(nil).DisconnectExternalCalendarsBulk), ctx, credentialID)
+}

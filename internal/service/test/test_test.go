@@ -132,6 +132,7 @@ func createCredentialsService(t *testing.T) (context.Context, *dataMock, *servic
 	jwt := jwt_mock.NewMockIJwtProcessor(ctrl)
 	provider := mock.NewMockIProviderManager(ctrl)
 	providerGateway := mock.NewMockIProviderGateway(ctrl)
+	events := mock.NewMockIEventsRemote(ctrl)
 	credentialsRepo := mock.NewMockCredentialsRepo(ctrl)
 
 	// collect repo
@@ -142,6 +143,7 @@ func createCredentialsService(t *testing.T) (context.Context, *dataMock, *servic
 		jwt:             jwt,
 		provider:        provider,
 		providerGateway: providerGateway,
+		events:          events,
 		credentialsRepo: credentialsRepo,
 	}
 
@@ -152,6 +154,7 @@ func createCredentialsService(t *testing.T) (context.Context, *dataMock, *servic
 		qm,
 		jwt,
 		provider,
+		events,
 		credentialsRepo,
 	)
 	require.NoError(t, err)
