@@ -97,6 +97,21 @@ func (mr *MockCredentialsRepoMockRecorder) GetCredentialByMail(ctx, mail, provid
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetCredentialByMail", reflect.TypeOf((*MockCredentialsRepo)(nil).GetCredentialByMail), ctx, mail, provider)
 }
 
+// GetCredentialByProvider mocks base method.
+func (m *MockCredentialsRepo) GetCredentialByProvider(ctx context.Context, userID int64, provider struc.Provider) (*ent.UserCredentials, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetCredentialByProvider", ctx, userID, provider)
+	ret0, _ := ret[0].(*ent.UserCredentials)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetCredentialByProvider indicates an expected call of GetCredentialByProvider.
+func (mr *MockCredentialsRepoMockRecorder) GetCredentialByProvider(ctx, userID, provider interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetCredentialByProvider", reflect.TypeOf((*MockCredentialsRepo)(nil).GetCredentialByProvider), ctx, userID, provider)
+}
+
 // ListCredentials mocks base method.
 func (m *MockCredentialsRepo) ListCredentials(ctx context.Context, userID int64, provider *struc.Provider) ([]*ent.UserCredentials, error) {
 	m.ctrl.T.Helper()

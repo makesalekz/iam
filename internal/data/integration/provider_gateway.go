@@ -1,8 +1,6 @@
 package integration
 
 import (
-	"context"
-
 	"gitlab.calendaria.team/services/iam/ent"
 	u_struc "gitlab.calendaria.team/services/utils/v2/struc"
 
@@ -20,8 +18,9 @@ type CredentialDto struct {
 }
 
 type IProviderGateway interface {
-	Authenticate(ctx context.Context, actorID int64, authCode string) (*CredentialDto, error)
-	RefreshToken(ctx context.Context, credential *ent.UserCredentials) (*CredentialDto, error)
+	Authenticate(actorID int64, authCode string) (*CredentialDto, error)
+	RefreshToken(credential *ent.UserCredentials) (*CredentialDto, error)
+	RevokeToken(credential *ent.UserCredentials) error
 }
 
 func CredentialToDto(credential *ent.UserCredentials) *CredentialDto {

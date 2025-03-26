@@ -110,7 +110,6 @@ type sxodimUserDataReply struct {
 }
 
 func (g *SxodimGateway) doSxodimRequest(
-	ctx context.Context,
 	request *http.Request,
 ) (*http.Response, func(), error) {
 	// Collect header
@@ -149,7 +148,7 @@ func (g *SxodimGateway) doSxodimRequest(
 //   - Requires "sxodimclientsecret" to be properly configured in the secret store
 //   - Requires SxodimAuthUrl is preconfigured with the correct endpoint
 //   - Converts ExpiresIn from milliseconds to time.Time expiry
-func (g *SxodimGateway) exchangeSxodimToken(ctx context.Context, grantType enum.SxodimGrantType, authCode string) (*xoauth2.Token, error) {
+func (g *SxodimGateway) exchangeSxodimToken(grantType enum.SxodimGrantType, authCode string) (*xoauth2.Token, error) {
 	// Collect body
 	body := sxodimAuthRequestBody{
 		GrantType:    grantType.Value(),
@@ -171,13 +170,13 @@ func (g *SxodimGateway) exchangeSxodimToken(ctx context.Context, grantType enum.
 	}
 
 	// Initialize http request
-	request, err := http.NewRequestWithContext(ctx, http.MethodPost, g.storage.SxodimDomain+SxodimAuthUrl, bytes.NewBuffer(requestBody))
+	request, err := http.NewRequest(http.MethodPost, g.storage.SxodimDomain+SxodimAuthUrl, bytes.NewBuffer(requestBody))
 	if err != nil {
 		return nil, v1.ErrorInternal("failed on creating http request: %s", err)
 	}
 
 	// Do request to Sxodim
-	response, cleanup, err := g.doSxodimRequest(ctx, request)
+	response, cleanup, err := g.doSxodimRequest(request)
 	if err != nil {
 		return nil, err
 	}
@@ -205,9 +204,9 @@ func (g *SxodimGateway) exchangeSxodimToken(ctx context.Context, grantType enum.
 }
 
 // getUserData is to get data of the Sxodim user.
-func (g *SxodimGateway) getUserData(ctx context.Context, accessToken string) (*sxodimUser, error) {
+func (g *SxodimGateway) getUserData(accessToken string) (*sxodimUser, error) {
 	// Initialize http request
-	request, err := http.NewRequestWithContext(ctx, http.MethodGet, g.storage.SxodimDomain+SxodimUserDataUrl, nil)
+	request, err := http.NewRequest(http.MethodGet, g.storage.SxodimDomain+SxodimUserDataUrl, nil)
 	if err != nil {
 		return nil, v1.ErrorInternal("failed on creating http request: %s", err)
 	}
@@ -215,7 +214,7 @@ func (g *SxodimGateway) getUserData(ctx context.Context, accessToken string) (*s
 	request.Header.Set("Sxodim-Secret-Aigenda", g.storage.AigendaSecret)
 
 	// Do request to Sxodim
-	response, cleanup, err := g.doSxodimRequest(ctx, request)
+	response, cleanup, err := g.doSxodimRequest(request)
 	if err != nil {
 		return nil, err
 	}
@@ -231,13 +230,13 @@ func (g *SxodimGateway) getUserData(ctx context.Context, accessToken string) (*s
 	return &reply.User, nil
 }
 
-func (g *SxodimGateway) Authenticate(ctx context.Context, actorID int64, authCode string) (*CredentialDto, error) {
-	token, err := g.exchangeSxodimToken(ctx, enum.Authorization, authCode)
+func (g *SxodimGateway) Authenticate(actorID int64, authCode string) (*CredentialDto, error) {
+	token, err := g.exchangeSxodimToken(enum.Authorization, authCode)
 	if err != nil {
 		return nil, err
 	}
 
-	user, err := g.getUserData(ctx, token.AccessToken)
+	user, err := g.getUserData(token.AccessToken)
 	if err != nil {
 		return nil, err
 	}
@@ -256,7 +255,6 @@ func (g *SxodimGateway) Authenticate(ctx context.Context, actorID int64, authCod
 }
 
 func (g *SxodimGateway) RefreshToken(
-	ctx context.Context,
 	credential *ent.UserCredentials,
 ) (*CredentialDto, error) {
 	// Retrieve dto from credential
@@ -269,7 +267,7 @@ func (g *SxodimGateway) RefreshToken(
 
 	// Check if token valid
 	if !dto.Token.Valid() {
-		newToken, err := g.exchangeSxodimToken(ctx, enum.RefreshToken, dto.Token.RefreshToken)
+		newToken, err := g.exchangeSxodimToken(enum.RefreshToken, dto.Token.RefreshToken)
 		if err != nil {
 			return nil, err
 		}
@@ -278,7 +276,7 @@ func (g *SxodimGateway) RefreshToken(
 	}
 
 	// Get Sxodim user data
-	user, err := g.getUserData(ctx, dto.Token.AccessToken)
+	user, err := g.getUserData(dto.Token.AccessToken)
 	if err != nil {
 		return nil, err
 	}
@@ -290,4 +288,8 @@ func (g *SxodimGateway) RefreshToken(
 	dto.DisplayName = user.Name
 
 	return dto, nil
+}
+
+func (g *SxodimGateway) RevokeToken(credential *ent.UserCredentials) error {
+	return nil
 }
