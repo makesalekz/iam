@@ -5,7 +5,6 @@
 package mock
 
 import (
-	context "context"
 	reflect "reflect"
 
 	gomock "github.com/golang/mock/gomock"
@@ -37,45 +36,45 @@ func (m *MockIProviderGateway) EXPECT() *MockIProviderGatewayMockRecorder {
 }
 
 // Authenticate mocks base method.
-func (m *MockIProviderGateway) Authenticate(ctx context.Context, actorID int64, authCode string) (*integration.CredentialDto, error) {
+func (m *MockIProviderGateway) Authenticate(actorID int64, authCode string) (*integration.CredentialDto, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Authenticate", ctx, actorID, authCode)
+	ret := m.ctrl.Call(m, "Authenticate", actorID, authCode)
 	ret0, _ := ret[0].(*integration.CredentialDto)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // Authenticate indicates an expected call of Authenticate.
-func (mr *MockIProviderGatewayMockRecorder) Authenticate(ctx, actorID, authCode interface{}) *gomock.Call {
+func (mr *MockIProviderGatewayMockRecorder) Authenticate(actorID, authCode interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Authenticate", reflect.TypeOf((*MockIProviderGateway)(nil).Authenticate), ctx, actorID, authCode)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Authenticate", reflect.TypeOf((*MockIProviderGateway)(nil).Authenticate), actorID, authCode)
 }
 
 // RefreshToken mocks base method.
-func (m *MockIProviderGateway) RefreshToken(ctx context.Context, credential *ent.UserCredentials) (*integration.CredentialDto, error) {
+func (m *MockIProviderGateway) RefreshToken(credential *ent.UserCredentials) (*integration.CredentialDto, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "RefreshToken", ctx, credential)
+	ret := m.ctrl.Call(m, "RefreshToken", credential)
 	ret0, _ := ret[0].(*integration.CredentialDto)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // RefreshToken indicates an expected call of RefreshToken.
-func (mr *MockIProviderGatewayMockRecorder) RefreshToken(ctx, credential interface{}) *gomock.Call {
+func (mr *MockIProviderGatewayMockRecorder) RefreshToken(credential interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "RefreshToken", reflect.TypeOf((*MockIProviderGateway)(nil).RefreshToken), ctx, credential)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "RefreshToken", reflect.TypeOf((*MockIProviderGateway)(nil).RefreshToken), credential)
 }
 
 // RevokeToken mocks base method.
-func (m *MockIProviderGateway) RevokeToken(ctx context.Context, credential *ent.UserCredentials) error {
+func (m *MockIProviderGateway) RevokeToken(credential *ent.UserCredentials) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "RevokeToken", ctx, credential)
+	ret := m.ctrl.Call(m, "RevokeToken", credential)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
 // RevokeToken indicates an expected call of RevokeToken.
-func (mr *MockIProviderGatewayMockRecorder) RevokeToken(ctx, credential interface{}) *gomock.Call {
+func (mr *MockIProviderGatewayMockRecorder) RevokeToken(credential interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "RevokeToken", reflect.TypeOf((*MockIProviderGateway)(nil).RevokeToken), ctx, credential)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "RevokeToken", reflect.TypeOf((*MockIProviderGateway)(nil).RevokeToken), credential)
 }

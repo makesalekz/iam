@@ -50,7 +50,7 @@ func TestCredentialsService_ExternalAuth_Success(t *testing.T) {
 			Email:  "user@example.com",
 		}
 		repo.providerGateway.EXPECT().
-			Authenticate(ctx, ids.actorID, authCode).
+			Authenticate(ids.actorID, authCode).
 			Return(credentialDto, nil)
 
 		// Simulate the scenario where the credential is not found in the repository.
@@ -106,11 +106,11 @@ func TestCredentialsService_ExternalAuth_Success(t *testing.T) {
 			Email:  mail,
 		}
 		repo.providerGateway.EXPECT().
-			Authenticate(ctx, ids.actorID, authCode).
+			Authenticate(ids.actorID, authCode).
 			Return(credentialDto, nil)
 
 		repo.providerGateway.EXPECT().
-			RefreshToken(ctx, existingCredential).
+			RefreshToken(existingCredential).
 			Return(credentialDto, nil)
 
 		// Expect that a new credential is created successfully.
@@ -194,7 +194,7 @@ func TestCredentialsService_ExternalAuth_ErrorCases(t *testing.T) {
 
 		errFunc := v1.ErrorInternal("auth failed")
 		repo.providerGateway.EXPECT().
-			Authenticate(ctx, ids.actorID, authCode).
+			Authenticate(ids.actorID, authCode).
 			Return(nil, errFunc)
 
 		expectedErr := v1.ErrorServiceFailed("service error: %s", errFunc.Error())
@@ -225,7 +225,7 @@ func TestCredentialsService_ExternalAuth_ErrorCases(t *testing.T) {
 			Email:  "user@example.com",
 		}
 		repo.providerGateway.EXPECT().
-			Authenticate(ctx, ids.actorID, authCode).
+			Authenticate(ids.actorID, authCode).
 			Return(credentialDto, nil)
 
 		dbErr := v1.ErrorInternal("db error")
@@ -261,7 +261,7 @@ func TestCredentialsService_ExternalAuth_ErrorCases(t *testing.T) {
 			Email:  "user@example.com",
 		}
 		repo.providerGateway.EXPECT().
-			Authenticate(ctx, ids.actorID, authCode).
+			Authenticate(ids.actorID, authCode).
 			Return(credentialDto, nil)
 
 		prov := provider1
@@ -302,7 +302,7 @@ func TestCredentialsService_ExternalAuth_ErrorCases(t *testing.T) {
 			Email:  "user@example.com",
 		}
 		repo.providerGateway.EXPECT().
-			Authenticate(ctx, ids.actorID, authCode).
+			Authenticate(ids.actorID, authCode).
 			Return(credentialDto, nil)
 
 		repo.credentialsRepo.EXPECT().
@@ -353,7 +353,7 @@ func TestCredentialsService_RefreshCredential_SuccessCases(t *testing.T) {
 		Email:  "user@example.com",
 	}
 	repo.providerGateway.EXPECT().
-		RefreshToken(ctx, cred).
+		RefreshToken(cred).
 		Return(credentialDto, nil)
 
 	updatedCred := &ent.UserCredentials{
@@ -497,7 +497,7 @@ func TestCredentialsService_RefreshCredential_ErrorCases(t *testing.T) {
 
 		errFunc := v1.ErrorInternal("refresh token failed")
 		repo.providerGateway.EXPECT().
-			RefreshToken(ctx, cred).
+			RefreshToken(cred).
 			Return(nil, errFunc)
 
 		expectedErr := v1.ErrorServiceFailed("service error: %v", errFunc)
@@ -532,7 +532,7 @@ func TestCredentialsService_RefreshCredential_ErrorCases(t *testing.T) {
 			Email:  "user@example.com",
 		}
 		repo.providerGateway.EXPECT().
-			RefreshToken(ctx, cred).
+			RefreshToken(cred).
 			Return(credentialDto, nil)
 
 		updateErr := v1.ErrorInternal("update failed")

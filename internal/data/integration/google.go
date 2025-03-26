@@ -168,7 +168,7 @@ func NewGoogleRemote(config config.IConfig) (IProviderGateway, error) {
 }
 
 // Authenticate exchanges an authorization code for OAuth tokens and user info
-func (r *GoogleGateway) Authenticate(ctx context.Context, actorID int64, authCode string) (*CredentialDto, error) {
+func (r *GoogleGateway) Authenticate(actorID int64, authCode string) (*CredentialDto, error) {
 	// Input validation
 	if authCode == "" {
 		return nil, errors.ErrAuthCodeInvalid
@@ -180,7 +180,7 @@ func (r *GoogleGateway) Authenticate(ctx context.Context, actorID int64, authCod
 	}
 
 	// Exchange auth code for token with direct HTTP request
-	token, err := r.exchangeAuthCodeForToken(ctx, r.oauthConfig, authCode)
+	token, err := r.exchangeAuthCodeForToken(authCode)
 	if err != nil {
 		r.log.Errorf("Failed to exchange auth code for token: %v (actor_id: %d)", err, actorID)
 		return nil, errors.MapToExternalError(err)
@@ -198,7 +198,7 @@ func (r *GoogleGateway) Authenticate(ctx context.Context, actorID int64, authCod
 	}
 
 	// Get user information using the access token
-	userInfo, err := r.getUserInfo(ctx, token.AccessToken)
+	userInfo, err := r.getUserInfo(token.AccessToken)
 	if err != nil {
 		r.log.Errorf("Failed to retrieve user info: %v (actor_id: %d)", err, actorID)
 		return nil, errors.MapToExternalError(err)
@@ -227,14 +227,12 @@ func (r *GoogleGateway) Authenticate(ctx context.Context, actorID int64, authCod
 
 // exchangeAuthCodeForToken exchanges authorization code for an OAuth token
 func (r *GoogleGateway) exchangeAuthCodeForToken(
-	ctx context.Context,
-	googleConfig *GoogleOAuthConfig,
 	authCode string,
 ) (*GoogleOAuthToken, error) {
 	// Select a redirect URI - use the first one from the array
 	var redirectURI string
-	if len(googleConfig.RedirectURIs) > 0 {
-		redirectURI = googleConfig.RedirectURIs[0]
+	if len(r.oauthConfig.RedirectURIs) > 0 {
+		redirectURI = r.oauthConfig.RedirectURIs[0]
 	} else {
 		// Default fallback - though this might not work if not registered
 		redirectURI = defaultRedirectURI
@@ -243,8 +241,8 @@ func (r *GoogleGateway) exchangeAuthCodeForToken(
 	// Prepare form data
 	data := url.Values{}
 	data.Set("code", authCode)
-	data.Set("client_id", googleConfig.ClientID)
-	data.Set("client_secret", googleConfig.ClientSecret)
+	data.Set("client_id", r.oauthConfig.ClientID)
+	data.Set("client_secret", r.oauthConfig.ClientSecret)
 	data.Set("redirect_uri", redirectURI) // FIXED: Using single redirect_uri
 	data.Set("grant_type", "authorization_code")
 
@@ -256,12 +254,7 @@ func (r *GoogleGateway) exchangeAuthCodeForToken(
 	data.Set("scope", strings.Join(r.scopes, " "))
 
 	// Create request
-	req, err := http.NewRequestWithContext(
-		ctx,
-		http.MethodPost,
-		googleConfig.TokenURI,
-		strings.NewReader(data.Encode()),
-	)
+	req, err := http.NewRequest(http.MethodPost, r.oauthConfig.TokenURI, strings.NewReader(data.Encode()))
 	if err != nil {
 		return nil, fmt.Errorf("failed to create token request: %w", err)
 	}
@@ -289,7 +282,8 @@ func (r *GoogleGateway) exchangeAuthCodeForToken(
 		r.log.Debugf("Token exchange failed - Response: %s", string(body))
 
 		var oauthErr GoogleOAuthError
-		if err := json.Unmarshal(body, &oauthErr); err == nil && oauthErr.Error != "" {
+		err = json.Unmarshal(body, &oauthErr)
+		if err == nil && oauthErr.Error != "" {
 			r.log.Errorf("OAuth error response: %s - %s", oauthErr.Error, oauthErr.ErrorDescription)
 
 			if oauthErr.Error == "invalid_grant" {
@@ -309,7 +303,8 @@ func (r *GoogleGateway) exchangeAuthCodeForToken(
 
 	// Parse the successful response
 	var token GoogleOAuthToken
-	if err := json.Unmarshal(body, &token); err != nil {
+	err = json.Unmarshal(body, &token)
+	if err != nil {
 		return nil, fmt.Errorf("failed to parse token response: %w", err)
 	}
 
@@ -317,9 +312,9 @@ func (r *GoogleGateway) exchangeAuthCodeForToken(
 }
 
 // getUserInfo retrieves the user's profile information using an access token
-func (r *GoogleGateway) getUserInfo(ctx context.Context, accessToken string) (*GoogleUserInfo, error) {
+func (r *GoogleGateway) getUserInfo(accessToken string) (*GoogleUserInfo, error) {
 	// Create request
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, r.userInfoURL, nil)
+	req, err := http.NewRequest(http.MethodGet, r.userInfoURL, nil)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create user info request: %w", err)
 	}
@@ -349,7 +344,8 @@ func (r *GoogleGateway) getUserInfo(ctx context.Context, accessToken string) (*G
 
 	// Parse the successful response
 	var userInfo GoogleUserInfo
-	if err := json.Unmarshal(body, &userInfo); err != nil {
+	err = json.Unmarshal(body, &userInfo)
+	if err != nil {
 		return nil, fmt.Errorf("failed to parse user info response: %w", err)
 	}
 
@@ -358,7 +354,6 @@ func (r *GoogleGateway) getUserInfo(ctx context.Context, accessToken string) (*G
 
 // RefreshToken refreshes an expired OAuth token
 func (r *GoogleGateway) RefreshToken(
-	ctx context.Context,
 	credential *ent.UserCredentials,
 ) (*CredentialDto, error) {
 	// Input validation
@@ -397,7 +392,7 @@ func (r *GoogleGateway) RefreshToken(
 	}
 
 	// Refresh the token with direct HTTP request
-	newToken, err := r.refreshTokenRequest(ctx, r.oauthConfig, dto.Token.RefreshToken)
+	newToken, err := r.refreshTokenRequest(r.oauthConfig, dto.Token.RefreshToken)
 	if err != nil {
 		r.log.Errorf("Token refresh failed: %v (user_id: %d, credential_id: %d)",
 			err, credential.UserID, credential.ID)
@@ -432,7 +427,6 @@ func (r *GoogleGateway) RefreshToken(
 
 // refreshTokenRequest sends a refresh token request to Google OAuth server
 func (r *GoogleGateway) refreshTokenRequest(
-	ctx context.Context,
 	googleConfig *GoogleOAuthConfig,
 	refreshToken string,
 ) (*GoogleOAuthToken, error) {
@@ -444,12 +438,7 @@ func (r *GoogleGateway) refreshTokenRequest(
 	data.Set("grant_type", "refresh_token")
 
 	// Create request
-	req, err := http.NewRequestWithContext(
-		ctx,
-		http.MethodPost,
-		googleConfig.TokenURI,
-		strings.NewReader(data.Encode()),
-	)
+	req, err := http.NewRequest(http.MethodPost, googleConfig.TokenURI, strings.NewReader(data.Encode()))
 	if err != nil {
 		return nil, fmt.Errorf("failed to create refresh token request: %w", err)
 	}
@@ -474,7 +463,8 @@ func (r *GoogleGateway) refreshTokenRequest(
 	// Check for error response
 	if resp.StatusCode != http.StatusOK {
 		var oauthErr GoogleOAuthError
-		if err := json.Unmarshal(body, &oauthErr); err == nil && oauthErr.Error != "" {
+		err = json.Unmarshal(body, &oauthErr)
+		if err == nil && oauthErr.Error != "" {
 			r.log.Errorf("OAuth refresh error: %s - %s", oauthErr.Error, oauthErr.ErrorDescription)
 
 			if oauthErr.Error == "invalid_grant" {
@@ -489,7 +479,8 @@ func (r *GoogleGateway) refreshTokenRequest(
 
 	// Parse the successful response
 	var token GoogleOAuthToken
-	if err := json.Unmarshal(body, &token); err != nil {
+	err = json.Unmarshal(body, &token)
+	if err != nil {
 		return nil, fmt.Errorf("failed to parse refresh token response: %w", err)
 	}
 
@@ -498,7 +489,7 @@ func (r *GoogleGateway) refreshTokenRequest(
 
 // RevokeToken revokes both access and refresh tokens for a credential
 // This ensures the credential is completely invalidated with Google
-func (r *GoogleGateway) RevokeToken(ctx context.Context, credential *ent.UserCredentials) error {
+func (r *GoogleGateway) RevokeToken(credential *ent.UserCredentials) error {
 	if credential == nil {
 		return errors.ErrInvalidCredential
 	}
@@ -507,7 +498,7 @@ func (r *GoogleGateway) RevokeToken(ctx context.Context, credential *ent.UserCre
 
 	// Try to revoke refresh token first (this also invalidates all associated access tokens)
 	if credential.RefreshToken != nil && *credential.RefreshToken != "" {
-		err := r.revokeTokenRequest(ctx, *credential.RefreshToken, true)
+		err := r.revokeTokenRequest(*credential.RefreshToken, true)
 		if err != nil {
 			r.log.Warnf("Failed to revoke refresh token: %v (user_id: %d, credential_id: %d)",
 				err, credential.UserID, credential.ID)
@@ -532,7 +523,7 @@ func (r *GoogleGateway) RevokeToken(ctx context.Context, credential *ent.UserCre
 	// If refresh token revocation failed or there was no refresh token,
 	// try to revoke the access token as a fallback
 	if credential.AccessToken != "" {
-		err := r.revokeTokenRequest(ctx, credential.AccessToken, false)
+		err := r.revokeTokenRequest(credential.AccessToken, false)
 		if err != nil {
 			r.log.Warnf("Failed to revoke access token: %v (user_id: %d, credential_id: %d)",
 				err, credential.UserID, credential.ID)
@@ -566,7 +557,7 @@ func (r *GoogleGateway) RevokeToken(ctx context.Context, credential *ent.UserCre
 // revokeTokenRequest revokes an OAuth token with Google
 // It supports revoking both access tokens and refresh tokens
 // When a refresh token is revoked, all associated access tokens are automatically invalidated
-func (r *GoogleGateway) revokeTokenRequest(ctx context.Context, token string, isRefreshToken bool) error {
+func (r *GoogleGateway) revokeTokenRequest(token string, isRefreshToken bool) error {
 	// Validate input
 	if token == "" {
 		return errors.ErrInvalidToken
@@ -584,12 +575,7 @@ func (r *GoogleGateway) revokeTokenRequest(ctx context.Context, token string, is
 	}
 
 	// Create request
-	req, err := http.NewRequestWithContext(
-		ctx,
-		http.MethodPost,
-		googleRevocationURL,
-		strings.NewReader(data.Encode()),
-	)
+	req, err := http.NewRequest(http.MethodPost, googleRevocationURL, strings.NewReader(data.Encode()))
 	if err != nil {
 		return fmt.Errorf("failed to create revocation request: %w", err)
 	}
@@ -612,7 +598,8 @@ func (r *GoogleGateway) revokeTokenRequest(ctx context.Context, token string, is
 
 		// Try to parse error response
 		var oauthErr GoogleOAuthError
-		if err := json.Unmarshal(body, &oauthErr); err == nil && oauthErr.Error != "" {
+		err = json.Unmarshal(body, &oauthErr)
+		if err == nil && oauthErr.Error != "" {
 			r.log.Errorf("OAuth revocation error: %s - %s", oauthErr.Error, oauthErr.ErrorDescription)
 			return fmt.Errorf("oauth error: %s - %s", oauthErr.Error, oauthErr.ErrorDescription)
 		}

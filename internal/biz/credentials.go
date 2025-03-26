@@ -80,14 +80,14 @@ func (uc *CredentialsUsecase) ExternalAuth(
 	}
 
 	// Step 2: Exchange the token
-	credentialDto, err := providerGateway.Authenticate(ctx, actorID, authCode)
+	credentialDto, err := providerGateway.Authenticate(actorID, authCode)
 	if err != nil {
 		return nil, errors.MapToExternalError(err)
 	}
 
 	// If user has existing credential with same email - update it
 	if existingCredential != nil && existingCredential.Mail != nil && *existingCredential.Mail == credentialDto.Email {
-		refreshedCredentialDto, err2 := providerGateway.RefreshToken(ctx, existingCredential)
+		refreshedCredentialDto, err2 := providerGateway.RefreshToken(existingCredential)
 		if err2 != nil {
 			return nil, errors.MapToExternalError(err2)
 		}
@@ -99,7 +99,7 @@ func (uc *CredentialsUsecase) ExternalAuth(
 	var needsRevocation bool
 	defer func() {
 		if needsRevocation && credentialDto != nil && credentialDto.Token != nil {
-			err2 := providerGateway.RevokeToken(ctx, &ent.UserCredentials{
+			err2 := providerGateway.RevokeToken(&ent.UserCredentials{
 				AccessToken:  credentialDto.Token.AccessToken,
 				RefreshToken: &credentialDto.Token.RefreshToken,
 			})
@@ -167,7 +167,7 @@ func (uc *CredentialsUsecase) RefreshCredential(
 	}
 
 	// Exchange token
-	credentialDto, err := providerGateway.RefreshToken(ctx, credential)
+	credentialDto, err := providerGateway.RefreshToken(credential)
 	if err != nil {
 		return nil, errors.MapToExternalError(err)
 	}
@@ -218,7 +218,7 @@ func (uc *CredentialsUsecase) DeleteCredential(ctx context.Context, actorID, cre
 			uc.log.Errorf("provider gateway creation failed: %v", err2)
 		}
 
-		err = providerGateway.RevokeToken(ctx, credential)
+		err = providerGateway.RevokeToken(credential)
 		if err != nil {
 			uc.log.Warnf("failed to revoke token: %v (user_id: %d, credential_id: %d)",
 				err, actorID, credentialID)
