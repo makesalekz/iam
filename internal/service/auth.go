@@ -5,8 +5,8 @@ import (
 
 	v1 "gitlab.calendaria.team/services/iam/api/iam/v1"
 	"gitlab.calendaria.team/services/iam/internal/biz"
+	"gitlab.calendaria.team/services/iam/internal/data/dto"
 	"gitlab.calendaria.team/services/utils/v2/auth"
-	"gitlab.calendaria.team/services/utils/v2/struc"
 )
 
 type AuthService struct {
@@ -29,18 +29,12 @@ func (s *AuthService) AuthByPhone(ctx context.Context, req *v1.AuthByPhoneReques
 		return nil, v1.ErrorEmptyAppId("empty app id")
 	}
 
-	dto := &biz.AuthPhoneDto{
-		AppID:                struc.ApplicationID(appID),
-		Phone:                req.GetPhone(),
-		IsRegistrationNeeded: req.GetIsRegistrationNeeded(),
-		IsRegistration:       req.GetIsRegistration(),
-		AppSignature:         req.GetAppSignature(),
-	}
-	if err := dto.Validate(); err != nil {
+	authPhoneDto := dto.NewAuthPhoneDto(appID, req)
+	if err := authPhoneDto.Validate(); err != nil {
 		return nil, err
 	}
 
-	userID, err := s.au.AuthUserByPhone(ctx, dto)
+	userID, err := s.au.AuthUserByPhone(ctx, authPhoneDto)
 	if err != nil {
 		return nil, err
 	}

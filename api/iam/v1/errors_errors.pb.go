@@ -181,6 +181,30 @@ func ErrorInvalidProvider(format string, args ...interface{}) *errors.Error {
 	return errors.New(400, ErrorReason_INVALID_PROVIDER.String(), fmt.Sprintf(format, args...))
 }
 
+func IsForbidden(err error) bool {
+	if err == nil {
+		return false
+	}
+	e := errors.FromError(err)
+	return e.Reason == ErrorReason_FORBIDDEN.String() && e.Code == 403
+}
+
+func ErrorForbidden(format string, args ...interface{}) *errors.Error {
+	return errors.New(403, ErrorReason_FORBIDDEN.String(), fmt.Sprintf(format, args...))
+}
+
+func IsNotFound(err error) bool {
+	if err == nil {
+		return false
+	}
+	e := errors.FromError(err)
+	return e.Reason == ErrorReason_NOT_FOUND.String() && e.Code == 404
+}
+
+func ErrorNotFound(format string, args ...interface{}) *errors.Error {
+	return errors.New(404, ErrorReason_NOT_FOUND.String(), fmt.Sprintf(format, args...))
+}
+
 func IsUserNotFound(err error) bool {
 	if err == nil {
 		return false
@@ -263,4 +287,28 @@ func IsUserAlreadyExist(err error) bool {
 
 func ErrorUserAlreadyExist(format string, args ...interface{}) *errors.Error {
 	return errors.New(409, ErrorReason_USER_ALREADY_EXIST.String(), fmt.Sprintf(format, args...))
+}
+
+func IsCredentialsAlreadyInUse(err error) bool {
+	if err == nil {
+		return false
+	}
+	e := errors.FromError(err)
+	return e.Reason == ErrorReason_CREDENTIALS_ALREADY_IN_USE.String() && e.Code == 409
+}
+
+func ErrorCredentialsAlreadyInUse(format string, args ...interface{}) *errors.Error {
+	return errors.New(409, ErrorReason_CREDENTIALS_ALREADY_IN_USE.String(), fmt.Sprintf(format, args...))
+}
+
+func IsNeedReauthorization(err error) bool {
+	if err == nil {
+		return false
+	}
+	e := errors.FromError(err)
+	return e.Reason == ErrorReason_NEED_REAUTHORIZATION.String() && e.Code == 400
+}
+
+func ErrorNeedReauthorization(format string, args ...interface{}) *errors.Error {
+	return errors.New(400, ErrorReason_NEED_REAUTHORIZATION.String(), fmt.Sprintf(format, args...))
 }

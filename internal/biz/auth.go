@@ -10,20 +10,18 @@ import (
 	"gitlab.calendaria.team/services/iam/ent"
 	"gitlab.calendaria.team/services/iam/ent/enum"
 	"gitlab.calendaria.team/services/iam/internal/data"
+	"gitlab.calendaria.team/services/iam/internal/data/dialer"
+	"gitlab.calendaria.team/services/iam/internal/data/dto"
 	u_auth "gitlab.calendaria.team/services/utils/v2/auth"
-	u_jwt "gitlab.calendaria.team/services/utils/v2/jwt"
-	u_nats "gitlab.calendaria.team/services/utils/v2/nats"
 	u_struc "gitlab.calendaria.team/services/utils/v2/struc"
+	u_jwt "gitlab.calendaria.team/services/utils/v4/jwt"
+	u_nats "gitlab.calendaria.team/services/utils/v4/nats"
 
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/golang-jwt/jwt/v5"
 )
 
 const (
-	otpLength    = 6
-	digits       = "0123456789"
-	debugOtpCode = "777333"
-
 	authOtpDuration             = time.Duration(5) * time.Minute
 	defaultAccessTokenDuration  = time.Duration(10) * time.Minute
 	defaultRefreshTokenDuration = time.Duration(30*24) * time.Hour
@@ -35,8 +33,8 @@ type AuthUsecase struct {
 	log                  *log.Helper
 	jwt                  u_jwt.IJwtProcessor
 	queue                u_nats.IQueueManager
-	tenants              data.ITenantsRemote
-	notifications        data.INotificationsRemote
+	tenants              dialer.ITenantsRemote
+	notifications        dialer.INotificationsRemote
 	usersRepo            data.UsersRepo
 	otpRepo              data.OtpRepo
 	accessTokenDuration  time.Duration
@@ -48,8 +46,8 @@ func NewAuthUsecase(
 	logger log.Logger,
 	jwt u_jwt.IJwtProcessor,
 	queue u_nats.IQueueManager,
-	tenants data.ITenantsRemote,
-	notifications data.INotificationsRemote,
+	tenants dialer.ITenantsRemote,
+	notifications dialer.INotificationsRemote,
 	usersRepo data.UsersRepo,
 	otpRepo data.OtpRepo,
 ) (*AuthUsecase, error) {
@@ -96,7 +94,7 @@ func NewAuthUsecase(
 	return uc, nil
 }
 
-func (uc *AuthUsecase) AuthUserByPhone(ctx context.Context, dto *AuthPhoneDto) (
+func (uc *AuthUsecase) AuthUserByPhone(ctx context.Context, dto *dto.AuthPhoneDto) (
 	int64, error,
 ) {
 	user, err := uc.usersRepo.GetUserByPhone(ctx, dto.Phone, true)
@@ -156,9 +154,9 @@ func (uc *AuthUsecase) AuthUserByEmail(
 	var code string
 	if os.Getenv("DEBUG") != "" {
 		// use fixed code in debug mode
-		code = debugOtpCode
+		code = dto.DebugOtpCode
 	} else {
-		code = generateRandomNumber(otpLength)
+		code = dto.GenerateRandomNumber(dto.OtpLength)
 	}
 
 	otp, err := uc.otpRepo.CreateOneTimePassword(ctx, user.ID, enum.Email, code, authOtpDuration)
@@ -212,7 +210,7 @@ func (uc *AuthUsecase) handleUserVerification(ctx context.Context, user *ent.Use
 			return v1.ErrorGrpcConnection("CreateTenants error: %s", err.Error())
 		}
 
-		_, err = uc.usersRepo.UpdateUserData(tenantContext, user, data.UpdateUserDto{TenantID: personalTenant.GetId()})
+		_, err = uc.usersRepo.UpdateUserData(tenantContext, user, dto.UpdateUserDto{TenantID: personalTenant.GetId()})
 		if err != nil {
 			return v1.ErrorDatabaseQuery("UpdateUserData gone wrong: %s", err.Error())
 		}

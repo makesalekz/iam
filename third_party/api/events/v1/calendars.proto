@@ -18,6 +18,8 @@ service Calendars {
   rpc ListExternalCalendars(ListExternalCalendarsRequest) returns (ListExternalCalendarsReply);
   rpc ConnectExternalCalendar(ConnectExternalCalendarRequest) returns (CalendarReply);
   rpc DisconnectExternalCalendar(DisconnectExternalCalendarRequest) returns (CalendarReply);
+  rpc DisconnectExternalCalendarsBulk(DisconnectExternalCalendarsBulkRequest) returns (utils.v1.EmptyReply);
+  rpc SynchronizeExternalCalendar(SynchronizeExternalCalendarRequest) returns (CalendarReply);
 }
 
 message CreateCalendarRequest {
@@ -54,5 +56,13 @@ message ConnectExternalCalendarRequest {
 }
 
 message DisconnectExternalCalendarRequest {
+  int64 calendarId = 1;
+}
+
+message DisconnectExternalCalendarsBulkRequest {
+  int64 credentialId = 1;
+}
+
+message SynchronizeExternalCalendarRequest {
   int64 calendarId = 1;
 }

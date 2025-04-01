@@ -1,4 +1,4 @@
-package service_test
+package test_test
 
 import (
 	"context"
@@ -6,16 +6,17 @@ import (
 	"time"
 
 	v1 "gitlab.calendaria.team/services/iam/api/iam/v1"
-	tenants_v1 "gitlab.calendaria.team/services/tenants/api/tenants/v1"
-
-	"github.com/golang/mock/gomock"
-	"github.com/stretchr/testify/require"
 	"gitlab.calendaria.team/services/iam/ent"
 	"gitlab.calendaria.team/services/iam/ent/enum"
 	"gitlab.calendaria.team/services/iam/internal/biz"
+	"gitlab.calendaria.team/services/iam/internal/data/dto"
 	"gitlab.calendaria.team/services/iam/internal/data/mock"
-	jwt_mock "gitlab.calendaria.team/services/utils/v2/jwt/mock"
-	nats_mock "gitlab.calendaria.team/services/utils/v2/nats/mock"
+	tenants_v1 "gitlab.calendaria.team/services/tenants/api/tenants/v1"
+	jwt_mock "gitlab.calendaria.team/services/utils/v4/jwt/mock"
+	nats_mock "gitlab.calendaria.team/services/utils/v4/nats/mock"
+
+	"github.com/golang/mock/gomock"
+	"github.com/stretchr/testify/require"
 	"gitlab.calendaria.team/services/utils/v2/zap"
 )
 
@@ -58,7 +59,7 @@ func TestAuthSuccess(t *testing.T) {
 	otpRepo.EXPECT().CreateOneTimePassword(gomock.Any(), userID, enum.Phone, smsCode, 5*time.Minute).Return(otp, nil)
 	notificationsRemote.EXPECT().PersonalSmsSender(gomock.Any(), aigendaAppID, phone, smsText).Return(nil)
 
-	_, err = authUseCase.AuthUserByPhone(ctx, &biz.AuthPhoneDto{
+	_, err = authUseCase.AuthUserByPhone(ctx, &dto.AuthPhoneDto{
 		AppID: calendariaAppID,
 		Phone: phone,
 	})
@@ -98,7 +99,7 @@ func TestUserNotExist(t *testing.T) {
 	otpRepo.EXPECT().CreateOneTimePassword(gomock.Any(), userID, enum.Phone, smsCode, 5*time.Minute).Return(otp, nil)
 	notificationsRemote.EXPECT().PersonalSmsSender(gomock.Any(), aigendaAppID, phone, smsText).Return(nil)
 
-	_, err = authUseCase.AuthUserByPhone(ctx, &biz.AuthPhoneDto{
+	_, err = authUseCase.AuthUserByPhone(ctx, &dto.AuthPhoneDto{
 		AppID: calendariaAppID,
 		Phone: phone,
 	})
@@ -126,7 +127,7 @@ func TestUserRegistrationRequired(t *testing.T) {
 	phone := "+77777777777"
 
 	usersRepo.EXPECT().GetUserByPhone(gomock.Any(), phone, true).Return(nil, &ent.NotFoundError{})
-	_, err = authUseCase.AuthUserByPhone(ctx, &biz.AuthPhoneDto{
+	_, err = authUseCase.AuthUserByPhone(ctx, &dto.AuthPhoneDto{
 		AppID:                calendariaAppID,
 		Phone:                phone,
 		IsRegistrationNeeded: true,
@@ -168,7 +169,7 @@ func TestUserRegistration(t *testing.T) {
 	otpRepo.EXPECT().CreateOneTimePassword(gomock.Any(), userID, enum.Phone, smsCode, 5*time.Minute).Return(otp, nil)
 	notificationsRemote.EXPECT().PersonalSmsSender(gomock.Any(), aigendaAppID, phone, smsText).Return(nil)
 
-	_, err = authUseCase.AuthUserByPhone(ctx, &biz.AuthPhoneDto{
+	_, err = authUseCase.AuthUserByPhone(ctx, &dto.AuthPhoneDto{
 		AppID:          calendariaAppID,
 		Phone:          phone,
 		IsRegistration: true,
@@ -199,7 +200,7 @@ func TestAuthService_RefreshToken(t *testing.T) {
 			Member: "member1",
 			Groups: []string{"group1", "group2"},
 		}
-		repo.tenantsRemote.EXPECT().GetMemberIdentities(ctx, req.GetTenantId(), user.ID).Return(tenantIdentities, nil)
+		repo.tenants.EXPECT().GetMemberIdentities(ctx, req.GetTenantId(), user.ID).Return(tenantIdentities, nil)
 
 		// jwt secret
 		secret := []byte{1}

@@ -5,101 +5,174 @@ import (
 
 	iam_v1 "gitlab.calendaria.team/services/iam/api/iam/v1"
 	"gitlab.calendaria.team/services/iam/ent"
+	"gitlab.calendaria.team/services/iam/ent/mixins"
 	"gitlab.calendaria.team/services/iam/internal/data"
-	"gitlab.calendaria.team/services/utils/v1/config"
-	u_jwt "gitlab.calendaria.team/services/utils/v2/jwt"
-	u_nats "gitlab.calendaria.team/services/utils/v2/nats"
+	"gitlab.calendaria.team/services/iam/internal/data/dialer"
+	"gitlab.calendaria.team/services/iam/internal/data/errors"
+	"gitlab.calendaria.team/services/iam/internal/data/integration"
 	u_struc "gitlab.calendaria.team/services/utils/v2/struc"
+	"gitlab.calendaria.team/services/utils/v4/config"
+	u_jwt "gitlab.calendaria.team/services/utils/v4/jwt"
+	u_nats "gitlab.calendaria.team/services/utils/v4/nats"
 
 	"github.com/go-kratos/kratos/v2/log"
-	"github.com/mitchellh/mapstructure"
-	"golang.org/x/oauth2/google"
-	"google.golang.org/api/oauth2/v2"
-	"google.golang.org/api/option"
 )
 
 type CredentialsUsecase struct {
-	config          *config.Config
 	log             *log.Helper
+	config          config.IConfig
 	queue           u_nats.IQueueManager
 	jwt             u_jwt.IJwtProcessor
+	provider        integration.IProviderManager
+	events          dialer.IEventsRemote
 	credentialsRepo data.CredentialsRepo
 }
 
 func NewCredentialsUsecase(
-	config *config.Config,
+	config config.IConfig,
 	logger log.Logger,
 	queue u_nats.IQueueManager,
 	jwt u_jwt.IJwtProcessor,
+	provide integration.IProviderManager,
+	events dialer.IEventsRemote,
 	credentialsRepo data.CredentialsRepo,
 ) (*CredentialsUsecase, error) {
 	return &CredentialsUsecase{
-		config:          config,
-		log:             log.NewHelper(logger),
+		config: config,
+		log: log.NewHelper(
+			log.With(logger, "ts", log.DefaultTimestamp, "module", "usecase/credentials"),
+		),
 		jwt:             jwt,
 		queue:           queue,
+		provider:        provide,
+		events:          events,
 		credentialsRepo: credentialsRepo,
 	}, nil
 }
 
-func (uc *CredentialsUsecase) AuthByGoogle(ctx context.Context, actorID int64, authCode string) error {
-	// get google credentials
-	mapGoogleCredentials, err := uc.config.ReadGlobalSecretsFor(ctx, "gwebcredentials")
+func (uc *CredentialsUsecase) ExternalAuth(
+	ctx context.Context,
+	actorID int64,
+	provider u_struc.Provider,
+	authCode string,
+) (*ent.UserCredentials, error) {
+	// Input validation
+	if authCode == "" {
+		return nil, iam_v1.ErrorInvalidRequest("auth code is required")
+	}
+
+	// Create provider gateway
+	providerGateway, err := uc.provider.NewProviderGateway(provider)
 	if err != nil {
-		return iam_v1.ErrorServiceFailed("Unable to read client secret from vault: %v", err.Error())
+		return nil, iam_v1.ErrorInvalidProvider("provider gateway creation failed: %v", err)
 	}
 
-	// decode google credentials
-	googleCredentials := ""
-	err = mapstructure.Decode(mapGoogleCredentials["data"], &googleCredentials)
+	// Step 1: Check if the current user already has a credential for this provider
+	existingCredential, err := uc.credentialsRepo.GetCredentialByProvider(ctx, actorID, provider)
+	if err != nil && !ent.IsNotFound(err) {
+		if ent.IsNotSingular(err) {
+			uc.log.Errorf("multiple credentials found for userID (%v) provider %s: %v",
+				actorID, provider, err)
+			return nil, iam_v1.ErrorDatabaseQuery("multiple credentials found for this email")
+		}
+
+		return nil, iam_v1.ErrorDatabaseQuery("error checking existing credentials: %v", err)
+	}
+
+	// Step 2: Exchange the token
+	credentialDto, err := providerGateway.Authenticate(actorID, authCode)
 	if err != nil {
-		return iam_v1.ErrorServiceFailed("Unable to decode client secret: %v", err.Error())
+		return nil, errors.MapToExternalError(err)
 	}
 
-	// get config from credentials
-	googleConfig, err := google.ConfigFromJSON(
-		[]byte(googleCredentials),
-		oauth2.UserinfoProfileScope,
-		oauth2.UserinfoEmailScope,
-	)
+	// If user has existing credential with same email - update it
+	if existingCredential != nil && existingCredential.Mail != nil && *existingCredential.Mail == credentialDto.Email {
+		refreshedCredentialDto, err2 := providerGateway.RefreshToken(existingCredential)
+		if err2 != nil {
+			return nil, errors.MapToExternalError(err2)
+		}
+
+		return uc.credentialsRepo.UpdateCredential(ctx, existingCredential.ID, *refreshedCredentialDto)
+	}
+
+	// Revoke the token if we can't create it
+	var needsRevocation bool
+	defer func() {
+		if needsRevocation && credentialDto != nil && credentialDto.Token != nil {
+			err2 := providerGateway.RevokeToken(&ent.UserCredentials{
+				AccessToken:  credentialDto.Token.AccessToken,
+				RefreshToken: &credentialDto.Token.RefreshToken,
+			})
+			if err2 != nil {
+				uc.log.Errorf("failed to revoke token for mail (%s)", credentialDto.Email)
+			}
+		}
+	}()
+
+	// Step 3: Check if the email is already in use by ANY user
+	emailCredential, err := uc.credentialsRepo.GetCredentialByMail(ctx, credentialDto.Email, provider)
+	if err != nil && !ent.IsNotFound(err) {
+		needsRevocation = true
+		if ent.IsNotSingular(err) {
+			uc.log.Errorf("multiple credentials found for email (%s) provider %s: %v",
+				credentialDto.Email, provider, err)
+			return nil, iam_v1.ErrorDatabaseQuery("multiple credentials found for this email")
+		}
+
+		return nil, iam_v1.ErrorDatabaseQuery("error querying credentials: %v", err)
+	}
+
+	// If email belongs to another user - reject the auth attempt.
+	// Don't revoke another user's token.
+	if emailCredential != nil && emailCredential.UserID != actorID {
+		return nil, iam_v1.ErrorCredentialsAlreadyInUse("this email address is already in use by another user")
+	}
+
+	// User has existing credential with different email - reject the auth attempt
+	if existingCredential != nil && existingCredential.Mail != nil && *existingCredential.Mail != credentialDto.Email {
+		needsRevocation = true
+		return nil, iam_v1.ErrorForbidden("you already have an active credential")
+	}
+
+	// If there is a no existing credential for user with this email and provider - create new one
+	userCredential, err := uc.credentialsRepo.CreateCredential(ctx, *credentialDto)
 	if err != nil {
-		return iam_v1.ErrorServiceFailed("Unable to parse client secret file to config: %v", err.Error())
+		needsRevocation = true
+		return nil, iam_v1.ErrorDatabaseQuery("failed to create credential: %v", err)
 	}
 
-	// exchange auth code to token
-	tok, err := googleConfig.Exchange(ctx, authCode)
+	return userCredential, nil
+}
+
+func (uc *CredentialsUsecase) RefreshCredential(
+	ctx context.Context,
+	actorID, credentialID int64,
+) (*ent.UserCredentials, error) {
+	credential, err := uc.credentialsRepo.GetCredential(ctx, actorID, credentialID)
 	if err != nil {
-		return iam_v1.ErrorServiceFailed("Unable to retrieve token from web: %v", err.Error())
+		if ent.IsNotFound(err) {
+			return nil, iam_v1.ErrorCredentialNotFound("credential not found")
+		}
+		return nil, iam_v1.ErrorDatabaseQuery("database error: %s", err.Error())
 	}
 
-	// get http client
-	client := googleConfig.Client(ctx, tok)
+	// validate credential
+	if credential == nil || credential.Provider == nil {
+		return nil, iam_v1.ErrorInternal("credential don't have provider")
+	}
 
-	oauth2Service, err := oauth2.NewService(ctx, option.WithHTTPClient(client))
+	providerGateway, err := uc.provider.NewProviderGateway(*credential.Provider)
 	if err != nil {
-		return iam_v1.ErrorServiceFailed("Unable to retrieve OAuth2 service: %v", err.Error())
+		return nil, err
 	}
 
-	userInfoService := oauth2.NewUserinfoV2MeService(oauth2Service)
-	userInfo, err := userInfoService.Get().Do()
+	// Exchange token
+	credentialDto, err := providerGateway.RefreshToken(credential)
 	if err != nil {
-		return iam_v1.ErrorServiceFailed("Unable to retrieve user info: %v", err.Error())
+		return nil, errors.MapToExternalError(err)
 	}
 
-	// save tokens to database
-	dto := data.CredentialDto{
-		UserID:      actorID,
-		DisplayName: userInfo.Name,
-		Email:       userInfo.Email,
-		Provider:    u_struc.Google,
-		Token:       tok,
-	}
-	err = uc.credentialsRepo.CreateCredential(ctx, dto)
-	if err != nil {
-		return iam_v1.ErrorDatabaseQuery("database error: %s", err.Error())
-	}
-
-	return nil
+	return uc.credentialsRepo.UpdateCredential(ctx, credentialID, *credentialDto)
 }
 
 func (uc *CredentialsUsecase) GetCredential(
@@ -118,11 +191,38 @@ func (uc *CredentialsUsecase) ListCredentials(
 }
 
 func (uc *CredentialsUsecase) DeleteCredential(ctx context.Context, actorID, credentialID int64) error {
-	deletedCount, err := uc.credentialsRepo.DeleteCredential(ctx, actorID, credentialID)
+	credential, err := uc.credentialsRepo.GetCredential(ctx, actorID, credentialID)
+	if err != nil {
+		if ent.IsNotFound(err) {
+			return iam_v1.ErrorCredentialNotFound("credential not found")
+		}
+		return iam_v1.ErrorDatabaseQuery("database error: %s", err.Error())
+	}
+
+	// Disconnect calendars from deleted credential
+	err = uc.events.DisconnectExternalCalendarsBulk(ctx, credential.ID)
+	if err != nil {
+		return err
+	}
+
+	// Delete credential from db
+	_, err = uc.credentialsRepo.DeleteCredential(mixins.SkipSoftDelete(ctx), actorID, credentialID)
 	if err != nil {
 		return iam_v1.ErrorDatabaseQuery("database error: %s", err.Error())
-	} else if deletedCount == 0 {
-		return iam_v1.ErrorCredentialNotFound("credential not found")
+	}
+
+	// Revoke token after deletion
+	if credential.Provider != nil {
+		providerGateway, err2 := uc.provider.NewProviderGateway(*credential.Provider)
+		if err2 != nil {
+			uc.log.Errorf("provider gateway creation failed: %v", err2)
+		}
+
+		err = providerGateway.RevokeToken(credential)
+		if err != nil {
+			uc.log.Warnf("failed to revoke token: %v (user_id: %d, credential_id: %d)",
+				err, actorID, credentialID)
+		}
 	}
 
 	return nil

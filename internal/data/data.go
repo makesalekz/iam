@@ -6,10 +6,12 @@ import (
 
 	"gitlab.calendaria.team/services/iam/ent"
 	"gitlab.calendaria.team/services/iam/internal/conf"
-	u_config "gitlab.calendaria.team/services/utils/v1/config"
-	u_dialer "gitlab.calendaria.team/services/utils/v2/dialer"
-	u_jwt "gitlab.calendaria.team/services/utils/v2/jwt"
-	u_tracing "gitlab.calendaria.team/services/utils/v2/tracing"
+	"gitlab.calendaria.team/services/iam/internal/data/dialer"
+	"gitlab.calendaria.team/services/iam/internal/data/integration"
+	u_config "gitlab.calendaria.team/services/utils/v4/config"
+	u_dialer "gitlab.calendaria.team/services/utils/v4/dialer"
+	u_jwt "gitlab.calendaria.team/services/utils/v4/jwt"
+	u_tracing "gitlab.calendaria.team/services/utils/v4/tracing"
 
 	"github.com/go-kratos/kratos/v2/errors"
 	"github.com/go-kratos/kratos/v2/log"
@@ -29,12 +31,13 @@ var ProviderSet = wire.NewSet(
 	u_dialer.NewServiceDialerManager,
 	u_tracing.NewTracer,
 	NewNatsClient,
-	NewNotificationsRemote,
-	NewTenantsRemote,
-	NewContactsRemote,
-	NewChatsRemote,
-	NewEventsRemote,
-	NewMediaRemote,
+	dialer.NewNotificationsRemote,
+	dialer.NewTenantsRemote,
+	dialer.NewContactsRemote,
+	dialer.NewChatsRemote,
+	dialer.NewEventsRemote,
+	dialer.NewMediaRemote,
+	integration.NewProviderManager,
 	NewUsersRepo,
 	NewOtpRepo,
 	NewPrivacyRepo,
@@ -50,7 +53,7 @@ type Data struct {
 const CodeInvalid = 500
 
 // NewData .
-func NewData(bc *conf.Bootstrap, c *u_config.Config, logger log.Logger) (*Data, func(), error) {
+func NewData(bc *conf.Bootstrap, c u_config.IConfig, logger log.Logger) (*Data, func(), error) {
 	l := log.NewHelper(logger)
 
 	dbDsn := bc.GetDb() // read from local config

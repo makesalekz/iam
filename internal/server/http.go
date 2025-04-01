@@ -1,11 +1,13 @@
+//nolint:gochecknoglobals, promlinter // this global variable is required for wire
 package server
 
 import (
+	"gitlab.calendaria.team/services/iam/internal/conf"
+
 	"github.com/go-kratos/kratos/v2/middleware/recovery"
 	khttp "github.com/go-kratos/kratos/v2/transport/http"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
-	"gitlab.calendaria.team/services/iam/internal/conf"
 )
 
 var _metricSeconds = prometheus.NewHistogramVec(prometheus.HistogramOpts{
@@ -41,14 +43,14 @@ func NewHTTPServer(
 			recovery.Recovery(),
 		),
 	}
-	if c.Server.Http.Network != "" {
-		opts = append(opts, khttp.Network(c.Server.Http.Network))
+	if c.GetServer().GetHttp().GetNetwork() != "" {
+		opts = append(opts, khttp.Network(c.GetServer().GetHttp().GetNetwork()))
 	}
-	if c.Server.Http.Addr != "" {
-		opts = append(opts, khttp.Address(c.Server.Http.Addr))
+	if c.GetServer().GetHttp().GetAddr() != "" {
+		opts = append(opts, khttp.Address(c.GetServer().GetHttp().GetAddr()))
 	}
-	if c.Server.Http.Timeout != nil {
-		opts = append(opts, khttp.Timeout(c.Server.Http.Timeout.AsDuration()))
+	if c.GetServer().GetHttp().GetTimeout() != nil {
+		opts = append(opts, khttp.Timeout(c.GetServer().GetHttp().GetTimeout().AsDuration()))
 	}
 	srv := khttp.NewServer(opts...)
 

@@ -31,18 +31,21 @@ func NewCredentialsService(
 	}
 }
 
-func userCredentialToV1Credential(userCredentials *ent.UserCredentials) *iam_v1.UserCredential {
+func UserCredentialToV1Credential(userCredentials *ent.UserCredentials) *iam_v1.UserCredential {
 	if userCredentials == nil {
 		return &iam_v1.UserCredential{}
 	}
 
 	replyUserCredentials := &iam_v1.UserCredential{
 		Id:           userCredentials.ID,
-		Mail:         userCredentials.Mail,
 		DisplayName:  userCredentials.DisplayName,
 		AccessToken:  userCredentials.AccessToken,
 		TokenType:    userCredentials.TokenType,
 		RefreshToken: userCredentials.RefreshToken,
+	}
+
+	if userCredentials.Mail != nil {
+		replyUserCredentials.Mail = *userCredentials.Mail
 	}
 
 	if userCredentials.Provider != nil {
@@ -65,8 +68,11 @@ func userCredentialToV1CredentialShort(userCredentials *ent.UserCredentials) *ia
 
 	replyUserCredentials := &iam_v1.UserCredentialShort{
 		Id:          userCredentials.ID,
-		Mail:        userCredentials.Mail,
 		DisplayName: userCredentials.DisplayName,
+	}
+
+	if userCredentials.Mail != nil {
+		replyUserCredentials.Mail = *userCredentials.Mail
 	}
 
 	if userCredentials.Provider != nil {
@@ -86,21 +92,43 @@ func userCredentialsToV1CredentialShorts(userCredentials []*ent.UserCredentials)
 	return trUserCredentials
 }
 
-func (s *CredentialsService) AuthByGoogle(
+func (s *CredentialsService) ExternalAuth(
 	ctx context.Context,
-	req *iam_v1.AuthByGoogleRequest,
+	req *iam_v1.ExternalAuthRequest,
 ) (*utils_v1.EmptyReply, error) {
 	actorID := auth.GetActorIdFromContext(ctx)
 	if actorID == 0 {
 		return nil, iam_v1.ErrorEmptyActorId("empty actor id")
 	}
 
-	err := s.uc.AuthByGoogle(ctx, actorID, req.GetAuthCode())
+	provider := u_struc.Provider(req.GetProvider())
+	if !provider.IsValid() {
+		return nil, iam_v1.ErrorInvalidProvider("invalid provider")
+	}
+
+	_, err := s.uc.ExternalAuth(ctx, actorID, provider, req.GetAuthCode())
 	if err != nil {
 		return nil, err
 	}
 
 	return &utils_v1.EmptyReply{}, nil
+}
+
+func (s *CredentialsService) RefreshCredential(
+	ctx context.Context,
+	req *iam_v1.CredentialRequest,
+) (*iam_v1.CredentialReply, error) {
+	actorID := auth.GetActorIdFromContext(ctx)
+	if actorID == 0 {
+		return nil, iam_v1.ErrorEmptyActorId("empty actor id")
+	}
+
+	credential, err := s.uc.RefreshCredential(ctx, actorID, req.GetCredentialId())
+	if err != nil {
+		return nil, err
+	}
+
+	return &iam_v1.CredentialReply{Credential: UserCredentialToV1Credential(credential)}, nil
 }
 
 func (s *CredentialsService) GetCredential(
@@ -117,7 +145,7 @@ func (s *CredentialsService) GetCredential(
 		return nil, err
 	}
 
-	return &iam_v1.CredentialReply{Credential: userCredentialToV1Credential(credential)}, nil
+	return &iam_v1.CredentialReply{Credential: UserCredentialToV1Credential(credential)}, nil
 }
 
 func (s *CredentialsService) ListCredentials(

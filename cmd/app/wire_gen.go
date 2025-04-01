@@ -12,13 +12,15 @@ import (
 	"gitlab.calendaria.team/services/iam/internal/biz"
 	"gitlab.calendaria.team/services/iam/internal/conf"
 	"gitlab.calendaria.team/services/iam/internal/data"
+	dialer2 "gitlab.calendaria.team/services/iam/internal/data/dialer"
+	"gitlab.calendaria.team/services/iam/internal/data/integration"
 	"gitlab.calendaria.team/services/iam/internal/server"
 	"gitlab.calendaria.team/services/iam/internal/service"
-	"gitlab.calendaria.team/services/utils/v1/config"
-	"gitlab.calendaria.team/services/utils/v2/dialer"
-	"gitlab.calendaria.team/services/utils/v2/jwt"
-	"gitlab.calendaria.team/services/utils/v2/nats"
-	"gitlab.calendaria.team/services/utils/v2/tracing"
+	"gitlab.calendaria.team/services/utils/v4/config"
+	"gitlab.calendaria.team/services/utils/v4/dialer"
+	"gitlab.calendaria.team/services/utils/v4/jwt"
+	"gitlab.calendaria.team/services/utils/v4/nats"
+	"gitlab.calendaria.team/services/utils/v4/tracing"
 )
 
 import (
@@ -29,37 +31,37 @@ import (
 
 // wireApp init kratos application.
 func wireApp(bootstrap *conf.Bootstrap, logger log.Logger) (*kratos.App, func(), error) {
-	configConfig, err := config.NewConfig()
+	iConfig, err := config.NewConfig()
 	if err != nil {
 		return nil, nil, err
 	}
-	iJwtProcessor, err := jwt.NewJwtProcessor(configConfig)
+	iJwtProcessor, err := jwt.NewJwtProcessor(iConfig)
 	if err != nil {
 		return nil, nil, err
 	}
+	iTracer := tracing.NewTracer(iConfig)
 	conn, cleanup, err := data.NewNatsClient(bootstrap)
 	if err != nil {
 		return nil, nil, err
 	}
-	iQueueManager := nats.NewQueueManager(configConfig, conn, logger)
-	tracer := tracing.NewTracer(configConfig)
-	iDialerManager, err := dialer.NewServiceDialerManager(configConfig, tracer, iJwtProcessor)
+	iQueueManager := nats.NewQueueManager(iConfig, conn, logger)
+	iDialerManager, err := dialer.NewServiceDialerManager(iConfig, iTracer, iJwtProcessor)
 	if err != nil {
 		cleanup()
 		return nil, nil, err
 	}
-	iTenantsRemote, cleanup2, err := data.NewTenantsRemote(bootstrap, iDialerManager)
+	iTenantsRemote, cleanup2, err := dialer2.NewTenantsRemote(bootstrap, iDialerManager)
 	if err != nil {
 		cleanup()
 		return nil, nil, err
 	}
-	iNotificationsRemote, err := data.NewNotificationsRemote(bootstrap, iDialerManager)
+	iNotificationsRemote, err := dialer2.NewNotificationsRemote(bootstrap, iDialerManager)
 	if err != nil {
 		cleanup2()
 		cleanup()
 		return nil, nil, err
 	}
-	dataData, cleanup3, err := data.NewData(bootstrap, configConfig, logger)
+	dataData, cleanup3, err := data.NewData(bootstrap, iConfig, logger)
 	if err != nil {
 		cleanup2()
 		cleanup()
@@ -75,14 +77,14 @@ func wireApp(bootstrap *conf.Bootstrap, logger log.Logger) (*kratos.App, func(),
 		return nil, nil, err
 	}
 	authService := service.NewAuthService(authUsecase)
-	iContactsRemote, cleanup4, err := data.NewContactsRemote(bootstrap, iDialerManager)
+	iContactsRemote, cleanup4, err := dialer2.NewContactsRemote(bootstrap, iDialerManager)
 	if err != nil {
 		cleanup3()
 		cleanup2()
 		cleanup()
 		return nil, nil, err
 	}
-	iChatsRemote, cleanup5, err := data.NewChatsRemote(bootstrap, iDialerManager)
+	iChatsRemote, cleanup5, err := dialer2.NewChatsRemote(bootstrap, iDialerManager)
 	if err != nil {
 		cleanup4()
 		cleanup3()
@@ -90,7 +92,7 @@ func wireApp(bootstrap *conf.Bootstrap, logger log.Logger) (*kratos.App, func(),
 		cleanup()
 		return nil, nil, err
 	}
-	iEventsRemote, cleanup6, err := data.NewEventsRemote(bootstrap, iDialerManager)
+	iEventsRemote, cleanup6, err := dialer2.NewEventsRemote(bootstrap, iDialerManager)
 	if err != nil {
 		cleanup5()
 		cleanup4()
@@ -99,7 +101,7 @@ func wireApp(bootstrap *conf.Bootstrap, logger log.Logger) (*kratos.App, func(),
 		cleanup()
 		return nil, nil, err
 	}
-	iMediaRemote, cleanup7, err := data.NewMediaRemote(logger, bootstrap, iDialerManager)
+	iMediaRemote, cleanup7, err := dialer2.NewMediaRemote(logger, bootstrap, iDialerManager)
 	if err != nil {
 		cleanup6()
 		cleanup5()
@@ -147,8 +149,19 @@ func wireApp(bootstrap *conf.Bootstrap, logger log.Logger) (*kratos.App, func(),
 		return nil, nil, err
 	}
 	settingsService := service.NewSettingsService(settingsUsecase)
+	iProviderManager, err := integration.NewProviderManager(iConfig)
+	if err != nil {
+		cleanup7()
+		cleanup6()
+		cleanup5()
+		cleanup4()
+		cleanup3()
+		cleanup2()
+		cleanup()
+		return nil, nil, err
+	}
 	credentialsRepo := data.NewCredentialsRepo(dataData)
-	credentialsUsecase, err := biz.NewCredentialsUsecase(configConfig, logger, iQueueManager, iJwtProcessor, credentialsRepo)
+	credentialsUsecase, err := biz.NewCredentialsUsecase(iConfig, logger, iQueueManager, iJwtProcessor, iProviderManager, iEventsRemote, credentialsRepo)
 	if err != nil {
 		cleanup7()
 		cleanup6()
@@ -160,10 +173,10 @@ func wireApp(bootstrap *conf.Bootstrap, logger log.Logger) (*kratos.App, func(),
 		return nil, nil, err
 	}
 	credentialsService := service.NewCredentialsService(logger, credentialsUsecase)
-	grpcServer := server.NewGRPCServer(bootstrap, iJwtProcessor, authService, usersService, privacyService, settingsService, credentialsService, tracer)
+	grpcServer := server.NewGRPCServer(bootstrap, iJwtProcessor, iTracer, authService, usersService, privacyService, settingsService, credentialsService)
 	httpServer := server.NewHTTPServer(bootstrap)
 	cronServer := server.NewCronServer(logger, usersUsecase)
-	app := newApp(logger, configConfig, grpcServer, httpServer, cronServer)
+	app := newApp(logger, iConfig, grpcServer, httpServer, cronServer)
 	return app, func() {
 		cleanup7()
 		cleanup6()

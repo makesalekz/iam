@@ -10,7 +10,7 @@ import (
 
 	gomock "github.com/golang/mock/gomock"
 	ent "gitlab.calendaria.team/services/iam/ent"
-	data "gitlab.calendaria.team/services/iam/internal/data"
+	integration "gitlab.calendaria.team/services/iam/internal/data/integration"
 	struc "gitlab.calendaria.team/services/utils/v2/struc"
 )
 
@@ -38,11 +38,12 @@ func (m *MockCredentialsRepo) EXPECT() *MockCredentialsRepoMockRecorder {
 }
 
 // CreateCredential mocks base method.
-func (m *MockCredentialsRepo) CreateCredential(ctx context.Context, dto data.CredentialDto) error {
+func (m *MockCredentialsRepo) CreateCredential(ctx context.Context, dto integration.CredentialDto) (*ent.UserCredentials, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "CreateCredential", ctx, dto)
-	ret0, _ := ret[0].(error)
-	return ret0
+	ret0, _ := ret[0].(*ent.UserCredentials)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
 }
 
 // CreateCredential indicates an expected call of CreateCredential.
@@ -81,6 +82,36 @@ func (mr *MockCredentialsRepoMockRecorder) GetCredential(ctx, userID, credential
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetCredential", reflect.TypeOf((*MockCredentialsRepo)(nil).GetCredential), ctx, userID, credentialID)
 }
 
+// GetCredentialByMail mocks base method.
+func (m *MockCredentialsRepo) GetCredentialByMail(ctx context.Context, mail string, provider struc.Provider) (*ent.UserCredentials, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetCredentialByMail", ctx, mail, provider)
+	ret0, _ := ret[0].(*ent.UserCredentials)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetCredentialByMail indicates an expected call of GetCredentialByMail.
+func (mr *MockCredentialsRepoMockRecorder) GetCredentialByMail(ctx, mail, provider interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetCredentialByMail", reflect.TypeOf((*MockCredentialsRepo)(nil).GetCredentialByMail), ctx, mail, provider)
+}
+
+// GetCredentialByProvider mocks base method.
+func (m *MockCredentialsRepo) GetCredentialByProvider(ctx context.Context, userID int64, provider struc.Provider) (*ent.UserCredentials, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetCredentialByProvider", ctx, userID, provider)
+	ret0, _ := ret[0].(*ent.UserCredentials)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetCredentialByProvider indicates an expected call of GetCredentialByProvider.
+func (mr *MockCredentialsRepoMockRecorder) GetCredentialByProvider(ctx, userID, provider interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetCredentialByProvider", reflect.TypeOf((*MockCredentialsRepo)(nil).GetCredentialByProvider), ctx, userID, provider)
+}
+
 // ListCredentials mocks base method.
 func (m *MockCredentialsRepo) ListCredentials(ctx context.Context, userID int64, provider *struc.Provider) ([]*ent.UserCredentials, error) {
 	m.ctrl.T.Helper()
@@ -94,4 +125,19 @@ func (m *MockCredentialsRepo) ListCredentials(ctx context.Context, userID int64,
 func (mr *MockCredentialsRepoMockRecorder) ListCredentials(ctx, userID, provider interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListCredentials", reflect.TypeOf((*MockCredentialsRepo)(nil).ListCredentials), ctx, userID, provider)
+}
+
+// UpdateCredential mocks base method.
+func (m *MockCredentialsRepo) UpdateCredential(ctx context.Context, credentialID int64, dto integration.CredentialDto) (*ent.UserCredentials, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "UpdateCredential", ctx, credentialID, dto)
+	ret0, _ := ret[0].(*ent.UserCredentials)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// UpdateCredential indicates an expected call of UpdateCredential.
+func (mr *MockCredentialsRepoMockRecorder) UpdateCredential(ctx, credentialID, dto interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateCredential", reflect.TypeOf((*MockCredentialsRepo)(nil).UpdateCredential), ctx, credentialID, dto)
 }

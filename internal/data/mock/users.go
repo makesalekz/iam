@@ -12,6 +12,7 @@ import (
 	gomock "github.com/golang/mock/gomock"
 	ent "gitlab.calendaria.team/services/iam/ent"
 	data "gitlab.calendaria.team/services/iam/internal/data"
+	dto "gitlab.calendaria.team/services/iam/internal/data/dto"
 	utils_v1 "gitlab.calendaria.team/services/utils/api/utils/v1"
 )
 
@@ -230,7 +231,7 @@ func (mr *MockUsersRepoMockRecorder) TempGetUsersWithoutDefaultTenant(ctx interf
 }
 
 // UpdateUserData mocks base method.
-func (m *MockUsersRepo) UpdateUserData(ctx context.Context, user *ent.User, dto data.UpdateUserDto) (*ent.User, error) {
+func (m *MockUsersRepo) UpdateUserData(ctx context.Context, user *ent.User, dto dto.UpdateUserDto) (*ent.User, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "UpdateUserData", ctx, user, dto)
 	ret0, _ := ret[0].(*ent.User)

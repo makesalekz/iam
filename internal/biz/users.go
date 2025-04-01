@@ -10,11 +10,13 @@ import (
 	v1 "gitlab.calendaria.team/services/iam/api/iam/v1"
 	"gitlab.calendaria.team/services/iam/ent"
 	"gitlab.calendaria.team/services/iam/internal/data"
+	"gitlab.calendaria.team/services/iam/internal/data/dialer"
+	"gitlab.calendaria.team/services/iam/internal/data/dto"
 	tenants_v1 "gitlab.calendaria.team/services/tenants/api/tenants/v1"
 	utils_v1 "gitlab.calendaria.team/services/utils/api/utils/v1"
 	u_error "gitlab.calendaria.team/services/utils/v1/error"
-	u_jwt "gitlab.calendaria.team/services/utils/v2/jwt"
-	u_nats "gitlab.calendaria.team/services/utils/v2/nats"
+	u_jwt "gitlab.calendaria.team/services/utils/v4/jwt"
+	u_nats "gitlab.calendaria.team/services/utils/v4/nats"
 
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/lib/pq"
@@ -32,11 +34,11 @@ type UsersUsecase struct {
 	log           *log.Helper
 	jwt           u_jwt.IJwtProcessor
 	queue         u_nats.IQueueManager
-	tenants       data.ITenantsRemote
-	contacts      data.IContactsRemote
-	chats         data.IChatsRemote
-	events        data.IEventsRemote
-	media         data.IMediaRemote
+	tenants       dialer.ITenantsRemote
+	contacts      dialer.IContactsRemote
+	chats         dialer.IChatsRemote
+	events        dialer.IEventsRemote
+	media         dialer.IMediaRemote
 	usersRepo     data.UsersRepo
 	otpRepo       data.OtpRepo
 	privaciesRepo data.PrivacyRepo
@@ -62,11 +64,11 @@ func NewUsersUsecase(
 	logger log.Logger,
 	jwt u_jwt.IJwtProcessor,
 	queue u_nats.IQueueManager,
-	tenants data.ITenantsRemote,
-	contacts data.IContactsRemote,
-	chats data.IChatsRemote,
-	events data.IEventsRemote,
-	media data.IMediaRemote,
+	tenants dialer.ITenantsRemote,
+	contacts dialer.IContactsRemote,
+	chats dialer.IChatsRemote,
+	events dialer.IEventsRemote,
+	media dialer.IMediaRemote,
 	usersRepo data.UsersRepo,
 	otpRepo data.OtpRepo,
 	privaciesRepo data.PrivacyRepo,
@@ -242,7 +244,7 @@ func (uc *UsersUsecase) GetUserProfile(ctx context.Context, filter data.GetUserF
 func (uc *UsersUsecase) UpdateUserProfile(
 	ctx context.Context,
 	userID int64,
-	dto data.UpdateUserDto,
+	dto dto.UpdateUserDto,
 ) (*UserItem, error) {
 	var err error
 

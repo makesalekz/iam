@@ -1,4 +1,4 @@
-package biz
+package dto
 
 import (
 	"fmt"
@@ -13,7 +13,10 @@ import (
 
 const (
 	DefaultRegion = "KZ"
+	OtpLength     = 6
+	DebugOtpCode  = "777333"
 
+	digits            = "0123456789"
 	verifiablePhone   = "+77710012030"
 	verifiableOtpCode = "667423"
 )
@@ -25,6 +28,16 @@ type AuthPhoneDto struct {
 	IsRegistration       bool
 	AppSignature         string
 	code                 string
+}
+
+func NewAuthPhoneDto(appID string, req *v1.AuthByPhoneRequest) *AuthPhoneDto {
+	return &AuthPhoneDto{
+		AppID:                struc.ApplicationID(appID),
+		Phone:                req.GetPhone(),
+		IsRegistrationNeeded: req.GetIsRegistrationNeeded(),
+		IsRegistration:       req.GetIsRegistration(),
+		AppSignature:         req.GetAppSignature(),
+	}
 }
 
 func (dto *AuthPhoneDto) Validate() error {
@@ -53,10 +66,10 @@ func (dto *AuthPhoneDto) GenerateCode() string {
 
 	case os.Getenv("DEBUG") != "":
 		// use fixed code in debug mode
-		dto.code = debugOtpCode
+		dto.code = DebugOtpCode
 
 	default:
-		dto.code = generateRandomNumber(otpLength)
+		dto.code = GenerateRandomNumber(OtpLength)
 	}
 
 	return dto.code
@@ -72,7 +85,7 @@ func (dto *AuthPhoneDto) GetOtpMessage() string {
 	return sms
 }
 
-func generateRandomNumber(n int) string {
+func GenerateRandomNumber(n int) string {
 	result := make([]byte, n)
 	for i := range result {
 		//nolint:gosec // we don't need cryptographically secure random numbers here

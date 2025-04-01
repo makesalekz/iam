@@ -2,8 +2,12 @@ package main
 
 import (
 	"flag"
-	"gitlab.calendaria.team/services/iam/internal/server"
 	"os"
+
+	"gitlab.calendaria.team/services/iam/internal/conf"
+	"gitlab.calendaria.team/services/iam/internal/server"
+	u_log "gitlab.calendaria.team/services/utils/v1/log"
+	"gitlab.calendaria.team/services/utils/v4/config"
 
 	"github.com/go-kratos/kratos/v2"
 	kconfig "github.com/go-kratos/kratos/v2/config"
@@ -12,9 +16,6 @@ import (
 	"github.com/go-kratos/kratos/v2/middleware/tracing"
 	"github.com/go-kratos/kratos/v2/transport/grpc"
 	"github.com/go-kratos/kratos/v2/transport/http"
-	"gitlab.calendaria.team/services/iam/internal/conf"
-	"gitlab.calendaria.team/services/utils/v1/config"
-	u_log "gitlab.calendaria.team/services/utils/v1/log"
 
 	_ "go.uber.org/automaxprocs"
 )
@@ -35,7 +36,7 @@ func init() {
 	flag.StringVar(&flagconf, "conf", "config.yaml", "config path, eg: -conf config.yaml")
 }
 
-func newApp(logger log.Logger, c *config.Config, gs *grpc.Server, hs *http.Server, cs *server.CronServer) *kratos.App {
+func newApp(logger log.Logger, c config.IConfig, gs *grpc.Server, hs *http.Server, cs *server.CronServer) *kratos.App {
 	return kratos.New(
 		kratos.ID(id),
 		kratos.Name(c.GetAppName()),
