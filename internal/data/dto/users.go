@@ -81,7 +81,7 @@ func (dto *UpdateUserDto) Validate() (err error) {
 func isValidUsername(actorID int64, username string) bool {
 	// 1. Check if username is empty
 	if username == "" {
-		return false
+		return true
 	}
 
 	// 2. Check combined validation for length and allowed characters
