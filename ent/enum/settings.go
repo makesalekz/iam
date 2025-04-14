@@ -3,8 +3,10 @@ package enum
 type Settings string
 
 const (
-	Language Settings = "LANGUAGE"
-	Theme    Settings = "THEME"
+	Language                     Settings = "LANGUAGE"
+	Theme                        Settings = "THEME"
+	NotificationSoundEnabled     Settings = "NOTIFICATION_SOUND_ENABLED"
+	NotificationVibrationEnabled Settings = "NOTIFICATION_VIBRATION_ENABLED"
 )
 
 // Values provides list valid values for Enum.
