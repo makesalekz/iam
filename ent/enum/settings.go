@@ -11,7 +11,7 @@ const (
 
 // Values provides list valid values for Enum.
 func (Settings) Values() (kinds []string) {
-	for _, s := range []Settings{Language, Theme} {
+	for _, s := range []Settings{Language, Theme, NotificationSoundEnabled, NotificationVibrationEnabled} {
 		kinds = append(kinds, string(s))
 	}
 	return
