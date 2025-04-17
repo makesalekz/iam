@@ -40,6 +40,8 @@ const (
 	FieldEmailVerified = "email_verified"
 	// FieldLastLoginAt holds the string denoting the last_login_at field in the database.
 	FieldLastLoginAt = "last_login_at"
+	// FieldLastActivityAt holds the string denoting the last_activity_at field in the database.
+	FieldLastActivityAt = "last_activity_at"
 	// FieldCreatedAt holds the string denoting the created_at field in the database.
 	FieldCreatedAt = "created_at"
 	// FieldUpdatedAt holds the string denoting the updated_at field in the database.
@@ -68,6 +70,7 @@ var Columns = []string{
 	FieldPhoneVerified,
 	FieldEmailVerified,
 	FieldLastLoginAt,
+	FieldLastActivityAt,
 	FieldCreatedAt,
 	FieldUpdatedAt,
 	FieldBioUpdatedAt,
@@ -185,6 +188,11 @@ func ByEmailVerified(opts ...sql.OrderTermOption) OrderOption {
 // ByLastLoginAt orders the results by the last_login_at field.
 func ByLastLoginAt(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldLastLoginAt, opts...).ToFunc()
+}
+
+// ByLastActivityAt orders the results by the last_activity_at field.
+func ByLastActivityAt(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldLastActivityAt, opts...).ToFunc()
 }
 
 // ByCreatedAt orders the results by the created_at field.

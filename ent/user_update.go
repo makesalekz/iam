@@ -247,6 +247,26 @@ func (uu *UserUpdate) SetNillableLastLoginAt(t *time.Time) *UserUpdate {
 	return uu
 }
 
+// SetLastActivityAt sets the "last_activity_at" field.
+func (uu *UserUpdate) SetLastActivityAt(t time.Time) *UserUpdate {
+	uu.mutation.SetLastActivityAt(t)
+	return uu
+}
+
+// SetNillableLastActivityAt sets the "last_activity_at" field if the given value is not nil.
+func (uu *UserUpdate) SetNillableLastActivityAt(t *time.Time) *UserUpdate {
+	if t != nil {
+		uu.SetLastActivityAt(*t)
+	}
+	return uu
+}
+
+// ClearLastActivityAt clears the value of the "last_activity_at" field.
+func (uu *UserUpdate) ClearLastActivityAt() *UserUpdate {
+	uu.mutation.ClearLastActivityAt()
+	return uu
+}
+
 // SetCreatedAt sets the "created_at" field.
 func (uu *UserUpdate) SetCreatedAt(t time.Time) *UserUpdate {
 	uu.mutation.SetCreatedAt(t)
@@ -438,6 +458,12 @@ func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if value, ok := uu.mutation.LastLoginAt(); ok {
 		_spec.SetField(user.FieldLastLoginAt, field.TypeTime, value)
+	}
+	if value, ok := uu.mutation.LastActivityAt(); ok {
+		_spec.SetField(user.FieldLastActivityAt, field.TypeTime, value)
+	}
+	if uu.mutation.LastActivityAtCleared() {
+		_spec.ClearField(user.FieldLastActivityAt, field.TypeTime)
 	}
 	if value, ok := uu.mutation.CreatedAt(); ok {
 		_spec.SetField(user.FieldCreatedAt, field.TypeTime, value)
@@ -700,6 +726,26 @@ func (uuo *UserUpdateOne) SetNillableLastLoginAt(t *time.Time) *UserUpdateOne {
 	return uuo
 }
 
+// SetLastActivityAt sets the "last_activity_at" field.
+func (uuo *UserUpdateOne) SetLastActivityAt(t time.Time) *UserUpdateOne {
+	uuo.mutation.SetLastActivityAt(t)
+	return uuo
+}
+
+// SetNillableLastActivityAt sets the "last_activity_at" field if the given value is not nil.
+func (uuo *UserUpdateOne) SetNillableLastActivityAt(t *time.Time) *UserUpdateOne {
+	if t != nil {
+		uuo.SetLastActivityAt(*t)
+	}
+	return uuo
+}
+
+// ClearLastActivityAt clears the value of the "last_activity_at" field.
+func (uuo *UserUpdateOne) ClearLastActivityAt() *UserUpdateOne {
+	uuo.mutation.ClearLastActivityAt()
+	return uuo
+}
+
 // SetCreatedAt sets the "created_at" field.
 func (uuo *UserUpdateOne) SetCreatedAt(t time.Time) *UserUpdateOne {
 	uuo.mutation.SetCreatedAt(t)
@@ -921,6 +967,12 @@ func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) 
 	}
 	if value, ok := uuo.mutation.LastLoginAt(); ok {
 		_spec.SetField(user.FieldLastLoginAt, field.TypeTime, value)
+	}
+	if value, ok := uuo.mutation.LastActivityAt(); ok {
+		_spec.SetField(user.FieldLastActivityAt, field.TypeTime, value)
+	}
+	if uuo.mutation.LastActivityAtCleared() {
+		_spec.ClearField(user.FieldLastActivityAt, field.TypeTime)
 	}
 	if value, ok := uuo.mutation.CreatedAt(); ok {
 		_spec.SetField(user.FieldCreatedAt, field.TypeTime, value)

@@ -796,6 +796,7 @@ type UserMutation struct {
 	phone_verified       *bool
 	email_verified       *bool
 	last_login_at        *time.Time
+	last_activity_at     *time.Time
 	created_at           *time.Time
 	updated_at           *time.Time
 	bio_updated_at       *time.Time
@@ -1457,6 +1458,55 @@ func (m *UserMutation) ResetLastLoginAt() {
 	m.last_login_at = nil
 }
 
+// SetLastActivityAt sets the "last_activity_at" field.
+func (m *UserMutation) SetLastActivityAt(t time.Time) {
+	m.last_activity_at = &t
+}
+
+// LastActivityAt returns the value of the "last_activity_at" field in the mutation.
+func (m *UserMutation) LastActivityAt() (r time.Time, exists bool) {
+	v := m.last_activity_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldLastActivityAt returns the old "last_activity_at" field's value of the User entity.
+// If the User object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *UserMutation) OldLastActivityAt(ctx context.Context) (v *time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldLastActivityAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldLastActivityAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldLastActivityAt: %w", err)
+	}
+	return oldValue.LastActivityAt, nil
+}
+
+// ClearLastActivityAt clears the value of the "last_activity_at" field.
+func (m *UserMutation) ClearLastActivityAt() {
+	m.last_activity_at = nil
+	m.clearedFields[user.FieldLastActivityAt] = struct{}{}
+}
+
+// LastActivityAtCleared returns if the "last_activity_at" field was cleared in this mutation.
+func (m *UserMutation) LastActivityAtCleared() bool {
+	_, ok := m.clearedFields[user.FieldLastActivityAt]
+	return ok
+}
+
+// ResetLastActivityAt resets all changes to the "last_activity_at" field.
+func (m *UserMutation) ResetLastActivityAt() {
+	m.last_activity_at = nil
+	delete(m.clearedFields, user.FieldLastActivityAt)
+}
+
 // SetCreatedAt sets the "created_at" field.
 func (m *UserMutation) SetCreatedAt(t time.Time) {
 	m.created_at = &t
@@ -1682,7 +1732,7 @@ func (m *UserMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *UserMutation) Fields() []string {
-	fields := make([]string, 0, 17)
+	fields := make([]string, 0, 18)
 	if m.deleted_at != nil {
 		fields = append(fields, user.FieldDeletedAt)
 	}
@@ -1721,6 +1771,9 @@ func (m *UserMutation) Fields() []string {
 	}
 	if m.last_login_at != nil {
 		fields = append(fields, user.FieldLastLoginAt)
+	}
+	if m.last_activity_at != nil {
+		fields = append(fields, user.FieldLastActivityAt)
 	}
 	if m.created_at != nil {
 		fields = append(fields, user.FieldCreatedAt)
@@ -1768,6 +1821,8 @@ func (m *UserMutation) Field(name string) (ent.Value, bool) {
 		return m.EmailVerified()
 	case user.FieldLastLoginAt:
 		return m.LastLoginAt()
+	case user.FieldLastActivityAt:
+		return m.LastActivityAt()
 	case user.FieldCreatedAt:
 		return m.CreatedAt()
 	case user.FieldUpdatedAt:
@@ -1811,6 +1866,8 @@ func (m *UserMutation) OldField(ctx context.Context, name string) (ent.Value, er
 		return m.OldEmailVerified(ctx)
 	case user.FieldLastLoginAt:
 		return m.OldLastLoginAt(ctx)
+	case user.FieldLastActivityAt:
+		return m.OldLastActivityAt(ctx)
 	case user.FieldCreatedAt:
 		return m.OldCreatedAt(ctx)
 	case user.FieldUpdatedAt:
@@ -1919,6 +1976,13 @@ func (m *UserMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetLastLoginAt(v)
 		return nil
+	case user.FieldLastActivityAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetLastActivityAt(v)
+		return nil
 	case user.FieldCreatedAt:
 		v, ok := value.(time.Time)
 		if !ok {
@@ -2010,6 +2074,9 @@ func (m *UserMutation) ClearedFields() []string {
 	if m.FieldCleared(user.FieldAvatar) {
 		fields = append(fields, user.FieldAvatar)
 	}
+	if m.FieldCleared(user.FieldLastActivityAt) {
+		fields = append(fields, user.FieldLastActivityAt)
+	}
 	if m.FieldCleared(user.FieldBioUpdatedAt) {
 		fields = append(fields, user.FieldBioUpdatedAt)
 	}
@@ -2047,6 +2114,9 @@ func (m *UserMutation) ClearField(name string) error {
 		return nil
 	case user.FieldAvatar:
 		m.ClearAvatar()
+		return nil
+	case user.FieldLastActivityAt:
+		m.ClearLastActivityAt()
 		return nil
 	case user.FieldBioUpdatedAt:
 		m.ClearBioUpdatedAt()
@@ -2100,6 +2170,9 @@ func (m *UserMutation) ResetField(name string) error {
 		return nil
 	case user.FieldLastLoginAt:
 		m.ResetLastLoginAt()
+		return nil
+	case user.FieldLastActivityAt:
+		m.ResetLastActivityAt()
 		return nil
 	case user.FieldCreatedAt:
 		m.ResetCreatedAt()
