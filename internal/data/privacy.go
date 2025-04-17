@@ -39,6 +39,7 @@ func DefaultPrivacies() map[string]string {
 		string(enum.EventInvite):     string(enum.All),
 		string(enum.MySlots):         string(enum.NoOne),
 		string(enum.SlotsDetails):    string(enum.NoOne),
+		string(enum.LastVisit):       string(enum.All),
 	}
 }
 
