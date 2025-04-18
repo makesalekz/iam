@@ -363,3 +363,15 @@ func (uc *UsersUsecase) GetUserTenants(ctx context.Context) ([]*tenants_v1.Tenan
 
 	return tenants, nil
 }
+
+func (uc *UsersUsecase) UpdateUserActivityTime(ctx context.Context, userID int64, activityTime time.Time) error {
+	err := uc.usersRepo.UpdateUserActivityTime(ctx, userID, activityTime)
+	if err != nil {
+		if ent.IsNotFound(err) {
+			return v1.ErrorUserNotFound("user not found")
+		}
+		return v1.ErrorDatabaseQuery("database error: %s", err.Error())
+	}
+
+	return nil
+}

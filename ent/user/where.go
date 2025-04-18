@@ -119,6 +119,11 @@ func LastLoginAt(v time.Time) predicate.User {
 	return predicate.User(sql.FieldEQ(FieldLastLoginAt, v))
 }
 
+// LastActivityAt applies equality check predicate on the "last_activity_at" field. It's identical to LastActivityAtEQ.
+func LastActivityAt(v time.Time) predicate.User {
+	return predicate.User(sql.FieldEQ(FieldLastActivityAt, v))
+}
+
 // CreatedAt applies equality check predicate on the "created_at" field. It's identical to CreatedAtEQ.
 func CreatedAt(v time.Time) predicate.User {
 	return predicate.User(sql.FieldEQ(FieldCreatedAt, v))
@@ -802,6 +807,56 @@ func LastLoginAtLT(v time.Time) predicate.User {
 // LastLoginAtLTE applies the LTE predicate on the "last_login_at" field.
 func LastLoginAtLTE(v time.Time) predicate.User {
 	return predicate.User(sql.FieldLTE(FieldLastLoginAt, v))
+}
+
+// LastActivityAtEQ applies the EQ predicate on the "last_activity_at" field.
+func LastActivityAtEQ(v time.Time) predicate.User {
+	return predicate.User(sql.FieldEQ(FieldLastActivityAt, v))
+}
+
+// LastActivityAtNEQ applies the NEQ predicate on the "last_activity_at" field.
+func LastActivityAtNEQ(v time.Time) predicate.User {
+	return predicate.User(sql.FieldNEQ(FieldLastActivityAt, v))
+}
+
+// LastActivityAtIn applies the In predicate on the "last_activity_at" field.
+func LastActivityAtIn(vs ...time.Time) predicate.User {
+	return predicate.User(sql.FieldIn(FieldLastActivityAt, vs...))
+}
+
+// LastActivityAtNotIn applies the NotIn predicate on the "last_activity_at" field.
+func LastActivityAtNotIn(vs ...time.Time) predicate.User {
+	return predicate.User(sql.FieldNotIn(FieldLastActivityAt, vs...))
+}
+
+// LastActivityAtGT applies the GT predicate on the "last_activity_at" field.
+func LastActivityAtGT(v time.Time) predicate.User {
+	return predicate.User(sql.FieldGT(FieldLastActivityAt, v))
+}
+
+// LastActivityAtGTE applies the GTE predicate on the "last_activity_at" field.
+func LastActivityAtGTE(v time.Time) predicate.User {
+	return predicate.User(sql.FieldGTE(FieldLastActivityAt, v))
+}
+
+// LastActivityAtLT applies the LT predicate on the "last_activity_at" field.
+func LastActivityAtLT(v time.Time) predicate.User {
+	return predicate.User(sql.FieldLT(FieldLastActivityAt, v))
+}
+
+// LastActivityAtLTE applies the LTE predicate on the "last_activity_at" field.
+func LastActivityAtLTE(v time.Time) predicate.User {
+	return predicate.User(sql.FieldLTE(FieldLastActivityAt, v))
+}
+
+// LastActivityAtIsNil applies the IsNil predicate on the "last_activity_at" field.
+func LastActivityAtIsNil() predicate.User {
+	return predicate.User(sql.FieldIsNull(FieldLastActivityAt))
+}
+
+// LastActivityAtNotNil applies the NotNil predicate on the "last_activity_at" field.
+func LastActivityAtNotNil() predicate.User {
+	return predicate.User(sql.FieldNotNull(FieldLastActivityAt))
 }
 
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
