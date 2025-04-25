@@ -5,6 +5,7 @@ import (
 	"slices"
 
 	"entgo.io/ent/dialect/sql"
+
 	"gitlab.calendaria.team/services/iam/ent"
 	"gitlab.calendaria.team/services/iam/ent/enum"
 	"gitlab.calendaria.team/services/iam/ent/usersettings"
@@ -16,6 +17,7 @@ type SettingsData map[string]string
 type SettingsRepo interface {
 	GetSettings(ctx context.Context, userID int64) (SettingsData, error)
 	UpdateSettings(ctx context.Context, userID int64, dto SettingsData) (SettingsData, error)
+	GetUsersSettings(ctx context.Context, userIDs []int64) (map[int64]SettingsData, error)
 }
 
 type settingsRepo struct {
@@ -69,4 +71,28 @@ func (r *settingsRepo) UpdateSettings(ctx context.Context, userID int64, dto Set
 	}
 
 	return r.GetSettings(ctx, userID)
+}
+
+func (r *settingsRepo) GetUsersSettings(ctx context.Context, userIDs []int64) (map[int64]SettingsData, error) {
+	if len(userIDs) == 0 {
+		return nil, nil
+	}
+
+	settings, err := r.db.UserSettings.Query().
+		Where(usersettings.UserIDIn(userIDs...)).
+		All(ctx)
+
+	if err != nil {
+		return nil, err
+	}
+
+	result := make(map[int64]SettingsData)
+	for _, setting := range settings {
+		if _, ok := result[setting.UserID]; !ok {
+			result[setting.UserID] = make(SettingsData)
+		}
+		result[setting.UserID][string(setting.Setting)] = setting.Value
+	}
+
+	return result, nil
 }

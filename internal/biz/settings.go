@@ -3,6 +3,7 @@ package biz
 import (
 	"context"
 
+	v1 "gitlab.calendaria.team/services/iam/api/iam/v1"
 	"gitlab.calendaria.team/services/iam/internal/data"
 )
 
@@ -22,6 +23,17 @@ func (uc *SettingsUsecase) GetSettings(ctx context.Context, userId int64) (data.
 	return uc.settingsRepo.GetSettings(ctx, userId)
 }
 
-func (uc *SettingsUsecase) UpdateSettings(ctx context.Context, userId int64, data data.SettingsData) (data.SettingsData, error) {
+func (uc *SettingsUsecase) UpdateSettings(ctx context.Context, userId int64, data data.SettingsData) (
+	data.SettingsData, error,
+) {
 	return uc.settingsRepo.UpdateSettings(ctx, userId, data)
+}
+
+func (uc *SettingsUsecase) GetUsersSettings(ctx context.Context, userIDs []int64) (map[int64]data.SettingsData, error) {
+	settings, err := uc.settingsRepo.GetUsersSettings(ctx, userIDs)
+	if err != nil {
+		return nil, v1.ErrorDatabaseQuery("database error: %s", err.Error())
+	}
+
+	return settings, nil
 }
