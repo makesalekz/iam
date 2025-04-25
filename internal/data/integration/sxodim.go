@@ -5,6 +5,7 @@ import (
 	"context"
 	"encoding/json"
 	"net/http"
+	"os"
 	"time"
 
 	v1 "gitlab.calendaria.team/services/contacts/api/contacts/v1"
@@ -42,6 +43,10 @@ func NewSxodimRemote(
 ) (IProviderGateway, error) {
 	g := &SxodimGateway{
 		config: config,
+	}
+
+	if os.Getenv("DEBUG") == "true" {
+		return g, nil
 	}
 
 	// Get Sxodim domain

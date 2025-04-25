@@ -7,6 +7,7 @@ import (
 	"io"
 	"net/http"
 	"net/url"
+	"os"
 	"strings"
 	"time"
 
@@ -21,7 +22,7 @@ import (
 	xoauth2 "golang.org/x/oauth2"
 )
 
-// GoogleOAuthConfig contains Google OAuth configuration
+// GoogleOAuthConfig contains Google OAuth configuration.
 type GoogleOAuthConfig struct {
 	ClientID     string   `json:"client_id"`
 	ClientSecret string   `json:"client_secret"`
@@ -30,7 +31,7 @@ type GoogleOAuthConfig struct {
 	TokenURI     string   `json:"token_uri"`
 }
 
-// GoogleOAuthToken represents the OAuth2 token response from Google
+// GoogleOAuthToken represents the OAuth2 token response from Google.
 type GoogleOAuthToken struct {
 	AccessToken  string `json:"access_token"`
 	RefreshToken string `json:"refresh_token,omitempty"`
@@ -40,7 +41,7 @@ type GoogleOAuthToken struct {
 	Scope        string `json:"scope,omitempty"`
 }
 
-// ToXOAuth2Token converts the Google OAuth token to standard xoauth2.Token
+// ToXOAuth2Token converts the Google OAuth token to standard xoauth2.Token.
 func (t *GoogleOAuthToken) ToXOAuth2Token() *xoauth2.Token {
 	if t == nil {
 		return nil
@@ -55,7 +56,7 @@ func (t *GoogleOAuthToken) ToXOAuth2Token() *xoauth2.Token {
 	}
 }
 
-// GoogleUserInfo represents user information from Google
+// GoogleUserInfo represents user information from Google.
 type GoogleUserInfo struct {
 	ID            string `json:"id"`
 	Email         string `json:"email"`
@@ -67,13 +68,13 @@ type GoogleUserInfo struct {
 	Locale        string `json:"locale"`
 }
 
-// GoogleOAuthError represents an error response from Google OAuth
+// GoogleOAuthError represents an error response from Google OAuth.
 type GoogleOAuthError struct {
 	Error            string `json:"error"`
 	ErrorDescription string `json:"error_description,omitempty"`
 }
 
-// GoogleGateway implements IProviderGateway for Google OAuth2
+// GoogleGateway implements IProviderGateway for Google OAuth2.
 type GoogleGateway struct {
 	config      config.IConfig
 	log         *log.Helper
@@ -84,24 +85,24 @@ type GoogleGateway struct {
 }
 
 const (
-	// Google OAuth2 credentials vault key
+	// Google OAuth2 credentials vault key.
 	googleCredentialsKey = "gwebcredentials"
 
-	// Default Google OAuth endpoints
+	// Default Google OAuth endpoints.
 	googleTokenURI      = "https://oauth2.googleapis.com/token"
 	googleRevocationURL = "https://oauth2.googleapis.com/revoke"
 	googleUserInfoURI   = "https://www.googleapis.com/oauth2/v2/userinfo"
 	defaultRedirectURI  = "https://localhost:8100"
 
-	// Token buffer time defines how long before expiry we should refresh (30 minutes)
+	// Token buffer time defines how long before expiry we should refresh (30 minutes).
 	tokenBufferTime = 30 * time.Minute
 
-	// HTTP Client timeout
+	// HTTP Client timeout.
 	httpClientTimeout = 10 * time.Second
 )
 
 // NewGoogleRemote creates a new Google OAuth2 gateway
-// It loads Google credentials immediately to validate configuration up front
+// It loads Google credentials immediately to validate configuration up front.
 func NewGoogleRemote(config config.IConfig) (IProviderGateway, error) {
 	logger := u_log.NewStdLogger()
 	logHelper := log.NewHelper(log.With(logger, "ts", log.DefaultTimestamp, "component", "integration.google"))
@@ -112,6 +113,10 @@ func NewGoogleRemote(config config.IConfig) (IProviderGateway, error) {
 		httpClient:  &http.Client{Timeout: httpClientTimeout},
 		userInfoURL: googleUserInfoURI,
 		scopes:      []string{"profile", "email", "https://www.googleapis.com/auth/calendar"},
+	}
+
+	if os.Getenv("DEBUG") == "true" {
+		return g, nil
 	}
 
 	// Load Google credentials upfront to validate configuration
@@ -161,13 +166,15 @@ func NewGoogleRemote(config config.IConfig) (IProviderGateway, error) {
 		g.oauthConfig.TokenURI = googleTokenURI
 	}
 
-	g.log.Infof("Google OAuth config loaded successfully (client_id_prefix: %s...)",
-		g.oauthConfig.ClientID[:8])
+	g.log.Infof(
+		"Google OAuth config loaded successfully (client_id_prefix: %s...)",
+		g.oauthConfig.ClientID[:8],
+	)
 
 	return g, nil
 }
 
-// Authenticate exchanges an authorization code for OAuth tokens and user info
+// Authenticate exchanges an authorization code for OAuth tokens and user info.
 func (r *GoogleGateway) Authenticate(actorID int64, authCode string) (*CredentialDto, error) {
 	// Input validation
 	if authCode == "" {
@@ -225,7 +232,7 @@ func (r *GoogleGateway) Authenticate(actorID int64, authCode string) (*Credentia
 	return dto, nil
 }
 
-// exchangeAuthCodeForToken exchanges authorization code for an OAuth token
+// exchangeAuthCodeForToken exchanges authorization code for an OAuth token.
 func (r *GoogleGateway) exchangeAuthCodeForToken(
 	authCode string,
 ) (*GoogleOAuthToken, error) {
@@ -311,7 +318,7 @@ func (r *GoogleGateway) exchangeAuthCodeForToken(
 	return &token, nil
 }
 
-// getUserInfo retrieves the user's profile information using an access token
+// getUserInfo retrieves the user's profile information using an access token.
 func (r *GoogleGateway) getUserInfo(accessToken string) (*GoogleUserInfo, error) {
 	// Create request
 	req, err := http.NewRequest(http.MethodGet, r.userInfoURL, nil)
@@ -352,7 +359,7 @@ func (r *GoogleGateway) getUserInfo(accessToken string) (*GoogleUserInfo, error)
 	return &userInfo, nil
 }
 
-// RefreshToken refreshes an expired OAuth token
+// RefreshToken refreshes an expired OAuth token.
 func (r *GoogleGateway) RefreshToken(
 	credential *ent.UserCredentials,
 ) (*CredentialDto, error) {
@@ -371,8 +378,10 @@ func (r *GoogleGateway) RefreshToken(
 
 	// Check for refresh token existence (required for token refresh)
 	if dto.Token.RefreshToken == "" {
-		r.log.Warnf("Missing refresh token, re-authentication required (user_id: %d, credential_id: %d)",
-			credential.UserID, credential.ID)
+		r.log.Warnf(
+			"Missing refresh token, re-authentication required (user_id: %d, credential_id: %d)",
+			credential.UserID, credential.ID,
+		)
 		return nil, errors.ErrMissingRefreshToken
 	}
 
@@ -381,8 +390,10 @@ func (r *GoogleGateway) RefreshToken(
 	// preventing disruptions during user sessions.
 	now := time.Now()
 	if !dto.Token.Expiry.IsZero() && dto.Token.Expiry.After(now.Add(tokenBufferTime)) {
-		r.log.Debugf("Token still valid, no refresh needed (user_id: %d, expires_at: %s, now: %s)",
-			credential.UserID, dto.Token.Expiry.Format(time.RFC3339), now.Format(time.RFC3339))
+		r.log.Debugf(
+			"Token still valid, no refresh needed (user_id: %d, expires_at: %s, now: %s)",
+			credential.UserID, dto.Token.Expiry.Format(time.RFC3339), now.Format(time.RFC3339),
+		)
 		return dto, nil
 	}
 
@@ -394,8 +405,10 @@ func (r *GoogleGateway) RefreshToken(
 	// Refresh the token with direct HTTP request
 	newToken, err := r.refreshTokenRequest(r.oauthConfig, dto.Token.RefreshToken)
 	if err != nil {
-		r.log.Errorf("Token refresh failed: %v (user_id: %d, credential_id: %d)",
-			err, credential.UserID, credential.ID)
+		r.log.Errorf(
+			"Token refresh failed: %v (user_id: %d, credential_id: %d)",
+			err, credential.UserID, credential.ID,
+		)
 		return nil, errors.MapToExternalError(err)
 	}
 
@@ -404,8 +417,10 @@ func (r *GoogleGateway) RefreshToken(
 
 	// Validate the token
 	if !xOAuthToken.Valid() {
-		r.log.Errorf("Token validation failed after refresh (user_id: %d)",
-			credential.UserID)
+		r.log.Errorf(
+			"Token validation failed after refresh (user_id: %d)",
+			credential.UserID,
+		)
 		return nil, errors.ErrInvalidToken
 	}
 
@@ -419,13 +434,15 @@ func (r *GoogleGateway) RefreshToken(
 	dto.Token = xOAuthToken
 
 	// Log successful refresh
-	r.log.Debugf("Token refreshed successfully (user_id: %d, credential_id: %d, new_expiry: %s)",
-		credential.UserID, credential.ID, xOAuthToken.Expiry.Format(time.RFC3339))
+	r.log.Debugf(
+		"Token refreshed successfully (user_id: %d, credential_id: %d, new_expiry: %s)",
+		credential.UserID, credential.ID, xOAuthToken.Expiry.Format(time.RFC3339),
+	)
 
 	return dto, nil
 }
 
-// refreshTokenRequest sends a refresh token request to Google OAuth server
+// refreshTokenRequest sends a refresh token request to Google OAuth server.
 func (r *GoogleGateway) refreshTokenRequest(
 	googleConfig *GoogleOAuthConfig,
 	refreshToken string,
@@ -488,7 +505,7 @@ func (r *GoogleGateway) refreshTokenRequest(
 }
 
 // RevokeToken revokes both access and refresh tokens for a credential
-// This ensures the credential is completely invalidated with Google
+// This ensures the credential is completely invalidated with Google.
 func (r *GoogleGateway) RevokeToken(credential *ent.UserCredentials) error {
 	if credential == nil {
 		return errors.ErrInvalidCredential
@@ -500,8 +517,10 @@ func (r *GoogleGateway) RevokeToken(credential *ent.UserCredentials) error {
 	if credential.RefreshToken != nil && *credential.RefreshToken != "" {
 		err := r.revokeTokenRequest(*credential.RefreshToken, true)
 		if err != nil {
-			r.log.Warnf("Failed to revoke refresh token: %v (user_id: %d, credential_id: %d)",
-				err, credential.UserID, credential.ID)
+			r.log.Warnf(
+				"Failed to revoke refresh token: %v (user_id: %d, credential_id: %d)",
+				err, credential.UserID, credential.ID,
+			)
 			errs = append(errs, err)
 
 			// Continue to try revoking access token even if refresh token revocation fails
@@ -513,8 +532,10 @@ func (r *GoogleGateway) RevokeToken(credential *ent.UserCredentials) error {
 			if credential.Mail != nil {
 				mail = *credential.Mail
 			}
-			r.log.Infof("Revoked [Refresh token including Access token] successfully "+
-				"for userID (%v) with mail (%s)", credential.UserID, mail)
+			r.log.Infof(
+				"Revoked [Refresh token including Access token] successfully "+
+					"for userID (%v) with mail (%s)", credential.UserID, mail,
+			)
 
 			return nil
 		}
@@ -525,8 +546,10 @@ func (r *GoogleGateway) RevokeToken(credential *ent.UserCredentials) error {
 	if credential.AccessToken != "" {
 		err := r.revokeTokenRequest(credential.AccessToken, false)
 		if err != nil {
-			r.log.Warnf("Failed to revoke access token: %v (user_id: %d, credential_id: %d)",
-				err, credential.UserID, credential.ID)
+			r.log.Warnf(
+				"Failed to revoke access token: %v (user_id: %d, credential_id: %d)",
+				err, credential.UserID, credential.ID,
+			)
 			errs = append(errs, err)
 		}
 	}
@@ -556,7 +579,7 @@ func (r *GoogleGateway) RevokeToken(credential *ent.UserCredentials) error {
 
 // revokeTokenRequest revokes an OAuth token with Google
 // It supports revoking both access tokens and refresh tokens
-// When a refresh token is revoked, all associated access tokens are automatically invalidated
+// When a refresh token is revoked, all associated access tokens are automatically invalidated.
 func (r *GoogleGateway) revokeTokenRequest(token string, isRefreshToken bool) error {
 	// Validate input
 	if token == "" {
