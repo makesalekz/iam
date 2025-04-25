@@ -41,3 +41,4 @@ bin/
 .env
 .docker
 configs/config.yaml
+/.run/go build gitlab.calendaria.team_services_iam_cmd_app.run.xml

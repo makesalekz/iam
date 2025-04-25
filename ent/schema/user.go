@@ -32,6 +32,7 @@ func (User) Fields() []ent.Field {
 		field.Bool("phone_verified").Default(false).Comment("this field indicates that phone has been verified"),
 		field.Bool("email_verified").Default(false).Comment("this field indicates that email has been verified"),
 		field.Time("last_login_at").Default(time.Now).Comment("the time when user was last logged in"),
+		field.Time("last_activity_at").Nillable().Optional().Comment("the time of user's last activity"),
 		field.Time("created_at").Default(time.Now).Comment("the time when user has been created"),
 		field.Time("updated_at").Default(time.Now).Comment("the time when user was last changed"),
 		field.Time("bio_updated_at").Nillable().Optional().Comment("the time when user's bio has been changed"),

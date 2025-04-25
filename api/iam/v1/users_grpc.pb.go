@@ -20,15 +20,16 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	Users_GetOwnProfile_FullMethodName       = "/iam.v1.Users/GetOwnProfile"
-	Users_UpdateOwnProfile_FullMethodName    = "/iam.v1.Users/UpdateOwnProfile"
-	Users_DeleteOwnProfile_FullMethodName    = "/iam.v1.Users/DeleteOwnProfile"
-	Users_GetUserFull_FullMethodName         = "/iam.v1.Users/GetUserFull"
-	Users_GetUserByFilterFull_FullMethodName = "/iam.v1.Users/GetUserByFilterFull"
-	Users_GetUser_FullMethodName             = "/iam.v1.Users/GetUser"
-	Users_GetUserByFilter_FullMethodName     = "/iam.v1.Users/GetUserByFilter"
-	Users_GetUsers_FullMethodName            = "/iam.v1.Users/GetUsers"
-	Users_ListUsers_FullMethodName           = "/iam.v1.Users/ListUsers"
+	Users_GetOwnProfile_FullMethodName          = "/iam.v1.Users/GetOwnProfile"
+	Users_UpdateOwnProfile_FullMethodName       = "/iam.v1.Users/UpdateOwnProfile"
+	Users_DeleteOwnProfile_FullMethodName       = "/iam.v1.Users/DeleteOwnProfile"
+	Users_GetUserFull_FullMethodName            = "/iam.v1.Users/GetUserFull"
+	Users_GetUserByFilterFull_FullMethodName    = "/iam.v1.Users/GetUserByFilterFull"
+	Users_GetUser_FullMethodName                = "/iam.v1.Users/GetUser"
+	Users_GetUserByFilter_FullMethodName        = "/iam.v1.Users/GetUserByFilter"
+	Users_GetUsers_FullMethodName               = "/iam.v1.Users/GetUsers"
+	Users_ListUsers_FullMethodName              = "/iam.v1.Users/ListUsers"
+	Users_UpdateUserActivityTime_FullMethodName = "/iam.v1.Users/UpdateUserActivityTime"
 )
 
 // UsersClient is the client API for Users service.
@@ -67,6 +68,10 @@ type UsersClient interface {
 	// Request: IDs, or search filter
 	// Returns: users' short information
 	ListUsers(ctx context.Context, in *ListUsersRequest, opts ...grpc.CallOption) (*UsersReply, error)
+	// Update user activity time this method is used s2s
+	// Request: user ID and activity time
+	// Returns: empty reply
+	UpdateUserActivityTime(ctx context.Context, in *UpdateActivityTimeRequest, opts ...grpc.CallOption) (*v1.EmptyReply, error)
 }
 
 type usersClient struct {
@@ -167,6 +172,16 @@ func (c *usersClient) ListUsers(ctx context.Context, in *ListUsersRequest, opts 
 	return out, nil
 }
 
+func (c *usersClient) UpdateUserActivityTime(ctx context.Context, in *UpdateActivityTimeRequest, opts ...grpc.CallOption) (*v1.EmptyReply, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(v1.EmptyReply)
+	err := c.cc.Invoke(ctx, Users_UpdateUserActivityTime_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // UsersServer is the server API for Users service.
 // All implementations must embed UnimplementedUsersServer
 // for forward compatibility.
@@ -203,6 +218,10 @@ type UsersServer interface {
 	// Request: IDs, or search filter
 	// Returns: users' short information
 	ListUsers(context.Context, *ListUsersRequest) (*UsersReply, error)
+	// Update user activity time this method is used s2s
+	// Request: user ID and activity time
+	// Returns: empty reply
+	UpdateUserActivityTime(context.Context, *UpdateActivityTimeRequest) (*v1.EmptyReply, error)
 	mustEmbedUnimplementedUsersServer()
 }
 
@@ -239,6 +258,9 @@ func (UnimplementedUsersServer) GetUsers(context.Context, *GetUsersRequest) (*Us
 }
 func (UnimplementedUsersServer) ListUsers(context.Context, *ListUsersRequest) (*UsersReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListUsers not implemented")
+}
+func (UnimplementedUsersServer) UpdateUserActivityTime(context.Context, *UpdateActivityTimeRequest) (*v1.EmptyReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateUserActivityTime not implemented")
 }
 func (UnimplementedUsersServer) mustEmbedUnimplementedUsersServer() {}
 func (UnimplementedUsersServer) testEmbeddedByValue()               {}
@@ -423,6 +445,24 @@ func _Users_ListUsers_Handler(srv interface{}, ctx context.Context, dec func(int
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Users_UpdateUserActivityTime_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateActivityTimeRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UsersServer).UpdateUserActivityTime(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Users_UpdateUserActivityTime_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UsersServer).UpdateUserActivityTime(ctx, req.(*UpdateActivityTimeRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Users_ServiceDesc is the grpc.ServiceDesc for Users service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -465,6 +505,10 @@ var Users_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "ListUsers",
 			Handler:    _Users_ListUsers_Handler,
+		},
+		{
+			MethodName: "UpdateUserActivityTime",
+			Handler:    _Users_UpdateUserActivityTime_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

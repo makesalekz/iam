@@ -230,6 +230,20 @@ func (mr *MockUsersRepoMockRecorder) TempGetUsersWithoutDefaultTenant(ctx interf
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "TempGetUsersWithoutDefaultTenant", reflect.TypeOf((*MockUsersRepo)(nil).TempGetUsersWithoutDefaultTenant), ctx)
 }
 
+// UpdateUserActivityTime mocks base method.
+func (m *MockUsersRepo) UpdateUserActivityTime(ctx context.Context, userID int64, activityTime time.Time) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "UpdateUserActivityTime", ctx, userID, activityTime)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// UpdateUserActivityTime indicates an expected call of UpdateUserActivityTime.
+func (mr *MockUsersRepoMockRecorder) UpdateUserActivityTime(ctx, userID, activityTime interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateUserActivityTime", reflect.TypeOf((*MockUsersRepo)(nil).UpdateUserActivityTime), ctx, userID, activityTime)
+}
+
 // UpdateUserData mocks base method.
 func (m *MockUsersRepo) UpdateUserData(ctx context.Context, user *ent.User, dto dto.UpdateUserDto) (*ent.User, error) {
 	m.ctrl.T.Helper()

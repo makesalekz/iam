@@ -203,6 +203,31 @@ func (s *UsersService) GetUserByFilterFull(
 	return &v1.UserFullReply{User: userItemToV1User(user)}, nil
 }
 
+func (s *UsersService) UpdateUserActivityTime(
+	ctx context.Context,
+	req *v1.UpdateActivityTimeRequest,
+) (*utils_v1.EmptyReply, error) {
+	if req.GetUserId() == 0 {
+		return nil, v1.ErrorEmptyActorId("empty user id")
+	}
+
+	if req.GetActivityTime() == "" {
+		return nil, v1.ErrorInvalidRequest("empty activity time")
+	}
+
+	activityTime, err := time.Parse(time.RFC3339, req.GetActivityTime())
+	if err != nil {
+		return nil, v1.ErrorInvalidRequest("invalid activity time")
+	}
+
+	err = s.uc.UpdateUserActivityTime(ctx, req.GetUserId(), activityTime)
+	if err != nil {
+		return nil, err
+	}
+
+	return &utils_v1.EmptyReply{}, nil
+}
+
 func userItemToV1User(user *biz.UserItem) *v1.User {
 	if user == nil {
 		return &v1.User{}
@@ -221,6 +246,10 @@ func userItemToV1User(user *biz.UserItem) *v1.User {
 		UpdatedAt:   user.UpdatedAt.Format(time.RFC3339),
 		LastLoginAt: user.LastLoginAt.Format(time.RFC3339),
 		IsActive:    user.IsActive,
+	}
+
+	if user.LastActivityAt != nil {
+		replyUser.LastActivityAt = user.LastActivityAt.Format(time.RFC3339)
 	}
 
 	if user.WithVerified {
@@ -242,6 +271,10 @@ func userItemToV1ShortUser(user *biz.UserItem) *v1.UserShort {
 		Name:        user.Name,
 		LastLoginAt: user.LastLoginAt.Format(time.RFC3339),
 		Privacies:   user.Privacies,
+	}
+
+	if user.LastActivityAt != nil {
+		replyUser.LastActivityAt = user.LastActivityAt.Format(time.RFC3339)
 	}
 
 	if user.WithVerified {
