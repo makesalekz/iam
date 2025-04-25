@@ -39,8 +39,5 @@ message GetUsersSettingsRequest {
 }
 
 message UsersSettingsReply {
-  message UserSettings {
-    map<string, string> settings = 1;
-  }
-  map<int64, UserSettings> usersSettings = 1;
+  map<int64, SettingsReply> usersSettings = 1;
 }

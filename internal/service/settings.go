@@ -72,9 +72,9 @@ func (s *SettingsService) GetUsersSettings(
 		return nil, err
 	}
 
-	usersSettings := make(map[int64]*v1.UsersSettingsReply_UserSettings)
+	usersSettings := make(map[int64]*v1.SettingsReply)
 	for userId, userSettings := range settings {
-		usersSettings[userId] = &v1.UsersSettingsReply_UserSettings{
+		usersSettings[userId] = &v1.SettingsReply{
 			Settings: userSettings,
 		}
 	}
