@@ -45,7 +45,8 @@ run:
 .PHONY: db
 # run docker db container
 db:
-	docker compose up -d db
+#	docker compose up -d db
+	docker exec -it postgres_db psql -U $(DB_USER) -d postgres -c 'CREATE DATABASE $(DB_NAME);'
 
 .PHONY: start
 # start docker container locally
