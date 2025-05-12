@@ -294,6 +294,7 @@ func userItemToV1User(user *biz.UserItem) *v1.User {
 		UpdatedAt:   user.UpdatedAt.Format(time.RFC3339),
 		LastLoginAt: user.LastLoginAt.Format(time.RFC3339),
 		IsActive:    user.IsActive,
+		IsBlocked:   &user.IsBlocked,
 	}
 
 	if user.LastActivityAt != nil {
@@ -319,6 +320,7 @@ func userItemToV1ShortUser(user *biz.UserItem) *v1.UserShort {
 		Name:        user.Name,
 		LastLoginAt: user.LastLoginAt.Format(time.RFC3339),
 		Privacies:   user.Privacies,
+		IsBlocked:   &user.IsBlocked,
 	}
 
 	if user.LastActivityAt != nil {
