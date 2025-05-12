@@ -230,6 +230,20 @@ func (mr *MockUsersRepoMockRecorder) TempGetUsersWithoutDefaultTenant(ctx interf
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "TempGetUsersWithoutDefaultTenant", reflect.TypeOf((*MockUsersRepo)(nil).TempGetUsersWithoutDefaultTenant), ctx)
 }
 
+// ToggleIsBlocked mocks base method.
+func (m *MockUsersRepo) ToggleIsBlocked(ctx context.Context, userID int64, isBlocked bool) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ToggleIsBlocked", ctx, userID, isBlocked)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// ToggleIsBlocked indicates an expected call of ToggleIsBlocked.
+func (mr *MockUsersRepoMockRecorder) ToggleIsBlocked(ctx, userID, isBlocked interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ToggleIsBlocked", reflect.TypeOf((*MockUsersRepo)(nil).ToggleIsBlocked), ctx, userID, isBlocked)
+}
+
 // UpdateUserActivityTime mocks base method.
 func (m *MockUsersRepo) UpdateUserActivityTime(ctx context.Context, userID int64, activityTime time.Time) error {
 	m.ctrl.T.Helper()
