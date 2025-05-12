@@ -342,6 +342,20 @@ func (uu *UserUpdate) ClearDefaultTenantID() *UserUpdate {
 	return uu
 }
 
+// SetIsBlocked sets the "is_blocked" field.
+func (uu *UserUpdate) SetIsBlocked(b bool) *UserUpdate {
+	uu.mutation.SetIsBlocked(b)
+	return uu
+}
+
+// SetNillableIsBlocked sets the "is_blocked" field if the given value is not nil.
+func (uu *UserUpdate) SetNillableIsBlocked(b *bool) *UserUpdate {
+	if b != nil {
+		uu.SetIsBlocked(*b)
+	}
+	return uu
+}
+
 // Mutation returns the UserMutation object of the builder.
 func (uu *UserUpdate) Mutation() *UserMutation {
 	return uu.mutation
@@ -485,6 +499,9 @@ func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if uu.mutation.DefaultTenantIDCleared() {
 		_spec.ClearField(user.FieldDefaultTenantID, field.TypeInt64)
+	}
+	if value, ok := uu.mutation.IsBlocked(); ok {
+		_spec.SetField(user.FieldIsBlocked, field.TypeBool, value)
 	}
 	_spec.AddModifiers(uu.modifiers...)
 	if n, err = sqlgraph.UpdateNodes(ctx, uu.driver, _spec); err != nil {
@@ -821,6 +838,20 @@ func (uuo *UserUpdateOne) ClearDefaultTenantID() *UserUpdateOne {
 	return uuo
 }
 
+// SetIsBlocked sets the "is_blocked" field.
+func (uuo *UserUpdateOne) SetIsBlocked(b bool) *UserUpdateOne {
+	uuo.mutation.SetIsBlocked(b)
+	return uuo
+}
+
+// SetNillableIsBlocked sets the "is_blocked" field if the given value is not nil.
+func (uuo *UserUpdateOne) SetNillableIsBlocked(b *bool) *UserUpdateOne {
+	if b != nil {
+		uuo.SetIsBlocked(*b)
+	}
+	return uuo
+}
+
 // Mutation returns the UserMutation object of the builder.
 func (uuo *UserUpdateOne) Mutation() *UserMutation {
 	return uuo.mutation
@@ -994,6 +1025,9 @@ func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) 
 	}
 	if uuo.mutation.DefaultTenantIDCleared() {
 		_spec.ClearField(user.FieldDefaultTenantID, field.TypeInt64)
+	}
+	if value, ok := uuo.mutation.IsBlocked(); ok {
+		_spec.SetField(user.FieldIsBlocked, field.TypeBool, value)
 	}
 	_spec.AddModifiers(uuo.modifiers...)
 	_node = &User{config: uuo.config}

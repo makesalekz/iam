@@ -228,6 +228,54 @@ func (s *UsersService) UpdateUserActivityTime(
 	return &utils_v1.EmptyReply{}, nil
 }
 
+func (s *UsersService) BlockUser(
+	ctx context.Context,
+	req *v1.GetUserRequest,
+) (*utils_v1.EmptyReply, error) {
+	if req.GetUserId() == 0 {
+		return nil, v1.ErrorEmptyActorId("empty user id")
+	}
+
+	err := s.uc.ToggleUserState(ctx, req.GetUserId())
+	if err != nil {
+		return nil, err
+	}
+
+	return &utils_v1.EmptyReply{}, nil
+}
+
+func (s *UsersService) UnblockUser(
+	ctx context.Context,
+	req *v1.GetUserRequest,
+) (*utils_v1.EmptyReply, error) {
+	if req.GetUserId() == 0 {
+		return nil, v1.ErrorEmptyActorId("empty user id")
+	}
+
+	err := s.uc.ToggleUserState(ctx, req.GetUserId())
+	if err != nil {
+		return nil, err
+	}
+
+	return &utils_v1.EmptyReply{}, nil
+}
+
+func (s *UsersService) DeleteUser(
+	ctx context.Context,
+	req *v1.GetUserRequest,
+) (*utils_v1.EmptyReply, error) {
+	if req.GetUserId() == 0 {
+		return nil, v1.ErrorEmptyActorId("empty user id")
+	}
+
+	err := s.uc.DeleteUser(ctx, req.GetUserId())
+	if err != nil {
+		return nil, err
+	}
+
+	return &utils_v1.EmptyReply{}, nil
+}
+
 func userItemToV1User(user *biz.UserItem) *v1.User {
 	if user == nil {
 		return &v1.User{}

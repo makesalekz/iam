@@ -30,6 +30,9 @@ const (
 	Users_GetUsers_FullMethodName               = "/iam.v1.Users/GetUsers"
 	Users_ListUsers_FullMethodName              = "/iam.v1.Users/ListUsers"
 	Users_UpdateUserActivityTime_FullMethodName = "/iam.v1.Users/UpdateUserActivityTime"
+	Users_BlockUser_FullMethodName              = "/iam.v1.Users/BlockUser"
+	Users_UnblockUser_FullMethodName            = "/iam.v1.Users/UnblockUser"
+	Users_DeleteUser_FullMethodName             = "/iam.v1.Users/DeleteUser"
 )
 
 // UsersClient is the client API for Users service.
@@ -72,6 +75,18 @@ type UsersClient interface {
 	// Request: user ID and activity time
 	// Returns: empty reply
 	UpdateUserActivityTime(ctx context.Context, in *UpdateActivityTimeRequest, opts ...grpc.CallOption) (*v1.EmptyReply, error)
+	// Block user
+	// Request: user ID
+	// Return: empty reply
+	BlockUser(ctx context.Context, in *GetUserRequest, opts ...grpc.CallOption) (*v1.EmptyReply, error)
+	// Unblock user
+	// Request: user ID
+	// Return: empty reply
+	UnblockUser(ctx context.Context, in *GetUserRequest, opts ...grpc.CallOption) (*v1.EmptyReply, error)
+	// Delete user
+	// Request: user ID
+	// Return: empty reply
+	DeleteUser(ctx context.Context, in *GetUserRequest, opts ...grpc.CallOption) (*v1.EmptyReply, error)
 }
 
 type usersClient struct {
@@ -182,6 +197,36 @@ func (c *usersClient) UpdateUserActivityTime(ctx context.Context, in *UpdateActi
 	return out, nil
 }
 
+func (c *usersClient) BlockUser(ctx context.Context, in *GetUserRequest, opts ...grpc.CallOption) (*v1.EmptyReply, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(v1.EmptyReply)
+	err := c.cc.Invoke(ctx, Users_BlockUser_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *usersClient) UnblockUser(ctx context.Context, in *GetUserRequest, opts ...grpc.CallOption) (*v1.EmptyReply, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(v1.EmptyReply)
+	err := c.cc.Invoke(ctx, Users_UnblockUser_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *usersClient) DeleteUser(ctx context.Context, in *GetUserRequest, opts ...grpc.CallOption) (*v1.EmptyReply, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(v1.EmptyReply)
+	err := c.cc.Invoke(ctx, Users_DeleteUser_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // UsersServer is the server API for Users service.
 // All implementations must embed UnimplementedUsersServer
 // for forward compatibility.
@@ -222,6 +267,18 @@ type UsersServer interface {
 	// Request: user ID and activity time
 	// Returns: empty reply
 	UpdateUserActivityTime(context.Context, *UpdateActivityTimeRequest) (*v1.EmptyReply, error)
+	// Block user
+	// Request: user ID
+	// Return: empty reply
+	BlockUser(context.Context, *GetUserRequest) (*v1.EmptyReply, error)
+	// Unblock user
+	// Request: user ID
+	// Return: empty reply
+	UnblockUser(context.Context, *GetUserRequest) (*v1.EmptyReply, error)
+	// Delete user
+	// Request: user ID
+	// Return: empty reply
+	DeleteUser(context.Context, *GetUserRequest) (*v1.EmptyReply, error)
 	mustEmbedUnimplementedUsersServer()
 }
 
@@ -261,6 +318,15 @@ func (UnimplementedUsersServer) ListUsers(context.Context, *ListUsersRequest) (*
 }
 func (UnimplementedUsersServer) UpdateUserActivityTime(context.Context, *UpdateActivityTimeRequest) (*v1.EmptyReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateUserActivityTime not implemented")
+}
+func (UnimplementedUsersServer) BlockUser(context.Context, *GetUserRequest) (*v1.EmptyReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method BlockUser not implemented")
+}
+func (UnimplementedUsersServer) UnblockUser(context.Context, *GetUserRequest) (*v1.EmptyReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UnblockUser not implemented")
+}
+func (UnimplementedUsersServer) DeleteUser(context.Context, *GetUserRequest) (*v1.EmptyReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteUser not implemented")
 }
 func (UnimplementedUsersServer) mustEmbedUnimplementedUsersServer() {}
 func (UnimplementedUsersServer) testEmbeddedByValue()               {}
@@ -463,6 +529,60 @@ func _Users_UpdateUserActivityTime_Handler(srv interface{}, ctx context.Context,
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Users_BlockUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetUserRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UsersServer).BlockUser(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Users_BlockUser_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UsersServer).BlockUser(ctx, req.(*GetUserRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Users_UnblockUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetUserRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UsersServer).UnblockUser(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Users_UnblockUser_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UsersServer).UnblockUser(ctx, req.(*GetUserRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Users_DeleteUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetUserRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UsersServer).DeleteUser(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Users_DeleteUser_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UsersServer).DeleteUser(ctx, req.(*GetUserRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Users_ServiceDesc is the grpc.ServiceDesc for Users service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -509,6 +629,18 @@ var Users_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "UpdateUserActivityTime",
 			Handler:    _Users_UpdateUserActivityTime_Handler,
+		},
+		{
+			MethodName: "BlockUser",
+			Handler:    _Users_BlockUser_Handler,
+		},
+		{
+			MethodName: "UnblockUser",
+			Handler:    _Users_UnblockUser_Handler,
+		},
+		{
+			MethodName: "DeleteUser",
+			Handler:    _Users_DeleteUser_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

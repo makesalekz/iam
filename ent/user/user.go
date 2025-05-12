@@ -50,6 +50,8 @@ const (
 	FieldBioUpdatedAt = "bio_updated_at"
 	// FieldDefaultTenantID holds the string denoting the default_tenant_id field in the database.
 	FieldDefaultTenantID = "default_tenant_id"
+	// FieldIsBlocked holds the string denoting the is_blocked field in the database.
+	FieldIsBlocked = "is_blocked"
 	// Table holds the table name of the user in the database.
 	Table = "users"
 )
@@ -75,6 +77,7 @@ var Columns = []string{
 	FieldUpdatedAt,
 	FieldBioUpdatedAt,
 	FieldDefaultTenantID,
+	FieldIsBlocked,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -115,6 +118,8 @@ var (
 	DefaultCreatedAt func() time.Time
 	// DefaultUpdatedAt holds the default value on creation for the "updated_at" field.
 	DefaultUpdatedAt func() time.Time
+	// DefaultIsBlocked holds the default value on creation for the "is_blocked" field.
+	DefaultIsBlocked bool
 )
 
 // OrderOption defines the ordering options for the User queries.
@@ -213,4 +218,9 @@ func ByBioUpdatedAt(opts ...sql.OrderTermOption) OrderOption {
 // ByDefaultTenantID orders the results by the default_tenant_id field.
 func ByDefaultTenantID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldDefaultTenantID, opts...).ToFunc()
+}
+
+// ByIsBlocked orders the results by the is_blocked field.
+func ByIsBlocked(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldIsBlocked, opts...).ToFunc()
 }

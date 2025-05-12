@@ -55,6 +55,22 @@ service Users {
   // Request: user ID and activity time
   // Returns: empty reply
   rpc UpdateUserActivityTime(UpdateActivityTimeRequest) returns (utils.v1.EmptyReply);
+
+  // Block user
+  // Request: user ID
+  // Return: empty reply
+  rpc BlockUser(GetUserRequest) returns (utils.v1.EmptyReply);
+
+  // Unblock user
+  // Request: user ID
+  // Return: empty reply
+  rpc UnblockUser(GetUserRequest) returns (utils.v1.EmptyReply);
+
+  // Delete user
+  // Request: user ID
+  // Return: empty reply
+  rpc DeleteUser(GetUserRequest) returns (utils.v1.EmptyReply);
+
 }
 
 /* UserFullReply is a reply with full user information */
