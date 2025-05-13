@@ -25,12 +25,12 @@ func NewPrivacyService(
 }
 
 func (s *PrivacyService) GetPrivacy(ctx context.Context, req *utils_v1.EmptyRequest) (*v1.PrivacyReply, error) {
-	actorId := auth.GetActorIdFromContext(ctx)
-	if actorId == 0 {
+	actorID := auth.GetActorIdFromContext(ctx)
+	if actorID == 0 {
 		return nil, v1.ErrorEmptyActorId("empty actor id")
 	}
 
-	settings, err := s.uc.GetPrivacy(ctx, actorId)
+	settings, err := s.uc.GetPrivacy(ctx, actorID)
 	if err != nil {
 		return nil, v1.ErrorDatabaseQuery("database error: %s", err.Error())
 	}
@@ -41,12 +41,12 @@ func (s *PrivacyService) GetPrivacy(ctx context.Context, req *utils_v1.EmptyRequ
 }
 
 func (s *PrivacyService) UpdatePrivacy(ctx context.Context, req *v1.PrivacyRequest) (*v1.PrivacyReply, error) {
-	actorId := auth.GetActorIdFromContext(ctx)
-	if actorId == 0 {
+	actorID := auth.GetActorIdFromContext(ctx)
+	if actorID == 0 {
 		return nil, v1.ErrorEmptyActorId("empty actor id")
 	}
 
-	settings, err := s.uc.UpdatePrivacy(ctx, actorId, req.Settings)
+	settings, err := s.uc.UpdatePrivacy(ctx, actorID, req.GetSettings())
 	if err != nil {
 		if ent.IsValidationError(err) {
 			return nil, v1.ErrorInvalidRequest("invalid request: %s", err.Error())
@@ -59,8 +59,11 @@ func (s *PrivacyService) UpdatePrivacy(ctx context.Context, req *v1.PrivacyReque
 	}, nil
 }
 
-func (s *PrivacyService) GetUsersPrivacies(ctx context.Context, req *v1.UsersPrivaciesRequest) (*v1.UsersPrivaciesReply, error) {
-	settings, err := s.uc.GetPrivacies(ctx, req.Ids)
+func (s *PrivacyService) GetUsersPrivacies(
+	ctx context.Context,
+	req *v1.UsersPrivaciesRequest,
+) (*v1.UsersPrivaciesReply, error) {
+	settings, err := s.uc.GetPrivacies(ctx, req.GetIds())
 	if err != nil {
 		return nil, err
 	}
