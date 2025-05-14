@@ -53,7 +53,9 @@ type User struct {
 	BioUpdatedAt *time.Time `json:"bio_updated_at,omitempty"`
 	// default tenant id of user
 	DefaultTenantID *int64 `json:"default_tenant_id,omitempty"`
-	selectValues    sql.SelectValues
+	// this field indicates than user is blocked
+	IsBlocked    bool `json:"is_blocked,omitempty"`
+	selectValues sql.SelectValues
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -61,7 +63,7 @@ func (*User) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case user.FieldIsActive, user.FieldPhoneVerified, user.FieldEmailVerified:
+		case user.FieldIsActive, user.FieldPhoneVerified, user.FieldEmailVerified, user.FieldIsBlocked:
 			values[i] = new(sql.NullBool)
 		case user.FieldID, user.FieldDefaultTenantID:
 			values[i] = new(sql.NullInt64)
@@ -207,6 +209,12 @@ func (u *User) assignValues(columns []string, values []any) error {
 				u.DefaultTenantID = new(int64)
 				*u.DefaultTenantID = value.Int64
 			}
+		case user.FieldIsBlocked:
+			if value, ok := values[i].(*sql.NullBool); !ok {
+				return fmt.Errorf("unexpected type %T for field is_blocked", values[i])
+			} else if value.Valid {
+				u.IsBlocked = value.Bool
+			}
 		default:
 			u.selectValues.Set(columns[i], values[i])
 		}
@@ -314,6 +322,9 @@ func (u *User) String() string {
 		builder.WriteString("default_tenant_id=")
 		builder.WriteString(fmt.Sprintf("%v", *v))
 	}
+	builder.WriteString(", ")
+	builder.WriteString("is_blocked=")
+	builder.WriteString(fmt.Sprintf("%v", u.IsBlocked))
 	builder.WriteByte(')')
 	return builder.String()
 }

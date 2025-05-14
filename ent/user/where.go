@@ -144,6 +144,11 @@ func DefaultTenantID(v int64) predicate.User {
 	return predicate.User(sql.FieldEQ(FieldDefaultTenantID, v))
 }
 
+// IsBlocked applies equality check predicate on the "is_blocked" field. It's identical to IsBlockedEQ.
+func IsBlocked(v bool) predicate.User {
+	return predicate.User(sql.FieldEQ(FieldIsBlocked, v))
+}
+
 // DeletedAtEQ applies the EQ predicate on the "deleted_at" field.
 func DeletedAtEQ(v time.Time) predicate.User {
 	return predicate.User(sql.FieldEQ(FieldDeletedAt, v))
@@ -1037,6 +1042,16 @@ func DefaultTenantIDIsNil() predicate.User {
 // DefaultTenantIDNotNil applies the NotNil predicate on the "default_tenant_id" field.
 func DefaultTenantIDNotNil() predicate.User {
 	return predicate.User(sql.FieldNotNull(FieldDefaultTenantID))
+}
+
+// IsBlockedEQ applies the EQ predicate on the "is_blocked" field.
+func IsBlockedEQ(v bool) predicate.User {
+	return predicate.User(sql.FieldEQ(FieldIsBlocked, v))
+}
+
+// IsBlockedNEQ applies the NEQ predicate on the "is_blocked" field.
+func IsBlockedNEQ(v bool) predicate.User {
+	return predicate.User(sql.FieldNEQ(FieldIsBlocked, v))
 }
 
 // And groups predicates with the AND operator between them.

@@ -802,6 +802,7 @@ type UserMutation struct {
 	bio_updated_at       *time.Time
 	default_tenant_id    *int64
 	adddefault_tenant_id *int64
+	is_blocked           *bool
 	clearedFields        map[string]struct{}
 	done                 bool
 	oldValue             func(context.Context) (*User, error)
@@ -1698,6 +1699,42 @@ func (m *UserMutation) ResetDefaultTenantID() {
 	delete(m.clearedFields, user.FieldDefaultTenantID)
 }
 
+// SetIsBlocked sets the "is_blocked" field.
+func (m *UserMutation) SetIsBlocked(b bool) {
+	m.is_blocked = &b
+}
+
+// IsBlocked returns the value of the "is_blocked" field in the mutation.
+func (m *UserMutation) IsBlocked() (r bool, exists bool) {
+	v := m.is_blocked
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldIsBlocked returns the old "is_blocked" field's value of the User entity.
+// If the User object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *UserMutation) OldIsBlocked(ctx context.Context) (v bool, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldIsBlocked is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldIsBlocked requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldIsBlocked: %w", err)
+	}
+	return oldValue.IsBlocked, nil
+}
+
+// ResetIsBlocked resets all changes to the "is_blocked" field.
+func (m *UserMutation) ResetIsBlocked() {
+	m.is_blocked = nil
+}
+
 // Where appends a list predicates to the UserMutation builder.
 func (m *UserMutation) Where(ps ...predicate.User) {
 	m.predicates = append(m.predicates, ps...)
@@ -1732,7 +1769,7 @@ func (m *UserMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *UserMutation) Fields() []string {
-	fields := make([]string, 0, 18)
+	fields := make([]string, 0, 19)
 	if m.deleted_at != nil {
 		fields = append(fields, user.FieldDeletedAt)
 	}
@@ -1787,6 +1824,9 @@ func (m *UserMutation) Fields() []string {
 	if m.default_tenant_id != nil {
 		fields = append(fields, user.FieldDefaultTenantID)
 	}
+	if m.is_blocked != nil {
+		fields = append(fields, user.FieldIsBlocked)
+	}
 	return fields
 }
 
@@ -1831,6 +1871,8 @@ func (m *UserMutation) Field(name string) (ent.Value, bool) {
 		return m.BioUpdatedAt()
 	case user.FieldDefaultTenantID:
 		return m.DefaultTenantID()
+	case user.FieldIsBlocked:
+		return m.IsBlocked()
 	}
 	return nil, false
 }
@@ -1876,6 +1918,8 @@ func (m *UserMutation) OldField(ctx context.Context, name string) (ent.Value, er
 		return m.OldBioUpdatedAt(ctx)
 	case user.FieldDefaultTenantID:
 		return m.OldDefaultTenantID(ctx)
+	case user.FieldIsBlocked:
+		return m.OldIsBlocked(ctx)
 	}
 	return nil, fmt.Errorf("unknown User field %s", name)
 }
@@ -2010,6 +2054,13 @@ func (m *UserMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetDefaultTenantID(v)
+		return nil
+	case user.FieldIsBlocked:
+		v, ok := value.(bool)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetIsBlocked(v)
 		return nil
 	}
 	return fmt.Errorf("unknown User field %s", name)
@@ -2185,6 +2236,9 @@ func (m *UserMutation) ResetField(name string) error {
 		return nil
 	case user.FieldDefaultTenantID:
 		m.ResetDefaultTenantID()
+		return nil
+	case user.FieldIsBlocked:
+		m.ResetIsBlocked()
 		return nil
 	}
 	return fmt.Errorf("unknown User field %s", name)

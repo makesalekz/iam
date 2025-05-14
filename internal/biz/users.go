@@ -375,3 +375,29 @@ func (uc *UsersUsecase) UpdateUserActivityTime(ctx context.Context, userID int64
 
 	return nil
 }
+
+func (uc *UsersUsecase) ToggleUserState(ctx context.Context, userID int64) error {
+	user, err := uc.usersRepo.GetUserByID(ctx, userID, true)
+	if err != nil {
+		if ent.IsNotFound(err) {
+			return v1.ErrorUserNotFound("user not found")
+		}
+
+		return v1.ErrorDatabaseQuery("error query user")
+	}
+
+	return uc.usersRepo.ToggleIsBlocked(ctx, userID, !user.IsBlocked)
+}
+
+func (uc *UsersUsecase) DeleteUser(ctx context.Context, userID int64) error {
+	_, err := uc.usersRepo.GetUserByID(ctx, userID, true)
+	if err != nil {
+		if ent.IsNotFound(err) {
+			return v1.ErrorUserNotFound("user not found")
+		}
+
+		return v1.ErrorDatabaseQuery("error query user")
+	}
+
+	return uc.usersRepo.DeleteUsers(ctx, []int64{userID})
+}

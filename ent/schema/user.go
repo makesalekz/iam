@@ -37,6 +37,7 @@ func (User) Fields() []ent.Field {
 		field.Time("updated_at").Default(time.Now).Comment("the time when user was last changed"),
 		field.Time("bio_updated_at").Nillable().Optional().Comment("the time when user's bio has been changed"),
 		field.Int64("default_tenant_id").Nillable().Optional().Comment("default tenant id of user"),
+		field.Bool("is_blocked").Default(false).Comment("this field indicates than user is blocked"),
 	}
 }
 

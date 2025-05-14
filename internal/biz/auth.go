@@ -115,6 +115,10 @@ func (uc *AuthUsecase) AuthUserByPhone(ctx context.Context, dto *dto.AuthPhoneDt
 		}
 	}
 
+	if user.IsBlocked {
+		return 0, v1.ErrorForbidden("user is blocked")
+	}
+
 	code := dto.GenerateCode()
 	_, err = uc.otpRepo.CreateOneTimePassword(ctx, user.ID, enum.Phone, code, authOtpDuration)
 	if err != nil {
@@ -149,6 +153,10 @@ func (uc *AuthUsecase) AuthUserByEmail(
 		if err != nil {
 			return 0, v1.ErrorDatabaseQuery("database error: %s", err.Error())
 		}
+	}
+
+	if user.IsBlocked {
+		return 0, v1.ErrorForbidden("user is blocked")
 	}
 
 	var code string

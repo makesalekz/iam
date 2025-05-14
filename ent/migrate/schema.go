@@ -55,6 +55,7 @@ var (
 		{Name: "updated_at", Type: field.TypeTime},
 		{Name: "bio_updated_at", Type: field.TypeTime, Nullable: true},
 		{Name: "default_tenant_id", Type: field.TypeInt64, Nullable: true},
+		{Name: "is_blocked", Type: field.TypeBool, Default: false},
 	}
 	// UsersTable holds the schema information for the "users" table.
 	UsersTable = &schema.Table{

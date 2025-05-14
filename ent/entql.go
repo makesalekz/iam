@@ -68,6 +68,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			user.FieldUpdatedAt:       {Type: field.TypeTime, Column: user.FieldUpdatedAt},
 			user.FieldBioUpdatedAt:    {Type: field.TypeTime, Column: user.FieldBioUpdatedAt},
 			user.FieldDefaultTenantID: {Type: field.TypeInt64, Column: user.FieldDefaultTenantID},
+			user.FieldIsBlocked:       {Type: field.TypeBool, Column: user.FieldIsBlocked},
 		},
 	}
 	graph.Nodes[2] = &sqlgraph.Node{
@@ -404,6 +405,11 @@ func (f *UserFilter) WhereBioUpdatedAt(p entql.TimeP) {
 // WhereDefaultTenantID applies the entql int64 predicate on the default_tenant_id field.
 func (f *UserFilter) WhereDefaultTenantID(p entql.Int64P) {
 	f.Where(p.Field(user.FieldDefaultTenantID))
+}
+
+// WhereIsBlocked applies the entql bool predicate on the is_blocked field.
+func (f *UserFilter) WhereIsBlocked(p entql.BoolP) {
+	f.Where(p.Field(user.FieldIsBlocked))
 }
 
 // addPredicate implements the predicateAdder interface.
