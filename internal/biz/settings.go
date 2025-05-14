@@ -19,14 +19,14 @@ func NewSettingsUsecase(settingsRepo data.SettingsRepo) (*SettingsUsecase, error
 	}, nil
 }
 
-func (uc *SettingsUsecase) GetSettings(ctx context.Context, userId int64) (data.SettingsData, error) {
-	return uc.settingsRepo.GetSettings(ctx, userId)
+func (uc *SettingsUsecase) GetSettings(ctx context.Context, userID int64) (data.SettingsData, error) {
+	return uc.settingsRepo.GetSettings(ctx, userID)
 }
 
-func (uc *SettingsUsecase) UpdateSettings(ctx context.Context, userId int64, data data.SettingsData) (
+func (uc *SettingsUsecase) UpdateSettings(ctx context.Context, userID int64, data data.SettingsData) (
 	data.SettingsData, error,
 ) {
-	return uc.settingsRepo.UpdateSettings(ctx, userId, data)
+	return uc.settingsRepo.UpdateSettings(ctx, userID, data)
 }
 
 func (uc *SettingsUsecase) GetUsersSettings(ctx context.Context, userIDs []int64) (map[int64]data.SettingsData, error) {

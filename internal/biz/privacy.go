@@ -19,16 +19,16 @@ func NewPrivacyUsecase(privacyRepo data.PrivacyRepo) (*PrivacyUsecase, error) {
 	}, nil
 }
 
-func (uc *PrivacyUsecase) GetPrivacy(ctx context.Context, userId int64) (data.PrivacySettingsData, error) {
-	return uc.privacyRepo.GetPrivacy(ctx, userId)
+func (uc *PrivacyUsecase) GetPrivacy(ctx context.Context, userID int64) (data.PrivacySettingsData, error) {
+	return uc.privacyRepo.GetPrivacy(ctx, userID)
 }
 
-func (uc *PrivacyUsecase) UpdatePrivacy(ctx context.Context, userId int64, data data.PrivacySettingsData) (data.PrivacySettingsData, error) {
-	return uc.privacyRepo.UpdatePrivacy(ctx, userId, data)
+func (uc *PrivacyUsecase) UpdatePrivacy(ctx context.Context, userID int64, data data.PrivacySettingsData) (data.PrivacySettingsData, error) {
+	return uc.privacyRepo.UpdatePrivacy(ctx, userID, data)
 }
 
-func (uc *PrivacyUsecase) GetPrivacies(ctx context.Context, userIds []int64) ([]*iam_v1.UserPrivacies, error) {
-	usersPrivacies, err := uc.privacyRepo.GetPrivacies(ctx, userIds)
+func (uc *PrivacyUsecase) GetPrivacies(ctx context.Context, userIDs []int64) ([]*iam_v1.UserPrivacies, error) {
+	usersPrivacies, err := uc.privacyRepo.GetPrivacies(ctx, userIDs)
 	if err != nil {
 		return nil, iam_v1.ErrorDatabaseQuery("privacy: %s", err.Error())
 	}
@@ -41,7 +41,7 @@ func (uc *PrivacyUsecase) GetPrivacies(ctx context.Context, userIds []int64) ([]
 		privaciesMap[userPrivacies.UserID][string(userPrivacies.Setting)] = string(userPrivacies.Option)
 	}
 
-	for _, id := range userIds {
+	for _, id := range userIDs {
 		_, ok := privaciesMap[id]
 		if !ok {
 			privaciesMap[id] = data.DefaultPrivacies()
@@ -52,8 +52,8 @@ func (uc *PrivacyUsecase) GetPrivacies(ctx context.Context, userIds []int64) ([]
 
 	userPrivaciesItems := make([]*iam_v1.UserPrivacies, len(privaciesMap))
 	i := 0
-	for userId, privacies := range privaciesMap {
-		userPrivaciesItems[i] = &iam_v1.UserPrivacies{Id: userId, Privacies: privacies}
+	for userID, privacies := range privaciesMap {
+		userPrivaciesItems[i] = &iam_v1.UserPrivacies{Id: userID, Privacies: privacies}
 		i++
 	}
 
