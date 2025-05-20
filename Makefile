@@ -36,27 +36,41 @@ doc:
 	go run -mod=mod entgo.io/ent/cmd/ent describe ./ent/schema > ./doc/schema.md
 	doc/sed.sh doc/schema.md
 	widdershins openapi.yaml -o ./doc/openapi.md --l --code --omitHeader --summary --resolve
-	
+
 .PHONY: run
 # run locally
 run:	
-	GOFLAGS='-mod=readonly' kratos run -w ./configs $(DIR)
+	GOFLAGS='-mod=readonly' kratos run -w ./configs ../cmd/app
+
+.PHONY: scripts
+# run scripts locally
+scripts:
+	GOFLAGS='-mod=readonly' kratos run -w ./configs ../cmd/scripts
 
 .PHONY: db
-# run docker db container
+# create db
 db:
-	docker compose up -d db
+	docker exec -it postgres_db psql -U $(DB_USER) -d postgres -c 'CREATE DATABASE $(DB_NAME);'
+
+.PHONY: db-restore
+# restore db after migration to new dev-environment
+db-restore:
+	docker exec -i $(SERVICE_NAME)_db pg_dump -U me -d api > ./dump.sql
+	docker exec -i postgres_db psql $(DB_NAME) $(DB_USER) < ./dump.sql
+	rm ./dump.sql
+	docker stop $(SERVICE_NAME)_db
+	docker rm $(SERVICE_NAME)_db
 
 .PHONY: start
 # start docker container locally
 start:
-	docker compose build local-service && \
-	docker compose up -d local-service
+	docker compose -f docker-compose.local.yml build --ssh rsa=$(HOME)/.ssh/id_rsa service && \
+	docker compose -f docker-compose.local.yml up -d
 
 .PHONY: stop
 # stop docker container locally
 stop:
-	docker compose down local-service
+	docker compose -f docker-compose.local.yml down
 
 .PHONY: config
 # generate internal proto
@@ -125,11 +139,7 @@ all:
 
 .PHONY: total
 # generate and check all
-total:
-	make all;
-	make lint;
-	make test;
-	make run DIR=../cmd/app;
+total: all lint test run
 
 .PHONY: hooks
 # install hooks

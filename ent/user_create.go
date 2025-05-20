@@ -204,6 +204,20 @@ func (uc *UserCreate) SetNillableLastLoginAt(t *time.Time) *UserCreate {
 	return uc
 }
 
+// SetLastActivityAt sets the "last_activity_at" field.
+func (uc *UserCreate) SetLastActivityAt(t time.Time) *UserCreate {
+	uc.mutation.SetLastActivityAt(t)
+	return uc
+}
+
+// SetNillableLastActivityAt sets the "last_activity_at" field if the given value is not nil.
+func (uc *UserCreate) SetNillableLastActivityAt(t *time.Time) *UserCreate {
+	if t != nil {
+		uc.SetLastActivityAt(*t)
+	}
+	return uc
+}
+
 // SetCreatedAt sets the "created_at" field.
 func (uc *UserCreate) SetCreatedAt(t time.Time) *UserCreate {
 	uc.mutation.SetCreatedAt(t)
@@ -256,6 +270,20 @@ func (uc *UserCreate) SetDefaultTenantID(i int64) *UserCreate {
 func (uc *UserCreate) SetNillableDefaultTenantID(i *int64) *UserCreate {
 	if i != nil {
 		uc.SetDefaultTenantID(*i)
+	}
+	return uc
+}
+
+// SetIsBlocked sets the "is_blocked" field.
+func (uc *UserCreate) SetIsBlocked(b bool) *UserCreate {
+	uc.mutation.SetIsBlocked(b)
+	return uc
+}
+
+// SetNillableIsBlocked sets the "is_blocked" field if the given value is not nil.
+func (uc *UserCreate) SetNillableIsBlocked(b *bool) *UserCreate {
+	if b != nil {
+		uc.SetIsBlocked(*b)
 	}
 	return uc
 }
@@ -348,6 +376,10 @@ func (uc *UserCreate) defaults() error {
 		v := user.DefaultUpdatedAt()
 		uc.mutation.SetUpdatedAt(v)
 	}
+	if _, ok := uc.mutation.IsBlocked(); !ok {
+		v := user.DefaultIsBlocked
+		uc.mutation.SetIsBlocked(v)
+	}
 	return nil
 }
 
@@ -384,6 +416,9 @@ func (uc *UserCreate) check() error {
 	}
 	if _, ok := uc.mutation.UpdatedAt(); !ok {
 		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "User.updated_at"`)}
+	}
+	if _, ok := uc.mutation.IsBlocked(); !ok {
+		return &ValidationError{Name: "is_blocked", err: errors.New(`ent: missing required field "User.is_blocked"`)}
 	}
 	return nil
 }
@@ -470,6 +505,10 @@ func (uc *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 		_spec.SetField(user.FieldLastLoginAt, field.TypeTime, value)
 		_node.LastLoginAt = value
 	}
+	if value, ok := uc.mutation.LastActivityAt(); ok {
+		_spec.SetField(user.FieldLastActivityAt, field.TypeTime, value)
+		_node.LastActivityAt = &value
+	}
 	if value, ok := uc.mutation.CreatedAt(); ok {
 		_spec.SetField(user.FieldCreatedAt, field.TypeTime, value)
 		_node.CreatedAt = value
@@ -485,6 +524,10 @@ func (uc *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 	if value, ok := uc.mutation.DefaultTenantID(); ok {
 		_spec.SetField(user.FieldDefaultTenantID, field.TypeInt64, value)
 		_node.DefaultTenantID = &value
+	}
+	if value, ok := uc.mutation.IsBlocked(); ok {
+		_spec.SetField(user.FieldIsBlocked, field.TypeBool, value)
+		_node.IsBlocked = value
 	}
 	return _node, _spec
 }
@@ -730,6 +773,24 @@ func (u *UserUpsert) UpdateLastLoginAt() *UserUpsert {
 	return u
 }
 
+// SetLastActivityAt sets the "last_activity_at" field.
+func (u *UserUpsert) SetLastActivityAt(v time.Time) *UserUpsert {
+	u.Set(user.FieldLastActivityAt, v)
+	return u
+}
+
+// UpdateLastActivityAt sets the "last_activity_at" field to the value that was provided on create.
+func (u *UserUpsert) UpdateLastActivityAt() *UserUpsert {
+	u.SetExcluded(user.FieldLastActivityAt)
+	return u
+}
+
+// ClearLastActivityAt clears the value of the "last_activity_at" field.
+func (u *UserUpsert) ClearLastActivityAt() *UserUpsert {
+	u.SetNull(user.FieldLastActivityAt)
+	return u
+}
+
 // SetCreatedAt sets the "created_at" field.
 func (u *UserUpsert) SetCreatedAt(v time.Time) *UserUpsert {
 	u.Set(user.FieldCreatedAt, v)
@@ -793,6 +854,18 @@ func (u *UserUpsert) AddDefaultTenantID(v int64) *UserUpsert {
 // ClearDefaultTenantID clears the value of the "default_tenant_id" field.
 func (u *UserUpsert) ClearDefaultTenantID() *UserUpsert {
 	u.SetNull(user.FieldDefaultTenantID)
+	return u
+}
+
+// SetIsBlocked sets the "is_blocked" field.
+func (u *UserUpsert) SetIsBlocked(v bool) *UserUpsert {
+	u.Set(user.FieldIsBlocked, v)
+	return u
+}
+
+// UpdateIsBlocked sets the "is_blocked" field to the value that was provided on create.
+func (u *UserUpsert) UpdateIsBlocked() *UserUpsert {
+	u.SetExcluded(user.FieldIsBlocked)
 	return u
 }
 
@@ -1068,6 +1141,27 @@ func (u *UserUpsertOne) UpdateLastLoginAt() *UserUpsertOne {
 	})
 }
 
+// SetLastActivityAt sets the "last_activity_at" field.
+func (u *UserUpsertOne) SetLastActivityAt(v time.Time) *UserUpsertOne {
+	return u.Update(func(s *UserUpsert) {
+		s.SetLastActivityAt(v)
+	})
+}
+
+// UpdateLastActivityAt sets the "last_activity_at" field to the value that was provided on create.
+func (u *UserUpsertOne) UpdateLastActivityAt() *UserUpsertOne {
+	return u.Update(func(s *UserUpsert) {
+		s.UpdateLastActivityAt()
+	})
+}
+
+// ClearLastActivityAt clears the value of the "last_activity_at" field.
+func (u *UserUpsertOne) ClearLastActivityAt() *UserUpsertOne {
+	return u.Update(func(s *UserUpsert) {
+		s.ClearLastActivityAt()
+	})
+}
+
 // SetCreatedAt sets the "created_at" field.
 func (u *UserUpsertOne) SetCreatedAt(v time.Time) *UserUpsertOne {
 	return u.Update(func(s *UserUpsert) {
@@ -1142,6 +1236,20 @@ func (u *UserUpsertOne) UpdateDefaultTenantID() *UserUpsertOne {
 func (u *UserUpsertOne) ClearDefaultTenantID() *UserUpsertOne {
 	return u.Update(func(s *UserUpsert) {
 		s.ClearDefaultTenantID()
+	})
+}
+
+// SetIsBlocked sets the "is_blocked" field.
+func (u *UserUpsertOne) SetIsBlocked(v bool) *UserUpsertOne {
+	return u.Update(func(s *UserUpsert) {
+		s.SetIsBlocked(v)
+	})
+}
+
+// UpdateIsBlocked sets the "is_blocked" field to the value that was provided on create.
+func (u *UserUpsertOne) UpdateIsBlocked() *UserUpsertOne {
+	return u.Update(func(s *UserUpsert) {
+		s.UpdateIsBlocked()
 	})
 }
 
@@ -1583,6 +1691,27 @@ func (u *UserUpsertBulk) UpdateLastLoginAt() *UserUpsertBulk {
 	})
 }
 
+// SetLastActivityAt sets the "last_activity_at" field.
+func (u *UserUpsertBulk) SetLastActivityAt(v time.Time) *UserUpsertBulk {
+	return u.Update(func(s *UserUpsert) {
+		s.SetLastActivityAt(v)
+	})
+}
+
+// UpdateLastActivityAt sets the "last_activity_at" field to the value that was provided on create.
+func (u *UserUpsertBulk) UpdateLastActivityAt() *UserUpsertBulk {
+	return u.Update(func(s *UserUpsert) {
+		s.UpdateLastActivityAt()
+	})
+}
+
+// ClearLastActivityAt clears the value of the "last_activity_at" field.
+func (u *UserUpsertBulk) ClearLastActivityAt() *UserUpsertBulk {
+	return u.Update(func(s *UserUpsert) {
+		s.ClearLastActivityAt()
+	})
+}
+
 // SetCreatedAt sets the "created_at" field.
 func (u *UserUpsertBulk) SetCreatedAt(v time.Time) *UserUpsertBulk {
 	return u.Update(func(s *UserUpsert) {
@@ -1657,6 +1786,20 @@ func (u *UserUpsertBulk) UpdateDefaultTenantID() *UserUpsertBulk {
 func (u *UserUpsertBulk) ClearDefaultTenantID() *UserUpsertBulk {
 	return u.Update(func(s *UserUpsert) {
 		s.ClearDefaultTenantID()
+	})
+}
+
+// SetIsBlocked sets the "is_blocked" field.
+func (u *UserUpsertBulk) SetIsBlocked(v bool) *UserUpsertBulk {
+	return u.Update(func(s *UserUpsert) {
+		s.SetIsBlocked(v)
+	})
+}
+
+// UpdateIsBlocked sets the "is_blocked" field to the value that was provided on create.
+func (u *UserUpsertBulk) UpdateIsBlocked() *UserUpsertBulk {
+	return u.Update(func(s *UserUpsert) {
+		s.UpdateIsBlocked()
 	})
 }
 

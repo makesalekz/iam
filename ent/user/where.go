@@ -119,6 +119,11 @@ func LastLoginAt(v time.Time) predicate.User {
 	return predicate.User(sql.FieldEQ(FieldLastLoginAt, v))
 }
 
+// LastActivityAt applies equality check predicate on the "last_activity_at" field. It's identical to LastActivityAtEQ.
+func LastActivityAt(v time.Time) predicate.User {
+	return predicate.User(sql.FieldEQ(FieldLastActivityAt, v))
+}
+
 // CreatedAt applies equality check predicate on the "created_at" field. It's identical to CreatedAtEQ.
 func CreatedAt(v time.Time) predicate.User {
 	return predicate.User(sql.FieldEQ(FieldCreatedAt, v))
@@ -137,6 +142,11 @@ func BioUpdatedAt(v time.Time) predicate.User {
 // DefaultTenantID applies equality check predicate on the "default_tenant_id" field. It's identical to DefaultTenantIDEQ.
 func DefaultTenantID(v int64) predicate.User {
 	return predicate.User(sql.FieldEQ(FieldDefaultTenantID, v))
+}
+
+// IsBlocked applies equality check predicate on the "is_blocked" field. It's identical to IsBlockedEQ.
+func IsBlocked(v bool) predicate.User {
+	return predicate.User(sql.FieldEQ(FieldIsBlocked, v))
 }
 
 // DeletedAtEQ applies the EQ predicate on the "deleted_at" field.
@@ -804,6 +814,56 @@ func LastLoginAtLTE(v time.Time) predicate.User {
 	return predicate.User(sql.FieldLTE(FieldLastLoginAt, v))
 }
 
+// LastActivityAtEQ applies the EQ predicate on the "last_activity_at" field.
+func LastActivityAtEQ(v time.Time) predicate.User {
+	return predicate.User(sql.FieldEQ(FieldLastActivityAt, v))
+}
+
+// LastActivityAtNEQ applies the NEQ predicate on the "last_activity_at" field.
+func LastActivityAtNEQ(v time.Time) predicate.User {
+	return predicate.User(sql.FieldNEQ(FieldLastActivityAt, v))
+}
+
+// LastActivityAtIn applies the In predicate on the "last_activity_at" field.
+func LastActivityAtIn(vs ...time.Time) predicate.User {
+	return predicate.User(sql.FieldIn(FieldLastActivityAt, vs...))
+}
+
+// LastActivityAtNotIn applies the NotIn predicate on the "last_activity_at" field.
+func LastActivityAtNotIn(vs ...time.Time) predicate.User {
+	return predicate.User(sql.FieldNotIn(FieldLastActivityAt, vs...))
+}
+
+// LastActivityAtGT applies the GT predicate on the "last_activity_at" field.
+func LastActivityAtGT(v time.Time) predicate.User {
+	return predicate.User(sql.FieldGT(FieldLastActivityAt, v))
+}
+
+// LastActivityAtGTE applies the GTE predicate on the "last_activity_at" field.
+func LastActivityAtGTE(v time.Time) predicate.User {
+	return predicate.User(sql.FieldGTE(FieldLastActivityAt, v))
+}
+
+// LastActivityAtLT applies the LT predicate on the "last_activity_at" field.
+func LastActivityAtLT(v time.Time) predicate.User {
+	return predicate.User(sql.FieldLT(FieldLastActivityAt, v))
+}
+
+// LastActivityAtLTE applies the LTE predicate on the "last_activity_at" field.
+func LastActivityAtLTE(v time.Time) predicate.User {
+	return predicate.User(sql.FieldLTE(FieldLastActivityAt, v))
+}
+
+// LastActivityAtIsNil applies the IsNil predicate on the "last_activity_at" field.
+func LastActivityAtIsNil() predicate.User {
+	return predicate.User(sql.FieldIsNull(FieldLastActivityAt))
+}
+
+// LastActivityAtNotNil applies the NotNil predicate on the "last_activity_at" field.
+func LastActivityAtNotNil() predicate.User {
+	return predicate.User(sql.FieldNotNull(FieldLastActivityAt))
+}
+
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
 func CreatedAtEQ(v time.Time) predicate.User {
 	return predicate.User(sql.FieldEQ(FieldCreatedAt, v))
@@ -982,6 +1042,16 @@ func DefaultTenantIDIsNil() predicate.User {
 // DefaultTenantIDNotNil applies the NotNil predicate on the "default_tenant_id" field.
 func DefaultTenantIDNotNil() predicate.User {
 	return predicate.User(sql.FieldNotNull(FieldDefaultTenantID))
+}
+
+// IsBlockedEQ applies the EQ predicate on the "is_blocked" field.
+func IsBlockedEQ(v bool) predicate.User {
+	return predicate.User(sql.FieldEQ(FieldIsBlocked, v))
+}
+
+// IsBlockedNEQ applies the NEQ predicate on the "is_blocked" field.
+func IsBlockedNEQ(v bool) predicate.User {
+	return predicate.User(sql.FieldNEQ(FieldIsBlocked, v))
 }
 
 // And groups predicates with the AND operator between them.

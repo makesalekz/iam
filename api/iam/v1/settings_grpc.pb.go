@@ -20,8 +20,9 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	Settings_GetSettings_FullMethodName    = "/iam.v1.Settings/GetSettings"
-	Settings_UpdateSettings_FullMethodName = "/iam.v1.Settings/UpdateSettings"
+	Settings_GetSettings_FullMethodName      = "/iam.v1.Settings/GetSettings"
+	Settings_UpdateSettings_FullMethodName   = "/iam.v1.Settings/UpdateSettings"
+	Settings_GetUsersSettings_FullMethodName = "/iam.v1.Settings/GetUsersSettings"
 )
 
 // SettingsClient is the client API for Settings service.
@@ -35,6 +36,10 @@ type SettingsClient interface {
 	// Request: the new settings to update
 	// Returns: the updated settings of the current user
 	UpdateSettings(ctx context.Context, in *SettingsRequest, opts ...grpc.CallOption) (*SettingsReply, error)
+	// GetUsersSettings returns the settings of the users
+	// Request: the ids of the users to get settings for
+	// Returns: the settings of the users
+	GetUsersSettings(ctx context.Context, in *GetUsersSettingsRequest, opts ...grpc.CallOption) (*UsersSettingsReply, error)
 }
 
 type settingsClient struct {
@@ -65,6 +70,16 @@ func (c *settingsClient) UpdateSettings(ctx context.Context, in *SettingsRequest
 	return out, nil
 }
 
+func (c *settingsClient) GetUsersSettings(ctx context.Context, in *GetUsersSettingsRequest, opts ...grpc.CallOption) (*UsersSettingsReply, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(UsersSettingsReply)
+	err := c.cc.Invoke(ctx, Settings_GetUsersSettings_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // SettingsServer is the server API for Settings service.
 // All implementations must embed UnimplementedSettingsServer
 // for forward compatibility.
@@ -76,6 +91,10 @@ type SettingsServer interface {
 	// Request: the new settings to update
 	// Returns: the updated settings of the current user
 	UpdateSettings(context.Context, *SettingsRequest) (*SettingsReply, error)
+	// GetUsersSettings returns the settings of the users
+	// Request: the ids of the users to get settings for
+	// Returns: the settings of the users
+	GetUsersSettings(context.Context, *GetUsersSettingsRequest) (*UsersSettingsReply, error)
 	mustEmbedUnimplementedSettingsServer()
 }
 
@@ -91,6 +110,9 @@ func (UnimplementedSettingsServer) GetSettings(context.Context, *v1.EmptyRequest
 }
 func (UnimplementedSettingsServer) UpdateSettings(context.Context, *SettingsRequest) (*SettingsReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateSettings not implemented")
+}
+func (UnimplementedSettingsServer) GetUsersSettings(context.Context, *GetUsersSettingsRequest) (*UsersSettingsReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetUsersSettings not implemented")
 }
 func (UnimplementedSettingsServer) mustEmbedUnimplementedSettingsServer() {}
 func (UnimplementedSettingsServer) testEmbeddedByValue()                  {}
@@ -149,6 +171,24 @@ func _Settings_UpdateSettings_Handler(srv interface{}, ctx context.Context, dec 
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Settings_GetUsersSettings_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetUsersSettingsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(SettingsServer).GetUsersSettings(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Settings_GetUsersSettings_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(SettingsServer).GetUsersSettings(ctx, req.(*GetUsersSettingsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Settings_ServiceDesc is the grpc.ServiceDesc for Settings service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -163,6 +203,10 @@ var Settings_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "UpdateSettings",
 			Handler:    _Settings_UpdateSettings_Handler,
+		},
+		{
+			MethodName: "GetUsersSettings",
+			Handler:    _Settings_GetUsersSettings_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

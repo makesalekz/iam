@@ -43,6 +43,8 @@ type User struct {
 	EmailVerified bool `json:"email_verified,omitempty"`
 	// the time when user was last logged in
 	LastLoginAt time.Time `json:"last_login_at,omitempty"`
+	// the time of user's last activity
+	LastActivityAt *time.Time `json:"last_activity_at,omitempty"`
 	// the time when user has been created
 	CreatedAt time.Time `json:"created_at,omitempty"`
 	// the time when user was last changed
@@ -51,7 +53,9 @@ type User struct {
 	BioUpdatedAt *time.Time `json:"bio_updated_at,omitempty"`
 	// default tenant id of user
 	DefaultTenantID *int64 `json:"default_tenant_id,omitempty"`
-	selectValues    sql.SelectValues
+	// this field indicates than user is blocked
+	IsBlocked    bool `json:"is_blocked,omitempty"`
+	selectValues sql.SelectValues
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -59,13 +63,13 @@ func (*User) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case user.FieldIsActive, user.FieldPhoneVerified, user.FieldEmailVerified:
+		case user.FieldIsActive, user.FieldPhoneVerified, user.FieldEmailVerified, user.FieldIsBlocked:
 			values[i] = new(sql.NullBool)
 		case user.FieldID, user.FieldDefaultTenantID:
 			values[i] = new(sql.NullInt64)
 		case user.FieldPhone, user.FieldEmail, user.FieldUsername, user.FieldName, user.FieldBio, user.FieldAvatar, user.FieldTimezone:
 			values[i] = new(sql.NullString)
-		case user.FieldDeletedAt, user.FieldRemoveAt, user.FieldLastLoginAt, user.FieldCreatedAt, user.FieldUpdatedAt, user.FieldBioUpdatedAt:
+		case user.FieldDeletedAt, user.FieldRemoveAt, user.FieldLastLoginAt, user.FieldLastActivityAt, user.FieldCreatedAt, user.FieldUpdatedAt, user.FieldBioUpdatedAt:
 			values[i] = new(sql.NullTime)
 		default:
 			values[i] = new(sql.UnknownType)
@@ -172,6 +176,13 @@ func (u *User) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				u.LastLoginAt = value.Time
 			}
+		case user.FieldLastActivityAt:
+			if value, ok := values[i].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field last_activity_at", values[i])
+			} else if value.Valid {
+				u.LastActivityAt = new(time.Time)
+				*u.LastActivityAt = value.Time
+			}
 		case user.FieldCreatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field created_at", values[i])
@@ -197,6 +208,12 @@ func (u *User) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				u.DefaultTenantID = new(int64)
 				*u.DefaultTenantID = value.Int64
+			}
+		case user.FieldIsBlocked:
+			if value, ok := values[i].(*sql.NullBool); !ok {
+				return fmt.Errorf("unexpected type %T for field is_blocked", values[i])
+			} else if value.Valid {
+				u.IsBlocked = value.Bool
 			}
 		default:
 			u.selectValues.Set(columns[i], values[i])
@@ -285,6 +302,11 @@ func (u *User) String() string {
 	builder.WriteString("last_login_at=")
 	builder.WriteString(u.LastLoginAt.Format(time.ANSIC))
 	builder.WriteString(", ")
+	if v := u.LastActivityAt; v != nil {
+		builder.WriteString("last_activity_at=")
+		builder.WriteString(v.Format(time.ANSIC))
+	}
+	builder.WriteString(", ")
 	builder.WriteString("created_at=")
 	builder.WriteString(u.CreatedAt.Format(time.ANSIC))
 	builder.WriteString(", ")
@@ -300,6 +322,9 @@ func (u *User) String() string {
 		builder.WriteString("default_tenant_id=")
 		builder.WriteString(fmt.Sprintf("%v", *v))
 	}
+	builder.WriteString(", ")
+	builder.WriteString("is_blocked=")
+	builder.WriteString(fmt.Sprintf("%v", u.IsBlocked))
 	builder.WriteByte(')')
 	return builder.String()
 }

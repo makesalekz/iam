@@ -363,3 +363,41 @@ func (uc *UsersUsecase) GetUserTenants(ctx context.Context) ([]*tenants_v1.Tenan
 
 	return tenants, nil
 }
+
+func (uc *UsersUsecase) UpdateUserActivityTime(ctx context.Context, userID int64, activityTime time.Time) error {
+	err := uc.usersRepo.UpdateUserActivityTime(ctx, userID, activityTime)
+	if err != nil {
+		if ent.IsNotFound(err) {
+			return v1.ErrorUserNotFound("user not found")
+		}
+		return v1.ErrorDatabaseQuery("database error: %s", err.Error())
+	}
+
+	return nil
+}
+
+func (uc *UsersUsecase) ToggleUserState(ctx context.Context, userID int64) error {
+	user, err := uc.usersRepo.GetUserByID(ctx, userID, true)
+	if err != nil {
+		if ent.IsNotFound(err) {
+			return v1.ErrorUserNotFound("user not found")
+		}
+
+		return v1.ErrorDatabaseQuery("error query user")
+	}
+
+	return uc.usersRepo.ToggleIsBlocked(ctx, userID, !user.IsBlocked)
+}
+
+func (uc *UsersUsecase) DeleteUser(ctx context.Context, userID int64) error {
+	_, err := uc.usersRepo.GetUserByID(ctx, userID, true)
+	if err != nil {
+		if ent.IsNotFound(err) {
+			return v1.ErrorUserNotFound("user not found")
+		}
+
+		return v1.ErrorDatabaseQuery("error query user")
+	}
+
+	return uc.usersRepo.DeleteUsers(ctx, []int64{userID})
+}

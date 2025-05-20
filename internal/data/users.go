@@ -50,6 +50,8 @@ type UsersRepo interface {
 	EmailVerified(ctx context.Context, userID int64) error
 
 	TempGetUsersWithoutDefaultTenant(ctx context.Context) ([]*ent.User, error)
+	UpdateUserActivityTime(ctx context.Context, userID int64, activityTime time.Time) error
+	ToggleIsBlocked(ctx context.Context, userID int64, isBlocked bool) error
 }
 
 type usersRepo struct {
@@ -260,4 +262,17 @@ func (r *usersRepo) TempGetUsersWithoutDefaultTenant(ctx context.Context) ([]*en
 	return r.db.User.Query().
 		Where(user.DefaultTenantIDIsNil()).
 		All(ctx)
+}
+
+func (r *usersRepo) UpdateUserActivityTime(ctx context.Context, userID int64, activityTime time.Time) error {
+	return r.db.User.UpdateOneID(userID).
+		SetLastLoginAt(activityTime).
+		SetUpdatedAt(activityTime).
+		Exec(ctx)
+}
+
+func (r *usersRepo) ToggleIsBlocked(ctx context.Context, userID int64, isBlocked bool) error {
+	return r.db.User.UpdateOneID(userID).
+		SetIsBlocked(isBlocked).
+		Exec(ctx)
 }

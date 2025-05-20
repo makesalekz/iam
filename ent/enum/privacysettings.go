@@ -10,11 +10,12 @@ const (
 	EventInvite     PrivacySettings = "EVENT_INVITE"
 	MySlots         PrivacySettings = "MY_SLOTS"
 	SlotsDetails    PrivacySettings = "SLOTS_DETAILS"
+	LastVisit       PrivacySettings = "LAST_VISIT"
 )
 
 // Values provides list valid values for Enum.
 func (PrivacySettings) Values() (kinds []string) {
-	for _, s := range []PrivacySettings{MyLastActions, MyProfileImage, MyEvents, GroupChatInvite, EventInvite, MySlots, SlotsDetails} {
+	for _, s := range []PrivacySettings{MyLastActions, MyProfileImage, MyEvents, GroupChatInvite, EventInvite, MySlots, SlotsDetails, LastVisit} {
 		kinds = append(kinds, string(s))
 	}
 	return

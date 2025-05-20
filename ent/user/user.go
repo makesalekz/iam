@@ -40,6 +40,8 @@ const (
 	FieldEmailVerified = "email_verified"
 	// FieldLastLoginAt holds the string denoting the last_login_at field in the database.
 	FieldLastLoginAt = "last_login_at"
+	// FieldLastActivityAt holds the string denoting the last_activity_at field in the database.
+	FieldLastActivityAt = "last_activity_at"
 	// FieldCreatedAt holds the string denoting the created_at field in the database.
 	FieldCreatedAt = "created_at"
 	// FieldUpdatedAt holds the string denoting the updated_at field in the database.
@@ -48,6 +50,8 @@ const (
 	FieldBioUpdatedAt = "bio_updated_at"
 	// FieldDefaultTenantID holds the string denoting the default_tenant_id field in the database.
 	FieldDefaultTenantID = "default_tenant_id"
+	// FieldIsBlocked holds the string denoting the is_blocked field in the database.
+	FieldIsBlocked = "is_blocked"
 	// Table holds the table name of the user in the database.
 	Table = "users"
 )
@@ -68,10 +72,12 @@ var Columns = []string{
 	FieldPhoneVerified,
 	FieldEmailVerified,
 	FieldLastLoginAt,
+	FieldLastActivityAt,
 	FieldCreatedAt,
 	FieldUpdatedAt,
 	FieldBioUpdatedAt,
 	FieldDefaultTenantID,
+	FieldIsBlocked,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -112,6 +118,8 @@ var (
 	DefaultCreatedAt func() time.Time
 	// DefaultUpdatedAt holds the default value on creation for the "updated_at" field.
 	DefaultUpdatedAt func() time.Time
+	// DefaultIsBlocked holds the default value on creation for the "is_blocked" field.
+	DefaultIsBlocked bool
 )
 
 // OrderOption defines the ordering options for the User queries.
@@ -187,6 +195,11 @@ func ByLastLoginAt(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldLastLoginAt, opts...).ToFunc()
 }
 
+// ByLastActivityAt orders the results by the last_activity_at field.
+func ByLastActivityAt(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldLastActivityAt, opts...).ToFunc()
+}
+
 // ByCreatedAt orders the results by the created_at field.
 func ByCreatedAt(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldCreatedAt, opts...).ToFunc()
@@ -205,4 +218,9 @@ func ByBioUpdatedAt(opts ...sql.OrderTermOption) OrderOption {
 // ByDefaultTenantID orders the results by the default_tenant_id field.
 func ByDefaultTenantID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldDefaultTenantID, opts...).ToFunc()
+}
+
+// ByIsBlocked orders the results by the is_blocked field.
+func ByIsBlocked(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldIsBlocked, opts...).ToFunc()
 }

@@ -5,6 +5,7 @@ import (
 	"context"
 	"encoding/json"
 	"net/http"
+	"os"
 	"time"
 
 	v1 "gitlab.calendaria.team/services/contacts/api/contacts/v1"
@@ -21,8 +22,8 @@ import (
 const (
 	HTTPTimeout = time.Second * 30
 
-	SxodimAuthUrl     = "/oauth/token"
-	SxodimUserDataUrl = "/api/aigenda/user"
+	SxodimAuthURL     = "/oauth/token"
+	SxodimUserDataURL = "/api/aigenda/user"
 	SxodimClientID    = "3"
 )
 
@@ -42,6 +43,10 @@ func NewSxodimRemote(
 ) (IProviderGateway, error) {
 	g := &SxodimGateway{
 		config: config,
+	}
+
+	if os.Getenv("DEBUG") == "true" {
+		return g, nil
 	}
 
 	// Get Sxodim domain
@@ -146,7 +151,7 @@ func (g *SxodimGateway) doSxodimRequest(
 //
 // Notes:
 //   - Requires "sxodimclientsecret" to be properly configured in the secret store
-//   - Requires SxodimAuthUrl is preconfigured with the correct endpoint
+//   - Requires SxodimAuthURL is preconfigured with the correct endpoint
 //   - Converts ExpiresIn from milliseconds to time.Time expiry
 func (g *SxodimGateway) exchangeSxodimToken(grantType enum.SxodimGrantType, authCode string) (*xoauth2.Token, error) {
 	// Collect body
@@ -170,7 +175,7 @@ func (g *SxodimGateway) exchangeSxodimToken(grantType enum.SxodimGrantType, auth
 	}
 
 	// Initialize http request
-	request, err := http.NewRequest(http.MethodPost, g.storage.SxodimDomain+SxodimAuthUrl, bytes.NewBuffer(requestBody))
+	request, err := http.NewRequest(http.MethodPost, g.storage.SxodimDomain+SxodimAuthURL, bytes.NewBuffer(requestBody))
 	if err != nil {
 		return nil, v1.ErrorInternal("failed on creating http request: %s", err)
 	}
@@ -206,7 +211,7 @@ func (g *SxodimGateway) exchangeSxodimToken(grantType enum.SxodimGrantType, auth
 // getUserData is to get data of the Sxodim user.
 func (g *SxodimGateway) getUserData(accessToken string) (*sxodimUser, error) {
 	// Initialize http request
-	request, err := http.NewRequest(http.MethodGet, g.storage.SxodimDomain+SxodimUserDataUrl, nil)
+	request, err := http.NewRequest(http.MethodGet, g.storage.SxodimDomain+SxodimUserDataURL, nil)
 	if err != nil {
 		return nil, v1.ErrorInternal("failed on creating http request: %s", err)
 	}

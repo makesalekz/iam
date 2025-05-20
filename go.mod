@@ -22,7 +22,7 @@ require (
 	gitlab.calendaria.team/services/media v1.5.0-pre
 	gitlab.calendaria.team/services/notifications v1.4.8-pre
 	gitlab.calendaria.team/services/tenants v1.2.0-pre
-	gitlab.calendaria.team/services/utils v0.3.19-pre
+	gitlab.calendaria.team/services/utils v0.3.21
 	go.uber.org/automaxprocs v1.6.0
 	golang.org/x/oauth2 v0.20.0
 	google.golang.org/grpc v1.65.0

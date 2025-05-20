@@ -91,13 +91,17 @@ func init() {
 	// user.DefaultLastLoginAt holds the default value on creation for the last_login_at field.
 	user.DefaultLastLoginAt = userDescLastLoginAt.Default.(func() time.Time)
 	// userDescCreatedAt is the schema descriptor for created_at field.
-	userDescCreatedAt := userFields[12].Descriptor()
+	userDescCreatedAt := userFields[13].Descriptor()
 	// user.DefaultCreatedAt holds the default value on creation for the created_at field.
 	user.DefaultCreatedAt = userDescCreatedAt.Default.(func() time.Time)
 	// userDescUpdatedAt is the schema descriptor for updated_at field.
-	userDescUpdatedAt := userFields[13].Descriptor()
+	userDescUpdatedAt := userFields[14].Descriptor()
 	// user.DefaultUpdatedAt holds the default value on creation for the updated_at field.
 	user.DefaultUpdatedAt = userDescUpdatedAt.Default.(func() time.Time)
+	// userDescIsBlocked is the schema descriptor for is_blocked field.
+	userDescIsBlocked := userFields[17].Descriptor()
+	// user.DefaultIsBlocked holds the default value on creation for the is_blocked field.
+	user.DefaultIsBlocked = userDescIsBlocked.Default.(bool)
 	usercredentialsMixin := schema.UserCredentials{}.Mixin()
 	usercredentialsMixinHooks1 := usercredentialsMixin[1].Hooks()
 	usercredentials.Hooks[0] = usercredentialsMixinHooks1[0]
