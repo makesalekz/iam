@@ -4,7 +4,6 @@ const (
 	QueueContactsPhoneVerified  = "contacts.confirmed_phone"
 	QueueContactsEmailVerified  = "contacts.confirmed_emails"
 	QueueEventsDefaultCalendars = "events.default_calendars"
-	QueueSilentNotifications    = "notifications.fcm_silent"
 	QueueDeleteDeviceTokens     = "notifications.delete_tokens"
 )
 

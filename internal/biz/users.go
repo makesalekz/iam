@@ -15,7 +15,6 @@ import (
 	tenants_v1 "gitlab.calendaria.team/services/tenants/api/tenants/v1"
 	utils_v1 "gitlab.calendaria.team/services/utils/api/utils/v1"
 	u_error "gitlab.calendaria.team/services/utils/v1/error"
-	u_struc "gitlab.calendaria.team/services/utils/v2/struc"
 	u_jwt "gitlab.calendaria.team/services/utils/v4/jwt"
 	u_nats "gitlab.calendaria.team/services/utils/v4/nats"
 
@@ -303,17 +302,6 @@ func (uc *UsersUsecase) ScheduleUserDeletion(ctx context.Context, actorID int64)
 	if err != nil {
 		return v1.ErrorDatabaseQuery("database error: %s", err.Error())
 	}
-
-	// set Notification
-	notification := u_struc.FirebaseNotification{
-		Type:  u_struc.Chat,
-		Body:  "Your account has been deleted",
-		Title: "Account deletion",
-		Data: map[string]string{
-			"type": NotifyAccountDeletion.String(),
-		},
-	}
-	uc.queue.GetRemote(QueueSilentNotifications).Pub(&notification)
 
 	// Delete all device tokens of the user
 	uc.queue.GetRemote(QueueDeleteDeviceTokens).Pub(&actorID)
