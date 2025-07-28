@@ -23,7 +23,11 @@ func (uc *PrivacyUsecase) GetPrivacy(ctx context.Context, userID int64) (data.Pr
 	return uc.privacyRepo.GetPrivacy(ctx, userID)
 }
 
-func (uc *PrivacyUsecase) UpdatePrivacy(ctx context.Context, userID int64, data data.PrivacySettingsData) (data.PrivacySettingsData, error) {
+func (uc *PrivacyUsecase) UpdatePrivacy(
+	ctx context.Context,
+	userID int64,
+	data data.PrivacySettingsData,
+) (data.PrivacySettingsData, error) {
 	return uc.privacyRepo.UpdatePrivacy(ctx, userID, data)
 }
 

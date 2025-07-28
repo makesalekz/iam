@@ -302,6 +302,10 @@ func (uc *UsersUsecase) ScheduleUserDeletion(ctx context.Context, actorID int64)
 	if err != nil {
 		return v1.ErrorDatabaseQuery("database error: %s", err.Error())
 	}
+
+	// Delete all device tokens of the user
+	uc.queue.GetRemote(QueueDeleteDeviceTokens).Pub(&actorID)
+
 	return nil
 }
 
