@@ -204,16 +204,16 @@ func (uc *UserCreate) SetNillableLastLoginAt(t *time.Time) *UserCreate {
 	return uc
 }
 
-// SetLastActivityAt sets the "last_activity_at" field.
-func (uc *UserCreate) SetLastActivityAt(t time.Time) *UserCreate {
-	uc.mutation.SetLastActivityAt(t)
+// SetLastSeen sets the "last_seen" field.
+func (uc *UserCreate) SetLastSeen(t time.Time) *UserCreate {
+	uc.mutation.SetLastSeen(t)
 	return uc
 }
 
-// SetNillableLastActivityAt sets the "last_activity_at" field if the given value is not nil.
-func (uc *UserCreate) SetNillableLastActivityAt(t *time.Time) *UserCreate {
+// SetNillableLastSeen sets the "last_seen" field if the given value is not nil.
+func (uc *UserCreate) SetNillableLastSeen(t *time.Time) *UserCreate {
 	if t != nil {
-		uc.SetLastActivityAt(*t)
+		uc.SetLastSeen(*t)
 	}
 	return uc
 }
@@ -505,9 +505,9 @@ func (uc *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 		_spec.SetField(user.FieldLastLoginAt, field.TypeTime, value)
 		_node.LastLoginAt = value
 	}
-	if value, ok := uc.mutation.LastActivityAt(); ok {
-		_spec.SetField(user.FieldLastActivityAt, field.TypeTime, value)
-		_node.LastActivityAt = &value
+	if value, ok := uc.mutation.LastSeen(); ok {
+		_spec.SetField(user.FieldLastSeen, field.TypeTime, value)
+		_node.LastSeen = &value
 	}
 	if value, ok := uc.mutation.CreatedAt(); ok {
 		_spec.SetField(user.FieldCreatedAt, field.TypeTime, value)
@@ -773,21 +773,21 @@ func (u *UserUpsert) UpdateLastLoginAt() *UserUpsert {
 	return u
 }
 
-// SetLastActivityAt sets the "last_activity_at" field.
-func (u *UserUpsert) SetLastActivityAt(v time.Time) *UserUpsert {
-	u.Set(user.FieldLastActivityAt, v)
+// SetLastSeen sets the "last_seen" field.
+func (u *UserUpsert) SetLastSeen(v time.Time) *UserUpsert {
+	u.Set(user.FieldLastSeen, v)
 	return u
 }
 
-// UpdateLastActivityAt sets the "last_activity_at" field to the value that was provided on create.
-func (u *UserUpsert) UpdateLastActivityAt() *UserUpsert {
-	u.SetExcluded(user.FieldLastActivityAt)
+// UpdateLastSeen sets the "last_seen" field to the value that was provided on create.
+func (u *UserUpsert) UpdateLastSeen() *UserUpsert {
+	u.SetExcluded(user.FieldLastSeen)
 	return u
 }
 
-// ClearLastActivityAt clears the value of the "last_activity_at" field.
-func (u *UserUpsert) ClearLastActivityAt() *UserUpsert {
-	u.SetNull(user.FieldLastActivityAt)
+// ClearLastSeen clears the value of the "last_seen" field.
+func (u *UserUpsert) ClearLastSeen() *UserUpsert {
+	u.SetNull(user.FieldLastSeen)
 	return u
 }
 
@@ -1141,24 +1141,24 @@ func (u *UserUpsertOne) UpdateLastLoginAt() *UserUpsertOne {
 	})
 }
 
-// SetLastActivityAt sets the "last_activity_at" field.
-func (u *UserUpsertOne) SetLastActivityAt(v time.Time) *UserUpsertOne {
+// SetLastSeen sets the "last_seen" field.
+func (u *UserUpsertOne) SetLastSeen(v time.Time) *UserUpsertOne {
 	return u.Update(func(s *UserUpsert) {
-		s.SetLastActivityAt(v)
+		s.SetLastSeen(v)
 	})
 }
 
-// UpdateLastActivityAt sets the "last_activity_at" field to the value that was provided on create.
-func (u *UserUpsertOne) UpdateLastActivityAt() *UserUpsertOne {
+// UpdateLastSeen sets the "last_seen" field to the value that was provided on create.
+func (u *UserUpsertOne) UpdateLastSeen() *UserUpsertOne {
 	return u.Update(func(s *UserUpsert) {
-		s.UpdateLastActivityAt()
+		s.UpdateLastSeen()
 	})
 }
 
-// ClearLastActivityAt clears the value of the "last_activity_at" field.
-func (u *UserUpsertOne) ClearLastActivityAt() *UserUpsertOne {
+// ClearLastSeen clears the value of the "last_seen" field.
+func (u *UserUpsertOne) ClearLastSeen() *UserUpsertOne {
 	return u.Update(func(s *UserUpsert) {
-		s.ClearLastActivityAt()
+		s.ClearLastSeen()
 	})
 }
 
@@ -1691,24 +1691,24 @@ func (u *UserUpsertBulk) UpdateLastLoginAt() *UserUpsertBulk {
 	})
 }
 
-// SetLastActivityAt sets the "last_activity_at" field.
-func (u *UserUpsertBulk) SetLastActivityAt(v time.Time) *UserUpsertBulk {
+// SetLastSeen sets the "last_seen" field.
+func (u *UserUpsertBulk) SetLastSeen(v time.Time) *UserUpsertBulk {
 	return u.Update(func(s *UserUpsert) {
-		s.SetLastActivityAt(v)
+		s.SetLastSeen(v)
 	})
 }
 
-// UpdateLastActivityAt sets the "last_activity_at" field to the value that was provided on create.
-func (u *UserUpsertBulk) UpdateLastActivityAt() *UserUpsertBulk {
+// UpdateLastSeen sets the "last_seen" field to the value that was provided on create.
+func (u *UserUpsertBulk) UpdateLastSeen() *UserUpsertBulk {
 	return u.Update(func(s *UserUpsert) {
-		s.UpdateLastActivityAt()
+		s.UpdateLastSeen()
 	})
 }
 
-// ClearLastActivityAt clears the value of the "last_activity_at" field.
-func (u *UserUpsertBulk) ClearLastActivityAt() *UserUpsertBulk {
+// ClearLastSeen clears the value of the "last_seen" field.
+func (u *UserUpsertBulk) ClearLastSeen() *UserUpsertBulk {
 	return u.Update(func(s *UserUpsert) {
-		s.ClearLastActivityAt()
+		s.ClearLastSeen()
 	})
 }
 

@@ -50,7 +50,7 @@ var (
 		{Name: "phone_verified", Type: field.TypeBool, Default: false},
 		{Name: "email_verified", Type: field.TypeBool, Default: false},
 		{Name: "last_login_at", Type: field.TypeTime},
-		{Name: "last_activity_at", Type: field.TypeTime, Nullable: true},
+		{Name: "last_seen", Type: field.TypeTime, Nullable: true},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
 		{Name: "bio_updated_at", Type: field.TypeTime, Nullable: true},

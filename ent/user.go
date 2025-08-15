@@ -43,8 +43,8 @@ type User struct {
 	EmailVerified bool `json:"email_verified,omitempty"`
 	// the time when user was last logged in
 	LastLoginAt time.Time `json:"last_login_at,omitempty"`
-	// the time of user's last activity
-	LastActivityAt *time.Time `json:"last_activity_at,omitempty"`
+	// the time of user's last seen (was online)
+	LastSeen *time.Time `json:"last_seen,omitempty"`
 	// the time when user has been created
 	CreatedAt time.Time `json:"created_at,omitempty"`
 	// the time when user was last changed
@@ -69,7 +69,7 @@ func (*User) scanValues(columns []string) ([]any, error) {
 			values[i] = new(sql.NullInt64)
 		case user.FieldPhone, user.FieldEmail, user.FieldUsername, user.FieldName, user.FieldBio, user.FieldAvatar, user.FieldTimezone:
 			values[i] = new(sql.NullString)
-		case user.FieldDeletedAt, user.FieldRemoveAt, user.FieldLastLoginAt, user.FieldLastActivityAt, user.FieldCreatedAt, user.FieldUpdatedAt, user.FieldBioUpdatedAt:
+		case user.FieldDeletedAt, user.FieldRemoveAt, user.FieldLastLoginAt, user.FieldLastSeen, user.FieldCreatedAt, user.FieldUpdatedAt, user.FieldBioUpdatedAt:
 			values[i] = new(sql.NullTime)
 		default:
 			values[i] = new(sql.UnknownType)
@@ -176,12 +176,12 @@ func (u *User) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				u.LastLoginAt = value.Time
 			}
-		case user.FieldLastActivityAt:
+		case user.FieldLastSeen:
 			if value, ok := values[i].(*sql.NullTime); !ok {
-				return fmt.Errorf("unexpected type %T for field last_activity_at", values[i])
+				return fmt.Errorf("unexpected type %T for field last_seen", values[i])
 			} else if value.Valid {
-				u.LastActivityAt = new(time.Time)
-				*u.LastActivityAt = value.Time
+				u.LastSeen = new(time.Time)
+				*u.LastSeen = value.Time
 			}
 		case user.FieldCreatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
@@ -302,8 +302,8 @@ func (u *User) String() string {
 	builder.WriteString("last_login_at=")
 	builder.WriteString(u.LastLoginAt.Format(time.ANSIC))
 	builder.WriteString(", ")
-	if v := u.LastActivityAt; v != nil {
-		builder.WriteString("last_activity_at=")
+	if v := u.LastSeen; v != nil {
+		builder.WriteString("last_seen=")
 		builder.WriteString(v.Format(time.ANSIC))
 	}
 	builder.WriteString(", ")
