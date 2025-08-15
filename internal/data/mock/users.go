@@ -244,20 +244,6 @@ func (mr *MockUsersRepoMockRecorder) ToggleIsBlocked(ctx, userID, isBlocked inte
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ToggleIsBlocked", reflect.TypeOf((*MockUsersRepo)(nil).ToggleIsBlocked), ctx, userID, isBlocked)
 }
 
-// UpdateUserActivityTime mocks base method.
-func (m *MockUsersRepo) UpdateUserActivityTime(ctx context.Context, userID int64, activityTime time.Time) error {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "UpdateUserActivityTime", ctx, userID, activityTime)
-	ret0, _ := ret[0].(error)
-	return ret0
-}
-
-// UpdateUserActivityTime indicates an expected call of UpdateUserActivityTime.
-func (mr *MockUsersRepoMockRecorder) UpdateUserActivityTime(ctx, userID, activityTime interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateUserActivityTime", reflect.TypeOf((*MockUsersRepo)(nil).UpdateUserActivityTime), ctx, userID, activityTime)
-}
-
 // UpdateUserData mocks base method.
 func (m *MockUsersRepo) UpdateUserData(ctx context.Context, user *ent.User, dto dto.UpdateUserDto) (*ent.User, error) {
 	m.ctrl.T.Helper()
@@ -271,4 +257,18 @@ func (m *MockUsersRepo) UpdateUserData(ctx context.Context, user *ent.User, dto 
 func (mr *MockUsersRepoMockRecorder) UpdateUserData(ctx, user, dto interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateUserData", reflect.TypeOf((*MockUsersRepo)(nil).UpdateUserData), ctx, user, dto)
+}
+
+// UpdateUserLastSeen mocks base method.
+func (m *MockUsersRepo) UpdateUserLastSeen(ctx context.Context, userID int64, lastSeenTime time.Time) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "UpdateUserLastSeen", ctx, userID, lastSeenTime)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// UpdateUserLastSeen indicates an expected call of UpdateUserLastSeen.
+func (mr *MockUsersRepoMockRecorder) UpdateUserLastSeen(ctx, userID, lastSeenTime interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateUserLastSeen", reflect.TypeOf((*MockUsersRepo)(nil).UpdateUserLastSeen), ctx, userID, lastSeenTime)
 }

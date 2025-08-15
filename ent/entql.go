@@ -63,7 +63,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			user.FieldPhoneVerified:   {Type: field.TypeBool, Column: user.FieldPhoneVerified},
 			user.FieldEmailVerified:   {Type: field.TypeBool, Column: user.FieldEmailVerified},
 			user.FieldLastLoginAt:     {Type: field.TypeTime, Column: user.FieldLastLoginAt},
-			user.FieldLastActivityAt:  {Type: field.TypeTime, Column: user.FieldLastActivityAt},
+			user.FieldLastSeen:        {Type: field.TypeTime, Column: user.FieldLastSeen},
 			user.FieldCreatedAt:       {Type: field.TypeTime, Column: user.FieldCreatedAt},
 			user.FieldUpdatedAt:       {Type: field.TypeTime, Column: user.FieldUpdatedAt},
 			user.FieldBioUpdatedAt:    {Type: field.TypeTime, Column: user.FieldBioUpdatedAt},
@@ -382,9 +382,9 @@ func (f *UserFilter) WhereLastLoginAt(p entql.TimeP) {
 	f.Where(p.Field(user.FieldLastLoginAt))
 }
 
-// WhereLastActivityAt applies the entql time.Time predicate on the last_activity_at field.
-func (f *UserFilter) WhereLastActivityAt(p entql.TimeP) {
-	f.Where(p.Field(user.FieldLastActivityAt))
+// WhereLastSeen applies the entql time.Time predicate on the last_seen field.
+func (f *UserFilter) WhereLastSeen(p entql.TimeP) {
+	f.Where(p.Field(user.FieldLastSeen))
 }
 
 // WhereCreatedAt applies the entql time.Time predicate on the created_at field.

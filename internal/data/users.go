@@ -50,7 +50,7 @@ type UsersRepo interface {
 	EmailVerified(ctx context.Context, userID int64) error
 
 	TempGetUsersWithoutDefaultTenant(ctx context.Context) ([]*ent.User, error)
-	UpdateUserActivityTime(ctx context.Context, userID int64, activityTime time.Time) error
+	UpdateUserLastSeen(ctx context.Context, userID int64, lastSeenTime time.Time) error
 	ToggleIsBlocked(ctx context.Context, userID int64, isBlocked bool) error
 }
 
@@ -264,10 +264,9 @@ func (r *usersRepo) TempGetUsersWithoutDefaultTenant(ctx context.Context) ([]*en
 		All(ctx)
 }
 
-func (r *usersRepo) UpdateUserActivityTime(ctx context.Context, userID int64, activityTime time.Time) error {
+func (r *usersRepo) UpdateUserLastSeen(ctx context.Context, userID int64, lastSeenTime time.Time) error {
 	return r.db.User.UpdateOneID(userID).
-		SetLastLoginAt(activityTime).
-		SetUpdatedAt(activityTime).
+		SetLastSeen(lastSeenTime).
 		Exec(ctx)
 }
 
