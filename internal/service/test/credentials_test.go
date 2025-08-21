@@ -368,7 +368,7 @@ func TestCredentialsService_RefreshCredential_SuccessCases(t *testing.T) {
 	result, err := credentialService.RefreshCredential(ctx, req)
 	require.NoError(t, err)
 	require.NotNil(t, result)
-	require.Equal(t, service.UserCredentialToV1Credential(updatedCred), result.Credential)
+	require.Equal(t, service.UserCredentialToV1Credential(updatedCred), result.GetCredential())
 }
 
 func TestCredentialsService_RefreshCredential_ErrorCases(t *testing.T) {

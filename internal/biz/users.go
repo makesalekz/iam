@@ -104,39 +104,6 @@ func btoi(b bool) int64 {
 	return 0
 }
 
-func (uc *UsersUsecase) includePrivacies(ctx context.Context, users ...*UserItem) error {
-	userIDs := make([]int64, len(users))
-	for i, user := range users {
-		userIDs[i] = user.ID
-	}
-
-	usersPrivacies, err := uc.privaciesRepo.GetPrivacies(ctx, userIDs)
-	if err != nil {
-		return v1.ErrorServiceFailed("privacy: %s", err.Error())
-	}
-
-	privaciesMap := make(map[int64]map[string]string)
-	for _, userPrivacies := range usersPrivacies {
-		if privaciesMap[userPrivacies.UserID] == nil {
-			privaciesMap[userPrivacies.UserID] = data.DefaultPrivacies()
-		}
-		privaciesMap[userPrivacies.UserID][string(userPrivacies.Setting)] = string(userPrivacies.Option)
-	}
-
-	for _, user := range users {
-		privacy, ok := privaciesMap[user.ID]
-		if !ok {
-			user.Privacies = data.DefaultPrivacies()
-
-			continue
-		}
-
-		user.Privacies = privacy
-	}
-
-	return nil
-}
-
 func (uc *UsersUsecase) DeleteUserData(ctx context.Context) {
 	users, err := uc.usersRepo.GetUsersToDelete(ctx)
 	if err != nil {
