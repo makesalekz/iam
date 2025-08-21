@@ -181,6 +181,7 @@ mock:
 	mockgen -source internal/data/remote/contacts.go -destination internal/data/mock/contacts.go -package mock
 	mockgen -source internal/data/remote/events.go -destination internal/data/mock/events.go -package mock
 	mockgen -source internal/data/remote/media.go -destination internal/data/mock/media.go -package mock
+	mockgen -source internal/data/remote/websockets.go -destination internal/data/mock/websockets.go -package mock
 	mockgen -source internal/data/remote/notifications.go -destination internal/data/mock/notifications.go -package mock
 	mockgen -source internal/data/remote/tenants.go -destination internal/data/mock/tenants.go -package mock
 	mockgen -source internal/data/integration/provider_manager.go -destination internal/data/mock/provider_manager.go -package mock
