@@ -1,5 +1,5 @@
 // nolint: dupl // different services
-package dialer
+package remote
 
 import (
 	"context"
@@ -75,7 +75,10 @@ func (r *EventsRemote) DisconnectExternalCalendarsBulk(ctx context.Context, cred
 		return err
 	}
 
-	_, err = client.DisconnectExternalCalendarsBulk(ctx, &events_v1.DisconnectExternalCalendarsBulkRequest{CredentialId: credentialID})
+	_, err = client.DisconnectExternalCalendarsBulk(
+		ctx,
+		&events_v1.DisconnectExternalCalendarsBulkRequest{CredentialId: credentialID},
+	)
 	if err != nil {
 		return err
 	}

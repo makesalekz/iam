@@ -7,9 +7,9 @@ import (
 	"gitlab.calendaria.team/services/iam/ent"
 	"gitlab.calendaria.team/services/iam/ent/mixins"
 	"gitlab.calendaria.team/services/iam/internal/data"
-	"gitlab.calendaria.team/services/iam/internal/data/dialer"
 	"gitlab.calendaria.team/services/iam/internal/data/errors"
 	"gitlab.calendaria.team/services/iam/internal/data/integration"
+	"gitlab.calendaria.team/services/iam/internal/data/remote"
 	u_struc "gitlab.calendaria.team/services/utils/v2/struc"
 	"gitlab.calendaria.team/services/utils/v4/config"
 	u_jwt "gitlab.calendaria.team/services/utils/v4/jwt"
@@ -24,7 +24,7 @@ type CredentialsUsecase struct {
 	queue           u_nats.IQueueManager
 	jwt             u_jwt.IJwtProcessor
 	provider        integration.IProviderManager
-	events          dialer.IEventsRemote
+	events          remote.IEventsRemote
 	credentialsRepo data.CredentialsRepo
 }
 
@@ -34,7 +34,7 @@ func NewCredentialsUsecase(
 	queue u_nats.IQueueManager,
 	jwt u_jwt.IJwtProcessor,
 	provide integration.IProviderManager,
-	events dialer.IEventsRemote,
+	events remote.IEventsRemote,
 	credentialsRepo data.CredentialsRepo,
 ) (*CredentialsUsecase, error) {
 	return &CredentialsUsecase{

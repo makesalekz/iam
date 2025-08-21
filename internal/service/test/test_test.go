@@ -31,6 +31,7 @@ type dataMock struct {
 	contacts        *mock.MockIContactsRemote
 	events          *mock.MockIEventsRemote
 	media           *mock.MockIMediaRemote
+	websockets      *mock.MockIWebsocketsRemote
 	tenants         *mock.MockITenantsRemote
 	notifications   *mock.MockINotificationsRemote
 	provider        *mock.MockIProviderManager
@@ -182,6 +183,7 @@ func createUsersService(t *testing.T) (context.Context, *dataMock, *service.User
 	chats := mock.NewMockIChatsRemote(ctrl)
 	events := mock.NewMockIEventsRemote(ctrl)
 	media := mock.NewMockIMediaRemote(ctrl)
+	websockets := mock.NewMockIWebsocketsRemote(ctrl)
 	usersRepo := mock.NewMockUsersRepo(ctrl)
 	otpRepo := mock.NewMockOtpRepo(ctrl)
 	privacyRepo := mock.NewMockPrivacyRepo(ctrl)
@@ -196,6 +198,7 @@ func createUsersService(t *testing.T) (context.Context, *dataMock, *service.User
 		chats:       chats,
 		events:      events,
 		media:       media,
+		websockets:  websockets,
 		usersRepo:   usersRepo,
 		otpRepo:     otpRepo,
 		privacyRepo: privacyRepo,
@@ -211,6 +214,7 @@ func createUsersService(t *testing.T) (context.Context, *dataMock, *service.User
 		chats,
 		events,
 		media,
+		websockets,
 		usersRepo,
 		otpRepo,
 		privacyRepo,
