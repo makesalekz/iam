@@ -282,24 +282,34 @@ func userItemToV1User(user *biz.UserItem) *v1.User {
 	}
 
 	replyUser := &v1.User{
-		Id:          user.ID,
-		Phone:       user.Phone,
-		Email:       user.Email,
-		Username:    user.Username,
-		Name:        user.Name,
-		Bio:         user.Bio,
-		Avatar:      user.Avatar,
-		Timezone:    user.Timezone,
-		CreatedAt:   user.CreatedAt.Format(time.RFC3339),
-		UpdatedAt:   user.UpdatedAt.Format(time.RFC3339),
-		LastLoginAt: user.LastLoginAt.Format(time.RFC3339),
-		IsActive:    user.IsActive,
-		IsBlocked:   &user.IsBlocked,
+		Id:                  user.ID,
+		Phone:               user.Phone,
+		Email:               user.Email,
+		Username:            user.Username,
+		Name:                user.Name,
+		Bio:                 user.Bio,
+		Avatar:              user.Avatar,
+		Timezone:            user.Timezone,
+		CreatedAt:           user.CreatedAt.Format(time.RFC3339),
+		UpdatedAt:           user.UpdatedAt.Format(time.RFC3339),
+		LastLoginAt:         user.LastLoginAt.Format(time.RFC3339),
+		IsActive:            user.IsActive,
+		IsBlocked:           &user.IsBlocked,
+		IsOnline:            user.IsOnline,
+		IsLastSeenAvailable: user.IsLastSeenAvailable,
 	}
 
-	if user.LastSeen != nil {
+	switch {
+	case user.CachedLastSeen != nil:
+		replyUser.LastActivityAt = user.CachedLastSeen.Format(time.RFC3339) // TODO: deprecated
+		replyUser.LastSeen = user.CachedLastSeen.Format(time.RFC3339)
+	case !user.IsOnline && user.LastSeen != nil:
 		replyUser.LastActivityAt = user.LastSeen.Format(time.RFC3339) // TODO: deprecated
 		replyUser.LastSeen = user.LastSeen.Format(time.RFC3339)
+	default:
+		timeZero := time.Time{}
+		replyUser.LastActivityAt = timeZero.Format(time.RFC3339) // TODO: deprecated
+		replyUser.LastSeen = timeZero.Format(time.RFC3339)
 	}
 
 	if user.WithVerified {
@@ -317,16 +327,26 @@ func userItemToV1User(user *biz.UserItem) *v1.User {
 
 func userItemToV1ShortUser(user *biz.UserItem) *v1.UserShort {
 	replyUser := &v1.UserShort{
-		Id:          user.ID,
-		Name:        user.Name,
-		LastLoginAt: user.LastLoginAt.Format(time.RFC3339),
-		Privacies:   user.Privacies,
-		IsBlocked:   &user.IsBlocked,
+		Id:                  user.ID,
+		Name:                user.Name,
+		LastLoginAt:         user.LastLoginAt.Format(time.RFC3339),
+		Privacies:           user.Privacies,
+		IsBlocked:           &user.IsBlocked,
+		IsOnline:            user.IsOnline,
+		IsLastSeenAvailable: user.IsLastSeenAvailable,
 	}
 
-	if user.LastSeen != nil {
+	switch {
+	case user.CachedLastSeen != nil:
+		replyUser.LastActivityAt = user.CachedLastSeen.Format(time.RFC3339) // TODO: deprecated
+		replyUser.LastSeen = user.CachedLastSeen.Format(time.RFC3339)
+	case !user.IsOnline && user.LastSeen != nil:
 		replyUser.LastActivityAt = user.LastSeen.Format(time.RFC3339) // TODO: deprecated
 		replyUser.LastSeen = user.LastSeen.Format(time.RFC3339)
+	default:
+		timeZero := time.Time{}
+		replyUser.LastActivityAt = timeZero.Format(time.RFC3339) // TODO: deprecated
+		replyUser.LastSeen = timeZero.Format(time.RFC3339)
 	}
 
 	if user.WithVerified {

@@ -40,4 +40,6 @@ message Discovery {
   google.protobuf.Duration events_timeout = 10;
   string media = 11;
   google.protobuf.Duration media_timeout = 12;
+  string websockets = 13;
+  google.protobuf.Duration websockets_timeout = 14;
 }

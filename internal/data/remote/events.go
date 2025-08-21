@@ -1,5 +1,5 @@
 // nolint: dupl // different services
-package dialer
+package remote
 
 import (
 	"context"
