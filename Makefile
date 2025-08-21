@@ -177,18 +177,18 @@ mock:
 	mockgen -source internal/data/credentials.go -destination internal/data/mock/credentials.go -package mock
 	mockgen -source internal/data/otp.go -destination internal/data/mock/otp.go -package mock
 	mockgen -source internal/data/privacy.go -destination internal/data/mock/privacy.go -package mock
-	mockgen -source internal/data/dialer/chats.go -destination internal/data/mock/chats.go -package mock
-	mockgen -source internal/data/dialer/contacts.go -destination internal/data/mock/contacts.go -package mock
-	mockgen -source internal/data/dialer/events.go -destination internal/data/mock/events.go -package mock
-	mockgen -source internal/data/dialer/media.go -destination internal/data/mock/media.go -package mock
-	mockgen -source internal/data/dialer/notifications.go -destination internal/data/mock/notifications.go -package mock
-	mockgen -source internal/data/dialer/tenants.go -destination internal/data/mock/tenants.go -package mock
+	mockgen -source internal/data/remote/chats.go -destination internal/data/mock/chats.go -package mock
+	mockgen -source internal/data/remote/contacts.go -destination internal/data/mock/contacts.go -package mock
+	mockgen -source internal/data/remote/events.go -destination internal/data/mock/events.go -package mock
+	mockgen -source internal/data/remote/media.go -destination internal/data/mock/media.go -package mock
+	mockgen -source internal/data/remote/notifications.go -destination internal/data/mock/notifications.go -package mock
+	mockgen -source internal/data/remote/tenants.go -destination internal/data/mock/tenants.go -package mock
 	mockgen -source internal/data/integration/provider_manager.go -destination internal/data/mock/provider_manager.go -package mock
 	mockgen -source internal/data/integration/provider_gateway.go -destination internal/data/mock/provider_gateway.go -package mock
 
 interfaces:
-	ifacemaker -f internal/data/dialer/tenants.go -s  TenantsRemote -i ITenantRemote -p data -o internal/data/dialer/tenant_interface.go
-	ifacemaker -f internal/data/dialer/notifications.go -s  NotificationsRemote -i INotificationsRemote -p data -o internal/data/dialer/notifications_interface.go
+	ifacemaker -f internal/data/remote/tenants.go -s  TenantsRemote -i ITenantRemote -p data -o internal/data/remote/tenant_interface.go
+	ifacemaker -f internal/data/remote/notifications.go -s  NotificationsRemote -i INotificationsRemote -p data -o internal/data/remote/notifications_interface.go
 
 # show help
 help:

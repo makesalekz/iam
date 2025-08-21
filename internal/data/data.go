@@ -6,8 +6,8 @@ import (
 
 	"gitlab.calendaria.team/services/iam/ent"
 	"gitlab.calendaria.team/services/iam/internal/conf"
-	"gitlab.calendaria.team/services/iam/internal/data/remote"
 	"gitlab.calendaria.team/services/iam/internal/data/integration"
+	"gitlab.calendaria.team/services/iam/internal/data/remote"
 	u_config "gitlab.calendaria.team/services/utils/v4/config"
 	u_dialer "gitlab.calendaria.team/services/utils/v4/dialer"
 	u_jwt "gitlab.calendaria.team/services/utils/v4/jwt"

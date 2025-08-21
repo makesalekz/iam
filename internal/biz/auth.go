@@ -10,8 +10,8 @@ import (
 	"gitlab.calendaria.team/services/iam/ent"
 	"gitlab.calendaria.team/services/iam/ent/enum"
 	"gitlab.calendaria.team/services/iam/internal/data"
-	"gitlab.calendaria.team/services/iam/internal/data/remote"
 	"gitlab.calendaria.team/services/iam/internal/data/dto"
+	"gitlab.calendaria.team/services/iam/internal/data/remote"
 	u_auth "gitlab.calendaria.team/services/utils/v2/auth"
 	u_struc "gitlab.calendaria.team/services/utils/v2/struc"
 	u_jwt "gitlab.calendaria.team/services/utils/v4/jwt"
@@ -32,10 +32,10 @@ const (
 type AuthUsecase struct {
 	log                  *log.Helper
 	jwt                  u_jwt.IJwtProcessor
-	queue         u_nats.IQueueManager
-	tenants       remote.ITenantsRemote
-	notifications remote.INotificationsRemote
-	usersRepo     data.UsersRepo
+	queue                u_nats.IQueueManager
+	tenants              remote.ITenantsRemote
+	notifications        remote.INotificationsRemote
+	usersRepo            data.UsersRepo
 	otpRepo              data.OtpRepo
 	accessTokenDuration  time.Duration
 	refreshTokenDuration time.Duration
