@@ -35,32 +35,32 @@ func (m *MockIWebsocketsRemote) EXPECT() *MockIWebsocketsRemoteMockRecorder {
 	return m.recorder
 }
 
-// GetUserPresence mocks base method.
-func (m *MockIWebsocketsRemote) GetUserPresence(ctx context.Context, userID int64) (*websockets_v1.UserPresenceModel, error) {
+// GetUserStatus mocks base method.
+func (m *MockIWebsocketsRemote) GetUserStatus(ctx context.Context, userID int64) (*websockets_v1.UserStatusReply, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetUserPresence", ctx, userID)
-	ret0, _ := ret[0].(*websockets_v1.UserPresenceModel)
+	ret := m.ctrl.Call(m, "GetUserStatus", ctx, userID)
+	ret0, _ := ret[0].(*websockets_v1.UserStatusReply)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
-// GetUserPresence indicates an expected call of GetUserPresence.
-func (mr *MockIWebsocketsRemoteMockRecorder) GetUserPresence(ctx, userID interface{}) *gomock.Call {
+// GetUserStatus indicates an expected call of GetUserStatus.
+func (mr *MockIWebsocketsRemoteMockRecorder) GetUserStatus(ctx, userID interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetUserPresence", reflect.TypeOf((*MockIWebsocketsRemote)(nil).GetUserPresence), ctx, userID)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetUserStatus", reflect.TypeOf((*MockIWebsocketsRemote)(nil).GetUserStatus), ctx, userID)
 }
 
-// ListUsersPresences mocks base method.
-func (m *MockIWebsocketsRemote) ListUsersPresences(ctx context.Context, usersIDs []int64) (map[int64]*websockets_v1.UserPresenceModel, error) {
+// ListUsersStatuses mocks base method.
+func (m *MockIWebsocketsRemote) ListUsersStatuses(ctx context.Context, usersIDs []int64) (map[int64]*websockets_v1.UserStatusModel, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "ListUsersPresences", ctx, usersIDs)
-	ret0, _ := ret[0].(map[int64]*websockets_v1.UserPresenceModel)
+	ret := m.ctrl.Call(m, "ListUsersStatuses", ctx, usersIDs)
+	ret0, _ := ret[0].(map[int64]*websockets_v1.UserStatusModel)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
-// ListUsersPresences indicates an expected call of ListUsersPresences.
-func (mr *MockIWebsocketsRemoteMockRecorder) ListUsersPresences(ctx, usersIDs interface{}) *gomock.Call {
+// ListUsersStatuses indicates an expected call of ListUsersStatuses.
+func (mr *MockIWebsocketsRemoteMockRecorder) ListUsersStatuses(ctx, usersIDs interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListUsersPresences", reflect.TypeOf((*MockIWebsocketsRemote)(nil).ListUsersPresences), ctx, usersIDs)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListUsersStatuses", reflect.TypeOf((*MockIWebsocketsRemote)(nil).ListUsersStatuses), ctx, usersIDs)
 }
