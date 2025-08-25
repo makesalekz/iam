@@ -383,7 +383,16 @@ func (uc *UsersUsecase) GetUsers(ctx context.Context, filter data.GetUsersFilter
 	}
 
 	for _, user := range replyUsers {
-		if presences[user.ID].LastSeen != nil {
+		if user == nil {
+			continue
+		}
+
+		presence, ok := presences[user.ID]
+		if !ok || presence == nil {
+			continue
+		}
+
+		if presence.LastSeen != nil {
 			lastSeen, err2 := time.Parse(time.RFC3339, presences[user.ID].GetLastSeen())
 			if err2 != nil {
 				uc.log.Errorf("can't parse lastSeen: %s", err2.Error())
@@ -392,7 +401,7 @@ func (uc *UsersUsecase) GetUsers(ctx context.Context, filter data.GetUsersFilter
 			user.CachedLastSeen = &lastSeen
 		}
 		user.IsLastSeenAvailable = false
-		user.IsOnline = presences[user.ID].GetIsOnline()
+		user.IsOnline = presence.GetIsOnline()
 
 		lastVisit, ok := privaciesMap[user.ID][string(enum.LastVisit)]
 		if !ok {
