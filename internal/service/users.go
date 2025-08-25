@@ -300,9 +300,6 @@ func userItemToV1User(user *biz.UserItem) *v1.User {
 	}
 
 	switch {
-	case user.CachedLastSeen != nil:
-		replyUser.LastActivityAt = user.CachedLastSeen.Format(time.RFC3339) // TODO: deprecated
-		replyUser.LastSeen = user.CachedLastSeen.Format(time.RFC3339)
 	case !user.IsOnline && user.LastSeen != nil:
 		replyUser.LastActivityAt = user.LastSeen.Format(time.RFC3339) // TODO: deprecated
 		replyUser.LastSeen = user.LastSeen.Format(time.RFC3339)
@@ -337,9 +334,6 @@ func userItemToV1ShortUser(user *biz.UserItem) *v1.UserShort {
 	}
 
 	switch {
-	case user.CachedLastSeen != nil:
-		replyUser.LastActivityAt = user.CachedLastSeen.Format(time.RFC3339) // TODO: deprecated
-		replyUser.LastSeen = user.CachedLastSeen.Format(time.RFC3339)
 	case !user.IsOnline && user.LastSeen != nil:
 		replyUser.LastActivityAt = user.LastSeen.Format(time.RFC3339) // TODO: deprecated
 		replyUser.LastSeen = user.LastSeen.Format(time.RFC3339)

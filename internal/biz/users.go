@@ -31,7 +31,6 @@ type UserItem struct {
 	WithVerified        bool
 	IsOnline            bool
 	IsLastSeenAvailable bool
-	CachedLastSeen      *time.Time
 }
 
 // UsersUsecase .
@@ -213,22 +212,14 @@ func (uc *UsersUsecase) GetUserProfile(ctx context.Context, filter data.GetUserF
 		User: user,
 	}
 
-	presence, err := uc.websockets.GetUserPresence(ctx, user.ID)
+	status, err := uc.websockets.GetUserStatus(ctx, user.ID)
 	if err != nil {
-		uc.log.Errorf("failed to fetch user presence: %s", err)
+		uc.log.Errorf("failed to fetch user status: %s", err)
 		return replyUser, nil
 	}
 
-	if presence.LastSeen != nil {
-		lastSeen, err2 := time.Parse(time.RFC3339, presence.GetLastSeen())
-		if err2 != nil {
-			uc.log.Errorf("can't parse lastSeen: %s", err2.Error())
-		}
-
-		replyUser.CachedLastSeen = &lastSeen
-	}
 	replyUser.IsLastSeenAvailable = false
-	replyUser.IsOnline = presence.GetIsOnline()
+	replyUser.IsOnline = status.GetIsOnline()
 
 	privacy, err := uc.privaciesRepo.GetPrivacy(ctx, user.ID)
 	if err != nil {
@@ -376,7 +367,7 @@ func (uc *UsersUsecase) GetUsers(ctx context.Context, filter data.GetUsersFilter
 		privaciesMap[userPrivacies.UserID][string(userPrivacies.Setting)] = string(userPrivacies.Option)
 	}
 
-	presences, err := uc.websockets.ListUsersPresences(ctx, filter.UsersIDs)
+	usersStatuses, err := uc.websockets.ListUsersStatuses(ctx, filter.UsersIDs)
 	if err != nil {
 		uc.log.Errorf("failed to fetch user presence: %s", err)
 		return replyUsers, nil
@@ -387,24 +378,12 @@ func (uc *UsersUsecase) GetUsers(ctx context.Context, filter data.GetUsersFilter
 			continue
 		}
 
-		presence, ok := presences[user.ID]
-		if !ok || presence == nil {
-			continue
-		}
-
-		if presence.LastSeen != nil {
-			lastSeen, err2 := time.Parse(time.RFC3339, presences[user.ID].GetLastSeen())
-			if err2 != nil {
-				uc.log.Errorf("can't parse lastSeen: %s", err2.Error())
-			}
-
-			user.CachedLastSeen = &lastSeen
-		}
+		status := usersStatuses[user.ID]
 		user.IsLastSeenAvailable = false
-		user.IsOnline = presence.GetIsOnline()
+		user.IsOnline = status.GetIsOnline()
 
-		lastVisit, ok := privaciesMap[user.ID][string(enum.LastVisit)]
-		if !ok {
+		lastVisit, exists := privaciesMap[user.ID][string(enum.LastVisit)]
+		if !exists {
 			user.IsLastSeenAvailable = true
 			continue
 		}
