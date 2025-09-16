@@ -20,19 +20,19 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	Users_GetOwnProfile_FullMethodName          = "/iam.v1.Users/GetOwnProfile"
-	Users_UpdateOwnProfile_FullMethodName       = "/iam.v1.Users/UpdateOwnProfile"
-	Users_DeleteOwnProfile_FullMethodName       = "/iam.v1.Users/DeleteOwnProfile"
-	Users_GetUserFull_FullMethodName            = "/iam.v1.Users/GetUserFull"
-	Users_GetUserByFilterFull_FullMethodName    = "/iam.v1.Users/GetUserByFilterFull"
-	Users_GetUser_FullMethodName                = "/iam.v1.Users/GetUser"
-	Users_GetUserByFilter_FullMethodName        = "/iam.v1.Users/GetUserByFilter"
-	Users_GetUsers_FullMethodName               = "/iam.v1.Users/GetUsers"
-	Users_ListUsers_FullMethodName              = "/iam.v1.Users/ListUsers"
-	Users_UpdateUserActivityTime_FullMethodName = "/iam.v1.Users/UpdateUserActivityTime"
-	Users_BlockUser_FullMethodName              = "/iam.v1.Users/BlockUser"
-	Users_UnblockUser_FullMethodName            = "/iam.v1.Users/UnblockUser"
-	Users_DeleteUser_FullMethodName             = "/iam.v1.Users/DeleteUser"
+	Users_GetOwnProfile_FullMethodName       = "/iam.v1.Users/GetOwnProfile"
+	Users_UpdateOwnProfile_FullMethodName    = "/iam.v1.Users/UpdateOwnProfile"
+	Users_DeleteOwnProfile_FullMethodName    = "/iam.v1.Users/DeleteOwnProfile"
+	Users_GetUserFull_FullMethodName         = "/iam.v1.Users/GetUserFull"
+	Users_GetUserByFilterFull_FullMethodName = "/iam.v1.Users/GetUserByFilterFull"
+	Users_GetUser_FullMethodName             = "/iam.v1.Users/GetUser"
+	Users_GetUserByFilter_FullMethodName     = "/iam.v1.Users/GetUserByFilter"
+	Users_GetUsers_FullMethodName            = "/iam.v1.Users/GetUsers"
+	Users_ListUsers_FullMethodName           = "/iam.v1.Users/ListUsers"
+	Users_UpdateUserLastSeen_FullMethodName  = "/iam.v1.Users/UpdateUserLastSeen"
+	Users_BlockUser_FullMethodName           = "/iam.v1.Users/BlockUser"
+	Users_UnblockUser_FullMethodName         = "/iam.v1.Users/UnblockUser"
+	Users_DeleteUser_FullMethodName          = "/iam.v1.Users/DeleteUser"
 )
 
 // UsersClient is the client API for Users service.
@@ -71,10 +71,10 @@ type UsersClient interface {
 	// Request: IDs, or search filter
 	// Returns: users' short information
 	ListUsers(ctx context.Context, in *ListUsersRequest, opts ...grpc.CallOption) (*UsersReply, error)
-	// Update user activity time this method is used s2s
-	// Request: user ID and activity time
+	// Update user last seen (online) time this method is used s2s
+	// Request: user ID and last seen time
 	// Returns: empty reply
-	UpdateUserActivityTime(ctx context.Context, in *UpdateActivityTimeRequest, opts ...grpc.CallOption) (*v1.EmptyReply, error)
+	UpdateUserLastSeen(ctx context.Context, in *UpdateLastSeenRequest, opts ...grpc.CallOption) (*v1.EmptyReply, error)
 	// Block user
 	// Request: user ID
 	// Return: empty reply
@@ -187,10 +187,10 @@ func (c *usersClient) ListUsers(ctx context.Context, in *ListUsersRequest, opts 
 	return out, nil
 }
 
-func (c *usersClient) UpdateUserActivityTime(ctx context.Context, in *UpdateActivityTimeRequest, opts ...grpc.CallOption) (*v1.EmptyReply, error) {
+func (c *usersClient) UpdateUserLastSeen(ctx context.Context, in *UpdateLastSeenRequest, opts ...grpc.CallOption) (*v1.EmptyReply, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(v1.EmptyReply)
-	err := c.cc.Invoke(ctx, Users_UpdateUserActivityTime_FullMethodName, in, out, cOpts...)
+	err := c.cc.Invoke(ctx, Users_UpdateUserLastSeen_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -263,10 +263,10 @@ type UsersServer interface {
 	// Request: IDs, or search filter
 	// Returns: users' short information
 	ListUsers(context.Context, *ListUsersRequest) (*UsersReply, error)
-	// Update user activity time this method is used s2s
-	// Request: user ID and activity time
+	// Update user last seen (online) time this method is used s2s
+	// Request: user ID and last seen time
 	// Returns: empty reply
-	UpdateUserActivityTime(context.Context, *UpdateActivityTimeRequest) (*v1.EmptyReply, error)
+	UpdateUserLastSeen(context.Context, *UpdateLastSeenRequest) (*v1.EmptyReply, error)
 	// Block user
 	// Request: user ID
 	// Return: empty reply
@@ -316,8 +316,8 @@ func (UnimplementedUsersServer) GetUsers(context.Context, *GetUsersRequest) (*Us
 func (UnimplementedUsersServer) ListUsers(context.Context, *ListUsersRequest) (*UsersReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListUsers not implemented")
 }
-func (UnimplementedUsersServer) UpdateUserActivityTime(context.Context, *UpdateActivityTimeRequest) (*v1.EmptyReply, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method UpdateUserActivityTime not implemented")
+func (UnimplementedUsersServer) UpdateUserLastSeen(context.Context, *UpdateLastSeenRequest) (*v1.EmptyReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateUserLastSeen not implemented")
 }
 func (UnimplementedUsersServer) BlockUser(context.Context, *GetUserRequest) (*v1.EmptyReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method BlockUser not implemented")
@@ -511,20 +511,20 @@ func _Users_ListUsers_Handler(srv interface{}, ctx context.Context, dec func(int
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Users_UpdateUserActivityTime_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(UpdateActivityTimeRequest)
+func _Users_UpdateUserLastSeen_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateLastSeenRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(UsersServer).UpdateUserActivityTime(ctx, in)
+		return srv.(UsersServer).UpdateUserLastSeen(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: Users_UpdateUserActivityTime_FullMethodName,
+		FullMethod: Users_UpdateUserLastSeen_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(UsersServer).UpdateUserActivityTime(ctx, req.(*UpdateActivityTimeRequest))
+		return srv.(UsersServer).UpdateUserLastSeen(ctx, req.(*UpdateLastSeenRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -627,8 +627,8 @@ var Users_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _Users_ListUsers_Handler,
 		},
 		{
-			MethodName: "UpdateUserActivityTime",
-			Handler:    _Users_UpdateUserActivityTime_Handler,
+			MethodName: "UpdateUserLastSeen",
+			Handler:    _Users_UpdateUserLastSeen_Handler,
 		},
 		{
 			MethodName: "BlockUser",

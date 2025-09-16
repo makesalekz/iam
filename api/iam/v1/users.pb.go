@@ -599,28 +599,28 @@ func (x *UsersReply) GetUsers() []*UserShort {
 	return nil
 }
 
-type UpdateActivityTimeRequest struct {
+type UpdateLastSeenRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	UserId        int64                  `protobuf:"varint,1,opt,name=userId,proto3" json:"userId,omitempty"`
-	ActivityTime  string                 `protobuf:"bytes,2,opt,name=activityTime,proto3" json:"activityTime,omitempty"` // RFC 3339 format
+	LastSeenTime  string                 `protobuf:"bytes,2,opt,name=lastSeenTime,proto3" json:"lastSeenTime,omitempty"` // RFC 3339 format
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
-func (x *UpdateActivityTimeRequest) Reset() {
-	*x = UpdateActivityTimeRequest{}
+func (x *UpdateLastSeenRequest) Reset() {
+	*x = UpdateLastSeenRequest{}
 	mi := &file_api_iam_v1_users_proto_msgTypes[9]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *UpdateActivityTimeRequest) String() string {
+func (x *UpdateLastSeenRequest) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*UpdateActivityTimeRequest) ProtoMessage() {}
+func (*UpdateLastSeenRequest) ProtoMessage() {}
 
-func (x *UpdateActivityTimeRequest) ProtoReflect() protoreflect.Message {
+func (x *UpdateLastSeenRequest) ProtoReflect() protoreflect.Message {
 	mi := &file_api_iam_v1_users_proto_msgTypes[9]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -632,21 +632,21 @@ func (x *UpdateActivityTimeRequest) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use UpdateActivityTimeRequest.ProtoReflect.Descriptor instead.
-func (*UpdateActivityTimeRequest) Descriptor() ([]byte, []int) {
+// Deprecated: Use UpdateLastSeenRequest.ProtoReflect.Descriptor instead.
+func (*UpdateLastSeenRequest) Descriptor() ([]byte, []int) {
 	return file_api_iam_v1_users_proto_rawDescGZIP(), []int{9}
 }
 
-func (x *UpdateActivityTimeRequest) GetUserId() int64 {
+func (x *UpdateLastSeenRequest) GetUserId() int64 {
 	if x != nil {
 		return x.UserId
 	}
 	return 0
 }
 
-func (x *UpdateActivityTimeRequest) GetActivityTime() string {
+func (x *UpdateLastSeenRequest) GetLastSeenTime() string {
 	if x != nil {
-		return x.ActivityTime
+		return x.LastSeenTime
 	}
 	return ""
 }
@@ -692,10 +692,10 @@ const file_api_iam_v1_users_proto_rawDesc = "" +
 	"\bpaginate\x18\b \x01(\v2\x19.utils.v1.PaginateRequestR\bpaginate\"5\n" +
 	"\n" +
 	"UsersReply\x12'\n" +
-	"\x05users\x18\x01 \x03(\v2\x11.iam.v1.UserShortR\x05users\"W\n" +
-	"\x19UpdateActivityTimeRequest\x12\x16\n" +
+	"\x05users\x18\x01 \x03(\v2\x11.iam.v1.UserShortR\x05users\"S\n" +
+	"\x15UpdateLastSeenRequest\x12\x16\n" +
 	"\x06userId\x18\x01 \x01(\x03R\x06userId\x12\"\n" +
-	"\factivityTime\x18\x02 \x01(\tR\factivityTime2\xd8\x06\n" +
+	"\flastSeenTime\x18\x02 \x01(\tR\flastSeenTime2\xd0\x06\n" +
 	"\x05Users\x12>\n" +
 	"\rGetOwnProfile\x12\x16.utils.v1.EmptyRequest\x1a\x15.iam.v1.UserFullReply\x12J\n" +
 	"\x10UpdateOwnProfile\x12\x1f.iam.v1.UpdateOwnProfileRequest\x1a\x15.iam.v1.UserFullReply\x12@\n" +
@@ -705,8 +705,8 @@ const file_api_iam_v1_users_proto_rawDesc = "" +
 	"\aGetUser\x12\x16.iam.v1.GetUserRequest\x1a\x11.iam.v1.UserReply\x12D\n" +
 	"\x0fGetUserByFilter\x12\x1e.iam.v1.GetUserByFilterRequest\x1a\x11.iam.v1.UserReply\x127\n" +
 	"\bGetUsers\x12\x17.iam.v1.GetUsersRequest\x1a\x12.iam.v1.UsersReply\x129\n" +
-	"\tListUsers\x12\x18.iam.v1.ListUsersRequest\x1a\x12.iam.v1.UsersReply\x12Q\n" +
-	"\x16UpdateUserActivityTime\x12!.iam.v1.UpdateActivityTimeRequest\x1a\x14.utils.v1.EmptyReply\x129\n" +
+	"\tListUsers\x12\x18.iam.v1.ListUsersRequest\x1a\x12.iam.v1.UsersReply\x12I\n" +
+	"\x12UpdateUserLastSeen\x12\x1d.iam.v1.UpdateLastSeenRequest\x1a\x14.utils.v1.EmptyReply\x129\n" +
 	"\tBlockUser\x12\x16.iam.v1.GetUserRequest\x1a\x14.utils.v1.EmptyReply\x12;\n" +
 	"\vUnblockUser\x12\x16.iam.v1.GetUserRequest\x1a\x14.utils.v1.EmptyReply\x12:\n" +
 	"\n" +
@@ -727,23 +727,23 @@ func file_api_iam_v1_users_proto_rawDescGZIP() []byte {
 
 var file_api_iam_v1_users_proto_msgTypes = make([]protoimpl.MessageInfo, 10)
 var file_api_iam_v1_users_proto_goTypes = []any{
-	(*UserFullReply)(nil),             // 0: iam.v1.UserFullReply
-	(*UpdateOwnProfileRequest)(nil),   // 1: iam.v1.UpdateOwnProfileRequest
-	(*GetUserRequest)(nil),            // 2: iam.v1.GetUserRequest
-	(*GetUserByFilterRequest)(nil),    // 3: iam.v1.GetUserByFilterRequest
-	(*SearchFilter)(nil),              // 4: iam.v1.SearchFilter
-	(*UserReply)(nil),                 // 5: iam.v1.UserReply
-	(*GetUsersRequest)(nil),           // 6: iam.v1.GetUsersRequest
-	(*ListUsersRequest)(nil),          // 7: iam.v1.ListUsersRequest
-	(*UsersReply)(nil),                // 8: iam.v1.UsersReply
-	(*UpdateActivityTimeRequest)(nil), // 9: iam.v1.UpdateActivityTimeRequest
-	(*User)(nil),                      // 10: iam.v1.User
-	(*TenantShort)(nil),               // 11: iam.v1.TenantShort
-	(*UserShort)(nil),                 // 12: iam.v1.UserShort
-	(*v1.SortRequest)(nil),            // 13: utils.v1.SortRequest
-	(*v1.PaginateRequest)(nil),        // 14: utils.v1.PaginateRequest
-	(*v1.EmptyRequest)(nil),           // 15: utils.v1.EmptyRequest
-	(*v1.EmptyReply)(nil),             // 16: utils.v1.EmptyReply
+	(*UserFullReply)(nil),           // 0: iam.v1.UserFullReply
+	(*UpdateOwnProfileRequest)(nil), // 1: iam.v1.UpdateOwnProfileRequest
+	(*GetUserRequest)(nil),          // 2: iam.v1.GetUserRequest
+	(*GetUserByFilterRequest)(nil),  // 3: iam.v1.GetUserByFilterRequest
+	(*SearchFilter)(nil),            // 4: iam.v1.SearchFilter
+	(*UserReply)(nil),               // 5: iam.v1.UserReply
+	(*GetUsersRequest)(nil),         // 6: iam.v1.GetUsersRequest
+	(*ListUsersRequest)(nil),        // 7: iam.v1.ListUsersRequest
+	(*UsersReply)(nil),              // 8: iam.v1.UsersReply
+	(*UpdateLastSeenRequest)(nil),   // 9: iam.v1.UpdateLastSeenRequest
+	(*User)(nil),                    // 10: iam.v1.User
+	(*TenantShort)(nil),             // 11: iam.v1.TenantShort
+	(*UserShort)(nil),               // 12: iam.v1.UserShort
+	(*v1.SortRequest)(nil),          // 13: utils.v1.SortRequest
+	(*v1.PaginateRequest)(nil),      // 14: utils.v1.PaginateRequest
+	(*v1.EmptyRequest)(nil),         // 15: utils.v1.EmptyRequest
+	(*v1.EmptyReply)(nil),           // 16: utils.v1.EmptyReply
 }
 var file_api_iam_v1_users_proto_depIdxs = []int32{
 	10, // 0: iam.v1.UserFullReply.user:type_name -> iam.v1.User
@@ -762,7 +762,7 @@ var file_api_iam_v1_users_proto_depIdxs = []int32{
 	3,  // 13: iam.v1.Users.GetUserByFilter:input_type -> iam.v1.GetUserByFilterRequest
 	6,  // 14: iam.v1.Users.GetUsers:input_type -> iam.v1.GetUsersRequest
 	7,  // 15: iam.v1.Users.ListUsers:input_type -> iam.v1.ListUsersRequest
-	9,  // 16: iam.v1.Users.UpdateUserActivityTime:input_type -> iam.v1.UpdateActivityTimeRequest
+	9,  // 16: iam.v1.Users.UpdateUserLastSeen:input_type -> iam.v1.UpdateLastSeenRequest
 	2,  // 17: iam.v1.Users.BlockUser:input_type -> iam.v1.GetUserRequest
 	2,  // 18: iam.v1.Users.UnblockUser:input_type -> iam.v1.GetUserRequest
 	2,  // 19: iam.v1.Users.DeleteUser:input_type -> iam.v1.GetUserRequest
@@ -775,7 +775,7 @@ var file_api_iam_v1_users_proto_depIdxs = []int32{
 	5,  // 26: iam.v1.Users.GetUserByFilter:output_type -> iam.v1.UserReply
 	8,  // 27: iam.v1.Users.GetUsers:output_type -> iam.v1.UsersReply
 	8,  // 28: iam.v1.Users.ListUsers:output_type -> iam.v1.UsersReply
-	16, // 29: iam.v1.Users.UpdateUserActivityTime:output_type -> utils.v1.EmptyReply
+	16, // 29: iam.v1.Users.UpdateUserLastSeen:output_type -> utils.v1.EmptyReply
 	16, // 30: iam.v1.Users.BlockUser:output_type -> utils.v1.EmptyReply
 	16, // 31: iam.v1.Users.UnblockUser:output_type -> utils.v1.EmptyReply
 	16, // 32: iam.v1.Users.DeleteUser:output_type -> utils.v1.EmptyReply

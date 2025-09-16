@@ -203,24 +203,24 @@ func (s *UsersService) GetUserByFilterFull(
 	return &v1.UserFullReply{User: userItemToV1User(user)}, nil
 }
 
-func (s *UsersService) UpdateUserActivityTime(
+func (s *UsersService) UpdateUserLastSeen(
 	ctx context.Context,
-	req *v1.UpdateActivityTimeRequest,
+	req *v1.UpdateLastSeenRequest,
 ) (*utils_v1.EmptyReply, error) {
 	if req.GetUserId() == 0 {
 		return nil, v1.ErrorEmptyActorId("empty user id")
 	}
 
-	if req.GetActivityTime() == "" {
-		return nil, v1.ErrorInvalidRequest("empty activity time")
+	if req.GetLastSeenTime() == "" {
+		return nil, v1.ErrorInvalidRequest("empty last seen time")
 	}
 
-	activityTime, err := time.Parse(time.RFC3339, req.GetActivityTime())
+	lastSeenTime, err := time.Parse(time.RFC3339, req.GetLastSeenTime())
 	if err != nil {
-		return nil, v1.ErrorInvalidRequest("invalid activity time")
+		return nil, v1.ErrorInvalidRequest("invalid last seen time")
 	}
 
-	err = s.uc.UpdateUserActivityTime(ctx, req.GetUserId(), activityTime)
+	err = s.uc.UpdateUserLastSeen(ctx, req.GetUserId(), lastSeenTime)
 	if err != nil {
 		return nil, err
 	}
@@ -282,23 +282,31 @@ func userItemToV1User(user *biz.UserItem) *v1.User {
 	}
 
 	replyUser := &v1.User{
-		Id:          user.ID,
-		Phone:       user.Phone,
-		Email:       user.Email,
-		Username:    user.Username,
-		Name:        user.Name,
-		Bio:         user.Bio,
-		Avatar:      user.Avatar,
-		Timezone:    user.Timezone,
-		CreatedAt:   user.CreatedAt.Format(time.RFC3339),
-		UpdatedAt:   user.UpdatedAt.Format(time.RFC3339),
-		LastLoginAt: user.LastLoginAt.Format(time.RFC3339),
-		IsActive:    user.IsActive,
-		IsBlocked:   &user.IsBlocked,
+		Id:                  user.ID,
+		Phone:               user.Phone,
+		Email:               user.Email,
+		Username:            user.Username,
+		Name:                user.Name,
+		Bio:                 user.Bio,
+		Avatar:              user.Avatar,
+		Timezone:            user.Timezone,
+		CreatedAt:           user.CreatedAt.Format(time.RFC3339),
+		UpdatedAt:           user.UpdatedAt.Format(time.RFC3339),
+		LastLoginAt:         user.LastLoginAt.Format(time.RFC3339),
+		IsActive:            user.IsActive,
+		IsBlocked:           &user.IsBlocked,
+		IsOnline:            user.IsOnline,
+		IsLastSeenAvailable: user.IsLastSeenAvailable,
 	}
 
-	if user.LastActivityAt != nil {
-		replyUser.LastActivityAt = user.LastActivityAt.Format(time.RFC3339)
+	switch {
+	case !user.IsOnline && user.LastSeen != nil:
+		replyUser.LastActivityAt = user.LastSeen.Format(time.RFC3339) // TODO: deprecated
+		replyUser.LastSeen = user.LastSeen.Format(time.RFC3339)
+	default:
+		timeZero := time.Time{}
+		replyUser.LastActivityAt = timeZero.Format(time.RFC3339) // TODO: deprecated
+		replyUser.LastSeen = timeZero.Format(time.RFC3339)
 	}
 
 	if user.WithVerified {
@@ -316,15 +324,23 @@ func userItemToV1User(user *biz.UserItem) *v1.User {
 
 func userItemToV1ShortUser(user *biz.UserItem) *v1.UserShort {
 	replyUser := &v1.UserShort{
-		Id:          user.ID,
-		Name:        user.Name,
-		LastLoginAt: user.LastLoginAt.Format(time.RFC3339),
-		Privacies:   user.Privacies,
-		IsBlocked:   &user.IsBlocked,
+		Id:                  user.ID,
+		Name:                user.Name,
+		LastLoginAt:         user.LastLoginAt.Format(time.RFC3339),
+		Privacies:           user.Privacies,
+		IsBlocked:           &user.IsBlocked,
+		IsOnline:            user.IsOnline,
+		IsLastSeenAvailable: user.IsLastSeenAvailable,
 	}
 
-	if user.LastActivityAt != nil {
-		replyUser.LastActivityAt = user.LastActivityAt.Format(time.RFC3339)
+	switch {
+	case !user.IsOnline && user.LastSeen != nil:
+		replyUser.LastActivityAt = user.LastSeen.Format(time.RFC3339) // TODO: deprecated
+		replyUser.LastSeen = user.LastSeen.Format(time.RFC3339)
+	default:
+		timeZero := time.Time{}
+		replyUser.LastActivityAt = timeZero.Format(time.RFC3339) // TODO: deprecated
+		replyUser.LastSeen = timeZero.Format(time.RFC3339)
 	}
 
 	if user.WithVerified {

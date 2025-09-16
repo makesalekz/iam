@@ -30,7 +30,10 @@ message User {
   optional bool isPhoneVerified = 13;
   optional bool isEmailVerified = 14;
   optional bool isBlocked = 17;
-  string lastActivityAt = 16;
+  string lastActivityAt = 16; // TODO: deprecated
+  bool isOnline = 19;
+  bool isLastSeenAvailable = 20;
+  string lastSeen = 18;
 }
 
 /* User's short information */
@@ -43,7 +46,10 @@ message UserShort {
   string avatar = 6;
   // last login at in RFC 3339 format
   string lastLoginAt = 7;
-  string lastActivityAt = 13;
+  string lastActivityAt = 13; // TODO: deprecated
+  bool isOnline = 16;
+  bool isLastSeenAvailable = 17;
+  string lastSeen = 15;
   optional bool isPhoneVerified = 10;
   optional bool isEmailVerified = 11;
   optional bool isBlocked = 14;

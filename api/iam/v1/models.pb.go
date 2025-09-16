@@ -42,13 +42,16 @@ type User struct {
 	Username    *string `protobuf:"bytes,15,opt,name=username,proto3,oneof" json:"username,omitempty"`
 	Avatar      *string `protobuf:"bytes,11,opt,name=avatar,proto3,oneof" json:"avatar,omitempty"`
 	// bio updated at in RFC 3339 format
-	BioUpdatedAt    *string `protobuf:"bytes,12,opt,name=bioUpdatedAt,proto3,oneof" json:"bioUpdatedAt,omitempty"`
-	IsPhoneVerified *bool   `protobuf:"varint,13,opt,name=isPhoneVerified,proto3,oneof" json:"isPhoneVerified,omitempty"`
-	IsEmailVerified *bool   `protobuf:"varint,14,opt,name=isEmailVerified,proto3,oneof" json:"isEmailVerified,omitempty"`
-	IsBlocked       *bool   `protobuf:"varint,17,opt,name=isBlocked,proto3,oneof" json:"isBlocked,omitempty"`
-	LastActivityAt  string  `protobuf:"bytes,16,opt,name=lastActivityAt,proto3" json:"lastActivityAt,omitempty"`
-	unknownFields   protoimpl.UnknownFields
-	sizeCache       protoimpl.SizeCache
+	BioUpdatedAt        *string `protobuf:"bytes,12,opt,name=bioUpdatedAt,proto3,oneof" json:"bioUpdatedAt,omitempty"`
+	IsPhoneVerified     *bool   `protobuf:"varint,13,opt,name=isPhoneVerified,proto3,oneof" json:"isPhoneVerified,omitempty"`
+	IsEmailVerified     *bool   `protobuf:"varint,14,opt,name=isEmailVerified,proto3,oneof" json:"isEmailVerified,omitempty"`
+	IsBlocked           *bool   `protobuf:"varint,17,opt,name=isBlocked,proto3,oneof" json:"isBlocked,omitempty"`
+	LastActivityAt      string  `protobuf:"bytes,16,opt,name=lastActivityAt,proto3" json:"lastActivityAt,omitempty"` // TODO: deprecated
+	IsOnline            bool    `protobuf:"varint,19,opt,name=isOnline,proto3" json:"isOnline,omitempty"`
+	IsLastSeenAvailable bool    `protobuf:"varint,20,opt,name=isLastSeenAvailable,proto3" json:"isLastSeenAvailable,omitempty"`
+	LastSeen            string  `protobuf:"bytes,18,opt,name=lastSeen,proto3" json:"lastSeen,omitempty"`
+	unknownFields       protoimpl.UnknownFields
+	sizeCache           protoimpl.SizeCache
 }
 
 func (x *User) Reset() {
@@ -200,6 +203,27 @@ func (x *User) GetLastActivityAt() string {
 	return ""
 }
 
+func (x *User) GetIsOnline() bool {
+	if x != nil {
+		return x.IsOnline
+	}
+	return false
+}
+
+func (x *User) GetIsLastSeenAvailable() bool {
+	if x != nil {
+		return x.IsLastSeenAvailable
+	}
+	return false
+}
+
+func (x *User) GetLastSeen() string {
+	if x != nil {
+		return x.LastSeen
+	}
+	return ""
+}
+
 // User's short information
 type UserShort struct {
 	state    protoimpl.MessageState `protogen:"open.v1"`
@@ -210,14 +234,17 @@ type UserShort struct {
 	Name     string                 `protobuf:"bytes,4,opt,name=name,proto3" json:"name,omitempty"`
 	Avatar   string                 `protobuf:"bytes,6,opt,name=avatar,proto3" json:"avatar,omitempty"`
 	// last login at in RFC 3339 format
-	LastLoginAt     string            `protobuf:"bytes,7,opt,name=lastLoginAt,proto3" json:"lastLoginAt,omitempty"`
-	LastActivityAt  string            `protobuf:"bytes,13,opt,name=lastActivityAt,proto3" json:"lastActivityAt,omitempty"`
-	IsPhoneVerified *bool             `protobuf:"varint,10,opt,name=isPhoneVerified,proto3,oneof" json:"isPhoneVerified,omitempty"`
-	IsEmailVerified *bool             `protobuf:"varint,11,opt,name=isEmailVerified,proto3,oneof" json:"isEmailVerified,omitempty"`
-	IsBlocked       *bool             `protobuf:"varint,14,opt,name=isBlocked,proto3,oneof" json:"isBlocked,omitempty"`
-	Privacies       map[string]string `protobuf:"bytes,9,rep,name=privacies,proto3" json:"privacies,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
-	unknownFields   protoimpl.UnknownFields
-	sizeCache       protoimpl.SizeCache
+	LastLoginAt         string            `protobuf:"bytes,7,opt,name=lastLoginAt,proto3" json:"lastLoginAt,omitempty"`
+	LastActivityAt      string            `protobuf:"bytes,13,opt,name=lastActivityAt,proto3" json:"lastActivityAt,omitempty"` // TODO: deprecated
+	IsOnline            bool              `protobuf:"varint,16,opt,name=isOnline,proto3" json:"isOnline,omitempty"`
+	IsLastSeenAvailable bool              `protobuf:"varint,17,opt,name=isLastSeenAvailable,proto3" json:"isLastSeenAvailable,omitempty"`
+	LastSeen            string            `protobuf:"bytes,15,opt,name=lastSeen,proto3" json:"lastSeen,omitempty"`
+	IsPhoneVerified     *bool             `protobuf:"varint,10,opt,name=isPhoneVerified,proto3,oneof" json:"isPhoneVerified,omitempty"`
+	IsEmailVerified     *bool             `protobuf:"varint,11,opt,name=isEmailVerified,proto3,oneof" json:"isEmailVerified,omitempty"`
+	IsBlocked           *bool             `protobuf:"varint,14,opt,name=isBlocked,proto3,oneof" json:"isBlocked,omitempty"`
+	Privacies           map[string]string `protobuf:"bytes,9,rep,name=privacies,proto3" json:"privacies,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	unknownFields       protoimpl.UnknownFields
+	sizeCache           protoimpl.SizeCache
 }
 
 func (x *UserShort) Reset() {
@@ -302,6 +329,27 @@ func (x *UserShort) GetLastLoginAt() string {
 func (x *UserShort) GetLastActivityAt() string {
 	if x != nil {
 		return x.LastActivityAt
+	}
+	return ""
+}
+
+func (x *UserShort) GetIsOnline() bool {
+	if x != nil {
+		return x.IsOnline
+	}
+	return false
+}
+
+func (x *UserShort) GetIsLastSeenAvailable() bool {
+	if x != nil {
+		return x.IsLastSeenAvailable
+	}
+	return false
+}
+
+func (x *UserShort) GetLastSeen() string {
+	if x != nil {
+		return x.LastSeen
 	}
 	return ""
 }
@@ -568,7 +616,7 @@ var File_api_iam_v1_models_proto protoreflect.FileDescriptor
 
 const file_api_iam_v1_models_proto_rawDesc = "" +
 	"\n" +
-	"\x17api/iam/v1/models.proto\x12\x06iam.v1\"\x8b\x05\n" +
+	"\x17api/iam/v1/models.proto\x12\x06iam.v1\"\xf5\x05\n" +
 	"\x04User\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\x03R\x02id\x12\x12\n" +
 	"\x04name\x18\x02 \x01(\tR\x04name\x12\x10\n" +
@@ -587,7 +635,10 @@ const file_api_iam_v1_models_proto_rawDesc = "" +
 	"\x0fisPhoneVerified\x18\r \x01(\bH\x05R\x0fisPhoneVerified\x88\x01\x01\x12-\n" +
 	"\x0fisEmailVerified\x18\x0e \x01(\bH\x06R\x0fisEmailVerified\x88\x01\x01\x12!\n" +
 	"\tisBlocked\x18\x11 \x01(\bH\aR\tisBlocked\x88\x01\x01\x12&\n" +
-	"\x0elastActivityAt\x18\x10 \x01(\tR\x0elastActivityAtB\b\n" +
+	"\x0elastActivityAt\x18\x10 \x01(\tR\x0elastActivityAt\x12\x1a\n" +
+	"\bisOnline\x18\x13 \x01(\bR\bisOnline\x120\n" +
+	"\x13isLastSeenAvailable\x18\x14 \x01(\bR\x13isLastSeenAvailable\x12\x1a\n" +
+	"\blastSeen\x18\x12 \x01(\tR\blastSeenB\b\n" +
 	"\x06_phoneB\b\n" +
 	"\x06_emailB\v\n" +
 	"\t_usernameB\t\n" +
@@ -596,7 +647,7 @@ const file_api_iam_v1_models_proto_rawDesc = "" +
 	"\x10_isPhoneVerifiedB\x12\n" +
 	"\x10_isEmailVerifiedB\f\n" +
 	"\n" +
-	"_isBlocked\"\x8e\x04\n" +
+	"_isBlocked\"\xf8\x04\n" +
 	"\tUserShort\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\x03R\x02id\x12\x14\n" +
 	"\x05phone\x18\x02 \x01(\tR\x05phone\x12\x14\n" +
@@ -605,7 +656,10 @@ const file_api_iam_v1_models_proto_rawDesc = "" +
 	"\x04name\x18\x04 \x01(\tR\x04name\x12\x16\n" +
 	"\x06avatar\x18\x06 \x01(\tR\x06avatar\x12 \n" +
 	"\vlastLoginAt\x18\a \x01(\tR\vlastLoginAt\x12&\n" +
-	"\x0elastActivityAt\x18\r \x01(\tR\x0elastActivityAt\x12-\n" +
+	"\x0elastActivityAt\x18\r \x01(\tR\x0elastActivityAt\x12\x1a\n" +
+	"\bisOnline\x18\x10 \x01(\bR\bisOnline\x120\n" +
+	"\x13isLastSeenAvailable\x18\x11 \x01(\bR\x13isLastSeenAvailable\x12\x1a\n" +
+	"\blastSeen\x18\x0f \x01(\tR\blastSeen\x12-\n" +
 	"\x0fisPhoneVerified\x18\n" +
 	" \x01(\bH\x00R\x0fisPhoneVerified\x88\x01\x01\x12-\n" +
 	"\x0fisEmailVerified\x18\v \x01(\bH\x01R\x0fisEmailVerified\x88\x01\x01\x12!\n" +

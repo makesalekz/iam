@@ -31,7 +31,7 @@ func TestUsersService_UpdateOwnProfile_SuccessCases(t *testing.T) {
 			Email:    &req.Email,
 			Phone:    &req.Phone,
 			Username: &req.Username,
-			Timezone: req.Timezone,
+			Timezone: req.GetTimezone(),
 		}
 
 		repo.usersRepo.EXPECT().
@@ -49,11 +49,11 @@ func TestUsersService_UpdateOwnProfile_SuccessCases(t *testing.T) {
 		result, err := usersService.UpdateOwnProfile(ctx, req)
 		require.NoError(t, err)
 		require.NotNil(t, result)
-		require.Equal(t, ids.actorID, result.User.Id)
-		require.Equal(t, req.Email, *result.User.Email)
-		require.Equal(t, req.Phone, *result.User.Phone)
-		require.Equal(t, req.Username, *result.User.Username)
-		require.Equal(t, req.Timezone, result.User.Timezone)
+		require.Equal(t, ids.actorID, result.GetUser().GetId())
+		require.Equal(t, req.GetEmail(), result.GetUser().GetEmail())
+		require.Equal(t, req.GetPhone(), result.GetUser().GetPhone())
+		require.Equal(t, req.GetUsername(), result.GetUser().GetUsername())
+		require.Equal(t, req.GetTimezone(), result.GetUser().GetTimezone())
 	}
 }
 
@@ -169,7 +169,7 @@ func TestUsersService_UpdateOwnProfile_ErrorCases(t *testing.T) {
 		repo.usersRepo.EXPECT().
 			UpdateUserData(ctx, user, dto.UpdateUserDto{
 				UserID:   ids.actorID,
-				Username: req.Username,
+				Username: req.GetUsername(),
 			}).
 			Return(nil, &pq.Error{Code: "23505", Constraint: "users_username_key"})
 
@@ -194,7 +194,7 @@ func TestUsersService_UpdateOwnProfile_ErrorCases(t *testing.T) {
 		repo.usersRepo.EXPECT().
 			UpdateUserData(ctx, user, dto.UpdateUserDto{
 				UserID:   ids.actorID,
-				Username: req.Username,
+				Username: req.GetUsername(),
 			}).
 			Return(nil, errors.New("general db error"))
 
@@ -219,9 +219,9 @@ func TestUsersService_UpdateOwnProfile_ErrorCases(t *testing.T) {
 
 		repo.usersRepo.EXPECT().
 			UpdateUserData(ctx, user, dto.UpdateUserDto{
-				Username: req.Username,
+				Username: req.GetUsername(),
 				UserID:   ids.actorID,
-				Email:    req.Email,
+				Email:    req.GetEmail(),
 			}).
 			Return(nil, &pq.Error{Code: "23505", Constraint: "users_email_key"})
 
@@ -247,8 +247,8 @@ func TestUsersService_UpdateOwnProfile_ErrorCases(t *testing.T) {
 		repo.usersRepo.EXPECT().
 			UpdateUserData(ctx, user, dto.UpdateUserDto{
 				UserID:   ids.actorID,
-				Username: req.Username,
-				Phone:    req.Phone,
+				Username: req.GetUsername(),
+				Phone:    req.GetPhone(),
 			}).
 			Return(nil, &pq.Error{Code: "23505", Constraint: "users_phone_key"})
 

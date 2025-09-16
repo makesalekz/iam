@@ -1,0 +1,33 @@
+syntax = "proto3";
+
+package websockets.v1;
+
+option go_package = "gitlab.calendaria.team/services/websockets/api/websockets/v1;websockets_v1";
+option java_multiple_files = true;
+option java_package = "websockets.v1";
+
+service UserStatus {
+  rpc GetUserStatus(GetUserStatusRequest) returns (UserStatusReply);
+  rpc ListUsersStatuses(ListUsersStatusesRequest) returns (ListUsersStatusesReply);
+}
+
+message GetUserStatusRequest {
+  int64 userId = 1;
+}
+
+message UserStatusReply {
+  bool isOnline = 1;
+}
+
+message ListUsersStatusesRequest {
+  repeated int64 usersIds = 1;
+}
+
+message ListUsersStatusesReply {
+  repeated UserStatusModel usersStatuses = 1;
+}
+
+message UserStatusModel {
+  int64 userId = 1;
+  bool isOnline = 2;
+}

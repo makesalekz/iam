@@ -156,6 +156,8 @@ type Discovery struct {
 	EventsTimeout        *durationpb.Duration   `protobuf:"bytes,10,opt,name=events_timeout,json=eventsTimeout,proto3" json:"events_timeout,omitempty"`
 	Media                string                 `protobuf:"bytes,11,opt,name=media,proto3" json:"media,omitempty"`
 	MediaTimeout         *durationpb.Duration   `protobuf:"bytes,12,opt,name=media_timeout,json=mediaTimeout,proto3" json:"media_timeout,omitempty"`
+	Websockets           string                 `protobuf:"bytes,13,opt,name=websockets,proto3" json:"websockets,omitempty"`
+	WebsocketsTimeout    *durationpb.Duration   `protobuf:"bytes,14,opt,name=websockets_timeout,json=websocketsTimeout,proto3" json:"websockets_timeout,omitempty"`
 	unknownFields        protoimpl.UnknownFields
 	sizeCache            protoimpl.SizeCache
 }
@@ -270,6 +272,20 @@ func (x *Discovery) GetMedia() string {
 func (x *Discovery) GetMediaTimeout() *durationpb.Duration {
 	if x != nil {
 		return x.MediaTimeout
+	}
+	return nil
+}
+
+func (x *Discovery) GetWebsockets() string {
+	if x != nil {
+		return x.Websockets
+	}
+	return ""
+}
+
+func (x *Discovery) GetWebsocketsTimeout() *durationpb.Duration {
+	if x != nil {
+		return x.WebsocketsTimeout
 	}
 	return nil
 }
@@ -415,7 +431,7 @@ const file_conf_conf_proto_rawDesc = "" +
 	"\x04GRPC\x12\x18\n" +
 	"\anetwork\x18\x01 \x01(\tR\anetwork\x12\x12\n" +
 	"\x04addr\x18\x02 \x01(\tR\x04addr\x123\n" +
-	"\atimeout\x18\x03 \x01(\v2\x19.google.protobuf.DurationR\atimeout\"\xc7\x04\n" +
+	"\atimeout\x18\x03 \x01(\v2\x19.google.protobuf.DurationR\atimeout\"\xb1\x05\n" +
 	"\tDiscovery\x12$\n" +
 	"\rnotifications\x18\x01 \x01(\tR\rnotifications\x12N\n" +
 	"\x15notifications_timeout\x18\x02 \x01(\v2\x19.google.protobuf.DurationR\x14notificationsTimeout\x12\x18\n" +
@@ -429,7 +445,11 @@ const file_conf_conf_proto_rawDesc = "" +
 	"\x0eevents_timeout\x18\n" +
 	" \x01(\v2\x19.google.protobuf.DurationR\reventsTimeout\x12\x14\n" +
 	"\x05media\x18\v \x01(\tR\x05media\x12>\n" +
-	"\rmedia_timeout\x18\f \x01(\v2\x19.google.protobuf.DurationR\fmediaTimeoutB8Z6gitlab.calendaria.team/services/iam/internal/conf;confb\x06proto3"
+	"\rmedia_timeout\x18\f \x01(\v2\x19.google.protobuf.DurationR\fmediaTimeout\x12\x1e\n" +
+	"\n" +
+	"websockets\x18\r \x01(\tR\n" +
+	"websockets\x12H\n" +
+	"\x12websockets_timeout\x18\x0e \x01(\v2\x19.google.protobuf.DurationR\x11websocketsTimeoutB8Z6gitlab.calendaria.team/services/iam/internal/conf;confb\x06proto3"
 
 var (
 	file_conf_conf_proto_rawDescOnce sync.Once
@@ -463,13 +483,14 @@ var file_conf_conf_proto_depIdxs = []int32{
 	5,  // 7: kratos.api.Discovery.chats_timeout:type_name -> google.protobuf.Duration
 	5,  // 8: kratos.api.Discovery.events_timeout:type_name -> google.protobuf.Duration
 	5,  // 9: kratos.api.Discovery.media_timeout:type_name -> google.protobuf.Duration
-	5,  // 10: kratos.api.Server.HTTP.timeout:type_name -> google.protobuf.Duration
-	5,  // 11: kratos.api.Server.GRPC.timeout:type_name -> google.protobuf.Duration
-	12, // [12:12] is the sub-list for method output_type
-	12, // [12:12] is the sub-list for method input_type
-	12, // [12:12] is the sub-list for extension type_name
-	12, // [12:12] is the sub-list for extension extendee
-	0,  // [0:12] is the sub-list for field type_name
+	5,  // 10: kratos.api.Discovery.websockets_timeout:type_name -> google.protobuf.Duration
+	5,  // 11: kratos.api.Server.HTTP.timeout:type_name -> google.protobuf.Duration
+	5,  // 12: kratos.api.Server.GRPC.timeout:type_name -> google.protobuf.Duration
+	13, // [13:13] is the sub-list for method output_type
+	13, // [13:13] is the sub-list for method input_type
+	13, // [13:13] is the sub-list for extension type_name
+	13, // [13:13] is the sub-list for extension extendee
+	0,  // [0:13] is the sub-list for field type_name
 }
 
 func init() { file_conf_conf_proto_init() }

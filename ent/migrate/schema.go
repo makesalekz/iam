@@ -50,7 +50,7 @@ var (
 		{Name: "phone_verified", Type: field.TypeBool, Default: false},
 		{Name: "email_verified", Type: field.TypeBool, Default: false},
 		{Name: "last_login_at", Type: field.TypeTime},
-		{Name: "last_activity_at", Type: field.TypeTime, Nullable: true},
+		{Name: "last_seen", Type: field.TypeTime, Nullable: true},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
 		{Name: "bio_updated_at", Type: field.TypeTime, Nullable: true},
@@ -136,7 +136,7 @@ var (
 	// UserSettingsColumns holds the columns for the "user_settings" table.
 	UserSettingsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt64, Increment: true},
-		{Name: "setting", Type: field.TypeEnum, Enums: []string{"LANGUAGE", "THEME", "NOTIFICATION_SOUND_ENABLED", "NOTIFICATION_VIBRATION_ENABLED"}},
+		{Name: "setting", Type: field.TypeEnum, Enums: []string{"LANGUAGE", "THEME", "NOTIFICATION_SOUND_ENABLED", "NOTIFICATION_VIBRATION_ENABLED", "EVENTS_CHAT_ENABLED"}},
 		{Name: "value", Type: field.TypeString},
 		{Name: "updated_at", Type: field.TypeTime},
 		{Name: "user_id", Type: field.TypeInt64},

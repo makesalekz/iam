@@ -1,4 +1,4 @@
-package dialer
+package remote
 
 import (
 	"context"

@@ -20,3 +20,5 @@ discovery:
   events_timeout: 30s
   media: localhost:9004
   media_timeout: 30s
+  websockets: localhost:9015
+  websockets_timeout: 30s

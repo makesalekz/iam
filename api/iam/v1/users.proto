@@ -51,10 +51,10 @@ service Users {
   // Returns: users' short information
   rpc ListUsers(ListUsersRequest) returns (UsersReply);
 
-  // Update user activity time this method is used s2s
-  // Request: user ID and activity time
+  // Update user last seen (online) time this method is used s2s
+  // Request: user ID and last seen time
   // Returns: empty reply
-  rpc UpdateUserActivityTime(UpdateActivityTimeRequest) returns (utils.v1.EmptyReply);
+  rpc UpdateUserLastSeen(UpdateLastSeenRequest) returns (utils.v1.EmptyReply);
 
   // Block user
   // Request: user ID
@@ -151,7 +151,7 @@ message UsersReply {
   repeated UserShort users = 1;
 }
 
-message UpdateActivityTimeRequest {
+message UpdateLastSeenRequest {
   int64 userId = 1;
-  string activityTime = 2; // RFC 3339 format
+  string lastSeenTime = 2; // RFC 3339 format
 }

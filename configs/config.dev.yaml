@@ -20,3 +20,5 @@ discovery:
   events_timeout: 30s
   media: discovery:///media
   media_timeout: 30s
+  websockets: discovery:///websockets
+  websockets_timeout: 30s

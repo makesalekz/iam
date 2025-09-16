@@ -7,11 +7,13 @@ import (
 	"sync"
 	"time"
 
+	contacts_v1 "gitlab.calendaria.team/services/contacts/api/contacts/v1"
 	v1 "gitlab.calendaria.team/services/iam/api/iam/v1"
 	"gitlab.calendaria.team/services/iam/ent"
+	"gitlab.calendaria.team/services/iam/ent/enum"
 	"gitlab.calendaria.team/services/iam/internal/data"
-	"gitlab.calendaria.team/services/iam/internal/data/dialer"
 	"gitlab.calendaria.team/services/iam/internal/data/dto"
+	"gitlab.calendaria.team/services/iam/internal/data/remote"
 	tenants_v1 "gitlab.calendaria.team/services/tenants/api/tenants/v1"
 	utils_v1 "gitlab.calendaria.team/services/utils/api/utils/v1"
 	u_error "gitlab.calendaria.team/services/utils/v1/error"
@@ -25,8 +27,10 @@ import (
 type UserItem struct {
 	*ent.User
 
-	Privacies    map[string]string
-	WithVerified bool
+	Privacies           map[string]string
+	WithVerified        bool
+	IsOnline            bool
+	IsLastSeenAvailable bool
 }
 
 // UsersUsecase .
@@ -34,11 +38,12 @@ type UsersUsecase struct {
 	log           *log.Helper
 	jwt           u_jwt.IJwtProcessor
 	queue         u_nats.IQueueManager
-	tenants       dialer.ITenantsRemote
-	contacts      dialer.IContactsRemote
-	chats         dialer.IChatsRemote
-	events        dialer.IEventsRemote
-	media         dialer.IMediaRemote
+	tenants       remote.ITenantsRemote
+	contacts      remote.IContactsRemote
+	chats         remote.IChatsRemote
+	events        remote.IEventsRemote
+	media         remote.IMediaRemote
+	websockets    remote.IWebsocketsRemote
 	usersRepo     data.UsersRepo
 	otpRepo       data.OtpRepo
 	privaciesRepo data.PrivacyRepo
@@ -64,11 +69,12 @@ func NewUsersUsecase(
 	logger log.Logger,
 	jwt u_jwt.IJwtProcessor,
 	queue u_nats.IQueueManager,
-	tenants dialer.ITenantsRemote,
-	contacts dialer.IContactsRemote,
-	chats dialer.IChatsRemote,
-	events dialer.IEventsRemote,
-	media dialer.IMediaRemote,
+	tenants remote.ITenantsRemote,
+	contacts remote.IContactsRemote,
+	chats remote.IChatsRemote,
+	events remote.IEventsRemote,
+	media remote.IMediaRemote,
+	websockets remote.IWebsocketsRemote,
 	usersRepo data.UsersRepo,
 	otpRepo data.OtpRepo,
 	privaciesRepo data.PrivacyRepo,
@@ -82,6 +88,7 @@ func NewUsersUsecase(
 		chats:         chats,
 		events:        events,
 		media:         media,
+		websockets:    websockets,
 		usersRepo:     usersRepo,
 		otpRepo:       otpRepo,
 		privaciesRepo: privaciesRepo,
@@ -94,39 +101,6 @@ func btoi(b bool) int64 {
 	}
 
 	return 0
-}
-
-func (uc *UsersUsecase) includePrivacies(ctx context.Context, users ...*UserItem) error {
-	userIDs := make([]int64, len(users))
-	for i, user := range users {
-		userIDs[i] = user.ID
-	}
-
-	usersPrivacies, err := uc.privaciesRepo.GetPrivacies(ctx, userIDs)
-	if err != nil {
-		return v1.ErrorServiceFailed("privacy: %s", err.Error())
-	}
-
-	privaciesMap := make(map[int64]map[string]string)
-	for _, userPrivacies := range usersPrivacies {
-		if privaciesMap[userPrivacies.UserID] == nil {
-			privaciesMap[userPrivacies.UserID] = data.DefaultPrivacies()
-		}
-		privaciesMap[userPrivacies.UserID][string(userPrivacies.Setting)] = string(userPrivacies.Option)
-	}
-
-	for _, user := range users {
-		privacy, ok := privaciesMap[user.ID]
-		if !ok {
-			user.Privacies = data.DefaultPrivacies()
-
-			continue
-		}
-
-		user.Privacies = privacy
-	}
-
-	return nil
 }
 
 func (uc *UsersUsecase) DeleteUserData(ctx context.Context) {
@@ -238,6 +212,43 @@ func (uc *UsersUsecase) GetUserProfile(ctx context.Context, filter data.GetUserF
 		User: user,
 	}
 
+	status, err := uc.websockets.GetUserStatus(ctx, user.ID)
+	if err != nil {
+		uc.log.Errorf("failed to fetch user status: %s", err)
+		return replyUser, nil
+	}
+
+	replyUser.IsLastSeenAvailable = false
+	replyUser.IsOnline = status.GetIsOnline()
+
+	privacy, err := uc.privaciesRepo.GetPrivacy(ctx, user.ID)
+	if err != nil {
+		uc.log.Errorf("can't retrieve user privacy: %s", err.Error())
+	}
+
+	lastVisit, ok := privacy[string(enum.LastVisit)]
+	if !ok {
+		replyUser.IsLastSeenAvailable = true
+		return replyUser, nil
+	}
+
+	switch enum.PrivacyOptions(lastVisit) {
+	case "", enum.All:
+		replyUser.IsLastSeenAvailable = true
+	case enum.MyContacts:
+		relationMap, err2 := uc.contacts.GetIncomingRelations(
+			ctx,
+			&contacts_v1.GetRelationsRequest{UserIds: []int64{user.ID}},
+		)
+		if err2 != nil {
+			uc.log.Errorf("can't retrieve incoming relations: %s", err2.Error())
+		}
+
+		if relationMap[user.ID].IsExistInContacts != nil && relationMap[user.ID].GetIsExistInContacts() {
+			replyUser.IsLastSeenAvailable = true
+		}
+	}
+
 	return replyUser, nil
 }
 
@@ -302,6 +313,10 @@ func (uc *UsersUsecase) ScheduleUserDeletion(ctx context.Context, actorID int64)
 	if err != nil {
 		return v1.ErrorDatabaseQuery("database error: %s", err.Error())
 	}
+
+	// Delete all device tokens of the user
+	uc.queue.GetRemote(QueueDeleteDeviceTokens).Pub(&actorID)
+
 	return nil
 }
 
@@ -339,10 +354,68 @@ func (uc *UsersUsecase) GetUsers(ctx context.Context, filter data.GetUsersFilter
 		replyUsers[i] = &UserItem{User: user}
 	}
 
+	usersPrivacies, err := uc.privaciesRepo.GetPrivacies(ctx, filter.UsersIDs)
+	if err != nil {
+		uc.log.Errorf("privacies retrieve failed: %s", err.Error())
+	}
+
+	privaciesMap := make(map[int64]map[string]string)
+	for _, userPrivacies := range usersPrivacies {
+		if privaciesMap[userPrivacies.UserID] == nil {
+			privaciesMap[userPrivacies.UserID] = data.DefaultPrivacies()
+		}
+		privaciesMap[userPrivacies.UserID][string(userPrivacies.Setting)] = string(userPrivacies.Option)
+	}
+
+	usersStatuses, err := uc.websockets.ListUsersStatuses(ctx, filter.UsersIDs)
+	if err != nil {
+		uc.log.Errorf("failed to fetch user presence: %s", err)
+		return replyUsers, nil
+	}
+
+	for _, user := range replyUsers {
+		if user == nil {
+			continue
+		}
+
+		status := usersStatuses[user.ID]
+		user.IsLastSeenAvailable = false
+		user.IsOnline = status.GetIsOnline()
+
+		lastVisit, exists := privaciesMap[user.ID][string(enum.LastVisit)]
+		if !exists {
+			user.IsLastSeenAvailable = true
+			continue
+		}
+
+		switch enum.PrivacyOptions(lastVisit) {
+		case "", enum.All:
+			user.IsLastSeenAvailable = true
+		case enum.MyContacts:
+			relationMap, err2 := uc.contacts.GetIncomingRelations(
+				ctx,
+				&contacts_v1.GetRelationsRequest{UserIds: []int64{user.ID}},
+			)
+			if err2 != nil {
+				uc.log.Errorf("can't retrieve incoming relations: %s", err2.Error())
+			}
+
+			if relationMap[user.ID].IsExistInContacts != nil && relationMap[user.ID].GetIsExistInContacts() {
+				user.IsLastSeenAvailable = true
+			}
+		}
+	}
+
 	if filter.WithPrivacies {
-		err = uc.includePrivacies(ctx, replyUsers...)
-		if err != nil {
-			return nil, err
+		for _, user := range replyUsers {
+			privacy, ok := privaciesMap[user.ID]
+			if !ok {
+				user.Privacies = data.DefaultPrivacies()
+
+				continue
+			}
+
+			user.Privacies = privacy
 		}
 	}
 
@@ -364,8 +437,8 @@ func (uc *UsersUsecase) GetUserTenants(ctx context.Context) ([]*tenants_v1.Tenan
 	return tenants, nil
 }
 
-func (uc *UsersUsecase) UpdateUserActivityTime(ctx context.Context, userID int64, activityTime time.Time) error {
-	err := uc.usersRepo.UpdateUserActivityTime(ctx, userID, activityTime)
+func (uc *UsersUsecase) UpdateUserLastSeen(ctx context.Context, userID int64, lastSeenTime time.Time) error {
+	err := uc.usersRepo.UpdateUserLastSeen(ctx, userID, lastSeenTime)
 	if err != nil {
 		if ent.IsNotFound(err) {
 			return v1.ErrorUserNotFound("user not found")
