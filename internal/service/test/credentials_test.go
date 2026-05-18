@@ -4,11 +4,11 @@ import (
 	"context"
 	"testing"
 
-	v1 "gitlab.calendaria.team/services/iam/api/iam/v1"
-	"gitlab.calendaria.team/services/iam/ent"
-	"gitlab.calendaria.team/services/iam/internal/data/integration"
-	"gitlab.calendaria.team/services/iam/internal/service"
-	u_struc "gitlab.calendaria.team/services/utils/v2/struc"
+	v1 "github.com/makesalekz/iam/api/iam/v1"
+	"github.com/makesalekz/iam/ent"
+	"github.com/makesalekz/iam/internal/data/integration"
+	"github.com/makesalekz/iam/internal/service"
+	u_struc "github.com/makesalekz/utils/v2/struc"
 
 	"github.com/stretchr/testify/require"
 )

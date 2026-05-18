@@ -4,7 +4,7 @@ package websockets.v1;
 
 import "errors/errors.proto";
 
-option go_package = "gitlab.calendaria.team/services/websockets/api/websockets/v1;websockets_v1";
+option go_package = "github.com/makesalekz/websockets/api/websockets/v1;websockets_v1";
 option java_multiple_files = true;
 option java_package = "websockets.v1";
 

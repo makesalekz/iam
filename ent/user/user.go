@@ -94,7 +94,7 @@ func ValidColumn(column string) bool {
 // package on the initialization of the application. Therefore,
 // it should be imported in the main as follows:
 //
-//	import _ "gitlab.calendaria.team/services/iam/ent/runtime"
+//	import _ "github.com/makesalekz/iam/ent/runtime"
 var (
 	Hooks        [1]ent.Hook
 	Interceptors [2]ent.Interceptor

@@ -3,10 +3,10 @@ package service
 import (
 	"context"
 
-	v1 "gitlab.calendaria.team/services/iam/api/iam/v1"
-	"gitlab.calendaria.team/services/iam/internal/biz"
-	"gitlab.calendaria.team/services/iam/internal/data/dto"
-	"gitlab.calendaria.team/services/utils/v2/auth"
+	v1 "github.com/makesalekz/iam/api/iam/v1"
+	"github.com/makesalekz/iam/internal/biz"
+	"github.com/makesalekz/iam/internal/data/dto"
+	"github.com/makesalekz/utils/v2/auth"
 )
 
 type AuthService struct {

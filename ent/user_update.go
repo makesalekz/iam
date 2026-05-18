@@ -11,8 +11,8 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"gitlab.calendaria.team/services/iam/ent/predicate"
-	"gitlab.calendaria.team/services/iam/ent/user"
+	"github.com/makesalekz/iam/ent/predicate"
+	"github.com/makesalekz/iam/ent/user"
 )
 
 // UserUpdate is the builder for updating User entities.

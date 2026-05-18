@@ -5,19 +5,19 @@ import (
 	"testing"
 	"time"
 
-	v1 "gitlab.calendaria.team/services/iam/api/iam/v1"
-	"gitlab.calendaria.team/services/iam/ent"
-	"gitlab.calendaria.team/services/iam/ent/enum"
-	"gitlab.calendaria.team/services/iam/internal/biz"
-	"gitlab.calendaria.team/services/iam/internal/data/dto"
-	"gitlab.calendaria.team/services/iam/internal/data/mock"
-	tenants_v1 "gitlab.calendaria.team/services/tenants/api/tenants/v1"
-	jwt_mock "gitlab.calendaria.team/services/utils/v4/jwt/mock"
-	nats_mock "gitlab.calendaria.team/services/utils/v4/nats/mock"
+	v1 "github.com/makesalekz/iam/api/iam/v1"
+	"github.com/makesalekz/iam/ent"
+	"github.com/makesalekz/iam/ent/enum"
+	"github.com/makesalekz/iam/internal/biz"
+	"github.com/makesalekz/iam/internal/data/dto"
+	"github.com/makesalekz/iam/internal/data/mock"
+	tenants_v1 "github.com/makesalekz/tenants/api/tenants/v1"
+	jwt_mock "github.com/makesalekz/utils/v4/jwt/mock"
+	nats_mock "github.com/makesalekz/utils/v4/nats/mock"
 
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/require"
-	"gitlab.calendaria.team/services/utils/v2/zap"
+	"github.com/makesalekz/utils/v2/zap"
 )
 
 const (

@@ -5,8 +5,8 @@ import (
 	"math/rand"
 	"os"
 
-	v1 "gitlab.calendaria.team/services/iam/api/iam/v1"
-	"gitlab.calendaria.team/services/utils/v2/struc"
+	v1 "github.com/makesalekz/iam/api/iam/v1"
+	"github.com/makesalekz/utils/v2/struc"
 
 	"github.com/nyaruka/phonenumbers"
 )

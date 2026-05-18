@@ -11,11 +11,11 @@ import (
 	"strings"
 	"time"
 
-	"gitlab.calendaria.team/services/iam/ent"
-	"gitlab.calendaria.team/services/iam/internal/data/errors"
-	u_log "gitlab.calendaria.team/services/utils/v1/log"
-	u_struc "gitlab.calendaria.team/services/utils/v2/struc"
-	"gitlab.calendaria.team/services/utils/v4/config"
+	"github.com/makesalekz/iam/ent"
+	"github.com/makesalekz/iam/internal/data/errors"
+	u_log "github.com/makesalekz/utils/v1/log"
+	u_struc "github.com/makesalekz/utils/v2/struc"
+	"github.com/makesalekz/utils/v4/config"
 
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/mitchellh/mapstructure"

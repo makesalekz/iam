@@ -9,9 +9,9 @@ import (
 	reflect "reflect"
 
 	gomock "github.com/golang/mock/gomock"
-	ent "gitlab.calendaria.team/services/iam/ent"
-	integration "gitlab.calendaria.team/services/iam/internal/data/integration"
-	struc "gitlab.calendaria.team/services/utils/v2/struc"
+	ent "github.com/makesalekz/iam/ent"
+	integration "github.com/makesalekz/iam/internal/data/integration"
+	struc "github.com/makesalekz/utils/v2/struc"
 )
 
 // MockCredentialsRepo is a mock of CredentialsRepo interface.

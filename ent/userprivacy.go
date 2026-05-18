@@ -9,9 +9,9 @@ import (
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
-	"gitlab.calendaria.team/services/iam/ent/enum"
-	"gitlab.calendaria.team/services/iam/ent/user"
-	"gitlab.calendaria.team/services/iam/ent/userprivacy"
+	"github.com/makesalekz/iam/ent/enum"
+	"github.com/makesalekz/iam/ent/user"
+	"github.com/makesalekz/iam/ent/userprivacy"
 )
 
 // UserPrivacy is the model entity for the UserPrivacy schema.

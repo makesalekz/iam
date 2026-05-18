@@ -4,7 +4,7 @@ package contacts.v1;
 
 import "errors/errors.proto";
 
-option go_package = "gitlab.calendaria.team/services/contacts/api/contacts/v1;contacts_v1";
+option go_package = "github.com/makesalekz/contacts/api/contacts/v1;contacts_v1";
 option java_multiple_files = true;
 option java_package = "contacts.v1";
 

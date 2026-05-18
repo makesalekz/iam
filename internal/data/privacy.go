@@ -5,9 +5,9 @@ import (
 	"slices"
 
 	"entgo.io/ent/dialect/sql"
-	"gitlab.calendaria.team/services/iam/ent"
-	"gitlab.calendaria.team/services/iam/ent/enum"
-	"gitlab.calendaria.team/services/iam/ent/userprivacy"
+	"github.com/makesalekz/iam/ent"
+	"github.com/makesalekz/iam/ent/enum"
+	"github.com/makesalekz/iam/ent/userprivacy"
 )
 
 type PrivacySettingsData map[string]string

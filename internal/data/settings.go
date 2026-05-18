@@ -6,9 +6,9 @@ import (
 
 	"entgo.io/ent/dialect/sql"
 
-	"gitlab.calendaria.team/services/iam/ent"
-	"gitlab.calendaria.team/services/iam/ent/enum"
-	"gitlab.calendaria.team/services/iam/ent/usersettings"
+	"github.com/makesalekz/iam/ent"
+	"github.com/makesalekz/iam/ent/enum"
+	"github.com/makesalekz/iam/ent/usersettings"
 )
 
 type SettingsData map[string]string

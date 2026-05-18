@@ -9,18 +9,18 @@ package main
 import (
 	"github.com/go-kratos/kratos/v2"
 	"github.com/go-kratos/kratos/v2/log"
-	"gitlab.calendaria.team/services/iam/internal/biz"
-	"gitlab.calendaria.team/services/iam/internal/conf"
-	"gitlab.calendaria.team/services/iam/internal/data"
-	"gitlab.calendaria.team/services/iam/internal/data/integration"
-	"gitlab.calendaria.team/services/iam/internal/data/remote"
-	"gitlab.calendaria.team/services/iam/internal/server"
-	"gitlab.calendaria.team/services/iam/internal/service"
-	"gitlab.calendaria.team/services/utils/v4/config"
-	"gitlab.calendaria.team/services/utils/v4/dialer"
-	"gitlab.calendaria.team/services/utils/v4/jwt"
-	"gitlab.calendaria.team/services/utils/v4/nats"
-	"gitlab.calendaria.team/services/utils/v4/tracing"
+	"github.com/makesalekz/iam/internal/biz"
+	"github.com/makesalekz/iam/internal/conf"
+	"github.com/makesalekz/iam/internal/data"
+	"github.com/makesalekz/iam/internal/data/integration"
+	"github.com/makesalekz/iam/internal/data/remote"
+	"github.com/makesalekz/iam/internal/server"
+	"github.com/makesalekz/iam/internal/service"
+	"github.com/makesalekz/utils/v4/config"
+	"github.com/makesalekz/utils/v4/dialer"
+	"github.com/makesalekz/utils/v4/jwt"
+	"github.com/makesalekz/utils/v4/nats"
+	"github.com/makesalekz/utils/v4/tracing"
 )
 
 import (
@@ -77,58 +77,20 @@ func wireApp(bootstrap *conf.Bootstrap, logger log.Logger) (*kratos.App, func(),
 		return nil, nil, err
 	}
 	authService := service.NewAuthService(authUsecase)
-	iContactsRemote, cleanup4, err := remote.NewContactsRemote(bootstrap, iDialerManager)
+	iContactsRemote := remote.NewContactsRemote()
+	iChatsRemote := remote.NewChatsRemote()
+	iEventsRemote := remote.NewEventsRemote()
+	iMediaRemote, cleanup4, err := remote.NewMediaRemote(logger, bootstrap, iDialerManager)
 	if err != nil {
 		cleanup3()
 		cleanup2()
 		cleanup()
 		return nil, nil, err
 	}
-	iChatsRemote, cleanup5, err := remote.NewChatsRemote(bootstrap, iDialerManager)
-	if err != nil {
-		cleanup4()
-		cleanup3()
-		cleanup2()
-		cleanup()
-		return nil, nil, err
-	}
-	iEventsRemote, cleanup6, err := remote.NewEventsRemote(bootstrap, iDialerManager)
-	if err != nil {
-		cleanup5()
-		cleanup4()
-		cleanup3()
-		cleanup2()
-		cleanup()
-		return nil, nil, err
-	}
-	iMediaRemote, cleanup7, err := remote.NewMediaRemote(logger, bootstrap, iDialerManager)
-	if err != nil {
-		cleanup6()
-		cleanup5()
-		cleanup4()
-		cleanup3()
-		cleanup2()
-		cleanup()
-		return nil, nil, err
-	}
-	iWebsocketsRemote, cleanup8, err := remote.NewWebsocketsRemote(logger, bootstrap, iDialerManager)
-	if err != nil {
-		cleanup7()
-		cleanup6()
-		cleanup5()
-		cleanup4()
-		cleanup3()
-		cleanup2()
-		cleanup()
-		return nil, nil, err
-	}
+	iWebsocketsRemote := remote.NewWebsocketsRemote()
 	privacyRepo := data.NewPrivacyRepo(dataData)
 	usersUsecase, err := biz.NewUsersUsecase(logger, iJwtProcessor, iQueueManager, iTenantsRemote, iContactsRemote, iChatsRemote, iEventsRemote, iMediaRemote, iWebsocketsRemote, usersRepo, otpRepo, privacyRepo)
 	if err != nil {
-		cleanup8()
-		cleanup7()
-		cleanup6()
-		cleanup5()
 		cleanup4()
 		cleanup3()
 		cleanup2()
@@ -138,10 +100,6 @@ func wireApp(bootstrap *conf.Bootstrap, logger log.Logger) (*kratos.App, func(),
 	usersService := service.NewUsersService(logger, usersUsecase)
 	privacyUsecase, err := biz.NewPrivacyUsecase(privacyRepo)
 	if err != nil {
-		cleanup8()
-		cleanup7()
-		cleanup6()
-		cleanup5()
 		cleanup4()
 		cleanup3()
 		cleanup2()
@@ -152,10 +110,6 @@ func wireApp(bootstrap *conf.Bootstrap, logger log.Logger) (*kratos.App, func(),
 	settingsRepo := data.NewSettingsRepo(dataData)
 	settingsUsecase, err := biz.NewSettingsUsecase(settingsRepo)
 	if err != nil {
-		cleanup8()
-		cleanup7()
-		cleanup6()
-		cleanup5()
 		cleanup4()
 		cleanup3()
 		cleanup2()
@@ -165,10 +119,6 @@ func wireApp(bootstrap *conf.Bootstrap, logger log.Logger) (*kratos.App, func(),
 	settingsService := service.NewSettingsService(settingsUsecase)
 	iProviderManager, err := integration.NewProviderManager(iConfig)
 	if err != nil {
-		cleanup8()
-		cleanup7()
-		cleanup6()
-		cleanup5()
 		cleanup4()
 		cleanup3()
 		cleanup2()
@@ -178,10 +128,6 @@ func wireApp(bootstrap *conf.Bootstrap, logger log.Logger) (*kratos.App, func(),
 	credentialsRepo := data.NewCredentialsRepo(dataData)
 	credentialsUsecase, err := biz.NewCredentialsUsecase(iConfig, logger, iQueueManager, iJwtProcessor, iProviderManager, iEventsRemote, credentialsRepo)
 	if err != nil {
-		cleanup8()
-		cleanup7()
-		cleanup6()
-		cleanup5()
 		cleanup4()
 		cleanup3()
 		cleanup2()
@@ -194,10 +140,6 @@ func wireApp(bootstrap *conf.Bootstrap, logger log.Logger) (*kratos.App, func(),
 	cronServer := server.NewCronServer(logger, usersUsecase)
 	app := newApp(logger, iConfig, grpcServer, httpServer, cronServer)
 	return app, func() {
-		cleanup8()
-		cleanup7()
-		cleanup6()
-		cleanup5()
 		cleanup4()
 		cleanup3()
 		cleanup2()

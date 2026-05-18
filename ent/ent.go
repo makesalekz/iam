@@ -12,11 +12,11 @@ import (
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
-	"gitlab.calendaria.team/services/iam/ent/onetimepassword"
-	"gitlab.calendaria.team/services/iam/ent/user"
-	"gitlab.calendaria.team/services/iam/ent/usercredentials"
-	"gitlab.calendaria.team/services/iam/ent/userprivacy"
-	"gitlab.calendaria.team/services/iam/ent/usersettings"
+	"github.com/makesalekz/iam/ent/onetimepassword"
+	"github.com/makesalekz/iam/ent/user"
+	"github.com/makesalekz/iam/ent/usercredentials"
+	"github.com/makesalekz/iam/ent/userprivacy"
+	"github.com/makesalekz/iam/ent/usersettings"
 )
 
 // ent aliases to avoid import conflicts in user's code.

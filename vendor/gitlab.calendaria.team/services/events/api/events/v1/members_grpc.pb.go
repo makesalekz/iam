@@ -28,6 +28,7 @@ const (
 	Members_GetMember_FullMethodName          = "/events.v1.Members/GetMember"
 	Members_ListMembers_FullMethodName        = "/events.v1.Members/ListMembers"
 	Members_GetMemberHistory_FullMethodName   = "/events.v1.Members/GetMemberHistory"
+	Members_MarkInvitationRead_FullMethodName = "/events.v1.Members/MarkInvitationRead"
 )
 
 // MembersClient is the client API for Members service.
@@ -35,13 +36,14 @@ const (
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type MembersClient interface {
 	InviteMembers(ctx context.Context, in *InviteMembersRequest, opts ...grpc.CallOption) (*InviteMembersReply, error)
-	UpdateMemberStatus(ctx context.Context, in *UpdateMemberStatusRequest, opts ...grpc.CallOption) (*v1.EmptyReply, error)
+	UpdateMemberStatus(ctx context.Context, in *UpdateMemberStatusRequest, opts ...grpc.CallOption) (*MemberReply, error)
 	UpdateMemberRemind(ctx context.Context, in *UpdateMemberRemindRequest, opts ...grpc.CallOption) (*v1.EmptyReply, error)
 	UpdateMemberRole(ctx context.Context, in *UpdateMemberRoleRequest, opts ...grpc.CallOption) (*v1.EmptyReply, error)
 	KickMember(ctx context.Context, in *KickMemberRequest, opts ...grpc.CallOption) (*v1.EmptyReply, error)
-	GetMember(ctx context.Context, in *GetMemberRequest, opts ...grpc.CallOption) (*GetMemberReply, error)
+	GetMember(ctx context.Context, in *GetMemberRequest, opts ...grpc.CallOption) (*MemberReply, error)
 	ListMembers(ctx context.Context, in *ListMembersRequest, opts ...grpc.CallOption) (*ListMembersReply, error)
 	GetMemberHistory(ctx context.Context, in *GetMemberHistoryRequest, opts ...grpc.CallOption) (*GetMemberHistoryReply, error)
+	MarkInvitationRead(ctx context.Context, in *MarkInvitationReadRequest, opts ...grpc.CallOption) (*v1.EmptyReply, error)
 }
 
 type membersClient struct {
@@ -62,9 +64,9 @@ func (c *membersClient) InviteMembers(ctx context.Context, in *InviteMembersRequ
 	return out, nil
 }
 
-func (c *membersClient) UpdateMemberStatus(ctx context.Context, in *UpdateMemberStatusRequest, opts ...grpc.CallOption) (*v1.EmptyReply, error) {
+func (c *membersClient) UpdateMemberStatus(ctx context.Context, in *UpdateMemberStatusRequest, opts ...grpc.CallOption) (*MemberReply, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(v1.EmptyReply)
+	out := new(MemberReply)
 	err := c.cc.Invoke(ctx, Members_UpdateMemberStatus_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -102,9 +104,9 @@ func (c *membersClient) KickMember(ctx context.Context, in *KickMemberRequest, o
 	return out, nil
 }
 
-func (c *membersClient) GetMember(ctx context.Context, in *GetMemberRequest, opts ...grpc.CallOption) (*GetMemberReply, error) {
+func (c *membersClient) GetMember(ctx context.Context, in *GetMemberRequest, opts ...grpc.CallOption) (*MemberReply, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(GetMemberReply)
+	out := new(MemberReply)
 	err := c.cc.Invoke(ctx, Members_GetMember_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -132,18 +134,29 @@ func (c *membersClient) GetMemberHistory(ctx context.Context, in *GetMemberHisto
 	return out, nil
 }
 
+func (c *membersClient) MarkInvitationRead(ctx context.Context, in *MarkInvitationReadRequest, opts ...grpc.CallOption) (*v1.EmptyReply, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(v1.EmptyReply)
+	err := c.cc.Invoke(ctx, Members_MarkInvitationRead_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // MembersServer is the server API for Members service.
 // All implementations must embed UnimplementedMembersServer
 // for forward compatibility.
 type MembersServer interface {
 	InviteMembers(context.Context, *InviteMembersRequest) (*InviteMembersReply, error)
-	UpdateMemberStatus(context.Context, *UpdateMemberStatusRequest) (*v1.EmptyReply, error)
+	UpdateMemberStatus(context.Context, *UpdateMemberStatusRequest) (*MemberReply, error)
 	UpdateMemberRemind(context.Context, *UpdateMemberRemindRequest) (*v1.EmptyReply, error)
 	UpdateMemberRole(context.Context, *UpdateMemberRoleRequest) (*v1.EmptyReply, error)
 	KickMember(context.Context, *KickMemberRequest) (*v1.EmptyReply, error)
-	GetMember(context.Context, *GetMemberRequest) (*GetMemberReply, error)
+	GetMember(context.Context, *GetMemberRequest) (*MemberReply, error)
 	ListMembers(context.Context, *ListMembersRequest) (*ListMembersReply, error)
 	GetMemberHistory(context.Context, *GetMemberHistoryRequest) (*GetMemberHistoryReply, error)
+	MarkInvitationRead(context.Context, *MarkInvitationReadRequest) (*v1.EmptyReply, error)
 	mustEmbedUnimplementedMembersServer()
 }
 
@@ -157,7 +170,7 @@ type UnimplementedMembersServer struct{}
 func (UnimplementedMembersServer) InviteMembers(context.Context, *InviteMembersRequest) (*InviteMembersReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method InviteMembers not implemented")
 }
-func (UnimplementedMembersServer) UpdateMemberStatus(context.Context, *UpdateMemberStatusRequest) (*v1.EmptyReply, error) {
+func (UnimplementedMembersServer) UpdateMemberStatus(context.Context, *UpdateMemberStatusRequest) (*MemberReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateMemberStatus not implemented")
 }
 func (UnimplementedMembersServer) UpdateMemberRemind(context.Context, *UpdateMemberRemindRequest) (*v1.EmptyReply, error) {
@@ -169,7 +182,7 @@ func (UnimplementedMembersServer) UpdateMemberRole(context.Context, *UpdateMembe
 func (UnimplementedMembersServer) KickMember(context.Context, *KickMemberRequest) (*v1.EmptyReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method KickMember not implemented")
 }
-func (UnimplementedMembersServer) GetMember(context.Context, *GetMemberRequest) (*GetMemberReply, error) {
+func (UnimplementedMembersServer) GetMember(context.Context, *GetMemberRequest) (*MemberReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetMember not implemented")
 }
 func (UnimplementedMembersServer) ListMembers(context.Context, *ListMembersRequest) (*ListMembersReply, error) {
@@ -177,6 +190,9 @@ func (UnimplementedMembersServer) ListMembers(context.Context, *ListMembersReque
 }
 func (UnimplementedMembersServer) GetMemberHistory(context.Context, *GetMemberHistoryRequest) (*GetMemberHistoryReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetMemberHistory not implemented")
+}
+func (UnimplementedMembersServer) MarkInvitationRead(context.Context, *MarkInvitationReadRequest) (*v1.EmptyReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method MarkInvitationRead not implemented")
 }
 func (UnimplementedMembersServer) mustEmbedUnimplementedMembersServer() {}
 func (UnimplementedMembersServer) testEmbeddedByValue()                 {}
@@ -343,6 +359,24 @@ func _Members_GetMemberHistory_Handler(srv interface{}, ctx context.Context, dec
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Members_MarkInvitationRead_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MarkInvitationReadRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MembersServer).MarkInvitationRead(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Members_MarkInvitationRead_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MembersServer).MarkInvitationRead(ctx, req.(*MarkInvitationReadRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Members_ServiceDesc is the grpc.ServiceDesc for Members service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -381,6 +415,10 @@ var Members_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetMemberHistory",
 			Handler:    _Members_GetMemberHistory_Handler,
+		},
+		{
+			MethodName: "MarkInvitationRead",
+			Handler:    _Members_MarkInvitationRead_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

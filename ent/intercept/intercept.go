@@ -7,13 +7,13 @@ import (
 	"fmt"
 
 	"entgo.io/ent/dialect/sql"
-	"gitlab.calendaria.team/services/iam/ent"
-	"gitlab.calendaria.team/services/iam/ent/onetimepassword"
-	"gitlab.calendaria.team/services/iam/ent/predicate"
-	"gitlab.calendaria.team/services/iam/ent/user"
-	"gitlab.calendaria.team/services/iam/ent/usercredentials"
-	"gitlab.calendaria.team/services/iam/ent/userprivacy"
-	"gitlab.calendaria.team/services/iam/ent/usersettings"
+	"github.com/makesalekz/iam/ent"
+	"github.com/makesalekz/iam/ent/onetimepassword"
+	"github.com/makesalekz/iam/ent/predicate"
+	"github.com/makesalekz/iam/ent/user"
+	"github.com/makesalekz/iam/ent/usercredentials"
+	"github.com/makesalekz/iam/ent/userprivacy"
+	"github.com/makesalekz/iam/ent/usersettings"
 )
 
 // The Query interface represents an operation that queries a graph.

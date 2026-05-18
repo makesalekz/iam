@@ -1,29 +1,25 @@
-module gitlab.calendaria.team/services/iam
+module github.com/makesalekz/iam
 
 go 1.26.0
 
 require (
-	entgo.io/ent v0.14.2
+	entgo.io/ent v0.14.4
 	github.com/go-kratos/kratos/contrib/metrics/prometheus/v2 v2.0.0-20240322155018-41971ffa647a
 	github.com/go-kratos/kratos/v2 v2.7.3
 	github.com/golang-jwt/jwt/v5 v5.2.1
 	github.com/golang/mock v1.6.0
 	github.com/google/wire v0.7.0
 	github.com/lib/pq v1.10.9
+	github.com/makesalekz/media v1.5.0-pre
+	github.com/makesalekz/notifications v1.4.8-pre
+	github.com/makesalekz/tenants v1.2.0-pre
+	github.com/makesalekz/utils v0.3.23-upd
 	github.com/mitchellh/mapstructure v1.5.0
 	github.com/nats-io/nats.go v1.36.0
 	github.com/nyaruka/phonenumbers v1.4.3
 	github.com/prometheus/client_golang v1.18.0
 	github.com/robfig/cron/v3 v3.0.1
-	github.com/stretchr/testify v1.9.0
-	gitlab.calendaria.team/services/chats v1.1.0
-	gitlab.calendaria.team/services/contacts v1.8.5-dev.1
-	gitlab.calendaria.team/services/events v1.9.6-pre
-	gitlab.calendaria.team/services/media v1.5.0-pre
-	gitlab.calendaria.team/services/notifications v1.4.8-pre
-	gitlab.calendaria.team/services/tenants v1.2.0-pre
-	gitlab.calendaria.team/services/utils v0.3.21
-	gitlab.calendaria.team/services/websockets v0.1.1
+	github.com/stretchr/testify v1.10.0
 	go.uber.org/automaxprocs v1.6.0
 	golang.org/x/oauth2 v0.20.0
 	google.golang.org/grpc v1.65.0
@@ -99,16 +95,23 @@ require (
 	go.opentelemetry.io/otel/trace v1.24.0 // indirect
 	go.opentelemetry.io/proto/otlp v1.1.0 // indirect
 	go.uber.org/multierr v1.11.0 // indirect
-	go.uber.org/zap v1.26.0 // indirect
-	golang.org/x/crypto v0.33.0 // indirect
-	golang.org/x/exp v0.0.0-20240525044651-4c93da0ed11d // indirect
-	golang.org/x/mod v0.23.0 // indirect
-	golang.org/x/net v0.35.0 // indirect
-	golang.org/x/sync v0.11.0 // indirect
-	golang.org/x/sys v0.30.0 // indirect
-	golang.org/x/text v0.22.0 // indirect
+	go.uber.org/zap v1.27.0 // indirect
+	golang.org/x/crypto v0.40.0 // indirect
+	golang.org/x/exp v0.0.0-20240719175910-8a7402abbf56 // indirect
+	golang.org/x/mod v0.27.0 // indirect
+	golang.org/x/net v0.42.0 // indirect
+	golang.org/x/sync v0.16.0 // indirect
+	golang.org/x/sys v0.34.0 // indirect
+	golang.org/x/text v0.27.0 // indirect
 	golang.org/x/time v0.5.0 // indirect
 	google.golang.org/genproto/googleapis/api v0.0.0-20240528184218-531527333157 // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20240528184218-531527333157 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
+)
+
+replace (
+	github.com/makesalekz/media => ../media
+	github.com/makesalekz/notifications => ../notifications
+	github.com/makesalekz/tenants => ../tenants
+	github.com/makesalekz/utils => ../utils
 )

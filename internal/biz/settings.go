@@ -3,8 +3,8 @@ package biz
 import (
 	"context"
 
-	v1 "gitlab.calendaria.team/services/iam/api/iam/v1"
-	"gitlab.calendaria.team/services/iam/internal/data"
+	v1 "github.com/makesalekz/iam/api/iam/v1"
+	"github.com/makesalekz/iam/internal/data"
 )
 
 // SettingsUsecase .

@@ -8,12 +8,11 @@ import (
 	"os"
 	"time"
 
-	v1 "gitlab.calendaria.team/services/contacts/api/contacts/v1"
-	iam_v1 "gitlab.calendaria.team/services/iam/api/iam/v1"
-	"gitlab.calendaria.team/services/iam/ent"
-	"gitlab.calendaria.team/services/iam/ent/enum"
-	u_struc "gitlab.calendaria.team/services/utils/v2/struc"
-	"gitlab.calendaria.team/services/utils/v4/config"
+	iam_v1 "github.com/makesalekz/iam/api/iam/v1"
+	"github.com/makesalekz/iam/ent"
+	"github.com/makesalekz/iam/ent/enum"
+	u_struc "github.com/makesalekz/utils/v2/struc"
+	"github.com/makesalekz/utils/v4/config"
 
 	xoauth2 "golang.org/x/oauth2"
 )
@@ -52,7 +51,7 @@ func NewSxodimRemote(
 	// Get Sxodim domain
 	sxodimDomain, err := g.config.GetValue("SXODIM_DOMAIN")
 	if err != nil {
-		return nil, v1.ErrorDatabaseQuery("error on getting SXODIM_DOMAIN value")
+		return nil, iam_v1.ErrorDatabaseQuery("error on getting SXODIM_DOMAIN value")
 	}
 
 	// get sxodim client secret
@@ -70,13 +69,13 @@ func NewSxodimRemote(
 	// get sxodim client secret
 	secretAigendaConfig, err := g.config.ReadGlobalSecretsFor(context.Background(), "sxodimsecretaigenda")
 	if err != nil {
-		return nil, v1.ErrorInternal("failed getting sxodim secret aigenda: %s", err)
+		return nil, iam_v1.ErrorInternal("failed getting sxodim secret aigenda: %s", err)
 	}
 
 	// Validate and retrieve the Sxodim secret aigenda from configuration
 	sxodimSecretAigenda, ok := secretAigendaConfig["secret"].(string)
 	if !ok {
-		return nil, v1.ErrorInternal("sxodim secret aigenda is not set: %s", err)
+		return nil, iam_v1.ErrorInternal("sxodim secret aigenda is not set: %s", err)
 	}
 
 	g.storage = SxodimStorage{
@@ -127,7 +126,7 @@ func (g *SxodimGateway) doSxodimRequest(
 	}
 	response, err := client.Do(request)
 	if err != nil {
-		return nil, nil, v1.ErrorInternal("unable to do sxodim request: %s", err)
+		return nil, nil, iam_v1.ErrorInternal("unable to do sxodim request: %s", err)
 	}
 
 	// Cleanup function to close response.Body
@@ -138,7 +137,7 @@ func (g *SxodimGateway) doSxodimRequest(
 	// Check status
 	if response.StatusCode != http.StatusOK {
 		cleanup()
-		return nil, nil, v1.ErrorInternal(
+		return nil, nil, iam_v1.ErrorInternal(
 			"failed on request to Sxodim: %s",
 			response.Status,
 		)
@@ -177,7 +176,7 @@ func (g *SxodimGateway) exchangeSxodimToken(grantType enum.SxodimGrantType, auth
 	// Initialize http request
 	request, err := http.NewRequest(http.MethodPost, g.storage.SxodimDomain+SxodimAuthURL, bytes.NewBuffer(requestBody))
 	if err != nil {
-		return nil, v1.ErrorInternal("failed on creating http request: %s", err)
+		return nil, iam_v1.ErrorInternal("failed on creating http request: %s", err)
 	}
 
 	// Do request to Sxodim
@@ -213,7 +212,7 @@ func (g *SxodimGateway) getUserData(accessToken string) (*sxodimUser, error) {
 	// Initialize http request
 	request, err := http.NewRequest(http.MethodGet, g.storage.SxodimDomain+SxodimUserDataURL, nil)
 	if err != nil {
-		return nil, v1.ErrorInternal("failed on creating http request: %s", err)
+		return nil, iam_v1.ErrorInternal("failed on creating http request: %s", err)
 	}
 	request.Header.Set("Authorization", "Bearer "+accessToken)
 	request.Header.Set("Sxodim-Secret-Aigenda", g.storage.AigendaSecret)

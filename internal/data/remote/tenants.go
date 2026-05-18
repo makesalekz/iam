@@ -3,10 +3,10 @@ package remote
 import (
 	"context"
 
-	v1 "gitlab.calendaria.team/services/iam/api/iam/v1"
-	"gitlab.calendaria.team/services/iam/internal/conf"
-	tenants_v1 "gitlab.calendaria.team/services/tenants/api/tenants/v1"
-	u_dialer "gitlab.calendaria.team/services/utils/v4/dialer"
+	v1 "github.com/makesalekz/iam/api/iam/v1"
+	"github.com/makesalekz/iam/internal/conf"
+	tenants_v1 "github.com/makesalekz/tenants/api/tenants/v1"
+	u_dialer "github.com/makesalekz/utils/v4/dialer"
 )
 
 type ITenantsRemote interface {

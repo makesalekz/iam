@@ -6,9 +6,9 @@ import (
 	"time"
 
 	"entgo.io/ent/dialect/sql"
-	"gitlab.calendaria.team/services/iam/ent"
-	"gitlab.calendaria.team/services/iam/ent/enum"
-	"gitlab.calendaria.team/services/iam/ent/onetimepassword"
+	"github.com/makesalekz/iam/ent"
+	"github.com/makesalekz/iam/ent/enum"
+	"github.com/makesalekz/iam/ent/onetimepassword"
 )
 
 const (

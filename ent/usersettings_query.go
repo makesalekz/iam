@@ -11,9 +11,9 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"gitlab.calendaria.team/services/iam/ent/predicate"
-	"gitlab.calendaria.team/services/iam/ent/user"
-	"gitlab.calendaria.team/services/iam/ent/usersettings"
+	"github.com/makesalekz/iam/ent/predicate"
+	"github.com/makesalekz/iam/ent/user"
+	"github.com/makesalekz/iam/ent/usersettings"
 )
 
 // UserSettingsQuery is the builder for querying UserSettings entities.

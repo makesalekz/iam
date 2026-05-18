@@ -6,7 +6,7 @@ import (
 	"entgo.io/ent/dialect/entsql"
 	"entgo.io/ent/schema/index"
 
-	"gitlab.calendaria.team/services/iam/ent/mixins"
+	"github.com/makesalekz/iam/ent/mixins"
 
 	"entgo.io/ent"
 	"entgo.io/ent/schema/field"

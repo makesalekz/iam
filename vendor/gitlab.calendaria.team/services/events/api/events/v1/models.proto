@@ -26,9 +26,12 @@ message EventReply {
   repeated EventSchedule schedules = 2;
 }
 
+message MemberReply {
+  Member member = 1;
+}
+
 message InviteLinkRequest {
-  int64 eventId = 1;
-  int64 linkId = 2;
+  int64 linkId = 1;
 }
 
 message InviteLinkReply {
@@ -41,6 +44,7 @@ message CalendarDto {
   string color = 2;
   string description = 3;
   bool isSelected = 4;
+  bool isPrimary = 5;
 }
 
 message EventDto {
@@ -55,8 +59,9 @@ message EventDto {
   int32 noticeBefore = 8;
   string type = 9;
   string recurrenceRule = 10;
-  bool isChatOn = 11;
   bool isToPublish = 13;
+  optional bool isChatOn = 11;
+  optional bool isInvitationAvailable = 16;
 
   optional LocationDto location = 12;
 }
@@ -114,10 +119,11 @@ message Event {
   string publishedAt = 20;
   int64 threadId = 22;
   optional int64 exploreEventId = 23;
+  bool isInvitationAvailable = 24;
 
   optional Membership membership = 18;
   optional LocationDto location = 19;
-  optional Calendar calendar = 21;
+  optional Calendar calendar = 21; // TODO: deprecated
 }
 
 message EventRecurrence {
@@ -160,8 +166,18 @@ message Link {
 message InviteLink {
   int64 id = 1;
   int64 eventId = 2;
-  optional int64 userId = 3;
-  string uuid = 4;
+  int64 ownerId = 14;
+  string uuid = 3;
+  string title = 4;
+  bool requiresApproval = 5;
+  int32 expiryDays = 6; // 0 = no expiration
+  int32 maxUses = 7;    // 0 = unlimited
+  string status = 8;
+  string createdAt = 9;
+  string expiresAt = 10;
+  optional string revokedAt = 11;
+
+  repeated Member members = 13;
 }
 
 message Member {
@@ -172,6 +188,12 @@ message Member {
   string role = 5;
   int32 remind = 6;
   optional string remindAt = 7;
+  string invitationStatus = 9;
+  string invitationSentAt = 10;
+  optional string invitationReadAt = 11;
+  optional int64 inviteLinkId = 12;
+
+  Calendar calendar = 8;
 }
 
 message Membership {
@@ -180,6 +202,9 @@ message Membership {
   string role = 3;
   optional int32 remind = 4;
   optional string remindAt = 5;
+  optional int64 calendarId = 6; // TODO: deprecated
+
+  Calendar calendar = 7;
 }
 
 message MemberHistory {

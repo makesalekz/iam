@@ -11,10 +11,10 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"gitlab.calendaria.team/services/iam/ent/predicate"
-	"gitlab.calendaria.team/services/iam/ent/user"
-	"gitlab.calendaria.team/services/iam/ent/usercredentials"
-	"gitlab.calendaria.team/services/utils/v2/struc"
+	"github.com/makesalekz/iam/ent/predicate"
+	"github.com/makesalekz/iam/ent/user"
+	"github.com/makesalekz/iam/ent/usercredentials"
+	"github.com/makesalekz/utils/v2/struc"
 )
 
 // UserCredentialsUpdate is the builder for updating UserCredentials entities.

@@ -10,8 +10,8 @@ import (
 	time "time"
 
 	gomock "github.com/golang/mock/gomock"
-	ent "gitlab.calendaria.team/services/iam/ent"
-	enum "gitlab.calendaria.team/services/iam/ent/enum"
+	ent "github.com/makesalekz/iam/ent"
+	enum "github.com/makesalekz/iam/ent/enum"
 )
 
 // MockOtpRepo is a mock of OtpRepo interface.

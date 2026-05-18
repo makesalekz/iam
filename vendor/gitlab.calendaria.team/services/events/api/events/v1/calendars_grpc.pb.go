@@ -40,7 +40,7 @@ type CalendarsClient interface {
 	CreateCalendar(ctx context.Context, in *CreateCalendarRequest, opts ...grpc.CallOption) (*CalendarReply, error)
 	UpdateCalendar(ctx context.Context, in *UpdateCalendarRequest, opts ...grpc.CallOption) (*CalendarReply, error)
 	DeleteCalendar(ctx context.Context, in *CalendarRequest, opts ...grpc.CallOption) (*v1.EmptyReply, error)
-	ListCalendars(ctx context.Context, in *ListCalendarsRequest, opts ...grpc.CallOption) (*ListCalendarsReply, error)
+	ListCalendars(ctx context.Context, in *v1.EmptyRequest, opts ...grpc.CallOption) (*ListCalendarsReply, error)
 	ListExternalCalendars(ctx context.Context, in *ListExternalCalendarsRequest, opts ...grpc.CallOption) (*ListExternalCalendarsReply, error)
 	ConnectExternalCalendar(ctx context.Context, in *ConnectExternalCalendarRequest, opts ...grpc.CallOption) (*CalendarReply, error)
 	DisconnectExternalCalendar(ctx context.Context, in *DisconnectExternalCalendarRequest, opts ...grpc.CallOption) (*CalendarReply, error)
@@ -96,7 +96,7 @@ func (c *calendarsClient) DeleteCalendar(ctx context.Context, in *CalendarReques
 	return out, nil
 }
 
-func (c *calendarsClient) ListCalendars(ctx context.Context, in *ListCalendarsRequest, opts ...grpc.CallOption) (*ListCalendarsReply, error) {
+func (c *calendarsClient) ListCalendars(ctx context.Context, in *v1.EmptyRequest, opts ...grpc.CallOption) (*ListCalendarsReply, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(ListCalendarsReply)
 	err := c.cc.Invoke(ctx, Calendars_ListCalendars_FullMethodName, in, out, cOpts...)
@@ -164,7 +164,7 @@ type CalendarsServer interface {
 	CreateCalendar(context.Context, *CreateCalendarRequest) (*CalendarReply, error)
 	UpdateCalendar(context.Context, *UpdateCalendarRequest) (*CalendarReply, error)
 	DeleteCalendar(context.Context, *CalendarRequest) (*v1.EmptyReply, error)
-	ListCalendars(context.Context, *ListCalendarsRequest) (*ListCalendarsReply, error)
+	ListCalendars(context.Context, *v1.EmptyRequest) (*ListCalendarsReply, error)
 	ListExternalCalendars(context.Context, *ListExternalCalendarsRequest) (*ListExternalCalendarsReply, error)
 	ConnectExternalCalendar(context.Context, *ConnectExternalCalendarRequest) (*CalendarReply, error)
 	DisconnectExternalCalendar(context.Context, *DisconnectExternalCalendarRequest) (*CalendarReply, error)
@@ -192,7 +192,7 @@ func (UnimplementedCalendarsServer) UpdateCalendar(context.Context, *UpdateCalen
 func (UnimplementedCalendarsServer) DeleteCalendar(context.Context, *CalendarRequest) (*v1.EmptyReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteCalendar not implemented")
 }
-func (UnimplementedCalendarsServer) ListCalendars(context.Context, *ListCalendarsRequest) (*ListCalendarsReply, error) {
+func (UnimplementedCalendarsServer) ListCalendars(context.Context, *v1.EmptyRequest) (*ListCalendarsReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListCalendars not implemented")
 }
 func (UnimplementedCalendarsServer) ListExternalCalendars(context.Context, *ListExternalCalendarsRequest) (*ListExternalCalendarsReply, error) {
@@ -304,7 +304,7 @@ func _Calendars_DeleteCalendar_Handler(srv interface{}, ctx context.Context, dec
 }
 
 func _Calendars_ListCalendars_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ListCalendarsRequest)
+	in := new(v1.EmptyRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -316,7 +316,7 @@ func _Calendars_ListCalendars_Handler(srv interface{}, ctx context.Context, dec 
 		FullMethod: Calendars_ListCalendars_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(CalendarsServer).ListCalendars(ctx, req.(*ListCalendarsRequest))
+		return srv.(CalendarsServer).ListCalendars(ctx, req.(*v1.EmptyRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }

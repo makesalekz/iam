@@ -4,7 +4,7 @@ package chats.v1;
 
 import "errors/errors.proto";
 
-option go_package = "gitlab.calendaria.team/services/chats/api/chats/v1;chats_v1";
+option go_package = "github.com/makesalekz/chats/api/chats/v1;chats_v1";
 option java_package = "chats.v1";
 
 enum ErrorReason {

@@ -9,7 +9,7 @@ import (
 	reflect "reflect"
 
 	gomock "github.com/golang/mock/gomock"
-	notifications_v1 "gitlab.calendaria.team/services/notifications/api/notifications/v1"
+	notifications_v1 "github.com/makesalekz/notifications/api/notifications/v1"
 )
 
 // MockINotificationsRemote is a mock of INotificationsRemote interface.

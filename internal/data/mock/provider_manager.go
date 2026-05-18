@@ -8,8 +8,8 @@ import (
 	reflect "reflect"
 
 	gomock "github.com/golang/mock/gomock"
-	integration "gitlab.calendaria.team/services/iam/internal/data/integration"
-	struc "gitlab.calendaria.team/services/utils/v2/struc"
+	integration "github.com/makesalekz/iam/internal/data/integration"
+	struc "github.com/makesalekz/utils/v2/struc"
 )
 
 // MockIProviderManager is a mock of IProviderManager interface.

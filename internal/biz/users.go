@@ -7,18 +7,17 @@ import (
 	"sync"
 	"time"
 
-	contacts_v1 "gitlab.calendaria.team/services/contacts/api/contacts/v1"
-	v1 "gitlab.calendaria.team/services/iam/api/iam/v1"
-	"gitlab.calendaria.team/services/iam/ent"
-	"gitlab.calendaria.team/services/iam/ent/enum"
-	"gitlab.calendaria.team/services/iam/internal/data"
-	"gitlab.calendaria.team/services/iam/internal/data/dto"
-	"gitlab.calendaria.team/services/iam/internal/data/remote"
-	tenants_v1 "gitlab.calendaria.team/services/tenants/api/tenants/v1"
-	utils_v1 "gitlab.calendaria.team/services/utils/api/utils/v1"
-	u_error "gitlab.calendaria.team/services/utils/v1/error"
-	u_jwt "gitlab.calendaria.team/services/utils/v4/jwt"
-	u_nats "gitlab.calendaria.team/services/utils/v4/nats"
+	v1 "github.com/makesalekz/iam/api/iam/v1"
+	"github.com/makesalekz/iam/ent"
+	"github.com/makesalekz/iam/ent/enum"
+	"github.com/makesalekz/iam/internal/data"
+	"github.com/makesalekz/iam/internal/data/dto"
+	"github.com/makesalekz/iam/internal/data/remote"
+	tenants_v1 "github.com/makesalekz/tenants/api/tenants/v1"
+	utils_v1 "github.com/makesalekz/utils/api/utils/v1"
+	u_error "github.com/makesalekz/utils/v1/error"
+	u_jwt "github.com/makesalekz/utils/v4/jwt"
+	u_nats "github.com/makesalekz/utils/v4/nats"
 
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/lib/pq"
@@ -212,14 +211,14 @@ func (uc *UsersUsecase) GetUserProfile(ctx context.Context, filter data.GetUserF
 		User: user,
 	}
 
-	status, err := uc.websockets.GetUserStatus(ctx, user.ID)
+	isOnline, err := uc.websockets.GetUserStatus(ctx, user.ID)
 	if err != nil {
 		uc.log.Errorf("failed to fetch user status: %s", err)
 		return replyUser, nil
 	}
 
 	replyUser.IsLastSeenAvailable = false
-	replyUser.IsOnline = status.GetIsOnline()
+	replyUser.IsOnline = isOnline
 
 	privacy, err := uc.privaciesRepo.GetPrivacy(ctx, user.ID)
 	if err != nil {
@@ -236,15 +235,12 @@ func (uc *UsersUsecase) GetUserProfile(ctx context.Context, filter data.GetUserF
 	case "", enum.All:
 		replyUser.IsLastSeenAvailable = true
 	case enum.MyContacts:
-		relationMap, err2 := uc.contacts.GetIncomingRelations(
-			ctx,
-			&contacts_v1.GetRelationsRequest{UserIds: []int64{user.ID}},
-		)
+		relationMap, err2 := uc.contacts.GetIncomingRelations(ctx, []int64{user.ID})
 		if err2 != nil {
 			uc.log.Errorf("can't retrieve incoming relations: %s", err2.Error())
 		}
 
-		if relationMap[user.ID].IsExistInContacts != nil && relationMap[user.ID].GetIsExistInContacts() {
+		if relationMap[user.ID] {
 			replyUser.IsLastSeenAvailable = true
 		}
 	}
@@ -378,9 +374,8 @@ func (uc *UsersUsecase) GetUsers(ctx context.Context, filter data.GetUsersFilter
 			continue
 		}
 
-		status := usersStatuses[user.ID]
 		user.IsLastSeenAvailable = false
-		user.IsOnline = status.GetIsOnline()
+		user.IsOnline = usersStatuses[user.ID]
 
 		lastVisit, exists := privaciesMap[user.ID][string(enum.LastVisit)]
 		if !exists {
@@ -392,15 +387,12 @@ func (uc *UsersUsecase) GetUsers(ctx context.Context, filter data.GetUsersFilter
 		case "", enum.All:
 			user.IsLastSeenAvailable = true
 		case enum.MyContacts:
-			relationMap, err2 := uc.contacts.GetIncomingRelations(
-				ctx,
-				&contacts_v1.GetRelationsRequest{UserIds: []int64{user.ID}},
-			)
+			relationMap, err2 := uc.contacts.GetIncomingRelations(ctx, []int64{user.ID})
 			if err2 != nil {
 				uc.log.Errorf("can't retrieve incoming relations: %s", err2.Error())
 			}
 
-			if relationMap[user.ID].IsExistInContacts != nil && relationMap[user.ID].GetIsExistInContacts() {
+			if relationMap[user.ID] {
 				user.IsLastSeenAvailable = true
 			}
 		}

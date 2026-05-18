@@ -4,12 +4,12 @@ import (
 	"context"
 	"time"
 
-	v1 "gitlab.calendaria.team/services/iam/api/iam/v1"
-	"gitlab.calendaria.team/services/iam/internal/biz"
-	"gitlab.calendaria.team/services/iam/internal/data"
-	"gitlab.calendaria.team/services/iam/internal/data/dto"
-	utils_v1 "gitlab.calendaria.team/services/utils/api/utils/v1"
-	"gitlab.calendaria.team/services/utils/v2/auth"
+	v1 "github.com/makesalekz/iam/api/iam/v1"
+	"github.com/makesalekz/iam/internal/biz"
+	"github.com/makesalekz/iam/internal/data"
+	"github.com/makesalekz/iam/internal/data/dto"
+	utils_v1 "github.com/makesalekz/utils/api/utils/v1"
+	"github.com/makesalekz/utils/v2/auth"
 
 	"github.com/go-kratos/kratos/v2/log"
 )

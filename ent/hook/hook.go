@@ -6,7 +6,7 @@ import (
 	"context"
 	"fmt"
 
-	"gitlab.calendaria.team/services/iam/ent"
+	"github.com/makesalekz/iam/ent"
 )
 
 // The OneTimePasswordFunc type is an adapter to allow the use of ordinary

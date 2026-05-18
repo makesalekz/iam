@@ -1,8 +1,8 @@
 package schema
 
 import (
-	"gitlab.calendaria.team/services/iam/ent/mixins"
-	u_struc "gitlab.calendaria.team/services/utils/v2/struc"
+	"github.com/makesalekz/iam/ent/mixins"
+	u_struc "github.com/makesalekz/utils/v2/struc"
 
 	"entgo.io/ent"
 	"entgo.io/ent/schema/edge"

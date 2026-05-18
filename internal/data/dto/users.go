@@ -7,8 +7,8 @@ import (
 	"strings"
 	"time"
 
-	v1 "gitlab.calendaria.team/services/iam/api/iam/v1"
-	"gitlab.calendaria.team/services/iam/ent"
+	v1 "github.com/makesalekz/iam/api/iam/v1"
+	"github.com/makesalekz/iam/ent"
 
 	"github.com/nyaruka/phonenumbers"
 )

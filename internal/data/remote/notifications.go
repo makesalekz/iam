@@ -3,10 +3,10 @@ package remote
 import (
 	"context"
 
-	v1 "gitlab.calendaria.team/services/contacts/api/contacts/v1"
-	"gitlab.calendaria.team/services/iam/internal/conf"
-	notifications_v1 "gitlab.calendaria.team/services/notifications/api/notifications/v1"
-	"gitlab.calendaria.team/services/utils/v4/dialer"
+	iam_v1 "github.com/makesalekz/iam/api/iam/v1"
+	"github.com/makesalekz/iam/internal/conf"
+	notifications_v1 "github.com/makesalekz/notifications/api/notifications/v1"
+	"github.com/makesalekz/utils/v4/dialer"
 )
 
 // INotificationsRemote ...
@@ -37,7 +37,7 @@ func NewNotificationsRemote(
 func (r *NotificationsRemote) GetSenderClient(ctx context.Context) (notifications_v1.SenderClient, error) {
 	conn, err := r.dialer.Connect(ctx)
 	if err != nil {
-		return nil, v1.ErrorGrpcConnection("can't connect to iam: %s", err.Error())
+		return nil, iam_v1.ErrorGrpcConnection("can't connect to notifications: %s", err.Error())
 	}
 
 	return notifications_v1.NewSenderClient(conn), nil

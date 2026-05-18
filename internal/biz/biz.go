@@ -1,8 +1,8 @@
 package biz
 
 import (
-	"gitlab.calendaria.team/services/iam/internal/data/remote"
-	"gitlab.calendaria.team/services/utils/v4/nats"
+	"github.com/makesalekz/iam/internal/data/remote"
+	"github.com/makesalekz/utils/v4/nats"
 
 	"github.com/google/wire"
 )
@@ -13,6 +13,9 @@ import (
 var ProviderSet = wire.NewSet(
 	nats.NewQueueManager,
 	remote.NewWebsocketsRemote,
+	remote.NewChatsRemote,
+	remote.NewContactsRemote,
+	remote.NewEventsRemote,
 	NewAuthUsecase,
 	NewUsersUsecase,
 	NewPrivacyUsecase,

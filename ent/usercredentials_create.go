@@ -11,9 +11,9 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"gitlab.calendaria.team/services/iam/ent/user"
-	"gitlab.calendaria.team/services/iam/ent/usercredentials"
-	"gitlab.calendaria.team/services/utils/v2/struc"
+	"github.com/makesalekz/iam/ent/user"
+	"github.com/makesalekz/iam/ent/usercredentials"
+	"github.com/makesalekz/utils/v2/struc"
 )
 
 // UserCredentialsCreate is the builder for creating a UserCredentials entity.

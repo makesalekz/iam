@@ -9,7 +9,7 @@ import (
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
-	"gitlab.calendaria.team/services/iam/ent/user"
+	"github.com/makesalekz/iam/ent/user"
 )
 
 // User is the model entity for the User schema.

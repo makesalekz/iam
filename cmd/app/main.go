@@ -4,10 +4,10 @@ import (
 	"flag"
 	"os"
 
-	"gitlab.calendaria.team/services/iam/internal/conf"
-	"gitlab.calendaria.team/services/iam/internal/server"
-	u_log "gitlab.calendaria.team/services/utils/v1/log"
-	"gitlab.calendaria.team/services/utils/v4/config"
+	"github.com/makesalekz/iam/internal/conf"
+	"github.com/makesalekz/iam/internal/server"
+	u_log "github.com/makesalekz/utils/v1/log"
+	"github.com/makesalekz/utils/v4/config"
 
 	"github.com/go-kratos/kratos/v2"
 	kconfig "github.com/go-kratos/kratos/v2/config"

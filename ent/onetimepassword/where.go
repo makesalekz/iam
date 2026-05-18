@@ -7,8 +7,8 @@ import (
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
-	"gitlab.calendaria.team/services/iam/ent/enum"
-	"gitlab.calendaria.team/services/iam/ent/predicate"
+	"github.com/makesalekz/iam/ent/enum"
+	"github.com/makesalekz/iam/ent/predicate"
 )
 
 // ID filters vertices based on their ID field.

@@ -4,21 +4,21 @@ import (
 	"context"
 	"os"
 
-	"gitlab.calendaria.team/services/iam/ent"
-	"gitlab.calendaria.team/services/iam/internal/conf"
-	"gitlab.calendaria.team/services/iam/internal/data/integration"
-	"gitlab.calendaria.team/services/iam/internal/data/remote"
-	u_config "gitlab.calendaria.team/services/utils/v4/config"
-	u_dialer "gitlab.calendaria.team/services/utils/v4/dialer"
-	u_jwt "gitlab.calendaria.team/services/utils/v4/jwt"
-	u_tracing "gitlab.calendaria.team/services/utils/v4/tracing"
+	"github.com/makesalekz/iam/ent"
+	"github.com/makesalekz/iam/internal/conf"
+	"github.com/makesalekz/iam/internal/data/integration"
+	"github.com/makesalekz/iam/internal/data/remote"
+	u_config "github.com/makesalekz/utils/v4/config"
+	u_dialer "github.com/makesalekz/utils/v4/dialer"
+	u_jwt "github.com/makesalekz/utils/v4/jwt"
+	u_tracing "github.com/makesalekz/utils/v4/tracing"
 
 	"github.com/go-kratos/kratos/v2/errors"
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/google/wire"
 
 	_ "github.com/lib/pq"
-	_ "gitlab.calendaria.team/services/iam/ent/runtime"
+	_ "github.com/makesalekz/iam/ent/runtime"
 )
 
 // ProviderSet is data providers.
@@ -33,9 +33,6 @@ var ProviderSet = wire.NewSet(
 	NewNatsClient,
 	remote.NewNotificationsRemote,
 	remote.NewTenantsRemote,
-	remote.NewContactsRemote,
-	remote.NewChatsRemote,
-	remote.NewEventsRemote,
 	remote.NewMediaRemote,
 	integration.NewProviderManager,
 	NewUsersRepo,

@@ -5,7 +5,7 @@ import (
 	"os"
 	"time"
 
-	"gitlab.calendaria.team/services/iam/internal/biz"
+	"github.com/makesalekz/iam/internal/biz"
 
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/robfig/cron/v3"

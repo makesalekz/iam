@@ -1,9 +1,9 @@
 package integration
 
 import (
-	iam_v1 "gitlab.calendaria.team/services/iam/api/iam/v1"
-	u_struc "gitlab.calendaria.team/services/utils/v2/struc"
-	"gitlab.calendaria.team/services/utils/v4/config"
+	iam_v1 "github.com/makesalekz/iam/api/iam/v1"
+	u_struc "github.com/makesalekz/utils/v2/struc"
+	"github.com/makesalekz/utils/v4/config"
 )
 
 type IProviderManager interface {

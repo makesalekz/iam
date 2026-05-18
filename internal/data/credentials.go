@@ -3,10 +3,10 @@ package data
 import (
 	"context"
 
-	"gitlab.calendaria.team/services/iam/ent"
-	"gitlab.calendaria.team/services/iam/ent/usercredentials"
-	"gitlab.calendaria.team/services/iam/internal/data/integration"
-	u_struc "gitlab.calendaria.team/services/utils/v2/struc"
+	"github.com/makesalekz/iam/ent"
+	"github.com/makesalekz/iam/ent/usercredentials"
+	"github.com/makesalekz/iam/internal/data/integration"
+	u_struc "github.com/makesalekz/utils/v2/struc"
 )
 
 type CredentialsRepo interface {

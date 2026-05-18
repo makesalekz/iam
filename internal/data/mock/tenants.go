@@ -9,7 +9,7 @@ import (
 	reflect "reflect"
 
 	gomock "github.com/golang/mock/gomock"
-	tenants_v1 "gitlab.calendaria.team/services/tenants/api/tenants/v1"
+	tenants_v1 "github.com/makesalekz/tenants/api/tenants/v1"
 )
 
 // MockITenantsRemote is a mock of ITenantsRemote interface.

@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"entgo.io/ent/dialect/sql"
-	"gitlab.calendaria.team/services/iam/ent/predicate"
+	"github.com/makesalekz/iam/ent/predicate"
 )
 
 // ID filters vertices based on their ID field.

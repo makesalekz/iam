@@ -3,7 +3,7 @@ package errors
 import (
 	"errors"
 
-	iam_v1 "gitlab.calendaria.team/services/iam/api/iam/v1"
+	iam_v1 "github.com/makesalekz/iam/api/iam/v1"
 )
 
 var (

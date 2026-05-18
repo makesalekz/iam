@@ -9,8 +9,8 @@ import (
 	reflect "reflect"
 
 	gomock "github.com/golang/mock/gomock"
-	ent "gitlab.calendaria.team/services/iam/ent"
-	data "gitlab.calendaria.team/services/iam/internal/data"
+	ent "github.com/makesalekz/iam/ent"
+	data "github.com/makesalekz/iam/internal/data"
 )
 
 // MockPrivacyRepo is a mock of PrivacyRepo interface.

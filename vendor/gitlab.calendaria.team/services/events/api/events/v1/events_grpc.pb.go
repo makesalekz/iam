@@ -34,6 +34,7 @@ const (
 	Events_DeleteUsersData_FullMethodName       = "/events.v1.Events/DeleteUsersData"
 	Events_DeleteCredentialData_FullMethodName  = "/events.v1.Events/DeleteCredentialData"
 	Events_GetGoogleNotification_FullMethodName = "/events.v1.Events/GetGoogleNotification"
+	Events_GetEventsCount_FullMethodName        = "/events.v1.Events/GetEventsCount"
 )
 
 // EventsClient is the client API for Events service.
@@ -54,6 +55,7 @@ type EventsClient interface {
 	DeleteUsersData(ctx context.Context, in *DeleteUsersDataRequest, opts ...grpc.CallOption) (*v1.EmptyReply, error)
 	DeleteCredentialData(ctx context.Context, in *DeleteCredentialDataRequest, opts ...grpc.CallOption) (*v1.EmptyReply, error)
 	GetGoogleNotification(ctx context.Context, in *GoogleNotificationRequest, opts ...grpc.CallOption) (*v1.EmptyReply, error)
+	GetEventsCount(ctx context.Context, in *EventsCountRequest, opts ...grpc.CallOption) (*EventsCountReply, error)
 }
 
 type eventsClient struct {
@@ -204,6 +206,16 @@ func (c *eventsClient) GetGoogleNotification(ctx context.Context, in *GoogleNoti
 	return out, nil
 }
 
+func (c *eventsClient) GetEventsCount(ctx context.Context, in *EventsCountRequest, opts ...grpc.CallOption) (*EventsCountReply, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(EventsCountReply)
+	err := c.cc.Invoke(ctx, Events_GetEventsCount_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // EventsServer is the server API for Events service.
 // All implementations must embed UnimplementedEventsServer
 // for forward compatibility.
@@ -222,6 +234,7 @@ type EventsServer interface {
 	DeleteUsersData(context.Context, *DeleteUsersDataRequest) (*v1.EmptyReply, error)
 	DeleteCredentialData(context.Context, *DeleteCredentialDataRequest) (*v1.EmptyReply, error)
 	GetGoogleNotification(context.Context, *GoogleNotificationRequest) (*v1.EmptyReply, error)
+	GetEventsCount(context.Context, *EventsCountRequest) (*EventsCountReply, error)
 	mustEmbedUnimplementedEventsServer()
 }
 
@@ -273,6 +286,9 @@ func (UnimplementedEventsServer) DeleteCredentialData(context.Context, *DeleteCr
 }
 func (UnimplementedEventsServer) GetGoogleNotification(context.Context, *GoogleNotificationRequest) (*v1.EmptyReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetGoogleNotification not implemented")
+}
+func (UnimplementedEventsServer) GetEventsCount(context.Context, *EventsCountRequest) (*EventsCountReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetEventsCount not implemented")
 }
 func (UnimplementedEventsServer) mustEmbedUnimplementedEventsServer() {}
 func (UnimplementedEventsServer) testEmbeddedByValue()                {}
@@ -547,6 +563,24 @@ func _Events_GetGoogleNotification_Handler(srv interface{}, ctx context.Context,
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Events_GetEventsCount_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(EventsCountRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(EventsServer).GetEventsCount(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Events_GetEventsCount_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(EventsServer).GetEventsCount(ctx, req.(*EventsCountRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Events_ServiceDesc is the grpc.ServiceDesc for Events service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -609,6 +643,10 @@ var Events_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetGoogleNotification",
 			Handler:    _Events_GetGoogleNotification_Handler,
+		},
+		{
+			MethodName: "GetEventsCount",
+			Handler:    _Events_GetEventsCount_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

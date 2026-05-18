@@ -8,8 +8,8 @@ import (
 	reflect "reflect"
 
 	gomock "github.com/golang/mock/gomock"
-	ent "gitlab.calendaria.team/services/iam/ent"
-	integration "gitlab.calendaria.team/services/iam/internal/data/integration"
+	ent "github.com/makesalekz/iam/ent"
+	integration "github.com/makesalekz/iam/internal/data/integration"
 )
 
 // MockIProviderGateway is a mock of IProviderGateway interface.

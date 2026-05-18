@@ -9,9 +9,9 @@ import (
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
-	"gitlab.calendaria.team/services/iam/ent/enum"
-	"gitlab.calendaria.team/services/iam/ent/onetimepassword"
-	"gitlab.calendaria.team/services/iam/ent/user"
+	"github.com/makesalekz/iam/ent/enum"
+	"github.com/makesalekz/iam/ent/onetimepassword"
+	"github.com/makesalekz/iam/ent/user"
 )
 
 // OneTimePassword is the model entity for the OneTimePassword schema.

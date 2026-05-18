@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package media.v1;
 
-option go_package = "gitlab.calendaria.team/services/media/api/media/v1;media_v1";
+option go_package = "github.com/makesalekz/media/api/media/v1;media_v1";
 option java_multiple_files = true;
 option java_package = "media.v1";
 

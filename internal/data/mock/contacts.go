@@ -9,7 +9,6 @@ import (
 	reflect "reflect"
 
 	gomock "github.com/golang/mock/gomock"
-	contacts_v1 "gitlab.calendaria.team/services/contacts/api/contacts/v1"
 )
 
 // MockIContactsRemote is a mock of IContactsRemote interface.
@@ -50,16 +49,16 @@ func (mr *MockIContactsRemoteMockRecorder) DeleteUsersDataInContacts(ctx, usersI
 }
 
 // GetIncomingRelations mocks base method.
-func (m *MockIContactsRemote) GetIncomingRelations(ctx context.Context, req *contacts_v1.GetRelationsRequest) (map[int64]*contacts_v1.Relation, error) {
+func (m *MockIContactsRemote) GetIncomingRelations(ctx context.Context, userIDs []int64) (map[int64]bool, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetIncomingRelations", ctx, req)
-	ret0, _ := ret[0].(map[int64]*contacts_v1.Relation)
+	ret := m.ctrl.Call(m, "GetIncomingRelations", ctx, userIDs)
+	ret0, _ := ret[0].(map[int64]bool)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // GetIncomingRelations indicates an expected call of GetIncomingRelations.
-func (mr *MockIContactsRemoteMockRecorder) GetIncomingRelations(ctx, req interface{}) *gomock.Call {
+func (mr *MockIContactsRemoteMockRecorder) GetIncomingRelations(ctx, userIDs interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetIncomingRelations", reflect.TypeOf((*MockIContactsRemote)(nil).GetIncomingRelations), ctx, req)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetIncomingRelations", reflect.TypeOf((*MockIContactsRemote)(nil).GetIncomingRelations), ctx, userIDs)
 }

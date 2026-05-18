@@ -4,7 +4,7 @@ package events.v1;
 
 import "api/media/v1/models.proto";
 
-option go_package = "gitlab.calendaria.team/services/events/api/events/v1;events_v1";
+option go_package = "github.com/makesalekz/events/api/events/v1;events_v1";
 option java_package = "events.v1";
 
 //---------------------------------- Models ----------------------------------

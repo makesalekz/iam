@@ -11,10 +11,10 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"gitlab.calendaria.team/services/iam/ent/enum"
-	"gitlab.calendaria.team/services/iam/ent/onetimepassword"
-	"gitlab.calendaria.team/services/iam/ent/predicate"
-	"gitlab.calendaria.team/services/iam/ent/user"
+	"github.com/makesalekz/iam/ent/enum"
+	"github.com/makesalekz/iam/ent/onetimepassword"
+	"github.com/makesalekz/iam/ent/predicate"
+	"github.com/makesalekz/iam/ent/user"
 )
 
 // OneTimePasswordUpdate is the builder for updating OneTimePassword entities.

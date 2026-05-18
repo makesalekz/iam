@@ -11,9 +11,9 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"gitlab.calendaria.team/services/iam/ent/enum"
-	"gitlab.calendaria.team/services/iam/ent/user"
-	"gitlab.calendaria.team/services/iam/ent/userprivacy"
+	"github.com/makesalekz/iam/ent/enum"
+	"github.com/makesalekz/iam/ent/user"
+	"github.com/makesalekz/iam/ent/userprivacy"
 )
 
 // UserPrivacyCreate is the builder for creating a UserPrivacy entity.

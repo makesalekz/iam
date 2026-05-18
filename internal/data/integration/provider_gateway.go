@@ -1,8 +1,8 @@
 package integration
 
 import (
-	"gitlab.calendaria.team/services/iam/ent"
-	u_struc "gitlab.calendaria.team/services/utils/v2/struc"
+	"github.com/makesalekz/iam/ent"
+	u_struc "github.com/makesalekz/utils/v2/struc"
 
 	xoauth2 "golang.org/x/oauth2"
 )

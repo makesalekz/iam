@@ -9,7 +9,6 @@ import (
 	reflect "reflect"
 
 	gomock "github.com/golang/mock/gomock"
-	websockets_v1 "gitlab.calendaria.team/services/websockets/api/websockets/v1"
 )
 
 // MockIWebsocketsRemote is a mock of IWebsocketsRemote interface.
@@ -36,10 +35,10 @@ func (m *MockIWebsocketsRemote) EXPECT() *MockIWebsocketsRemoteMockRecorder {
 }
 
 // GetUserStatus mocks base method.
-func (m *MockIWebsocketsRemote) GetUserStatus(ctx context.Context, userID int64) (*websockets_v1.UserStatusReply, error) {
+func (m *MockIWebsocketsRemote) GetUserStatus(ctx context.Context, userID int64) (bool, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetUserStatus", ctx, userID)
-	ret0, _ := ret[0].(*websockets_v1.UserStatusReply)
+	ret0, _ := ret[0].(bool)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -51,10 +50,10 @@ func (mr *MockIWebsocketsRemoteMockRecorder) GetUserStatus(ctx, userID interface
 }
 
 // ListUsersStatuses mocks base method.
-func (m *MockIWebsocketsRemote) ListUsersStatuses(ctx context.Context, usersIDs []int64) (map[int64]*websockets_v1.UserStatusModel, error) {
+func (m *MockIWebsocketsRemote) ListUsersStatuses(ctx context.Context, usersIDs []int64) (map[int64]bool, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "ListUsersStatuses", ctx, usersIDs)
-	ret0, _ := ret[0].(map[int64]*websockets_v1.UserStatusModel)
+	ret0, _ := ret[0].(map[int64]bool)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }

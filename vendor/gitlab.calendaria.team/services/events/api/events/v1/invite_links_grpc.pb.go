@@ -20,22 +20,34 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	InviteLinks_CreateInviteLink_FullMethodName     = "/events.v1.InviteLinks/CreateInviteLink"
-	InviteLinks_RegenerateInviteLink_FullMethodName = "/events.v1.InviteLinks/RegenerateInviteLink"
-	InviteLinks_JoinWithInviteLink_FullMethodName   = "/events.v1.InviteLinks/JoinWithInviteLink"
-	InviteLinks_DeleteInviteLink_FullMethodName     = "/events.v1.InviteLinks/DeleteInviteLink"
-	InviteLinks_ListInviteLinks_FullMethodName      = "/events.v1.InviteLinks/ListInviteLinks"
+	InviteLinks_CreateInviteLink_FullMethodName         = "/events.v1.InviteLinks/CreateInviteLink"
+	InviteLinks_RevokeInviteLink_FullMethodName         = "/events.v1.InviteLinks/RevokeInviteLink"
+	InviteLinks_DeleteRevokedInviteLinks_FullMethodName = "/events.v1.InviteLinks/DeleteRevokedInviteLinks"
+	InviteLinks_ListInviteLinks_FullMethodName          = "/events.v1.InviteLinks/ListInviteLinks"
+	InviteLinks_JoinWithInviteLink_FullMethodName       = "/events.v1.InviteLinks/JoinWithInviteLink"
+	InviteLinks_RespondToJoin_FullMethodName            = "/events.v1.InviteLinks/RespondToJoin"
+	InviteLinks_ListJoinRequests_FullMethodName         = "/events.v1.InviteLinks/ListJoinRequests"
 )
 
 // InviteLinksClient is the client API for InviteLinks service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type InviteLinksClient interface {
+	// Create a new invite link
 	CreateInviteLink(ctx context.Context, in *CreateInviteLinkRequest, opts ...grpc.CallOption) (*InviteLinkReply, error)
-	RegenerateInviteLink(ctx context.Context, in *InviteLinkRequest, opts ...grpc.CallOption) (*InviteLinkReply, error)
-	JoinWithInviteLink(ctx context.Context, in *JoinWithInviteLinkRequest, opts ...grpc.CallOption) (*Event, error)
-	DeleteInviteLink(ctx context.Context, in *InviteLinkRequest, opts ...grpc.CallOption) (*v1.EmptyReply, error)
+	// Revoke an invite link
+	RevokeInviteLink(ctx context.Context, in *RevokeInviteLinkRequest, opts ...grpc.CallOption) (*v1.EmptyReply, error)
+	// Delete all revoked invite links
+	DeleteRevokedInviteLinks(ctx context.Context, in *EventRequest, opts ...grpc.CallOption) (*v1.EmptyReply, error)
+	// Get a list of invite links (active, revoked, expired)
 	ListInviteLinks(ctx context.Context, in *ListInviteLinksRequest, opts ...grpc.CallOption) (*ListInviteLinksReply, error)
+	// Join an event using an invite link
+	// Send a join request (for closed links with requiresApproval = true)
+	JoinWithInviteLink(ctx context.Context, in *JoinWithInviteLinkRequest, opts ...grpc.CallOption) (*MemberReply, error)
+	// Accept or decline a join request
+	RespondToJoin(ctx context.Context, in *RespondToJoinRequest, opts ...grpc.CallOption) (*v1.EmptyReply, error)
+	// List pending join requests for an event
+	ListJoinRequests(ctx context.Context, in *ListJoinRequestsRequest, opts ...grpc.CallOption) (*ListJoinRequestsReply, error)
 }
 
 type inviteLinksClient struct {
@@ -56,30 +68,20 @@ func (c *inviteLinksClient) CreateInviteLink(ctx context.Context, in *CreateInvi
 	return out, nil
 }
 
-func (c *inviteLinksClient) RegenerateInviteLink(ctx context.Context, in *InviteLinkRequest, opts ...grpc.CallOption) (*InviteLinkReply, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(InviteLinkReply)
-	err := c.cc.Invoke(ctx, InviteLinks_RegenerateInviteLink_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *inviteLinksClient) JoinWithInviteLink(ctx context.Context, in *JoinWithInviteLinkRequest, opts ...grpc.CallOption) (*Event, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(Event)
-	err := c.cc.Invoke(ctx, InviteLinks_JoinWithInviteLink_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *inviteLinksClient) DeleteInviteLink(ctx context.Context, in *InviteLinkRequest, opts ...grpc.CallOption) (*v1.EmptyReply, error) {
+func (c *inviteLinksClient) RevokeInviteLink(ctx context.Context, in *RevokeInviteLinkRequest, opts ...grpc.CallOption) (*v1.EmptyReply, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(v1.EmptyReply)
-	err := c.cc.Invoke(ctx, InviteLinks_DeleteInviteLink_FullMethodName, in, out, cOpts...)
+	err := c.cc.Invoke(ctx, InviteLinks_RevokeInviteLink_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *inviteLinksClient) DeleteRevokedInviteLinks(ctx context.Context, in *EventRequest, opts ...grpc.CallOption) (*v1.EmptyReply, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(v1.EmptyReply)
+	err := c.cc.Invoke(ctx, InviteLinks_DeleteRevokedInviteLinks_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -96,15 +98,55 @@ func (c *inviteLinksClient) ListInviteLinks(ctx context.Context, in *ListInviteL
 	return out, nil
 }
 
+func (c *inviteLinksClient) JoinWithInviteLink(ctx context.Context, in *JoinWithInviteLinkRequest, opts ...grpc.CallOption) (*MemberReply, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(MemberReply)
+	err := c.cc.Invoke(ctx, InviteLinks_JoinWithInviteLink_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *inviteLinksClient) RespondToJoin(ctx context.Context, in *RespondToJoinRequest, opts ...grpc.CallOption) (*v1.EmptyReply, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(v1.EmptyReply)
+	err := c.cc.Invoke(ctx, InviteLinks_RespondToJoin_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *inviteLinksClient) ListJoinRequests(ctx context.Context, in *ListJoinRequestsRequest, opts ...grpc.CallOption) (*ListJoinRequestsReply, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ListJoinRequestsReply)
+	err := c.cc.Invoke(ctx, InviteLinks_ListJoinRequests_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // InviteLinksServer is the server API for InviteLinks service.
 // All implementations must embed UnimplementedInviteLinksServer
 // for forward compatibility.
 type InviteLinksServer interface {
+	// Create a new invite link
 	CreateInviteLink(context.Context, *CreateInviteLinkRequest) (*InviteLinkReply, error)
-	RegenerateInviteLink(context.Context, *InviteLinkRequest) (*InviteLinkReply, error)
-	JoinWithInviteLink(context.Context, *JoinWithInviteLinkRequest) (*Event, error)
-	DeleteInviteLink(context.Context, *InviteLinkRequest) (*v1.EmptyReply, error)
+	// Revoke an invite link
+	RevokeInviteLink(context.Context, *RevokeInviteLinkRequest) (*v1.EmptyReply, error)
+	// Delete all revoked invite links
+	DeleteRevokedInviteLinks(context.Context, *EventRequest) (*v1.EmptyReply, error)
+	// Get a list of invite links (active, revoked, expired)
 	ListInviteLinks(context.Context, *ListInviteLinksRequest) (*ListInviteLinksReply, error)
+	// Join an event using an invite link
+	// Send a join request (for closed links with requiresApproval = true)
+	JoinWithInviteLink(context.Context, *JoinWithInviteLinkRequest) (*MemberReply, error)
+	// Accept or decline a join request
+	RespondToJoin(context.Context, *RespondToJoinRequest) (*v1.EmptyReply, error)
+	// List pending join requests for an event
+	ListJoinRequests(context.Context, *ListJoinRequestsRequest) (*ListJoinRequestsReply, error)
 	mustEmbedUnimplementedInviteLinksServer()
 }
 
@@ -118,17 +160,23 @@ type UnimplementedInviteLinksServer struct{}
 func (UnimplementedInviteLinksServer) CreateInviteLink(context.Context, *CreateInviteLinkRequest) (*InviteLinkReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateInviteLink not implemented")
 }
-func (UnimplementedInviteLinksServer) RegenerateInviteLink(context.Context, *InviteLinkRequest) (*InviteLinkReply, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method RegenerateInviteLink not implemented")
+func (UnimplementedInviteLinksServer) RevokeInviteLink(context.Context, *RevokeInviteLinkRequest) (*v1.EmptyReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method RevokeInviteLink not implemented")
 }
-func (UnimplementedInviteLinksServer) JoinWithInviteLink(context.Context, *JoinWithInviteLinkRequest) (*Event, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method JoinWithInviteLink not implemented")
-}
-func (UnimplementedInviteLinksServer) DeleteInviteLink(context.Context, *InviteLinkRequest) (*v1.EmptyReply, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method DeleteInviteLink not implemented")
+func (UnimplementedInviteLinksServer) DeleteRevokedInviteLinks(context.Context, *EventRequest) (*v1.EmptyReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteRevokedInviteLinks not implemented")
 }
 func (UnimplementedInviteLinksServer) ListInviteLinks(context.Context, *ListInviteLinksRequest) (*ListInviteLinksReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListInviteLinks not implemented")
+}
+func (UnimplementedInviteLinksServer) JoinWithInviteLink(context.Context, *JoinWithInviteLinkRequest) (*MemberReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method JoinWithInviteLink not implemented")
+}
+func (UnimplementedInviteLinksServer) RespondToJoin(context.Context, *RespondToJoinRequest) (*v1.EmptyReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method RespondToJoin not implemented")
+}
+func (UnimplementedInviteLinksServer) ListJoinRequests(context.Context, *ListJoinRequestsRequest) (*ListJoinRequestsReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListJoinRequests not implemented")
 }
 func (UnimplementedInviteLinksServer) mustEmbedUnimplementedInviteLinksServer() {}
 func (UnimplementedInviteLinksServer) testEmbeddedByValue()                     {}
@@ -169,56 +217,38 @@ func _InviteLinks_CreateInviteLink_Handler(srv interface{}, ctx context.Context,
 	return interceptor(ctx, in, info, handler)
 }
 
-func _InviteLinks_RegenerateInviteLink_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(InviteLinkRequest)
+func _InviteLinks_RevokeInviteLink_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(RevokeInviteLinkRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(InviteLinksServer).RegenerateInviteLink(ctx, in)
+		return srv.(InviteLinksServer).RevokeInviteLink(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: InviteLinks_RegenerateInviteLink_FullMethodName,
+		FullMethod: InviteLinks_RevokeInviteLink_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(InviteLinksServer).RegenerateInviteLink(ctx, req.(*InviteLinkRequest))
+		return srv.(InviteLinksServer).RevokeInviteLink(ctx, req.(*RevokeInviteLinkRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _InviteLinks_JoinWithInviteLink_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(JoinWithInviteLinkRequest)
+func _InviteLinks_DeleteRevokedInviteLinks_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(EventRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(InviteLinksServer).JoinWithInviteLink(ctx, in)
+		return srv.(InviteLinksServer).DeleteRevokedInviteLinks(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: InviteLinks_JoinWithInviteLink_FullMethodName,
+		FullMethod: InviteLinks_DeleteRevokedInviteLinks_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(InviteLinksServer).JoinWithInviteLink(ctx, req.(*JoinWithInviteLinkRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _InviteLinks_DeleteInviteLink_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(InviteLinkRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(InviteLinksServer).DeleteInviteLink(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: InviteLinks_DeleteInviteLink_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(InviteLinksServer).DeleteInviteLink(ctx, req.(*InviteLinkRequest))
+		return srv.(InviteLinksServer).DeleteRevokedInviteLinks(ctx, req.(*EventRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -241,6 +271,60 @@ func _InviteLinks_ListInviteLinks_Handler(srv interface{}, ctx context.Context, 
 	return interceptor(ctx, in, info, handler)
 }
 
+func _InviteLinks_JoinWithInviteLink_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(JoinWithInviteLinkRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(InviteLinksServer).JoinWithInviteLink(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: InviteLinks_JoinWithInviteLink_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(InviteLinksServer).JoinWithInviteLink(ctx, req.(*JoinWithInviteLinkRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _InviteLinks_RespondToJoin_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(RespondToJoinRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(InviteLinksServer).RespondToJoin(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: InviteLinks_RespondToJoin_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(InviteLinksServer).RespondToJoin(ctx, req.(*RespondToJoinRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _InviteLinks_ListJoinRequests_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListJoinRequestsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(InviteLinksServer).ListJoinRequests(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: InviteLinks_ListJoinRequests_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(InviteLinksServer).ListJoinRequests(ctx, req.(*ListJoinRequestsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // InviteLinks_ServiceDesc is the grpc.ServiceDesc for InviteLinks service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -253,20 +337,28 @@ var InviteLinks_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _InviteLinks_CreateInviteLink_Handler,
 		},
 		{
-			MethodName: "RegenerateInviteLink",
-			Handler:    _InviteLinks_RegenerateInviteLink_Handler,
+			MethodName: "RevokeInviteLink",
+			Handler:    _InviteLinks_RevokeInviteLink_Handler,
+		},
+		{
+			MethodName: "DeleteRevokedInviteLinks",
+			Handler:    _InviteLinks_DeleteRevokedInviteLinks_Handler,
+		},
+		{
+			MethodName: "ListInviteLinks",
+			Handler:    _InviteLinks_ListInviteLinks_Handler,
 		},
 		{
 			MethodName: "JoinWithInviteLink",
 			Handler:    _InviteLinks_JoinWithInviteLink_Handler,
 		},
 		{
-			MethodName: "DeleteInviteLink",
-			Handler:    _InviteLinks_DeleteInviteLink_Handler,
+			MethodName: "RespondToJoin",
+			Handler:    _InviteLinks_RespondToJoin_Handler,
 		},
 		{
-			MethodName: "ListInviteLinks",
-			Handler:    _InviteLinks_ListInviteLinks_Handler,
+			MethodName: "ListJoinRequests",
+			Handler:    _InviteLinks_ListJoinRequests_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

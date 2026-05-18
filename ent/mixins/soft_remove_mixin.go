@@ -3,7 +3,7 @@ package mixins
 import (
 	"context"
 
-	"gitlab.calendaria.team/services/iam/ent/intercept"
+	"github.com/makesalekz/iam/ent/intercept"
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"

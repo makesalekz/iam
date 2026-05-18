@@ -5,11 +5,11 @@ import (
 	"fmt"
 	"time"
 
-	"gitlab.calendaria.team/services/iam/ent"
-	"gitlab.calendaria.team/services/iam/ent/mixins"
-	"gitlab.calendaria.team/services/iam/ent/user"
-	"gitlab.calendaria.team/services/iam/internal/data/dto"
-	utils_v1 "gitlab.calendaria.team/services/utils/api/utils/v1"
+	"github.com/makesalekz/iam/ent"
+	"github.com/makesalekz/iam/ent/mixins"
+	"github.com/makesalekz/iam/ent/user"
+	"github.com/makesalekz/iam/internal/data/dto"
+	utils_v1 "github.com/makesalekz/utils/api/utils/v1"
 )
 
 type GetUserFilterDto struct {
