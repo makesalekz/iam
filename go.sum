@@ -253,6 +253,14 @@ github.com/kylelemons/godebug v1.1.0 h1:RPNrshWIDI6G2gRW9EHilWtl7Z6Sb1BR0xunSBf0
 github.com/kylelemons/godebug v1.1.0/go.mod h1:9/0rRGxNHcop5bhtWyNeEfOS8JIWk580+fNqagV/RAw=
 github.com/lib/pq v1.10.9 h1:YXG7RB+JIjhP29X+OtkiDnYaXQwpS4JEWq7dtCCRUEw=
 github.com/lib/pq v1.10.9/go.mod h1:AlVN5x4E4T544tWzH6hKfbfQvm3HdbOxrmggDNAPY9o=
+github.com/makesalekz/media v1.99.0 h1:SB0FATM8zxpiWB/aCXT8iAznygt8rc0HZjLlhlX0XnA=
+github.com/makesalekz/media v1.99.0/go.mod h1:hnRP0GpOz335Hhu05S4yRNxabAX1khaE+mG7DwEYSjg=
+github.com/makesalekz/notifications v1.99.0 h1:eST37wPhzTg2IITGya+bPT5ZV0ADVuTgShUbmTG6/no=
+github.com/makesalekz/notifications v1.99.0/go.mod h1:3UWZJRh81WliPhtaUsWM3OdUkyXw32QhHcqUWeH36TY=
+github.com/makesalekz/tenants v1.99.0 h1:u9K/NkFQNW9QbpMrLg6uX3IMlF8H6iVBXh5n9fTZkGM=
+github.com/makesalekz/tenants v1.99.0/go.mod h1:WynYYgfbeaJAZzItcy2VoNonquU+pL8BbxYtOzw4XYY=
+github.com/makesalekz/utils v0.4.0 h1:fsw7QCJDzchfQcI8BZpr1yU1NeAHygmdHblS3jPVmks=
+github.com/makesalekz/utils v0.4.0/go.mod h1:SJoyp62UysGVkkgycOaGdEKVV3avcsImzL9nds82l3E=
 github.com/mattn/go-colorable v0.0.9/go.mod h1:9vuHe8Xs5qXnSaW/c/ABM9alt+Vo+STaOChaDxuIBZU=
 github.com/mattn/go-colorable v0.1.4/go.mod h1:U0ppj6V5qS13XJ6of8GYAs25YV2eR4EVcfRqFIhoBtE=
 github.com/mattn/go-colorable v0.1.6/go.mod h1:u6P/XSegPjTcexA+o6vUJrdnUu04hMope9wVRipJSqc=
