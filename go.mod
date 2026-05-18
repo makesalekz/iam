@@ -1,6 +1,6 @@
 module gitlab.calendaria.team/services/iam
 
-go 1.23.1
+go 1.26.0
 
 require (
 	entgo.io/ent v0.14.2
