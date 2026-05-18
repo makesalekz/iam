@@ -1,27 +1,22 @@
-FROM golang:latest AS builder
+FROM golang:1.23-alpine AS builder
+
+RUN apk add --no-cache git make
 
 COPY . /src
 WORKDIR /src
-ARG TOKEN
 
-RUN git config --global url.https://gitlab-ci-token:${TOKEN}@gitlab.calendaria.team.insteadOf https://gitlab.calendaria.team && \
-    export GOPRIVATE=gitlab.calendaria.team && \
-    touch .env
+RUN touch .env && CGO_ENABLED=0 go build -o bin/app ./cmd/app/
 
-RUN make build
+FROM alpine:3.21
 
-FROM debian:stable-slim
+RUN apk add --no-cache ca-certificates ffmpeg
 
-RUN apt-get update && apt-get install -y --no-install-recommends \
-		ca-certificates  \
-        netbase \
-        && rm -rf /var/lib/apt/lists/ \
-        && apt-get autoremove -y && apt-get autoclean -y
-
-ARG ENV
-COPY --from=builder /src/bin /app
+ARG ENV=dev
+COPY --from=builder /src/bin/app /app/app
 COPY --from=builder /src/configs/config.${ENV}.yaml /app/config.yaml
 
 WORKDIR /app
 
-EXPOSE 9000
+EXPOSE 8000 9000
+
+CMD ["./app", "-conf", "config.yaml"]
