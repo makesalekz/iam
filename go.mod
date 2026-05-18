@@ -10,9 +10,9 @@ require (
 	github.com/golang/mock v1.6.0
 	github.com/google/wire v0.7.0
 	github.com/lib/pq v1.10.9
-	github.com/makesalekz/media v2.0.0
-	github.com/makesalekz/notifications v2.0.0
-	github.com/makesalekz/tenants v2.0.0
+	github.com/makesalekz/media v1.99.0
+	github.com/makesalekz/notifications v1.99.0
+	github.com/makesalekz/tenants v1.99.0
 	github.com/makesalekz/utils v0.4.0
 	github.com/mitchellh/mapstructure v1.5.0
 	github.com/nats-io/nats.go v1.36.0
